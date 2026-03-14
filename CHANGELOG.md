@@ -1,3 +1,9 @@
+## [1.12.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.12.0...v1.12.1) (2026-03-14)
+
+### Bug Fixes
+
+* set base path for GitHub Pages deployment
+
 ## [1.12.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.2...v1.12.0) (2026-03-14)
 
 ### Features

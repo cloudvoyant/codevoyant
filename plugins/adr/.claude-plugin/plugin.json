@@ -1,7 +1,7 @@
 {
   "name": "adr",
   "hooks": "../hooks/hooks.json",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "Architecture Decision Records (ADR) commands for Claude Code - create and capture architectural decisions",
   "author": {
     "name": "Cloudvoyant",
