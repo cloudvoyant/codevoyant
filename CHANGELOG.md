@@ -1,3 +1,14 @@
+## [1.12.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.2...v1.12.0) (2026-03-14)
+
+### Features
+
+* add docs site and migrate plugins to skills/hooks architecture
+
+- Replace commands with skills, hooks, and agents across all plugins
+- Add VitePress documentation site with plugin reference pages
+- Split user guide into Installation and User Guide pages
+- Add GitHub Actions workflow for docs deployment
+
 ## [1.11.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.1...v1.11.2) (2026-02-23)
 
 ### Bug Fixes
