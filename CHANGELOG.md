@@ -1,3 +1,22 @@
+## [1.18.0](https://github.com/cloudvoyant/codevoyant/compare/v1.17.0...v1.18.0) (2026-03-15)
+
+### Features
+
+* **spec:** replace README.md plan tracker with spec.json
+
+Migrate plan metadata from a markdown README to a structured JSON
+file at .codevoyant/spec.json with activePlans and archivedPlans
+arrays. All skills updated to read/write JSON instead of markdown.
+
+
+### Documentation
+
+* remove AI-specific language and fix style file structure
+
+Replace generic "Claude" references with "the AI" or passive voice.
+Fix style plugin file structure to match what /style:init actually
+generates (no docs/style-guide/ directory).
+
 ## [1.17.0](https://github.com/cloudvoyant/codevoyant/compare/v1.16.0...v1.17.0) (2026-03-15)
 
 ### Features
