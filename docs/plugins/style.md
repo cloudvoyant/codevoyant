@@ -66,10 +66,11 @@ Contexts auto-activate based on file types, tools used, directories accessed, an
 ```
 project/
 ├── CLAUDE.md                  # Main style guide — Critical Rules block at top, context sections below
-├── .codevoyant/style/
-│   ├── config.json            # Settings (committed)
-│   ├── patterns.json          # Learning data (gitignored)
-│   └── compliance.json        # Validation history (gitignored)
+├── .codevoyant/
+│   ├── style.json             # Settings (committed)
+│   └── style/
+│       ├── patterns.json      # Learning data (gitignored)
+│       └── compliance.json    # Validation history (gitignored)
 └── docs/style-guide/          # Detailed rule docs (committed)
     ├── README.md
     ├── build.md
