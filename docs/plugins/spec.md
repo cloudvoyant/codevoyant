@@ -22,10 +22,10 @@ The spec plugin introduces a structured planning layer to your AI coding agent. 
 
 ## How It Works
 
-Plans live in `.spec/plans/{plan-name}/`:
+Plans live in `.codevoyant/plans/{plan-name}/`:
 
 ```
-.spec/plans/
+.codevoyant/plans/
 ├── README.md                        # Central plan tracker
 ├── my-feature/
 │   ├── plan.md                      # High-level objectives + checklist
@@ -76,6 +76,7 @@ Plans live in `.spec/plans/{plan-name}/`:
 ## Best Practices
 
 - **Use `/spec:new`** for real work — Claude's planning session catches ambiguities early. Pass a Linear/GitHub/Notion URL to seed requirements automatically. Use `--blank` only when you want to write the plan yourself.
+- **Plan selection**: For all skills except `/spec:new`, if you don't specify a plan name and multiple plans exist, Claude will show you the list and ask you to choose.
 - **Put detail in implementation files** — `plan.md` stays high-level; detailed specs go in `implementation/phase-N.md`
 - **Prefer `/spec:bg`** for long or routine tasks; use `/spec:go` for complex or high-risk changes
 - **Annotate plans directly** — add `> note` or `line >> instruction` markers while reading, then run `/spec:update` to apply them in bulk
@@ -103,7 +104,13 @@ Claude explores your requirements and creates:
 
 **`--blank`:** Skips the planning session entirely and creates an empty plan template for you to fill in manually. This replaces the old `/init` command.
 
-**Architecture exploration:** For non-trivial objectives, Claude optionally generates 2–3 terse proposal documents (`proposals/*.md`) comparing distinct architectural approaches before finalising the plan. You pick a direction (or ask for a synthesis), and the plan is built from that choice.
+**Research phase:** When you run `/spec:new`, three parallel research agents run automatically: a codebase scan (reads structure, existing patterns, tech stack), a library/pattern research agent (searches for relevant libraries and design patterns), and a skills lookup agent. Results are synthesized before planning begins.
+
+**Architecture exploration (optional):** For non-trivial objectives, Claude identifies 2–3 distinct architectural approaches and asks if you want proposal documents generated. If yes, proposals are written in parallel to `proposals/*.md`. You then pick a direction (or ask for a synthesis), and the plan is built from your choice.
+
+**Worktree prompt:** If you're in a git repo and not already in a worktree, Claude offers to create a dedicated git worktree for the plan during the planning session.
+
+**Final review:** Before writing any files, Claude presents the plan outline and asks "Does this plan cover everything?" so you can redirect before implementation files are generated.
 
 ### List All Plans
 
@@ -128,6 +135,22 @@ Choose your execution mode:
 - **Phase Review** — pause after each phase for your review
 - **Targeted Review** — stop at a specific phase
 
+**Inline annotations** — edit plan files directly while the agent runs, or before starting:
+
+- `> instruction` — standalone line; instruction applies to the block immediately below it
+- `content >> instruction` — inline suffix; instruction applies to that line only
+
+Examples:
+```
+> rewrite this phase for OAuth — drop all JWT references
+### Phase 2 - Authentication
+
+1. [ ] Set up Passport.js >> mark done
+2. [ ] Add refresh tokens >> remove this task
+```
+
+Run `/spec:update` to apply annotations in bulk, or let `/spec:go` apply them automatically as it reaches each task.
+
 ### Background Execution
 
 ```bash
@@ -143,7 +166,7 @@ Spawns an autonomous agent that:
 2. Updates `plan.md` checkboxes in real-time
 3. Runs tests at phase boundaries
 4. Pauses and preserves state on errors
-5. Writes an execution log at `.spec/plans/{name}/execution-log.md`
+5. Writes an execution log at `.codevoyant/plans/{name}/execution-log.md`
 6. Sends a **desktop notification** when execution completes or fails
 
 Flags:
@@ -204,7 +227,7 @@ Reviews what's been done and updates checkboxes in `plan.md` to reflect current 
 /spec:done plan-name        # Complete specific plan
 ```
 
-Marks the plan complete and archives it to `.spec/plans/archive/{name}-{YYYYMMDD}/`. Offers to create a git commit and pull request before archiving.
+Marks the plan complete and archives it to `.codevoyant/plans/archive/{name}-{YYYYMMDD}/`. Offers to create a git commit and pull request before archiving.
 
 ### Permanently Delete
 
@@ -231,7 +254,7 @@ Marks the plan complete and archives it to `.spec/plans/archive/{name}-{YYYYMMDD
 Manage git worktrees for isolated plan execution. Subcommands:
 
 - **`list`** — show all worktrees, their branches, status (clean/dirty), and associated plans
-- **`create [branch-name]`** — create a new worktree at `.worktrees/{branch-name}`
+- **`create [branch-name]`** — create a new worktree at `.codevoyant/worktrees/{branch-name}`
 - **`remove [branch-name]`** — remove a worktree; optionally delete the branch too
 - **`prune`** — remove stale git references to worktrees whose directories have been deleted manually
-- **`export [plan-name] [--force]`** — copy a plan from the current worktree's `.spec/plans/` into the main repository's `.spec/plans/`. Use `--force` to overwrite an existing entry. Re-run to push updates; the worktree copy remains the source of truth.
+- **`export [plan-name] [--force]`** — copy a plan from the current worktree's `.codevoyant/plans/` into the main repository's `.codevoyant/plans/`. Use `--force` to overwrite an existing entry. Re-run to push updates; the worktree copy remains the source of truth.

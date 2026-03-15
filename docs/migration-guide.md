@@ -2,7 +2,7 @@
 
 ## Breaking Change: Multi-Plan Architecture
 
-Version 2.0 of the spec plugin introduces a new multi-plan architecture. Plans are now stored in `.spec/plans/` instead of `.claude/plan.md`.
+Version 2.0 of the spec plugin introduces a new multi-plan architecture. Plans are now stored in `.codevoyant/plans/` instead of `.claude/plan.md`.
 
 ## What Changed
 
@@ -14,7 +14,7 @@ Version 2.0 of the spec plugin introduces a new multi-plan architecture. Plans a
 
 **After (v2.0):**
 ```
-.spec/
+.codevoyant/
 └── plans/
     ├── README.md        # Plan tracker
     ├── my-plan/
@@ -41,13 +41,13 @@ Decide what to call your plan. Use a descriptive slug like:
 
 ```bash
 # Create directories
-mkdir -p .spec/plans/your-plan-name/implementation
+mkdir -p .codevoyant/plans/your-plan-name/implementation
 
 # Move your plan
-mv .claude/plan.md .spec/plans/your-plan-name/plan.md
+mv .claude/plan.md .codevoyant/plans/your-plan-name/plan.md
 
 # Move execution log if it exists
-mv .claude/execution-log.md .spec/plans/your-plan-name/execution-log.md 2>/dev/null || true
+mv .claude/execution-log.md .codevoyant/plans/your-plan-name/execution-log.md 2>/dev/null || true
 ```
 
 **Important:** If your old plan.md contains detailed implementation sections, consider splitting them into separate phase files:
@@ -57,7 +57,7 @@ mv .claude/execution-log.md .spec/plans/your-plan-name/execution-log.md 2>/dev/n
 
 ### Step 3: Initialize README.md
 
-Create `.spec/plans/README.md`:
+Create `.codevoyant/plans/README.md`:
 
 ```markdown
 # Plans
@@ -70,7 +70,7 @@ Create `.spec/plans/README.md`:
 - **Progress**: [count your completed tasks]/[total tasks] ([percentage]%)
 - **Created**: [today's date]
 - **Last Updated**: [today's date]
-- **Path**: `.spec/plans/your-plan-name/`
+- **Path**: `.codevoyant/plans/your-plan-name/`
 
 ## Archived Plans
 ```
@@ -85,11 +85,11 @@ Update your `.gitignore`:
 - .claude/execution-log.md
 
 # Add new entries
-+ .spec/plans/*/plan.md
-+ .spec/plans/*/implementation/
-+ .spec/plans/*/execution-log.md
-+ .spec/plans/archive/
-+ !.spec/plans/README.md
++ .codevoyant/plans/*/plan.md
++ .codevoyant/plans/*/implementation/
++ .codevoyant/plans/*/execution-log.md
++ .codevoyant/plans/archive/
++ !.codevoyant/plans/README.md
 ```
 
 ### Step 5: Use New Commands

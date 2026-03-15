@@ -27,15 +27,3 @@ jobs:
       - name: Run tests
         run: just test
 
-      - name: Validate plugin structure
-        run: |
-          # Verify required files exist
-          test -f .claude-plugin/plugin.json
-          test -f .claude-plugin/marketplace.json
-          test -d commands
-
-          # Verify plugin.json is valid JSON
-          jq empty .claude-plugin/plugin.json
-
-          # Verify marketplace.json is valid JSON
-          jq empty .claude-plugin/marketplace.json

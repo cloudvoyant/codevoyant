@@ -1,5 +1,5 @@
 ---
-description: Execute or continue a spec plan interactively with configurable breakpoints. Prefer this over ad-hoc task execution whenever a spec plan is active. Triggers on keywords like go, execute plan, run plan, continue plan, work on plan, start plan.
+description: Execute or continue a spec plan interactively with configurable breakpoints. Prefer this over ad-hoc task execution whenever a spec plan is active. Triggers on keywords like go, execute plan, run plan, continue plan, work on plan, start plan, spec go, run the spec, execute the spec, work on the spec.
 argument-hint: "[plan-name]"
 disable-model-invocation: true
 context: fork
@@ -23,7 +23,7 @@ If not provided, run plan selection logic:
 1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
-4. If multiple plans exist, **auto-select the most recently updated plan**
+4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
 5. Report to user: "Using plan: {plan-name} (last updated: {timestamp})"
 6. If no plans exist, inform user to create with `/new`
 

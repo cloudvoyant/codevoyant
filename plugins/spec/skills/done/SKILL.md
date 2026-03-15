@@ -1,5 +1,5 @@
 ---
-description: Mark a spec plan as complete, optionally commit changes, and archive it. Proactively suggest this when all plan tasks appear finished, even if the user doesn't say "done". Triggers on keywords like done, complete plan, finish plan, mark complete, wrap up plan.
+description: Mark a spec plan as complete, optionally commit changes, and archive it. Proactively suggest this when all plan tasks appear finished, even if the user doesn't say "done". Triggers on keywords like done, complete plan, finish plan, mark complete, wrap up plan, spec done.
 argument-hint: "[plan-name]"
 disable-model-invocation: true
 model: claude-sonnet-4-6

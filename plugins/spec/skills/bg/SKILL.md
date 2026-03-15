@@ -1,5 +1,5 @@
 ---
-description: Launch a plan hands-free so you can keep working — the agent executes every task autonomously and updates progress in real-time. Use instead of /go whenever you want to stay unblocked. Triggers on keywords like bg, background, run in background, autonomous execution, run plan unattended, hands-free, let the agent handle it, don't wait for me, run without me, execute autonomously.
+description: Launch a plan hands-free so you can keep working — the agent executes every task autonomously and updates progress in real-time. Use instead of /go whenever you want to stay unblocked. Triggers on keywords like bg, background, run in background, autonomous execution, run plan unattended, hands-free, let the agent handle it, don't wait for me, run without me, execute autonomously, spec bg, run spec in background, spec background.
 argument-hint: "[plan-name] [--yes|-y] [--commit|-c] [--silent]"
 disable-model-invocation: true
 context: fork
@@ -59,7 +59,7 @@ If not provided:
 1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
-4. If multiple plans exist, **auto-select the most recently updated plan**
+4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
 5. Report to user: "Using plan: {plan-name} (last updated: {timestamp})"
 6. If no plans exist, inform user to create with `/new`
 

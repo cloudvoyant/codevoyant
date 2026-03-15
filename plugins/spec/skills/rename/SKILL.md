@@ -1,5 +1,5 @@
 ---
-description: Rename a spec plan and update all references. Proactively suggest when a plan name is a typo, too generic, or no longer reflects current scope. Triggers on keywords like rename plan, change plan name, plan name is wrong, update plan name, fix plan name.
+description: Rename a spec plan and update all references. Proactively suggest when a plan name is a typo, too generic, or no longer reflects current scope. Triggers on keywords like rename plan, change plan name, plan name is wrong, update plan name, fix plan name, spec rename.
 argument-hint: "[old-name] [new-name]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001

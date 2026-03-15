@@ -25,7 +25,7 @@ For long or routine tasks, run in the background instead:
 /spec:done my-feature
 ```
 
-You can have multiple plans active at once — `/spec:list` shows all of them. Plans live in `.spec/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files.
+You can have multiple plans active at once — `/spec:list` shows all of them. Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files.
 
 See the [Spec plugin reference](/plugins/spec) for all skills.
 

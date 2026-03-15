@@ -1,5 +1,5 @@
 ---
-description: Stop a running background agent OR pause a plan and capture session insights. Proactively suggest when a user says they're stopping work, switching tasks, halting execution, or ending a session. Triggers on keywords like stop plan, halt execution, stop background agent, pause plan, save insights, take a break, save progress, cancel execution.
+description: Stop a running background agent OR pause a plan and capture session insights. Proactively suggest when a user says they're stopping work, switching tasks, halting execution, or ending a session. Triggers on keywords like stop plan, halt execution, stop background agent, pause plan, save insights, take a break, save progress, cancel execution, stop spec, pause spec.
 argument-hint: "[plan-name]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001

@@ -1,5 +1,5 @@
 ---
-description: Permanently delete a spec plan and all its files. Proactively suggest this when a user calls a plan obsolete, a mistake, or asks to clean up old plans. Triggers on keywords like delete plan, remove plan, destroy plan, get rid of plan, clean up plan.
+description: Permanently delete a spec plan and all its files. Proactively suggest this when a user calls a plan obsolete, a mistake, or asks to clean up old plans. Triggers on keywords like delete plan, remove plan, destroy plan, get rid of plan, clean up plan, spec delete.
 argument-hint: "[plan-name]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001
