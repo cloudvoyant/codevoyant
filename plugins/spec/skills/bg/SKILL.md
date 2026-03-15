@@ -56,7 +56,7 @@ fi
 If plan name not provided in arguments:
 
 If not provided:
-1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
+1. Read `.codevoyant/spec.json` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
 4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
@@ -286,9 +286,9 @@ Status: RUNNING
 [timestamp] - Execution started
 ```
 
-2. Update `.codevoyant/plans/README.md`:
-   - Set status to "Executing"
-   - Update last updated timestamp
+2. Update `.codevoyant/spec.json`:
+   - Set the plan's `status` to `"Executing"`
+   - Update `lastUpdated` to current timestamp
 
 3. Optionally add execution status to plan.md Insights section (if it exists):
 
@@ -394,7 +394,7 @@ You will receive a desktop notification when execution completes or fails.
 ## Notes
 
 - The background agent works independently - you can continue chatting
-- Progress is saved continuously in .codevoyant/plans/{plan-name}/plan.md and README.md
+- Progress is saved continuously in .codevoyant/plans/{plan-name}/plan.md and spec.json
 - If the agent encounters errors, it will pause and preserve state
 - Resume with `/bg {plan-name}` again or use `/go {plan-name}` for interactive execution
 - Check execution status anytime with `/status {plan-name}` or `/status` for all plans

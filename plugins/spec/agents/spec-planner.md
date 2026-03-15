@@ -54,4 +54,4 @@ Produce:
 - `.codevoyant/plans/{plan-name}/implementation/phase-N.md` for each phase
 - `.codevoyant/plans/{plan-name}/user-guide.md`
 - `.codevoyant/plans/{plan-name}/research/` files from the research phase
-- Updated `.codevoyant/plans/README.md`
+- Updated `.codevoyant/spec.json`

@@ -15,8 +15,8 @@ Version 2.0 of the spec plugin introduces a new multi-plan architecture. Plans a
 **After (v2.0):**
 ```
 .codevoyant/
+├── spec.json            # Plan registry and variables
 └── plans/
-    ├── README.md        # Plan tracker
     ├── my-plan/
     │   ├── plan.md
     │   ├── implementation/     # NEW: Per-phase specs
@@ -55,24 +55,28 @@ mv .claude/execution-log.md .codevoyant/plans/your-plan-name/execution-log.md 2>
 - Create `implementation/phase-1.md`, `phase-2.md`, etc.
 - Keep only high-level objectives and task checklists in plan.md
 
-### Step 3: Initialize README.md
+### Step 3: Initialize spec.json
 
-Create `.codevoyant/plans/README.md`:
+Create `.codevoyant/spec.json`:
 
-```markdown
-# Plans
-
-## Active Plans
-
-### your-plan-name
-- **Description**: [Brief description from your plan]
-- **Status**: Active
-- **Progress**: [count your completed tasks]/[total tasks] ([percentage]%)
-- **Created**: [today's date]
-- **Last Updated**: [today's date]
-- **Path**: `.codevoyant/plans/your-plan-name/`
-
-## Archived Plans
+```json
+{
+  "version": "1.0",
+  "activePlans": [
+    {
+      "name": "your-plan-name",
+      "description": "Brief description from your plan",
+      "status": "Active",
+      "progress": { "completed": 0, "total": 10 },
+      "created": "2025-01-01T00:00:00Z",
+      "lastUpdated": "2025-01-01T00:00:00Z",
+      "path": ".codevoyant/plans/your-plan-name/",
+      "branch": null,
+      "worktree": null
+    }
+  ],
+  "archivedPlans": []
+}
 ```
 
 ### Step 4: Update .gitignore
@@ -89,7 +93,7 @@ Update your `.gitignore`:
 + .codevoyant/plans/*/implementation/
 + .codevoyant/plans/*/execution-log.md
 + .codevoyant/plans/archive/
-+ !.codevoyant/plans/README.md
++ !.codevoyant/spec.json
 ```
 
 ### Step 5: Use New Commands
@@ -118,7 +122,7 @@ We plan to add an automated migration command in a future release:
 
 If you encounter issues during migration:
 - Check that your plan.md is in the correct directory
-- Ensure README.md is properly formatted
+- Ensure spec.json is valid JSON
 - Try `/list` to see if your plan is detected
 
 For questions: https://github.com/codevoyant/codevoyant/issues

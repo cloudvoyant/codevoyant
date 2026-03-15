@@ -241,27 +241,24 @@ Archive the plan to `.codevoyant/plans/archive/`:
    - Move entire directory: `.codevoyant/plans/{plan-name}/` → `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
    - This includes plan.md, implementation/ directory, and execution-log.md
 
-4. **Update README.md:**
-   - Remove plan from Active Plans section
-   - Add to Archived Plans section with branch context:
-   ```markdown
-   ### {plan-name} (Completed {YYYY-MM-DD})
-   - **Description**: [from plan]
-   {if PLAN_BRANCH != "(none)"}
-   - **Branch**: {PLAN_BRANCH} 🌿 {if branch deleted}(deleted){endif}
-   {endif}
-   {if PLAN_WORKTREE != "(none)"}
-   - **Worktree**: {if removed}(removed){else}{PLAN_WORKTREE}{endif}
-   {endif}
-   - **Progress**: Y/Y tasks (100%)
-   - **Archive Path**: `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
+4. **Update spec.json:**
+   - Remove the plan entry from `activePlans`
+   - Append to `archivedPlans`:
+   ```json
+   {
+     "name": "{plan-name}",
+     "description": "[from plan objective]",
+     "status": "Complete",
+     "progress": { "completed": Y, "total": Y },
+     "created": "[original created timestamp]",
+     "completedAt": "{YYYY-MM-DDTHH:MM:SSZ}",
+     "archivePath": ".codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/",
+     "branch": "{PLAN_BRANCH or null}",
+     "worktree": "{PLAN_WORKTREE, null if removed, or null if never set}"
+   }
    ```
-
-   **Implementation Notes:**
-   - Include branch info if plan had a branch
-   - Note if branch was deleted during cleanup
-   - Note if worktree was removed during cleanup
-   - Preserve this info for historical reference
+   Set `worktree` to `null` if it was removed during cleanup or was never set.
+   Write the updated JSON back to `.codevoyant/spec.json`.
 
 ## Step 4.5: Offer Worktree Removal (if applicable)
 

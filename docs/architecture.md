@@ -112,8 +112,8 @@ The spec plugin now supports multiple concurrent plans with organized tracking:
 **Directory Structure:**
 ```
 .codevoyant/
+├── spec.json                        # Plan registry, statuses, and variables
 └── plans/
-    ├── README.md                    # Central plan tracker
     ├── {plan-name}/                 # Individual plans
     │   ├── plan.md                  # High-level plan
     │   ├── implementation/          # Detailed specs per phase
@@ -128,7 +128,7 @@ The spec plugin now supports multiple concurrent plans with organized tracking:
 **Plan Management:**
 - Each plan has its own directory with plan.md and execution-log.md
 - Implementation details split into separate files per phase (prevents large files)
-- README.md tracks metadata for all plans (status, progress, timestamps)
+- `spec.json` tracks metadata for all plans (status, progress, timestamps)
 - Commands accept plan name as argument or auto-select most recently updated plan
 - Plans can be archived when complete or manually archived if abandoned
 - Archive preserves full plan history with completion/archive date
@@ -150,7 +150,7 @@ The spec plugin now supports multiple concurrent plans with organized tracking:
 2. **Background Execution** (`/bg plan-name`):
    - Uses Claude Code's Task tool to spawn autonomous agent
    - Agent executes plan independently while user continues other work
-   - Real-time progress updates in plan.md and README.md
+   - Real-time progress updates in plan.md and spec.json
    - Execution log in .codevoyant/plans/{plan-name}/execution-log.md
    - Agent reads implementation files for detailed execution specs
    - Automatic pause on errors

@@ -395,7 +395,7 @@ FORCE=false     # set true if --force flag present
 **Find the Plan:**
 
 If `PLAN_NAME` not provided:
-1. Read `.codevoyant/plans/README.md` in current directory
+1. Read `.codevoyant/spec.json` in current directory
 2. Auto-select most recently updated active plan
 3. Report: `Exporting plan: {plan-name}`
 4. If no plans found, report error
@@ -431,20 +431,24 @@ cp -r ".codevoyant/plans/{plan-name}" "$MAIN_SPEC_DIR/"
 
 **Update Main Repo README:**
 
-Read `$MAIN_SPEC_DIR/README.md` (create if absent). If an entry for `{plan-name}` exists, update Progress/Status/Last Updated. If not, append a new entry to the Active Plans section:
+Read `$MAIN_REPO_ROOT/.codevoyant/spec.json` (create with empty structure if absent). If an entry for `{plan-name}` exists in `activePlans`, update `progress`, `status`, and `lastUpdated`. If not, append a new entry to `activePlans`:
 
-```markdown
-### {plan-name}
-- **Description**: {from plan objective}
-- **Branch**: {METADATA_BRANCH} 🌿
-- **Status**: {current status}
-- **Progress**: {X/Y tasks (Z%)}
-- **Last Updated**: {now, ISO 8601 UTC}
-- **Path**: `.codevoyant/plans/{plan-name}/`
-- **Exported From**: `.codevoyant/plans/{plan-name}/` (worktree)
+```json
+{
+  "name": "{plan-name}",
+  "description": "{from plan objective}",
+  "status": "{current status}",
+  "progress": { "completed": X, "total": Y },
+  "created": "{original created timestamp}",
+  "lastUpdated": "{now, ISO 8601 UTC}",
+  "path": ".codevoyant/plans/{plan-name}/",
+  "branch": "{METADATA_BRANCH or null}",
+  "worktree": null,
+  "exportedFrom": ".codevoyant/plans/{plan-name}/"
+}
 ```
 
-Only include Branch/Worktree lines if they have values other than `(none)`.
+Write the updated JSON back to `$MAIN_REPO_ROOT/.codevoyant/spec.json`.
 
 **Report:**
 ```

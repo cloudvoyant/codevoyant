@@ -23,19 +23,19 @@ Check if `.codevoyant/plans/` exists:
 - If not found, report: "No plans found. Create one with /new"
 - If found, continue
 
-### Step 2: Read README.md
+### Step 2: Read spec.json
 
-Read `.codevoyant/plans/README.md` to get plan metadata.
+Read `.codevoyant/spec.json` to get plan metadata.
 
-If README.md doesn't exist or is empty:
-- Scan `.codevoyant/plans/` for plan directories (exclude `archive/` and `README.md`)
+If spec.json doesn't exist or has empty plan lists:
+- Scan `.codevoyant/plans/` for plan directories (exclude `archive/`)
 - For each directory found, auto-generate metadata:
   1. Plan name: directory name
   2. Read `plan.md`: extract objective, count `[ ]` and `[x]` tasks
   3. Status: default to "Active"
   4. Timestamps: use filesystem mtime
   5. Path: `.codevoyant/plans/{directory-name}/`
-- Write generated README.md with warning comment and report: "Generated README.md from discovered plans. Verify accuracy with /refresh."
+- Write generated spec.json and report: "Generated spec.json from discovered plans. Verify accuracy with /refresh."
 
 ### Step 3: Parse and Display Plans
 
@@ -111,7 +111,7 @@ Check `.codevoyant/plans/{plan-name}/plan.md` exists. If not, report error and s
 
 1. Read `.codevoyant/plans/{plan-name}/plan.md` — task completion
 2. Read `.codevoyant/plans/{plan-name}/execution-log.md` if exists — execution details
-3. Read `.codevoyant/plans/README.md` — current status (Active/Paused/Executing)
+3. Read `.codevoyant/spec.json` — current status (Active/Paused/Executing)
 
 Extract branch context:
 ```bash

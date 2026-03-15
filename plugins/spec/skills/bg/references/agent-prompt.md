@@ -39,7 +39,7 @@ Apply each annotation (mark done, remove task, rewrite content, etc.) and delete
 
 - Plan: .codevoyant/plans/{plan-name}/plan.md
 - Execution log: .codevoyant/plans/{plan-name}/execution-log.md
-- README: .codevoyant/plans/README.md
+- Spec registry: .codevoyant/spec.json
 
 ## Execution log — required after every task
 

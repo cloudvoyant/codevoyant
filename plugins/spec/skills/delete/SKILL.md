@@ -68,8 +68,8 @@ Only proceed to Step 3 if user types the plan name exactly (case-sensitive match
 
 If confirmed:
 1. Delete plan directory: `.codevoyant/plans/{plan-name}/` or archive directory
-2. Update README.md:
-   - Remove plan entry from Active or Archived section
+2. Update `.codevoyant/spec.json`:
+   - Remove the plan entry from `activePlans` or `archivedPlans`
 3. If plan was executing, note that execution was stopped
 4. If plan had an associated worktree: note that the worktree itself is **not** deleted — only the plan files are removed. Suggest the user clean up manually: `/worktree remove <branch>` or `git worktree remove <path>`
 
@@ -80,7 +80,7 @@ Plan "{plan-name}" permanently deleted.
 
 All files removed:
 ✓ .codevoyant/plans/{plan-name}/ deleted
-✓ README.md updated
+✓ spec.json updated
 
 Create a new plan: /new
 ```

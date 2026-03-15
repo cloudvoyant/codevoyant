@@ -14,7 +14,7 @@ Stop a running background agent or pause manual work and capture session insight
 If argument provided: use that plan.
 
 If no argument:
-1. Read `.codevoyant/plans/README.md` to get all active plans
+1. Read `.codevoyant/spec.json` to get all active plans
 2. If no plans exist, report error
 3. If only one plan, auto-select it
 4. If multiple plans, use **AskUserQuestion tool**:
@@ -76,7 +76,7 @@ If confirmed:
    Status: STOPPED
    ```
 
-2. Update `.codevoyant/plans/README.md`: change status from "Executing" to "Active"
+2. Update `.codevoyant/spec.json`: set the plan's `status` to `"Active"` and `lastUpdated` to current timestamp
 
 3. Update plan.md Insights section (if exists):
    ```markdown
@@ -160,9 +160,9 @@ Notes:
 - [any other useful context]
 ```
 
-Update `.codevoyant/plans/README.md`:
-- Set status to "Paused"
-- Update last updated timestamp
+Update `.codevoyant/spec.json`:
+- Set the plan's `status` to `"Paused"`
+- Update `lastUpdated` to current timestamp
 
 Report:
 ```

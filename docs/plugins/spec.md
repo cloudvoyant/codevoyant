@@ -22,12 +22,13 @@ The spec plugin introduces a structured planning layer to your AI coding agent. 
 
 ## How It Works
 
-Plans live in `.codevoyant/plans/{plan-name}/`:
+Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are tracked in `.codevoyant/spec.json`:
 
 ```
-.codevoyant/plans/
-├── README.md                        # Central plan tracker
-├── my-feature/
+.codevoyant/
+├── spec.json                        # Plan registry, statuses, and variables
+└── plans/
+    ├── my-feature/
 │   ├── plan.md                      # High-level objectives + checklist
 │   ├── implementation/
 │   │   ├── phase-1.md               # Detailed specs per phase
@@ -43,7 +44,7 @@ Plans live in `.codevoyant/plans/{plan-name}/`:
 ### Interactive Workflow
 
 ```bash
-/spec:new my-feature        # Create plan with Claude's help
+/spec:new my-feature        # Create plan interactively
 /spec:go my-feature         # Execute step-by-step with review
 /spec:done my-feature       # Archive and optionally commit
 ```
@@ -75,8 +76,8 @@ Plans live in `.codevoyant/plans/{plan-name}/`:
 
 ## Best Practices
 
-- **Use `/spec:new`** for real work — Claude's planning session catches ambiguities early. Pass a Linear/GitHub/Notion URL to seed requirements automatically. Use `--blank` only when you want to write the plan yourself.
-- **Plan selection**: For all skills except `/spec:new`, if you don't specify a plan name and multiple plans exist, Claude will show you the list and ask you to choose.
+- **Use `/spec:new`** for real work — the planning session catches ambiguities early. Pass a Linear/GitHub/Notion URL to seed requirements automatically. Use `--blank` only when you want to write the plan yourself.
+- **Plan selection**: For all skills except `/spec:new`, if you don't specify a plan name and multiple plans exist, you'll be shown the list and asked to choose.
 - **Put detail in implementation files** — `plan.md` stays high-level; detailed specs go in `implementation/phase-N.md`
 - **Prefer `/spec:bg`** for long or routine tasks; use `/spec:go` for complex or high-risk changes
 - **Annotate plans directly** — add `> note` or `line >> instruction` markers while reading, then run `/spec:update` to apply them in bulk
@@ -96,21 +97,21 @@ Plans live in `.codevoyant/plans/{plan-name}/`:
 /spec:new --blank                              # Empty template (no planning session)
 ```
 
-Claude explores your requirements and creates:
+Explores your requirements and creates:
 - `plan.md` with objectives, design decisions, and task checklists
 - `implementation/phase-N.md` files with detailed specs per phase
 
-**URL seeding:** Pass a Linear issue, Notion page, or GitHub/GitLab issue URL as the first argument. Claude fetches the issue title, description, and comments to pre-fill requirements, then asks only follow-up questions the source doesn't already answer.
+**URL seeding:** Pass a Linear issue, Notion page, or GitHub/GitLab issue URL as the first argument. Fetches the issue title, description, and comments to pre-fill requirements, then asks only follow-up questions the source doesn't already answer.
 
 **`--blank`:** Skips the planning session entirely and creates an empty plan template for you to fill in manually. This replaces the old `/init` command.
 
 **Research phase:** When you run `/spec:new`, three parallel research agents run automatically: a codebase scan (reads structure, existing patterns, tech stack), a library/pattern research agent (searches for relevant libraries and design patterns), and a skills lookup agent. Results are synthesized before planning begins.
 
-**Architecture exploration (optional):** For non-trivial objectives, Claude identifies 2–3 distinct architectural approaches and asks if you want proposal documents generated. If yes, proposals are written in parallel to `proposals/*.md`. You then pick a direction (or ask for a synthesis), and the plan is built from your choice.
+**Architecture exploration (optional):** For non-trivial objectives, identifies 2–3 distinct architectural approaches and asks if you want proposal documents generated. If yes, proposals are written in parallel to `proposals/*.md`. You then pick a direction (or ask for a synthesis), and the plan is built from your choice.
 
-**Worktree prompt:** If you're in a git repo and not already in a worktree, Claude offers to create a dedicated git worktree for the plan during the planning session.
+**Worktree prompt:** If you're in a git repo and not already in a worktree, you'll be offered the option to create a dedicated git worktree for the plan during the planning session.
 
-**Final review:** Before writing any files, Claude presents the plan outline and asks "Does this plan cover everything?" so you can redirect before implementation files are generated.
+**Final review:** Before writing any files, the plan outline is presented with "Does this plan cover everything?" so you can redirect before implementation files are generated.
 
 ### List All Plans
 
@@ -197,7 +198,7 @@ Examples:
 2. [ ] Add refresh tokens >> remove this task
 ```
 
-`/spec:update` scans `plan.md` and all `implementation/phase-N.md` files, applies each instruction (mark done, remove, rewrite, etc.), removes the annotation markers, and updates progress stats in `README.md`.
+`/spec:update` scans `plan.md` and all `implementation/phase-N.md` files, applies each instruction (mark done, remove, rewrite, etc.), removes the annotation markers, and updates progress stats in `spec.json`.
 
 ### Stop or Pause
 

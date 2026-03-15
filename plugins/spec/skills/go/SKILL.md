@@ -20,7 +20,7 @@ This command executes your plan interactively, with configurable breakpoints for
 Check for plan name argument: `/go plan-name`
 
 If not provided, run plan selection logic:
-1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
+1. Read `.codevoyant/spec.json` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
 4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
@@ -246,9 +246,9 @@ For each task in the plan, follow this workflow:
 
 3. **CRITICAL:** Update checkboxes in `.codevoyant/plans/{plan-name}/plan.md` immediately as tasks complete
    - Use TodoWrite tool to track immediate work items (detailed sub-steps)
-   - After updating plan.md, also update `.codevoyant/plans/README.md`:
-     - Update progress stats (X/Y tasks, completion %)
-     - Update last updated timestamp
+   - After updating plan.md, also update `.codevoyant/spec.json`:
+     - Update the plan's `progress` field (`completed` and `total`)
+     - Update `lastUpdated` to current timestamp
 
 ### 4.3: Pause at Phase Boundaries
 
@@ -272,7 +272,7 @@ When a phase is complete:
    ### Phase 2 - OAuth Integration ✅
    ```
 
-3. Update README.md with new progress and last updated timestamp
+3. Update spec.json with new progress and last updated timestamp
 
 4. Before starting next phase, read the next implementation file (phase-N+1.md)
 
@@ -289,10 +289,10 @@ When a phase is complete:
 
 When all phases are complete:
 
-1. Update `.codevoyant/plans/README.md`:
-   - Update status field (may set to "Complete" or leave as "Active")
-   - Update progress to 100%
-   - Update last updated timestamp
+1. Update `.codevoyant/spec.json`:
+   - Set the plan's `status` to `"Complete"` (or leave as `"Active"` if not fully done)
+   - Set `progress.completed` to match total
+   - Update `lastUpdated` to current timestamp
 
 2. Run `/refresh {plan-name}` to verify all checkboxes
 

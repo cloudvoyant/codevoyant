@@ -97,7 +97,7 @@ If fetch fails: warn but continue — the user can provide requirements manually
 ## Step 1: Check for Existing Plan
 
 If a specific plan name was provided, check if `.codevoyant/plans/{plan-name}/plan.md` already exists.
-If no plan name was provided, check if `.codevoyant/plans/README.md` exists and contains any active plans.
+If no plan name was provided, check if `.codevoyant/spec.json` exists and contains any active plans.
 
 When a matching plan is found, read the plan to check completion status
 - Run `/refresh` logic to verify if all tasks are complete
@@ -139,7 +139,7 @@ When a matching plan is found, read the plan to check completion status
 ## Step 2: Initialize .spec Structure
 
 - Create `.codevoyant/plans/` directory if it doesn't exist
-- Create or update `.codevoyant/plans/README.md` if it doesn't exist (with empty Active/Archived sections)
+- Create or update `.codevoyant/spec.json` if it doesn't exist (with empty `activePlans` and `archivedPlans` arrays)
 
 ## Step 2.5: Create Worktree (if requested)
 
@@ -405,34 +405,29 @@ Keep plan.md concise with only:
 - Design overview
 - Task checklists (one-line items)
 
-### 5.4: Register in README
+### 5.4: Register in spec.json
 
-Update `$PLAN_BASE_DIR/README.md` (which is `$PLAN_WORKTREE/.codevoyant/plans/README.md` when in a worktree, otherwise `.codevoyant/plans/README.md`):
-- Add plan to Active Plans section
-- Include branch and worktree information if applicable
-- Set status to "Active"
-- Calculate initial task count from plan.md
-- Set created and last updated timestamps to current time
-- Use this format:
+Update `.codevoyant/spec.json` (or `$PLAN_WORKTREE/.codevoyant/spec.json` if in a worktree):
+- Read the file if it exists; create it with `{ "version": "1.0", "activePlans": [], "archivedPlans": [] }` if not
+- Calculate initial task count from plan.md (count `[ ]` items)
+- Append the new plan entry to `activePlans`:
 
-```markdown
-### {plan-name}
-- **Description**: [extracted from plan objective]
-{if METADATA_BRANCH != "(none)"}
-- **Branch**: {METADATA_BRANCH} 🌿
-{endif}
-{if METADATA_WORKTREE != "(none)"}
-- **Worktree**: {METADATA_WORKTREE}
-{endif}
-- **Status**: Active
-- **Progress**: 0/X tasks (0%)
-- **Created**: {CREATED_TIMESTAMP}
-- **Last Updated**: {CREATED_TIMESTAMP}
-- **Path**: `.codevoyant/plans/{plan-name}/`
+```json
+{
+  "name": "{plan-name}",
+  "description": "[extracted from plan objective]",
+  "status": "Active",
+  "progress": { "completed": 0, "total": X },
+  "created": "{CREATED_TIMESTAMP}",
+  "lastUpdated": "{CREATED_TIMESTAMP}",
+  "path": ".codevoyant/plans/{plan-name}/",
+  "branch": "{METADATA_BRANCH or null}",
+  "worktree": "{METADATA_WORKTREE or null}"
+}
 ```
 
-**Implementation:**
-Only include branch and worktree lines if they have values other than "(none)".
+Set `branch` and `worktree` to `null` if their values are `"(none)"` or empty.
+Write the updated JSON back to the file.
 
 ### 5.5: Create All Implementation Files
 

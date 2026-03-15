@@ -30,7 +30,7 @@ Both can appear in `plan.md` and any `implementation/phase-N.md`.
 ## Step 0: Select Plan
 
 Check for plan name argument. If not provided:
-1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
+1. Read `.codevoyant/spec.json` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
 4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
@@ -103,7 +103,7 @@ Log each change for the summary.
 
 After all annotations processed:
 - Verify ✅ phase markers match actual task completion for any touched phase
-- Update `.codevoyant/plans/README.md` progress stats and Last Updated timestamp
+- Update `.codevoyant/spec.json` progress stats and `lastUpdated` timestamp
 
 ## Step 4: Report
 
