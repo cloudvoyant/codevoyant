@@ -1,3 +1,12 @@
+## [1.14.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.13.1...v1.14.0) (2026-03-15)
+
+### Features
+
+* **docs:** add canvas warp particle effect to hero section
+
+Purple particle streak animation with tapered trails and flat
+center logo in the VitePress home hero image slot.
+
 ## [1.13.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.13.0...v1.13.1) (2026-03-15)
 
 ### Bug Fixes
