@@ -1,3 +1,9 @@
+## [1.13.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.13.0...v1.13.1) (2026-03-15)
+
+### Bug Fixes
+
+* correct hero image paths (remove duplicate base prefix)
+
 ## [1.13.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.12.2...v1.13.0) (2026-03-15)
 
 ### Features
