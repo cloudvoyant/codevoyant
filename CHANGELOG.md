@@ -1,3 +1,9 @@
+## [1.15.2](https://github.com/cloudvoyant/codevoyant/compare/v1.15.1...v1.15.2) (2026-03-15)
+
+### Bug Fixes
+
+* **docs:** use withBase composable for plugin icon paths
+
 ## [1.15.1](https://github.com/cloudvoyant/codevoyant/compare/v1.15.0...v1.15.1) (2026-03-15)
 
 ### Bug Fixes
