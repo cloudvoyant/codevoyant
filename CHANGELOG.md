@@ -1,3 +1,9 @@
+## [1.18.1](https://github.com/cloudvoyant/codevoyant/compare/v1.18.0...v1.18.1) (2026-03-15)
+
+### Bug Fixes
+
+* **docs:** correct GitHub org from codevoyant to cloudvoyant
+
 ## [1.18.0](https://github.com/cloudvoyant/codevoyant/compare/v1.17.0...v1.18.0) (2026-03-15)
 
 ### Features
