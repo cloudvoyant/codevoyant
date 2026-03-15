@@ -96,8 +96,8 @@ If fetch fails: warn but continue — the user can provide requirements manually
 
 ## Step 1: Check for Existing Plan
 
-If a specific plan name was provided, check if `.spec/plans/{plan-name}/plan.md` already exists.
-If no plan name was provided, check if `.spec/plans/README.md` exists and contains any active plans.
+If a specific plan name was provided, check if `.codevoyant/plans/{plan-name}/plan.md` already exists.
+If no plan name was provided, check if `.codevoyant/plans/README.md` exists and contains any active plans.
 
 When a matching plan is found, read the plan to check completion status
 - Run `/refresh` logic to verify if all tasks are complete
@@ -138,8 +138,8 @@ When a matching plan is found, read the plan to check completion status
 
 ## Step 2: Initialize .spec Structure
 
-- Create `.spec/plans/` directory if it doesn't exist
-- Create or update `.spec/plans/README.md` if it doesn't exist (with empty Active/Archived sections)
+- Create `.codevoyant/plans/` directory if it doesn't exist
+- Create or update `.codevoyant/plans/README.md` if it doesn't exist (with empty Active/Archived sections)
 
 ## Step 2.5: Create Worktree (if requested)
 
@@ -321,7 +321,7 @@ header: "Worktree Setup"
 multiSelect: false
 options:
   - label: "Yes, create worktree"
-    description: "Create branch 'feature-{plan-name}' with worktree at .worktrees/feature-{plan-name}"
+    description: "Create branch 'feature-{plan-name}' with worktree at .codevoyant/worktrees/feature-{plan-name}"
   - label: "Custom branch name"
     description: "Create worktree with a different branch name"
   - label: "No, continue on current branch"
@@ -352,12 +352,12 @@ After gathering requirements:
   - Truncate to 50 characters max
   - Example: "Add Authentication System" → "add-authentication-system"
 - Validate the name
-- `CHECK_DIR` = `$PLAN_WORKTREE/.spec/plans` if worktree set, else `.spec/plans`
+- `CHECK_DIR` = `$PLAN_WORKTREE/.codevoyant/plans` if worktree set, else `.codevoyant/plans`
 - Resolve collisions: run `scripts/resolve-plan-name.sh <base-name> <CHECK_DIR>` — returns a unique name (appends -2 .. -10) or exits 1 if all taken. If name was modified, inform user.
 
 ### 5.2: Create Plan Directory Structure
 
-If `PLAN_WORKTREE` is set and not `"(none)"`: `PLAN_BASE_DIR="$PLAN_WORKTREE/.spec/plans"`, else `PLAN_BASE_DIR=".spec/plans"`. `PLAN_DIR="$PLAN_BASE_DIR/{plan-name}"`.
+If `PLAN_WORKTREE` is set and not `"(none)"`: `PLAN_BASE_DIR="$PLAN_WORKTREE/.codevoyant/plans"`, else `PLAN_BASE_DIR=".codevoyant/plans"`. `PLAN_DIR="$PLAN_BASE_DIR/{plan-name}"`.
 
 Create: `$PLAN_BASE_DIR/`, `$PLAN_DIR/`, `$PLAN_DIR/implementation/`, `$PLAN_DIR/research/`, `$PLAN_DIR/proposals/` (for exploration artifacts).
 
@@ -385,7 +385,7 @@ Format Requirements for plan.md:
 
 **c. Create implementation files** for each phase:
 
-For each phase in the plan, create `.spec/plans/{plan-name}/implementation/phase-N.md`:
+For each phase in the plan, create `.codevoyant/plans/{plan-name}/implementation/phase-N.md`:
 - Number phases sequentially (phase-1.md, phase-2.md, phase-3.md, etc.)
 - Use the template structure in `references/implementation-template.md` (in this skill directory)
 
@@ -407,7 +407,7 @@ Keep plan.md concise with only:
 
 ### 5.4: Register in README
 
-Update `$PLAN_BASE_DIR/README.md` (which is `$PLAN_WORKTREE/.spec/plans/README.md` when in a worktree, otherwise `.spec/plans/README.md`):
+Update `$PLAN_BASE_DIR/README.md` (which is `$PLAN_WORKTREE/.codevoyant/plans/README.md` when in a worktree, otherwise `.codevoyant/plans/README.md`):
 - Add plan to Active Plans section
 - Include branch and worktree information if applicable
 - Set status to "Active"
@@ -428,7 +428,7 @@ Update `$PLAN_BASE_DIR/README.md` (which is `$PLAN_WORKTREE/.spec/plans/README.m
 - **Progress**: 0/X tasks (0%)
 - **Created**: {CREATED_TIMESTAMP}
 - **Last Updated**: {CREATED_TIMESTAMP}
-- **Path**: `.spec/plans/{plan-name}/`
+- **Path**: `.codevoyant/plans/{plan-name}/`
 ```
 
 **Implementation:**

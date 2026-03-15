@@ -19,30 +19,30 @@ Check for plan name argument:
 
 ### Step 1: Check for Plans Directory
 
-Check if `.spec/plans/` exists:
+Check if `.codevoyant/plans/` exists:
 - If not found, report: "No plans found. Create one with /new"
 - If found, continue
 
 ### Step 2: Read README.md
 
-Read `.spec/plans/README.md` to get plan metadata.
+Read `.codevoyant/plans/README.md` to get plan metadata.
 
 If README.md doesn't exist or is empty:
-- Scan `.spec/plans/` for plan directories (exclude `archive/` and `README.md`)
+- Scan `.codevoyant/plans/` for plan directories (exclude `archive/` and `README.md`)
 - For each directory found, auto-generate metadata:
   1. Plan name: directory name
   2. Read `plan.md`: extract objective, count `[ ]` and `[x]` tasks
   3. Status: default to "Active"
   4. Timestamps: use filesystem mtime
-  5. Path: `.spec/plans/{directory-name}/`
+  5. Path: `.codevoyant/plans/{directory-name}/`
 - Write generated README.md with warning comment and report: "Generated README.md from discovered plans. Verify accuracy with /refresh."
 
 ### Step 3: Parse and Display Plans
 
 For each plan, extract branch and worktree from plan.md:
 ```bash
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 ```
 
 Display:
@@ -55,7 +55,7 @@ Display:
 ✅ feature-auth (Executing) 🌿 feature-auth
    Description: Add authentication system
    Progress: ━━━━━━━━━━━━━━━━━━━━ 52% (12/23 tasks)
-   Branch: feature-auth | Worktree: .worktrees/feature-auth
+   Branch: feature-auth | Worktree: .codevoyant/worktrees/feature-auth
    Last Updated: 5 minutes ago
    Commands: /go feature-auth | /list feature-auth | /stop feature-auth
 
@@ -69,7 +69,7 @@ Display:
 📝 add-tests (Active) 🌿 feature-tests
    Description: Add comprehensive test coverage
    Progress: ━━━━━━━━━━━━━━━━━━━━ 10% (2/20 tasks)
-   Branch: feature-tests | Worktree: .worktrees/feature-tests
+   Branch: feature-tests | Worktree: .codevoyant/worktrees/feature-tests
    Last Updated: 1 hour ago
    Commands: /go add-tests | /bg add-tests
 
@@ -77,11 +77,11 @@ Display:
 
 ✓ feature-login (Completed 2025-02-08)
    Progress: 100% (15/15 tasks)
-   Archive: .spec/plans/archive/feature-login-20250208/
+   Archive: .codevoyant/plans/archive/feature-login-20250208/
 
 ✓ fix-bug-123 (Completed 2025-02-05)
    Progress: 100% (5/5 tasks)
-   Archive: .spec/plans/archive/fix-bug-123-20250205/
+   Archive: .codevoyant/plans/archive/fix-bug-123-20250205/
 ```
 
 **Display Rules:**
@@ -105,18 +105,18 @@ Quick Actions:
 
 ### Step 1: Find Plan
 
-Check `.spec/plans/{plan-name}/plan.md` exists. If not, report error and suggest `/list` to see available plans.
+Check `.codevoyant/plans/{plan-name}/plan.md` exists. If not, report error and suggest `/list` to see available plans.
 
 ### Step 2: Read Execution Status
 
-1. Read `.spec/plans/{plan-name}/plan.md` — task completion
-2. Read `.spec/plans/{plan-name}/execution-log.md` if exists — execution details
-3. Read `.spec/plans/README.md` — current status (Active/Paused/Executing)
+1. Read `.codevoyant/plans/{plan-name}/plan.md` — task completion
+2. Read `.codevoyant/plans/{plan-name}/execution-log.md` if exists — execution details
+3. Read `.codevoyant/plans/README.md` — current status (Active/Paused/Executing)
 
 Extract branch context:
 ```bash
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ```
 
@@ -165,7 +165,7 @@ Progress: ━━━━━━━━━━━━━━━━━━━━ 45%
 Error: [error from execution-log.md]
 
 Next Steps:
-1. Review .spec/plans/{plan-name}/execution-log.md
+1. Review .codevoyant/plans/{plan-name}/execution-log.md
 2. Fix the issue manually
 3. Resume with /bg {plan-name} or /go {plan-name}
 ```

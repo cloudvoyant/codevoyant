@@ -72,7 +72,7 @@ For each worktree:
 2. Check if worktree is associated with any plan (active or archived):
    ```bash
    # Search active and archived plans for worktree path
-   for plan_dir in .spec/plans/*/ .spec/plans/archive/*/; do
+   for plan_dir in .codevoyant/plans/*/ .codevoyant/plans/archive/*/; do
      if [ -f "$plan_dir/plan.md" ]; then
        if grep -q "Worktree.*$worktree_path" "$plan_dir/plan.md" 2>/dev/null; then
          echo "Plan: $(basename $plan_dir)"
@@ -96,25 +96,25 @@ Status: Clean
 Feature Worktrees:
 
 1. feature-auth 🌿
-   Path: .worktrees/feature-auth
+   Path: .codevoyant/worktrees/feature-auth
    Branch: feature-auth (def5678)
    Status: Clean ✓
    Plan: auth-system
-   Commands: cd .worktrees/feature-auth
+   Commands: cd .codevoyant/worktrees/feature-auth
 
 2. feature-refactor 🌿
-   Path: .worktrees/feature-refactor
+   Path: .codevoyant/worktrees/feature-refactor
    Branch: feature-refactor (ghi9012)
    Status: 2 uncommitted changes ⚠️
    Plan: refactor-api
-   Commands: cd .worktrees/feature-refactor
+   Commands: cd .codevoyant/worktrees/feature-refactor
 
 3. feature-old-task 🌿
-   Path: .worktrees/feature-old-task
+   Path: .codevoyant/worktrees/feature-old-task
    Branch: feature-old-task (jkl3456)
    Status: Clean ✓
    No associated plan
-   Commands: cd .worktrees/feature-old-task
+   Commands: cd .codevoyant/worktrees/feature-old-task
 
 Summary:
 - Total worktrees: 4 (1 main + 3 features)
@@ -165,7 +165,7 @@ fi
 
 # Get current branch for base
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-WORKTREE_PATH=".worktrees/$BRANCH_NAME"
+WORKTREE_PATH=".codevoyant/worktrees/$BRANCH_NAME"
 
 # Check if worktree already exists
 if git worktree list | grep -q "\[$BRANCH_NAME\]"; then
@@ -237,7 +237,7 @@ fi
 ```bash
 # Search for plans using this worktree
 ASSOCIATED_PLANS=()
-for plan_dir in .spec/plans/*/; do
+for plan_dir in .codevoyant/plans/*/; do
   if [ -f "$plan_dir/plan.md" ]; then
     if grep -q "Worktree.*$WORKTREE_PATH" "$plan_dir/plan.md" 2>/dev/null; then
       ASSOCIATED_PLANS+=("$(basename $plan_dir)")
@@ -384,7 +384,7 @@ Prune cancelled. Stale references preserved.
 
 ## Step 5: Export Plan to Main Repo
 
-Copy a plan from the current worktree's `.spec/plans/` into the main repo so it is visible from the repository root. One-way copy; re-run to push updates.
+Copy a plan from the current worktree's `.codevoyant/plans/` into the main repo so it is visible from the repository root. One-way copy; re-run to push updates.
 
 **Parse Arguments:**
 ```bash
@@ -395,18 +395,18 @@ FORCE=false     # set true if --force flag present
 **Find the Plan:**
 
 If `PLAN_NAME` not provided:
-1. Read `.spec/plans/README.md` in current directory
+1. Read `.codevoyant/plans/README.md` in current directory
 2. Auto-select most recently updated active plan
 3. Report: `Exporting plan: {plan-name}`
 4. If no plans found, report error
 
-Verify `.spec/plans/{plan-name}/plan.md` exists.
+Verify `.codevoyant/plans/{plan-name}/plan.md` exists.
 
 **Resolve Main Repo Root:**
 ```bash
 COMMON_GIT_DIR=$(git rev-parse --git-common-dir 2>/dev/null)
 MAIN_REPO_ROOT=$(cd "$COMMON_GIT_DIR/.." && pwd)
-MAIN_SPEC_DIR="$MAIN_REPO_ROOT/.spec/plans"
+MAIN_SPEC_DIR="$MAIN_REPO_ROOT/.codevoyant/plans"
 CURRENT_DIR=$(pwd)
 ```
 
@@ -426,7 +426,7 @@ fi
 **Copy Plan Files:**
 ```bash
 mkdir -p "$MAIN_SPEC_DIR"
-cp -r ".spec/plans/{plan-name}" "$MAIN_SPEC_DIR/"
+cp -r ".codevoyant/plans/{plan-name}" "$MAIN_SPEC_DIR/"
 ```
 
 **Update Main Repo README:**
@@ -440,8 +440,8 @@ Read `$MAIN_SPEC_DIR/README.md` (create if absent). If an entry for `{plan-name}
 - **Status**: {current status}
 - **Progress**: {X/Y tasks (Z%)}
 - **Last Updated**: {now, ISO 8601 UTC}
-- **Path**: `.spec/plans/{plan-name}/`
-- **Exported From**: `.spec/plans/{plan-name}/` (worktree)
+- **Path**: `.codevoyant/plans/{plan-name}/`
+- **Exported From**: `.codevoyant/plans/{plan-name}/` (worktree)
 ```
 
 Only include Branch/Worktree lines if they have values other than `(none)`.
@@ -450,7 +450,7 @@ Only include Branch/Worktree lines if they have values other than `(none)`.
 ```
 ✓ Exported plan: {plan-name}
 
-  From : .spec/plans/{plan-name}/       (worktree)
+  From : .codevoyant/plans/{plan-name}/       (worktree)
   To   : {MAIN_SPEC_DIR}/{plan-name}/   (main repo)
 
   Main repo README updated.

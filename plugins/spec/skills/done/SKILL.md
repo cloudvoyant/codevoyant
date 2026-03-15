@@ -32,7 +32,7 @@ If no argument:
 
 ## Step 1: Verify Plan Completion
 
-Read `.spec/plans/{plan-name}/plan.md` and verify completion status:
+Read `.codevoyant/plans/{plan-name}/plan.md` and verify completion status:
 
 1. Run `/refresh {plan-name}` logic to check all tasks
 2. Verify all phases have ✅ markers
@@ -67,9 +67,9 @@ Extract worktree and branch information from plan metadata:
 
 ```bash
 # Extract metadata
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
-BASE_BRANCH=$(grep "^- \*\*Base Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Base Branch\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+BASE_BRANCH=$(grep "^- \*\*Base Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Base Branch\*\*: //' | sed 's/ *$//')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 # Check if worktree exists and is set
@@ -228,17 +228,17 @@ Continue to next step without creating PR.
 
 ## Step 4: Archive Completed Plan
 
-Archive the plan to `.spec/plans/archive/`:
+Archive the plan to `.codevoyant/plans/archive/`:
 
 1. **Determine Archive Path:**
    - Get current date: YYYYMMDD
-   - Archive path: `.spec/plans/archive/{plan-name}-{YYYYMMDD}/`
+   - Archive path: `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
 
 2. **Check for Collision:**
    - If archive directory exists, append time: `{plan-name}-{YYYYMMDD}-HHMM`
 
 3. **Move Plan to Archive:**
-   - Move entire directory: `.spec/plans/{plan-name}/` → `.spec/plans/archive/{plan-name}-{YYYYMMDD}/`
+   - Move entire directory: `.codevoyant/plans/{plan-name}/` → `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
    - This includes plan.md, implementation/ directory, and execution-log.md
 
 4. **Update README.md:**
@@ -254,7 +254,7 @@ Archive the plan to `.spec/plans/archive/`:
    - **Worktree**: {if removed}(removed){else}{PLAN_WORKTREE}{endif}
    {endif}
    - **Progress**: Y/Y tasks (100%)
-   - **Archive Path**: `.spec/plans/archive/{plan-name}-{YYYYMMDD}/`
+   - **Archive Path**: `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
    ```
 
    **Implementation Notes:**
@@ -347,7 +347,7 @@ fi
 2. Update plan.md metadata in archive to reflect worktree removed:
 ```bash
 # In archived plan.md, update Worktree line
-sed -i '' 's/^- \*\*Worktree\*\*:.*/- **Worktree**: (removed)/' .spec/plans/archive/{plan-name}-{YYYYMMDD}/plan.md
+sed -i '' 's/^- \*\*Worktree\*\*:.*/- **Worktree**: (removed)/' .codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/plan.md
 ```
 
 **If user selects "Yes, remove worktree and delete branch":**
@@ -401,9 +401,9 @@ Plan "{plan-name}" marked as complete! ✅
 
 Commit : [Created ({short-sha}) / Skipped]
 PR     : [Created ({PR_URL}) / Skipped / Not applicable (no branch)]
-Archive: .spec/plans/archive/{plan-name}-{YYYYMMDD}/
+Archive: .codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/
 
-View archived plan with: cat .spec/plans/archive/{plan-name}-{YYYYMMDD}/plan.md
+View archived plan with: cat .codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/plan.md
 
 Ready to start your next plan with /new
 ```

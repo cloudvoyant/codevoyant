@@ -225,9 +225,10 @@ You correct Claude 3× → Pattern detected → Suggest rule → User approves �
 project/
 ├── CLAUDE.md                      # Main style guide (committed)
 ├── .codevoyant/style/
-│   ├── config.json                # Settings (committed)
 │   ├── patterns.json              # Learning data (gitignored)
 │   └── compliance.json            # Validation history (gitignored)
+├── .codevoyant/
+│   └── style.json                 # Settings (committed)
 ├── docs/
 │   └── style-guide/               # Detailed docs (committed)
 │       ├── README.md
@@ -239,12 +240,12 @@ project/
     # Add:
     .codevoyant/style/patterns.json
     .codevoyant/style/compliance.json
-    !.codevoyant/style/config.json
+    !.codevoyant/style.json
 ```
 
 ## Configuration
 
-### `.codevoyant/style/config.json`
+### `.codevoyant/style.json`
 
 ```json
 {
@@ -361,7 +362,7 @@ git commit -m "feat: add style guide"
 # Customize for team
 
 # Commit to git
-git add CLAUDE.md .codevoyant/style/config.json docs/style-guide/
+git add CLAUDE.md .codevoyant/style.json docs/style-guide/
 git commit -m "feat: add team style guide"
 git push
 

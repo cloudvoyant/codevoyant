@@ -4,7 +4,7 @@
 # Outputs the resolved name on stdout. Exits 1 if all 10 suffixes are taken.
 
 BASE="$1"
-DIR="${2:-.spec/plans}"
+DIR="${2:-.codevoyant/plans}"
 NAME="$BASE"
 
 if [ ! -d "$DIR/$NAME" ]; then

@@ -14,7 +14,7 @@ Check for plan name argument: `/refresh plan-name`
 
 If not provided:
 
-1. Read `.spec/plans/README.md` to get all active plans with Last Updated timestamps
+1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
 4. If multiple plans exist, **auto-select the most recently updated plan**
@@ -23,7 +23,7 @@ If not provided:
 
 ## Step 1: Read Current Plan
 
-Read `.spec/plans/{plan-name}/plan.md` and analyze:
+Read `.codevoyant/plans/{plan-name}/plan.md` and analyze:
 
 - The objective and overall scope
 - All phases and their tasks
@@ -34,8 +34,8 @@ Read `.spec/plans/{plan-name}/plan.md` and analyze:
 
 ```bash
 # Parse plan metadata to extract branch and worktree
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ```
 
@@ -55,11 +55,11 @@ If status is inconsistent:
 
 - Add ✅ to phase headers where all tasks are complete
 - Remove ✅ from phase headers where tasks remain incomplete
-- Update `.spec/plans/{plan-name}/plan.md` with corrections
+- Update `.codevoyant/plans/{plan-name}/plan.md` with corrections
 
 ## Step 4: Update README and Report Status
 
-After updating plan.md, also update `.spec/plans/README.md`:
+After updating plan.md, also update `.codevoyant/plans/README.md`:
 
 - Update progress stats (X/Y tasks, completion %)
 - Update last updated timestamp

@@ -239,7 +239,7 @@ CLAUDE.md: {before} → {after} tokens
 
 Update `.codevoyant/style/patterns.json` with all status changes.
 
-Update `.codevoyant/style/config.json` learning stats:
+Update `.codevoyant/style.json` learning stats:
 ```json
 {
   "learning": {

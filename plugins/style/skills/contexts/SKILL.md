@@ -16,11 +16,11 @@ Contexts enable smart, contextual loading of style guide rules. This command hel
 
 ## Step 1: List All Contexts
 
-Read `.codevoyant/style/config.json` and CLAUDE.md to compile context information:
+Read `.codevoyant/style.json` and CLAUDE.md to compile context information:
 
 ```bash
 # Extract contexts from config
-CONFIGURED_CONTEXTS=$(jq -r '.contexts | keys[]' .codevoyant/style/config.json)
+CONFIGURED_CONTEXTS=$(jq -r '.contexts | keys[]' .codevoyant/style.json)
 
 # Extract contexts from CLAUDE.md
 USED_CONTEXTS=$(grep -o "@context: [^-]*" CLAUDE.md | cut -d: -f2 | tr ',' '\n' | sort -u)
@@ -223,7 +223,7 @@ Maximum tokens for this context: _____ (default: 200)
 
 ### Add to Config
 
-Update `.codevoyant/style/config.json`:
+Update `.codevoyant/style.json`:
 
 ```json
 {
@@ -390,7 +390,7 @@ Save to `docs/style-guide/contexts.md`.
 
 ## Configuration
 
-Manage global context settings in `.codevoyant/style/config.json`:
+Manage global context settings in `.codevoyant/style.json`:
 
 ```json
 {

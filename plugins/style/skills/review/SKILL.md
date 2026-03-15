@@ -71,7 +71,7 @@ If "Directory" selected, ask for the path.
 
 ## Step 1: Load Style Rules and Tooling
 
-Read CLAUDE.md and `.codevoyant/style/config.json`. Build a rule index grouped by CLAUDE.md section:
+Read CLAUDE.md and `.codevoyant/style.json`. Build a rule index grouped by CLAUDE.md section:
 
 ```json
 {

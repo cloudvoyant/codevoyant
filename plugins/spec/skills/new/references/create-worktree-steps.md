@@ -3,7 +3,7 @@
 Use this bash logic whenever creating a worktree for a plan. Variable names differ slightly between callers — substitute as appropriate (`TARGET_BRANCH` in `/new`, `BRANCH_NAME` in `/worktree create`).
 
 ```bash
-WORKTREE_PATH=".worktrees/$TARGET_BRANCH"
+WORKTREE_PATH=".codevoyant/worktrees/$TARGET_BRANCH"
 
 # Validation: Check if worktree already exists
 if git worktree list | grep -q "\[$TARGET_BRANCH\]"; then
@@ -18,8 +18,8 @@ if [ -d "$WORKTREE_PATH" ]; then
   exit 1
 fi
 
-# Create .worktrees directory if needed
-mkdir -p .worktrees
+# Create .codevoyant/worktrees directory if needed
+mkdir -p .codevoyant/worktrees
 
 # Check if branch exists
 if git rev-parse --verify "$TARGET_BRANCH" >/dev/null 2>&1; then
@@ -34,16 +34,16 @@ fi
 
 # Update .gitignore
 if [ -f .gitignore ]; then
-  if ! grep -qx "\.worktrees/\?" .gitignore; then
+  if ! grep -qx "\.codevoyant/worktrees/\?" .gitignore; then
     echo "" >> .gitignore
     echo "# Git worktrees" >> .gitignore
-    echo ".worktrees/" >> .gitignore
-    echo "✓ Added .worktrees/ to .gitignore"
+    echo ".codevoyant/worktrees/" >> .gitignore
+    echo "✓ Added .codevoyant/worktrees/ to .gitignore"
   fi
 else
   echo "# Git worktrees" > .gitignore
-  echo ".worktrees/" >> .gitignore
-  echo "✓ Created .gitignore with .worktrees/ entry"
+  echo ".codevoyant/worktrees/" >> .gitignore
+  echo "✓ Created .gitignore with .codevoyant/worktrees/ entry"
 fi
 
 echo "✓ Worktree created at $WORKTREE_PATH"

@@ -33,13 +33,13 @@ Apply each annotation (mark done, remove task, rewrite content, etc.) and delete
 
 ## Implementation spec — Phase {N}
 
-{Full content of .spec/plans/{plan-name}/implementation/phase-{N}.md}
+{Full content of .codevoyant/plans/{plan-name}/implementation/phase-{N}.md}
 
 ## File paths
 
-- Plan: .spec/plans/{plan-name}/plan.md
-- Execution log: .spec/plans/{plan-name}/execution-log.md
-- README: .spec/plans/README.md
+- Plan: .codevoyant/plans/{plan-name}/plan.md
+- Execution log: .codevoyant/plans/{plan-name}/execution-log.md
+- README: .codevoyant/plans/README.md
 
 ## Execution log — required after every task
 

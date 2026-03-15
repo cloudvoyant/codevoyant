@@ -50,8 +50,8 @@ Every plan you create must include these as explicit constraints in implementati
 ## Output
 
 Produce:
-- `.spec/plans/{plan-name}/plan.md`
-- `.spec/plans/{plan-name}/implementation/phase-N.md` for each phase
-- `.spec/plans/{plan-name}/user-guide.md`
-- `.spec/plans/{plan-name}/research/` files from the research phase
-- Updated `.spec/plans/README.md`
+- `.codevoyant/plans/{plan-name}/plan.md`
+- `.codevoyant/plans/{plan-name}/implementation/phase-N.md` for each phase
+- `.codevoyant/plans/{plan-name}/user-guide.md`
+- `.codevoyant/plans/{plan-name}/research/` files from the research phase
+- Updated `.codevoyant/plans/README.md`

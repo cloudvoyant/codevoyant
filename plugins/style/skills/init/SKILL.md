@@ -274,7 +274,7 @@ Create `.codevoyant/style/` directory for pattern tracking:
 mkdir -p .style
 ```
 
-Create `.codevoyant/style/config.json`:
+Create `.codevoyant/style.json`:
 ```json
 {
   "version": "1.0.0",
@@ -320,7 +320,7 @@ Add to `.gitignore`:
 .codevoyant/style/history.jsonl
 
 # Keep config (team settings)
-!.codevoyant/style/config.json
+!.codevoyant/style.json
 ```
 
 Report what was added.
@@ -362,7 +362,7 @@ style-learn:
 
 Created files:
 - CLAUDE.md (context-tagged style guide)
-- .codevoyant/style/config.json (learning settings)
+- .codevoyant/style.json (learning settings)
 - .codevoyant/style/patterns.json (pattern tracking)
 - Updated .gitignore
 
@@ -390,7 +390,7 @@ Commands:
 **Team Collaboration:**
 - CLAUDE.md is committed to git and shared with team
 - Everyone gets the same rules automatically
-- .codevoyant/style/config.json is shared (learning settings)
+- .codevoyant/style.json is shared (learning settings)
 - .codevoyant/style/patterns.json is gitignored (personal observations)
 
 **Context Tags:**

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r '.tool_input.command // empty'); if echo \"$CMD\" | grep -qE 'rm -rf.*\\.spec/plans/[^/]+$'; then echo '⛔ Blocked: use /spec:delete to remove plans — it confirms before deleting' >&2; exit 2; fi",
+            "command": "INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r '.tool_input.command // empty'); if echo \"$CMD\" | grep -qE 'rm -rf.*\\.codevoyant/plans/[^/]+$'; then echo '⛔ Blocked: use /spec:delete to remove plans — it confirms before deleting' >&2; exit 2; fi",
             "timeout": 5
           }
         ]

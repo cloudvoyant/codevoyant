@@ -14,7 +14,7 @@ Stop a running background agent or pause manual work and capture session insight
 If argument provided: use that plan.
 
 If no argument:
-1. Read `.spec/plans/README.md` to get all active plans
+1. Read `.codevoyant/plans/README.md` to get all active plans
 2. If no plans exist, report error
 3. If only one plan, auto-select it
 4. If multiple plans, use **AskUserQuestion tool**:
@@ -33,12 +33,12 @@ If no argument:
 Extract branch context:
 
 ```bash
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ```
 
-Check `.spec/plans/{plan-name}/execution-log.md` for `Status: RUNNING`:
+Check `.codevoyant/plans/{plan-name}/execution-log.md` for `Status: RUNNING`:
 - Found → `AGENT_RUNNING=true` → continue to **Step 2a**
 - Not found → `AGENT_RUNNING=false` → continue to **Step 2b**
 
@@ -70,13 +70,13 @@ Progress will be saved:
 
 If confirmed:
 
-1. Update `.spec/plans/{plan-name}/execution-log.md`:
+1. Update `.codevoyant/plans/{plan-name}/execution-log.md`:
    ```
    [timestamp] - STOP requested by user
    Status: STOPPED
    ```
 
-2. Update `.spec/plans/README.md`: change status from "Executing" to "Active"
+2. Update `.codevoyant/plans/README.md`: change status from "Executing" to "Active"
 
 3. Update plan.md Insights section (if exists):
    ```markdown
@@ -121,7 +121,7 @@ Note: The background agent may complete its current task before noticing the sto
 
 No background agent is running. Capture insights from the current work session and mark the plan as paused.
 
-Read `.spec/plans/{plan-name}/plan.md` to understand current progress.
+Read `.codevoyant/plans/{plan-name}/plan.md` to understand current progress.
 
 Generate a comprehensive "## Insights" section covering:
 
@@ -132,7 +132,7 @@ Generate a comprehensive "## Insights" section covering:
 4. **Next Steps** — what to do when resuming, current task/phase, blockers
 5. **Notes** — tips for picking up later, references to relevant files
 
-Add or update the "## Insights" section at the end of `.spec/plans/{plan-name}/plan.md`:
+Add or update the "## Insights" section at the end of `.codevoyant/plans/{plan-name}/plan.md`:
 
 ```markdown
 ## Insights
@@ -160,7 +160,7 @@ Notes:
 - [any other useful context]
 ```
 
-Update `.spec/plans/README.md`:
+Update `.codevoyant/plans/README.md`:
 - Set status to "Paused"
 - Update last updated timestamp
 
@@ -168,7 +168,7 @@ Report:
 ```
 Plan "{plan-name}" paused with session insights captured.
 
-Insights saved to: .spec/plans/{plan-name}/plan.md
+Insights saved to: .codevoyant/plans/{plan-name}/plan.md
 Status: Paused
 
 Resume when ready:

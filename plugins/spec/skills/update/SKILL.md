@@ -30,25 +30,25 @@ Both can appear in `plan.md` and any `implementation/phase-N.md`.
 ## Step 0: Select Plan
 
 Check for plan name argument. If not provided:
-1. Read `.spec/plans/README.md`, sort active plans by Last Updated
+1. Read `.codevoyant/plans/README.md`, sort active plans by Last Updated
 2. Auto-select the most recently updated plan
 3. Report: "Updating plan: {plan-name}"
 4. If no plans exist, inform user to create one with `/new`
 
-Verify `.spec/plans/{plan-name}/plan.md` exists.
+Verify `.codevoyant/plans/{plan-name}/plan.md` exists.
 
 ## Step 1: Scan All Plan Files for Annotations
 
 Search every file in the plan directory:
 
 ```bash
-grep -rn "^>" .spec/plans/{plan-name}/plan.md .spec/plans/{plan-name}/implementation/ 2>/dev/null
-grep -rn ">>" .spec/plans/{plan-name}/plan.md .spec/plans/{plan-name}/implementation/ 2>/dev/null
+grep -rn "^>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
+grep -rn ">>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
 ```
 
 Files to scan:
-- `.spec/plans/{plan-name}/plan.md`
-- `.spec/plans/{plan-name}/implementation/phase-*.md`
+- `.codevoyant/plans/{plan-name}/plan.md`
+- `.codevoyant/plans/{plan-name}/implementation/phase-*.md`
 
 **Parse each annotation:**
 
@@ -101,7 +101,7 @@ Log each change for the summary.
 
 After all annotations processed:
 - Verify ✅ phase markers match actual task completion for any touched phase
-- Update `.spec/plans/README.md` progress stats and Last Updated timestamp
+- Update `.codevoyant/plans/README.md` progress stats and Last Updated timestamp
 
 ## Step 4: Report
 

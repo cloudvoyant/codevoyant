@@ -60,7 +60,7 @@ options:
 
 ## Step 5: Perform Rename
 
-1. Rename directory: `.spec/plans/{old-name}/` → `.spec/plans/{new-name}/`
+1. Rename directory: `.codevoyant/plans/{old-name}/` → `.codevoyant/plans/{new-name}/`
 2. Update README.md:
    - Find plan entry for old-name
    - Update plan name and path to new-name
@@ -74,7 +74,7 @@ Plan renamed successfully!
 
 Old name: {old-name}
 New name: {new-name}
-Location: .spec/plans/{new-name}/
+Location: .codevoyant/plans/{new-name}/
 
 Continue execution: /go {new-name}
 Check status: /status {new-name}

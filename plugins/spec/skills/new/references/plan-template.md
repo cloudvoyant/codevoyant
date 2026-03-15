@@ -1,6 +1,6 @@
 # plan.md Template
 
-Write this structure to `.spec/plans/{plan-name}/plan.md` when creating a new plan. Substitute all `{...}` placeholders with actual values.
+Write this structure to `.codevoyant/plans/{plan-name}/plan.md` when creating a new plan. Substitute all `{...}` placeholders with actual values.
 
 ```markdown
 # [Plan Title]

@@ -56,7 +56,7 @@ fi
 If plan name not provided in arguments:
 
 If not provided:
-1. Read `.spec/plans/README.md` to get all active plans with Last Updated timestamps
+1. Read `.codevoyant/plans/README.md` to get all active plans with Last Updated timestamps
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
 4. If multiple plans exist, **auto-select the most recently updated plan**
@@ -65,12 +65,12 @@ If not provided:
 
 ## Step 1: Verify Plan Exists
 
-1. Check that `.spec/plans/{plan-name}/plan.md` exists
+1. Check that `.codevoyant/plans/{plan-name}/plan.md` exists
 2. If not found, inform user to create one with `/new` or `/init`
 
 ## Step 2: Analyze Plan Scope
 
-Read `.spec/plans/{plan-name}/plan.md` and report:
+Read `.codevoyant/plans/{plan-name}/plan.md` and report:
 
 1. Total number of phases
 2. Total number of tasks
@@ -96,8 +96,8 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 CURRENT_DIR=$(pwd)
 
 # Parse plan metadata
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .spec/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 
 # Determine worktree status
 if [ -n "$PLAN_WORKTREE" ] && [ "$PLAN_WORKTREE" != "(none)" ]; then
@@ -190,13 +190,13 @@ If plan has no worktree (`PLAN_WORKTREE` is "(none)" or empty):
 Before starting execution, verify all implementation files exist:
 
 1. **Count phases** in plan.md:
-   - Parse `.spec/plans/{plan-name}/plan.md`
+   - Parse `.codevoyant/plans/{plan-name}/plan.md`
    - Count lines matching: `^### Phase (\d+)`
    - Store total phase count
 
 2. **Check each implementation file** exists:
    - For phase 1 to total phases:
-     - Check `.spec/plans/{plan-name}/implementation/phase-{N}.md` exists
+     - Check `.codevoyant/plans/{plan-name}/implementation/phase-{N}.md` exists
      - Check file size > 100 bytes (not empty)
 
 3. **If any files missing:**
@@ -211,7 +211,7 @@ Before starting execution, verify all implementation files exist:
    These files should have been created during /spec:new.
 
    To fix:
-   1. Create the missing files in .spec/plans/{plan-name}/implementation/
+   1. Create the missing files in .codevoyant/plans/{plan-name}/implementation/
    2. Use the template structure from /spec:new Step 5.5
    3. Or recreate the plan with /spec:new
 
@@ -256,7 +256,7 @@ The agent will:
 ✓ Update plan.md checkboxes in real-time
 ✓ Run tests at phase boundaries
 ✓ Pause on errors (preserving state)
-✓ Create execution log in .spec/plans/{plan-name}/execution-log.md
+✓ Create execution log in .codevoyant/plans/{plan-name}/execution-log.md
 [if ALLOW_COMMITS=false] ⚠️  Will NOT commit changes (pass --commit to enable git commits)
 [if ALLOW_COMMITS=true]  ✓ Will commit changes as tasks complete
 
@@ -268,7 +268,7 @@ You can:
 
 ## Step 5: Initialize Execution Tracking
 
-1. Create or clear `.spec/plans/{plan-name}/execution-log.md`:
+1. Create or clear `.codevoyant/plans/{plan-name}/execution-log.md`:
 
 ```markdown
 # Execution Log - {plan-name}
@@ -286,7 +286,7 @@ Status: RUNNING
 [timestamp] - Execution started
 ```
 
-2. Update `.spec/plans/README.md`:
+2. Update `.codevoyant/plans/README.md`:
    - Set status to "Executing"
    - Update last updated timestamp
 
@@ -380,8 +380,8 @@ Agent is now working through your plan autonomously.
 Monitor progress:
 - /status {plan-name} - Check current progress
 - /status - View all plans overview
-- Watch .spec/plans/{plan-name}/plan.md - See checkboxes update in real-time
-- View .spec/plans/{plan-name}/execution-log.md - See detailed execution log
+- Watch .codevoyant/plans/{plan-name}/plan.md - See checkboxes update in real-time
+- View .codevoyant/plans/{plan-name}/execution-log.md - See detailed execution log
 
 Control execution:
 - /stop {plan-name} - Halt execution gracefully
@@ -394,7 +394,7 @@ You will receive a desktop notification when execution completes or fails.
 ## Notes
 
 - The background agent works independently - you can continue chatting
-- Progress is saved continuously in .spec/plans/{plan-name}/plan.md and README.md
+- Progress is saved continuously in .codevoyant/plans/{plan-name}/plan.md and README.md
 - If the agent encounters errors, it will pause and preserve state
 - Resume with `/bg {plan-name}` again or use `/go {plan-name}` for interactive execution
 - Check execution status anytime with `/status {plan-name}` or `/status` for all plans

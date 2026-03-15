@@ -67,7 +67,7 @@ Only proceed to Step 3 if user types the plan name exactly (case-sensitive match
 ## Step 3: Delete the Plan
 
 If confirmed:
-1. Delete plan directory: `.spec/plans/{plan-name}/` or archive directory
+1. Delete plan directory: `.codevoyant/plans/{plan-name}/` or archive directory
 2. Update README.md:
    - Remove plan entry from Active or Archived section
 3. If plan was executing, note that execution was stopped
@@ -79,7 +79,7 @@ If confirmed:
 Plan "{plan-name}" permanently deleted.
 
 All files removed:
-✓ .spec/plans/{plan-name}/ deleted
+✓ .codevoyant/plans/{plan-name}/ deleted
 ✓ README.md updated
 
 Create a new plan: /new
