@@ -1,7 +1,7 @@
 <template>
   <div class="hero-orbs">
     <canvas ref="canvas" class="warp-canvas" />
-    <img class="hero-center-logo" :src="logoSrc" alt="claudevoyant" />
+    <img class="hero-center-logo" :src="logoSrc" alt="codevoyant" />
   </div>
 </template>
 
@@ -13,8 +13,8 @@ const isDark = ref(false)
 
 const logoSrc = computed(() =>
   isDark.value
-    ? '/claudevoyant/cloudvoyant-logo-dark.svg'
-    : '/claudevoyant/cloudvoyant-logo-light.svg'
+    ? '/codevoyant/codevoyant-logo-dark.svg'
+    : '/codevoyant/codevoyant-logo-light.svg'
 )
 
 const COLORS = ['#4343ff', '#5555ff', '#7766ff', '#9988ff', '#bbaaff', '#3322cc', '#ffffff']

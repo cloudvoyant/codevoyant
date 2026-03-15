@@ -1,3 +1,5 @@
+<img src="/codevoyant/icons/style.svg" width="64" height="64" style="margin-bottom: 1rem" />
+
 # Style Plugin
 
 Manage and enforce project style guides with contextual loading and automatic learning.
@@ -8,7 +10,7 @@ The style plugin helps teams create, maintain, and enforce a `CLAUDE.md` style g
 
 **Claude Code:**
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 /plugin install style
 ```
 
@@ -60,7 +62,7 @@ Contexts auto-activate based on file types, tools used, directories accessed, an
 ```
 project/
 ├── CLAUDE.md                  # Main style guide — Critical Rules block at top, context sections below
-├── .claudevoyant/style/
+├── .codevoyant/style/
 │   ├── config.json            # Settings (committed)
 │   ├── patterns.json          # Learning data (gitignored)
 │   └── compliance.json        # Validation history (gitignored)
@@ -81,7 +83,7 @@ project/
 
 Auto-detects your project's tech stack and creates:
 - `CLAUDE.md` — context-tagged style guide with a **Critical Rules block** prepended at the top (committed to git)
-- `.claudevoyant/style/` — learning database (gitignored)
+- `.codevoyant/style/` — learning database (gitignored)
 - `docs/style-guide/` — detailed documentation
 
 The Critical Rules block lives at the very top of `CLAUDE.md` and contains the 3–5 highest-priority rules as terse imperatives, plus a reminder to agents to load the relevant context sections below for the current task. Every AI tool reads the top of `CLAUDE.md` on load — no tool-specific setup required.

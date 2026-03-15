@@ -36,14 +36,14 @@ Read CLAUDE.md and check for known structural problems. Report findings before d
 
 **Check 5 — Legacy `.style/` directory**
 - Run `[ -d .style ]` to detect the old data directory
-- If present → **fix**: migrate to `.claudevoyant/style/`:
+- If present → **fix**: migrate to `.codevoyant/style/`:
   ```bash
-  mkdir -p .claudevoyant/style
-  cp -r .style/. .claudevoyant/style/
+  mkdir -p .codevoyant/style
+  cp -r .style/. .codevoyant/style/
   rm -rf .style
   ```
-  Then update `.gitignore`: replace `.style/` entries with `.claudevoyant/style/` equivalents.
-  Report: `✓ Migrated .style/ → .claudevoyant/style/`
+  Then update `.gitignore`: replace `.style/` entries with `.codevoyant/style/` equivalents.
+  Report: `✓ Migrated .style/ → .codevoyant/style/`
 - If absent → ✅
 
 Report findings:
@@ -54,7 +54,7 @@ Critical Rules block:  ❌ missing           → will add
 Context tags:          ⚠️  3/8 sections      → will infer + insert
 Agent reminder:        ✅ present
 Deprecated patterns:   ❌ style-brief ref    → will remove
-Legacy .style/ dir:    ⚠️  found             → will migrate to .claudevoyant/style/
+Legacy .style/ dir:    ⚠️  found             → will migrate to .codevoyant/style/
 
 Proceeding to fix structural issues, then optimize...
 ```
@@ -393,7 +393,7 @@ Your style guide is now lean and efficient!
 
 ## Step 10: Update Config
 
-Update `.claudevoyant/style/config.json` with optimization metadata:
+Update `.codevoyant/style/config.json` with optimization metadata:
 
 ```json
 {
@@ -415,7 +415,7 @@ Update `.claudevoyant/style/config.json` with optimization metadata:
 
 ## Configuration
 
-Control optimization in `.claudevoyant/style/config.json`:
+Control optimization in `.codevoyant/style/config.json`:
 
 ```json
 {

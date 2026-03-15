@@ -1,21 +1,21 @@
 # Architecture
 
-> Design and structure of the claudevoyant plugins
+> Design and structure of the codevoyant plugins
 
 ## Overview
 
-claudevoyant is a collection of Claude Code plugins that provide professional workflow commands for development tasks. It's organized as three specialized plugins that can be installed independently or together.
+codevoyant is a collection of Claude Code plugins that provide professional workflow commands for development tasks. It's organized as three specialized plugins that can be installed independently or together.
 
 ## Plugins
 
-- claudevoyant-adr - Architecture Decision Records
-- claudevoyant-dev - Development workflow (docs, review, commits)
-- claudevoyant-spec - Specification-driven development (planning, upgrading)
+- codevoyant-adr - Architecture Decision Records
+- codevoyant-dev - Development workflow (docs, review, commits)
+- codevoyant-spec - Specification-driven development (planning, upgrading)
 
 ## Repository Structure
 
 ```
-claudevoyant/
+codevoyant/
 ├── .claude-plugin/          # Marketplace metadata
 │   └── marketplace.json     # Lists all three plugins
 ├── plugins/                 # Plugin collection
@@ -189,7 +189,7 @@ Plugins are distributed via Claude Code marketplace:
 
 ```bash
 # Add marketplace
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 
 # Install individual plugins
 /plugin install adr
@@ -203,7 +203,7 @@ For development and testing:
 
 ```bash
 # Add local marketplace
-/plugin marketplace add /path/to/claudevoyant
+/plugin marketplace add /path/to/codevoyant
 
 # Install plugins from local source
 /plugin install adr

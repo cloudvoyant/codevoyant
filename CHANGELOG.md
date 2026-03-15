@@ -1,37 +1,28 @@
-## [1.14.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.13.1...v1.14.0) (2026-03-15)
-
-### Features
-
-* **docs:** add canvas warp particle effect to hero section
-
-Purple particle streak animation with tapered trails and flat
-center logo in the VitePress home hero image slot.
-
-## [1.13.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.13.0...v1.13.1) (2026-03-15)
+## [1.13.1](https://github.com/codevoyant/codevoyant/compare/v1.13.0...v1.13.1) (2026-03-15)
 
 ### Bug Fixes
 
 * correct hero image paths (remove duplicate base prefix)
 
-## [1.13.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.12.2...v1.13.0) (2026-03-15)
+## [1.13.0](https://github.com/codevoyant/codevoyant/compare/v1.12.2...v1.13.0) (2026-03-15)
 
 ### Features
 
 * add light/dark favicons and logo, add just favicons recipe
 
-## [1.12.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.12.1...v1.12.2) (2026-03-15)
+## [1.12.2](https://github.com/codevoyant/codevoyant/compare/v1.12.1...v1.12.2) (2026-03-15)
 
 ### Bug Fixes
 
 * remove invalid hooks path from plugin manifests
 
-## [1.12.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.12.0...v1.12.1) (2026-03-14)
+## [1.12.1](https://github.com/codevoyant/codevoyant/compare/v1.12.0...v1.12.1) (2026-03-14)
 
 ### Bug Fixes
 
 * set base path for GitHub Pages deployment
 
-## [1.12.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.2...v1.12.0) (2026-03-14)
+## [1.12.0](https://github.com/codevoyant/codevoyant/compare/v1.11.2...v1.12.0) (2026-03-14)
 
 ### Features
 
@@ -42,7 +33,7 @@ center logo in the VitePress home hero image slot.
 - Split user guide into Installation and User Guide pages
 - Add GitHub Actions workflow for docs deployment
 
-## [1.11.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.1...v1.11.2) (2026-02-23)
+## [1.11.2](https://github.com/codevoyant/codevoyant/compare/v1.11.1...v1.11.2) (2026-02-23)
 
 ### Bug Fixes
 
@@ -56,7 +47,7 @@ Now checks git check-ignore before staging; gitignored files use
 git add -f so --continue works correctly. Also adds an explicit 4d
 rule prohibiting --skip during conflict resolution.
 
-## [1.11.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.11.0...v1.11.1) (2026-02-22)
+## [1.11.1](https://github.com/codevoyant/codevoyant/compare/v1.11.0...v1.11.1) (2026-02-22)
 
 ### Bug Fixes
 
@@ -66,7 +57,7 @@ The background agent was committing during execution without explicit
 user consent. Commits are now disabled by default. Pass --commit or
 -c to opt in to agent-driven commits.
 
-## [1.11.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.10.0...v1.11.0) (2026-02-22)
+## [1.11.0](https://github.com/codevoyant/codevoyant/compare/v1.10.0...v1.11.0) (2026-02-22)
 
 ### Features
 
@@ -80,7 +71,7 @@ user consent. Commits are now disabled by default. Pass --commit or
 - Add format/lint step to dev:commit (Step 1.5) before staging
 - Add format/lint/test checks to dev:rebase verification (Step 5)
 
-## [1.10.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.9.0...v1.10.0) (2026-02-22)
+## [1.10.0](https://github.com/codevoyant/codevoyant/compare/v1.9.0...v1.10.0) (2026-02-22)
 
 ### Features
 
@@ -96,7 +87,7 @@ user consent. Commits are now disabled by default. Pass --commit or
   with auto-fix using background agents
 - Fix dev:commit: push and monitor CI automatically; add --no-push flag
 
-## [1.9.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.8.0...v1.9.0) (2026-02-19)
+## [1.9.0](https://github.com/codevoyant/codevoyant/compare/v1.8.0...v1.9.0) (2026-02-19)
 
 ### Features
 
@@ -120,7 +111,7 @@ Workflow:
 
 Plans without worktrees still go in main repo as before.
 
-## [1.8.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.7.1...v1.8.0) (2026-02-18)
+## [1.8.0](https://github.com/codevoyant/codevoyant/compare/v1.7.1...v1.8.0) (2026-02-18)
 
 ### Features
 
@@ -140,7 +131,7 @@ Add --yes/-y flag support for non-interactive execution:
 
 This enables fully automated workflows without manual confirmation steps.
 
-## [1.7.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.7.0...v1.7.1) (2026-02-13)
+## [1.7.1](https://github.com/codevoyant/codevoyant/compare/v1.7.0...v1.7.1) (2026-02-13)
 
 ### Bug Fixes
 
@@ -155,7 +146,7 @@ asking for permission to continue. Added explicit instructions to:
 This fixes agents stopping after each phase and asking if user
 wants to continue.
 
-## [1.7.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.6.1...v1.7.0) (2026-02-13)
+## [1.7.0](https://github.com/codevoyant/codevoyant/compare/v1.6.1...v1.7.0) (2026-02-13)
 
 ### Features
 
@@ -175,7 +166,7 @@ Changes:
 
 This makes worktree-based development fully automatic.
 
-## [1.6.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.6.0...v1.6.1) (2026-02-13)
+## [1.6.1](https://github.com/codevoyant/codevoyant/compare/v1.6.0...v1.6.1) (2026-02-13)
 
 ### Bug Fixes
 
@@ -189,7 +180,7 @@ After: Ask to push → automatically monitor
 
 Reduces friction and makes workflow faster.
 
-## [1.6.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.5.0...v1.6.0) (2026-02-13)
+## [1.6.0](https://github.com/codevoyant/codevoyant/compare/v1.5.0...v1.6.0) (2026-02-13)
 
 ### Features
 
@@ -209,7 +200,7 @@ New functionality:
 This addresses the issue where Claude declares work "done" without
 verifying that tests, builds, and other automated checks actually pass.
 
-## [1.5.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.4.2...v1.5.0) (2026-02-12)
+## [1.5.0](https://github.com/codevoyant/codevoyant/compare/v1.4.2...v1.5.0) (2026-02-12)
 
 ### Features
 
@@ -226,7 +217,7 @@ Features:
 - Fetch and show error logs on failure
 - Offer to help fix issues when workflows fail
 
-## [1.4.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.4.1...v1.4.2) (2026-02-12)
+## [1.4.2](https://github.com/codevoyant/codevoyant/compare/v1.4.1...v1.4.2) (2026-02-12)
 
 ### Bug Fixes
 
@@ -236,7 +227,7 @@ Commands are auto-discovered from the commands/ directory and should
 not be declared in plugin.json. This was causing validation errors
 during plugin installation.
 
-## [1.4.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.4.0...v1.4.1) (2026-02-12)
+## [1.4.1](https://github.com/codevoyant/codevoyant/compare/v1.4.0...v1.4.1) (2026-02-12)
 
 ### Bug Fixes
 
@@ -246,7 +237,7 @@ Moves plugin.json to .claude-plugin/ subdirectory and adds styleguide
 to marketplace index. Plugin was not discoverable due to incorrect
 file structure.
 
-## [1.4.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.3.0...v1.4.0) (2026-02-12)
+## [1.4.0](https://github.com/codevoyant/codevoyant/compare/v1.3.0...v1.4.0) (2026-02-12)
 
 ### Features
 
@@ -274,7 +265,7 @@ Commands:
 
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 
-## [1.3.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.2.0...v1.3.0) (2026-02-12)
+## [1.3.0](https://github.com/codevoyant/codevoyant/compare/v1.2.0...v1.3.0) (2026-02-12)
 
 ### Features
 
@@ -295,7 +286,7 @@ Key improvements:
 
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 
-## [1.2.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.1.2...v1.2.0) (2025-11-17)
+## [1.2.0](https://github.com/codevoyant/codevoyant/compare/v1.1.2...v1.2.0) (2025-11-17)
 
 ### Features
 
@@ -307,7 +298,7 @@ monitor progress, and control execution while continuing other work.
 
 Also removes markdown linting configs and updates documentation.
 
-## [1.1.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.1.1...v1.1.2) (2025-11-17)
+## [1.1.2](https://github.com/codevoyant/codevoyant/compare/v1.1.1...v1.1.2) (2025-11-17)
 
 ### Bug Fixes
 
@@ -324,7 +315,7 @@ Restructures repository to match Anthropic's official marketplace
 layout with all plugins under a single plugins/ parent directory.
 Updates marketplace.json source paths accordingly.
 
-## [1.1.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.1.0...v1.1.1) (2025-11-16)
+## [1.1.1](https://github.com/codevoyant/codevoyant/compare/v1.1.0...v1.1.1) (2025-11-16)
 
 ### Bug Fixes
 
@@ -334,16 +325,16 @@ Changes plugin sources from GitHub object format to relative paths,
 following Anthropic's recommended pattern for monorepo marketplaces.
 Also corrects outdated plugin name in README installation example.
 
-## [1.1.0](https://github.com/cloudvoyant/claudevoyant/compare/v1.0.3...v1.1.0) (2025-11-16)
+## [1.1.0](https://github.com/codevoyant/codevoyant/compare/v1.0.3...v1.1.0) (2025-11-16)
 
 ### Features
 
 * restructure into three plugins and add repository diff command
 
 Splits monolithic plugin into specialized plugins:
-- claudevoyant-adr: Architecture Decision Records
-- claudevoyant-dev: Development workflows (docs, review, commits, diff)
-- claudevoyant-spec: Specification-driven development
+- codevoyant-adr: Architecture Decision Records
+- codevoyant-dev: Development workflows (docs, review, commits, diff)
+- codevoyant-spec: Specification-driven development
 
 Adds new /diff command to compare repositories and generate
 comprehensive diff reports with insights and analysis.
@@ -354,7 +345,7 @@ with individual paths and descriptions.
 
 ### Bug Fixes
 
-* remove claudevoyant prefix from plugin names
+* remove codevoyant prefix from plugin names
 
 Fixes plugin installation by ensuring plugin names match between
 marketplace.json and individual plugin.json files. Removes the
@@ -372,13 +363,13 @@ by removing redundant verification steps.
 
 * improve installation instructions with CLI commands and version-specific installation
 
-## [1.0.3](https://github.com/cloudvoyant/claudevoyant/compare/v1.0.2...v1.0.3) (2025-11-16)
+## [1.0.3](https://github.com/codevoyant/codevoyant/compare/v1.0.2...v1.0.3) (2025-11-16)
 
 ### Bug Fixes
 
 * modifying plugin.json to use https with git repos
 
-## [1.0.2](https://github.com/cloudvoyant/claudevoyant/compare/v1.0.1...v1.0.2) (2025-11-16)
+## [1.0.2](https://github.com/codevoyant/codevoyant/compare/v1.0.1...v1.0.2) (2025-11-16)
 
 ### Bug Fixes
 
@@ -388,7 +379,7 @@ by removing redundant verification steps.
 
   format for GitHub
 
-## [1.0.1](https://github.com/cloudvoyant/claudevoyant/compare/v1.0.0...v1.0.1) (2025-11-16)
+## [1.0.1](https://github.com/codevoyant/codevoyant/compare/v1.0.0...v1.0.1) (2025-11-16)
 
 ### Bug Fixes
 
@@ -398,7 +389,7 @@ by removing redundant verification steps.
 
 ### Features
 
-* initialize claudevoyant plugin
+* initialize codevoyant plugin
 
 Create Claude Code plugin with professional workflow commands:
 - Planning workflow (/plan)

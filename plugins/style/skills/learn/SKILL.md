@@ -66,7 +66,7 @@ If "A specific directory": ask for path. If "A remote repository": ask for URL.
 
 ### Session source
 
-Read `.claudevoyant/style/patterns.json`. These are pre-accumulated observations from past interactions:
+Read `.codevoyant/style/patterns.json`. These are pre-accumulated observations from past interactions:
 
 ```json
 {
@@ -237,9 +237,9 @@ Still observing: {N} patterns
 CLAUDE.md: {before} → {after} tokens
 ```
 
-Update `.claudevoyant/style/patterns.json` with all status changes.
+Update `.codevoyant/style/patterns.json` with all status changes.
 
-Update `.claudevoyant/style/config.json` learning stats:
+Update `.codevoyant/style/config.json` learning stats:
 ```json
 {
   "learning": {

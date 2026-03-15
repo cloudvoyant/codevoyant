@@ -20,10 +20,10 @@ The style guide plugin helps teams:
 
 ## Installation
 
-This plugin is included in the claudevoyant plugin suite:
+This plugin is included in the codevoyant plugin suite:
 
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 ```
 
 ## Quick Start
@@ -36,7 +36,7 @@ This plugin is included in the claudevoyant plugin suite:
 
 Creates:
 - `CLAUDE.md` - Context-tagged style guide (committed to git)
-- `.claudevoyant/style/` - Learning database (gitignored)
+- `.codevoyant/style/` - Learning database (gitignored)
 - `docs/style-guide/` - Detailed documentation
 
 ### 2. Add Rules
@@ -224,7 +224,7 @@ You correct Claude 3× → Pattern detected → Suggest rule → User approves �
 ```
 project/
 ├── CLAUDE.md                      # Main style guide (committed)
-├── .claudevoyant/style/
+├── .codevoyant/style/
 │   ├── config.json                # Settings (committed)
 │   ├── patterns.json              # Learning data (gitignored)
 │   └── compliance.json            # Validation history (gitignored)
@@ -237,14 +237,14 @@ project/
 │       └── contexts.md
 └── .gitignore
     # Add:
-    .claudevoyant/style/patterns.json
-    .claudevoyant/style/compliance.json
-    !.claudevoyant/style/config.json
+    .codevoyant/style/patterns.json
+    .codevoyant/style/compliance.json
+    !.codevoyant/style/config.json
 ```
 
 ## Configuration
 
-### `.claudevoyant/style/config.json`
+### `.codevoyant/style/config.json`
 
 ```json
 {
@@ -338,7 +338,7 @@ just style-pre-commit || exit 1
 /style:init
 /style:extract
 # Review and customize CLAUDE.md
-git add CLAUDE.md .claudevoyant/style/ .gitignore
+git add CLAUDE.md .codevoyant/style/ .gitignore
 git commit -m "feat: add style guide"
 
 # Ongoing: Work normally
@@ -361,7 +361,7 @@ git commit -m "feat: add style guide"
 # Customize for team
 
 # Commit to git
-git add CLAUDE.md .claudevoyant/style/config.json docs/style-guide/
+git add CLAUDE.md .codevoyant/style/config.json docs/style-guide/
 git commit -m "feat: add team style guide"
 git push
 
@@ -475,7 +475,7 @@ Claude: [automatically uses just test] ✓
 
 ## Contributing
 
-Improvements welcome! See main [claudevoyant repository](https://github.com/cloudvoyant/claudevoyant).
+Improvements welcome! See main [codevoyant repository](https://github.com/codevoyant/codevoyant).
 
 ## License
 
@@ -483,4 +483,4 @@ MIT - See LICENSE file
 
 ---
 
-*Part of the [claudevoyant](https://github.com/cloudvoyant/claudevoyant) plugin suite*
+*Part of the [codevoyant](https://github.com/codevoyant/codevoyant) plugin suite*

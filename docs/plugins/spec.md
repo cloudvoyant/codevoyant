@@ -1,3 +1,5 @@
+<img src="/codevoyant/icons/spec.svg" width="64" height="64" style="margin-bottom: 1rem" />
+
 # Spec Plugin
 
 Specification-driven development — plan, execute, and track complex work with structured plans.
@@ -8,7 +10,7 @@ The spec plugin introduces a structured planning layer to your AI coding agent. 
 
 **Claude Code:**
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 /plugin install spec
 ```
 

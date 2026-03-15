@@ -4,10 +4,10 @@
   "description": "Manage and enforce project style guides with contextual loading and automatic learning",
   "author": {
     "name": "Cloudvoyant",
-    "url": "https://github.com/cloudvoyant"
+    "url": "https://github.com/codevoyant"
   },
-  "homepage": "https://github.com/cloudvoyant/claudevoyant",
-  "repository": "https://github.com/cloudvoyant/claudevoyant",
+  "homepage": "https://github.com/codevoyant/codevoyant",
+  "repository": "https://github.com/codevoyant/codevoyant",
   "license": "MIT",
   "keywords": [
     "claude-code",

@@ -4,10 +4,10 @@
   "description": "Specification-driven development commands for Claude Code - planning, adapting, and upgrading with specs",
   "author": {
     "name": "Cloudvoyant",
-    "url": "https://github.com/cloudvoyant"
+    "url": "https://github.com/codevoyant"
   },
-  "homepage": "https://github.com/cloudvoyant/claudevoyant",
-  "repository": "https://github.com/cloudvoyant/claudevoyant",
+  "homepage": "https://github.com/codevoyant/codevoyant",
+  "repository": "https://github.com/codevoyant/codevoyant",
   "license": "MIT",
   "keywords": [
     "claude-code",

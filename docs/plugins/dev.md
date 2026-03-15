@@ -1,3 +1,5 @@
+<img src="/codevoyant/icons/dev.svg" width="64" height="64" style="margin-bottom: 1rem" />
+
 # Dev Plugin
 
 Development workflow commands — commits, review, diffing, and CI monitoring.
@@ -8,7 +10,7 @@ The dev plugin streamlines the day-to-day mechanics of software development: wri
 
 **Claude Code:**
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 /plugin install dev
 ```
 
@@ -119,7 +121,7 @@ Fetch open PR/MR review comments and propose fixes:
 /dev:pr-fix [pr-id]
 ```
 
-Works with GitHub and GitLab. For each PR/MR with unresolved review comments, creates `.claudevoyant/pr-fix/{pr-id}.md` containing the review threads and a "Proposed Fixes" section written by a background agent.
+Works with GitHub and GitLab. For each PR/MR with unresolved review comments, creates `.codevoyant/pr-fix/{pr-id}.md` containing the review threads and a "Proposed Fixes" section written by a background agent.
 
 Proposals are written to the document only — **not applied to code** — so you review them before deciding what to apply.
 

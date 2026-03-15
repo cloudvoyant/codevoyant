@@ -268,13 +268,13 @@ The block format:
 
 ## Step 4: Create Support Directory
 
-Create `.claudevoyant/style/` directory for pattern tracking:
+Create `.codevoyant/style/` directory for pattern tracking:
 
 ```bash
 mkdir -p .style
 ```
 
-Create `.claudevoyant/style/config.json`:
+Create `.codevoyant/style/config.json`:
 ```json
 {
   "version": "1.0.0",
@@ -302,7 +302,7 @@ Create `.claudevoyant/style/config.json`:
 }
 ```
 
-Create `.claudevoyant/style/patterns.json`:
+Create `.codevoyant/style/patterns.json`:
 ```json
 {
   "version": "1.0.0",
@@ -316,11 +316,11 @@ Create `.claudevoyant/style/patterns.json`:
 Add to `.gitignore`:
 ```
 # Style guide learning data (personal observations)
-.claudevoyant/style/patterns.json
-.claudevoyant/style/history.jsonl
+.codevoyant/style/patterns.json
+.codevoyant/style/history.jsonl
 
 # Keep config (team settings)
-!.claudevoyant/style/config.json
+!.codevoyant/style/config.json
 ```
 
 Report what was added.
@@ -362,14 +362,14 @@ style-learn:
 
 Created files:
 - CLAUDE.md (context-tagged style guide)
-- .claudevoyant/style/config.json (learning settings)
-- .claudevoyant/style/patterns.json (pattern tracking)
+- .codevoyant/style/config.json (learning settings)
+- .codevoyant/style/patterns.json (pattern tracking)
 - Updated .gitignore
 
 Next steps:
 1. Review and customize CLAUDE.md for your team
 2. Run /style:extract to populate rules from existing code patterns
-3. Commit to git: git add CLAUDE.md .claudevoyant/style/ .gitignore
+3. Commit to git: git add CLAUDE.md .codevoyant/style/ .gitignore
 4. Add rules: /style:add "your rule" --context build
 5. Start learning: /style:learn
 
@@ -390,8 +390,8 @@ Commands:
 **Team Collaboration:**
 - CLAUDE.md is committed to git and shared with team
 - Everyone gets the same rules automatically
-- .claudevoyant/style/config.json is shared (learning settings)
-- .claudevoyant/style/patterns.json is gitignored (personal observations)
+- .codevoyant/style/config.json is shared (learning settings)
+- .codevoyant/style/patterns.json is gitignored (personal observations)
 
 **Context Tags:**
 - Format: `<!-- @context: tag1, tag2, tag3 -->`

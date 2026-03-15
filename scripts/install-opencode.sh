@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Install claudevoyant skills for OpenCode
+# Install codevoyant skills for OpenCode
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/cloudvoyant/claudevoyant/main/scripts/install-opencode.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash
 #
 # Or from a local clone:
 #   bash scripts/install-opencode.sh           # install all plugins
@@ -34,8 +34,8 @@ if [[ -z "$REPO" ]]; then
   else
     TMP_DIR="$(mktemp -d)"
     trap 'rm -rf "$TMP_DIR"' EXIT
-    echo -e "${BLUE}Cloning claudevoyant...${RESET}"
-    git clone --depth=1 https://github.com/cloudvoyant/claudevoyant.git "$TMP_DIR" >/dev/null 2>&1
+    echo -e "${BLUE}Cloning codevoyant...${RESET}"
+    git clone --depth=1 https://github.com/codevoyant/codevoyant.git "$TMP_DIR" >/dev/null 2>&1
     REPO="$TMP_DIR"
   fi
 fi
@@ -43,7 +43,7 @@ fi
 declare -A PLUGINS=( ["spec"]="spec" ["dev"]="dev" ["style"]="style" ["adr"]="adr" )
 
 if $UNINSTALL; then
-  echo -e "${YELLOW}Uninstalling claudevoyant skills from $INSTALL_DIR...${RESET}"
+  echo -e "${YELLOW}Uninstalling codevoyant skills from $INSTALL_DIR...${RESET}"
   for prefix in spec dev style adr; do
     for skill_dir in "$INSTALL_DIR"/"$prefix"-*/; do
       [[ -d "$skill_dir" ]] || continue
@@ -55,7 +55,7 @@ if $UNINSTALL; then
   exit 0
 fi
 
-echo -e "${BLUE}Installing claudevoyant skills to $INSTALL_DIR...${RESET}"
+echo -e "${BLUE}Installing codevoyant skills to $INSTALL_DIR...${RESET}"
 mkdir -p "$INSTALL_DIR"
 
 installed=0

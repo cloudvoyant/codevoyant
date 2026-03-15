@@ -2,32 +2,35 @@
 layout: home
 
 hero:
-  name: claudevoyant
-  text: A curated collection of plugins for real development workflows with AI agents
-  tagline: Works with Claude Code, OpenCode, and VS Code Copilot.
+  name: codevoyant
+  text: A collection of plugins for development with AI agents
+  tagline: Works with Claude Code, OpenCode, and VSC Copilot.
   image:
-    light: /cloudvoyant-logo-light.svg
-    dark: /cloudvoyant-logo-dark.svg
-    alt: claudevoyant
+    light: /codevoyant-logo-light.svg
+    dark: /codevoyant-logo-dark.svg
+    alt: codevoyant
   actions:
     - theme: brand
       text: Get Started
       link: /installation
     - theme: alt
       text: View on GitHub
-      link: https://github.com/cloudvoyant/claudevoyant
+      link: https://github.com/codevoyant/codevoyant
 
 features:
-  - icon: 📋
+  - icon:
+      src: /icons/spec.svg
     title: Spec Plugin
-    details: Specification-driven development with structured plans, background execution, multi-plan management, and interactive or autonomous execution modes.
+    details: For adaptive, deterministic and controllable spec-driven development.
     link: /plugins/spec
-  - icon: 🛠️
+  - icon:
+      src: /icons/dev.svg
     title: Dev Plugin
-    details: Conventional commits, code review, repository diffing, and CI monitoring.
+    details: For conventional commits, CI monitoring, MR fixes, easy rebasing, and more.
     link: /plugins/dev
-  - icon: 📐
+  - icon:
+      src: /icons/style.svg
     title: Style Plugin
-    details: Manage and enforce project style guides with contextual loading, automatic pattern learning, and token-optimized CLAUDE.md management.
+    details: For evolving and enforcing project styleguides.
     link: /plugins/style
 ---

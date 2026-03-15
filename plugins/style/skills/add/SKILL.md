@@ -169,7 +169,7 @@ Consider:
 
 ## Step 7: Update Learning Database
 
-Add to `.claudevoyant/style/patterns.json` as a manually added rule:
+Add to `.codevoyant/style/patterns.json` as a manually added rule:
 
 ```json
 {

@@ -8,7 +8,7 @@ The ADR plugin helps teams document architectural decisions as they're made, kee
 
 **Claude Code:**
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 /plugin install adr
 ```
 

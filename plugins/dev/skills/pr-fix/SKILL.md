@@ -49,9 +49,9 @@ Filter to only PRs/MRs that have **unresolved review comments** or **change requ
 
 ## Step 2: Create PR Documents
 
-Create `.claudevoyant/pr-fix/` directory if it doesn't exist.
+Create `.codevoyant/pr-fix/` directory if it doesn't exist.
 
-For each PR/MR with unresolved threads, create `.claudevoyant/pr-fix/{pr-id}.md`:
+For each PR/MR with unresolved threads, create `.codevoyant/pr-fix/{pr-id}.md`:
 
 **GitHub** — fetch full review data:
 ```bash
@@ -67,7 +67,7 @@ glab api "projects/:id/merge_requests/{iid}/discussions"
 
 Document format — use the template in `references/pr-document-template.md`.
 
-Report: `✓ Created .claudevoyant/pr-fix/{pr-id}.md — {N} change request(s)`
+Report: `✓ Created .codevoyant/pr-fix/{pr-id}.md — {N} change request(s)`
 
 ## Step 3: Launch Parallel Fixer Agents
 
@@ -78,7 +78,7 @@ TaskCreate:
   description: "pr-fix: propose fixes for PR #{id}"
   run_in_background: true
   prompt: |
-    Read .claudevoyant/pr-fix/{pr-id}.md to understand the change requests.
+    Read .codevoyant/pr-fix/{pr-id}.md to understand the change requests.
     For each change request:
     1. Read the referenced file and line numbers from the repository
     2. Understand what the reviewer is asking for
@@ -125,13 +125,13 @@ fi
 ✓ PR fix proposals ready
 
   PR #{id}: {title}
-    .claudevoyant/pr-fix/{pr-id}.md — {N} change requests, {N} proposals written
+    .codevoyant/pr-fix/{pr-id}.md — {N} change requests, {N} proposals written
 
   PR #{id}: {title}
-    .claudevoyant/pr-fix/{pr-id}.md — {N} change requests, {N} proposals written
+    .codevoyant/pr-fix/{pr-id}.md — {N} change requests, {N} proposals written
 
 To apply fixes:
-  "Read .claudevoyant/pr-fix/{pr-id}.md and apply every fix in the Proposed Fixes section."
+  "Read .codevoyant/pr-fix/{pr-id}.md and apply every fix in the Proposed Fixes section."
 
 To update GitHub/GitLab with a response:
   /dev:ci  (or push a fix commit and it triggers review)

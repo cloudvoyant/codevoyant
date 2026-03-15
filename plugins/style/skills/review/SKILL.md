@@ -8,7 +8,7 @@ hooks:
     - hooks:
         - type: command
           command: |
-            TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ"); if [ -f ".claudevoyant/style/REVIEW.md" ]; then VIOLATIONS=$(grep -c "^### V" .claudevoyant/style/REVIEW.md 2>/dev/null || echo 0); WARNINGS=$(grep -c "^### W" .claudevoyant/style/REVIEW.md 2>/dev/null || echo 0); if [ -f ".claudevoyant/style/compliance.json" ]; then TMP=$(jq --arg ts "$TS" --argjson v "$VIOLATIONS" --argjson w "$WARNINGS" '.history += [{"timestamp": $ts, "violations": $v, "warnings": $w, "reviewFile": ".claudevoyant/style/REVIEW.md"}]' .claudevoyant/style/compliance.json 2>/dev/null); [ -n "$TMP" ] && echo "$TMP" > .claudevoyant/style/compliance.json; fi; fi
+            TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ"); if [ -f ".codevoyant/style/REVIEW.md" ]; then VIOLATIONS=$(grep -c "^### V" .codevoyant/style/REVIEW.md 2>/dev/null || echo 0); WARNINGS=$(grep -c "^### W" .codevoyant/style/REVIEW.md 2>/dev/null || echo 0); if [ -f ".codevoyant/style/compliance.json" ]; then TMP=$(jq --arg ts "$TS" --argjson v "$VIOLATIONS" --argjson w "$WARNINGS" '.history += [{"timestamp": $ts, "violations": $v, "warnings": $w, "reviewFile": ".codevoyant/style/REVIEW.md"}]' .codevoyant/style/compliance.json 2>/dev/null); [ -n "$TMP" ] && echo "$TMP" > .codevoyant/style/compliance.json; fi; fi
 ---
 
 > **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially.
@@ -71,7 +71,7 @@ If "Directory" selected, ask for the path.
 
 ## Step 1: Load Style Rules and Tooling
 
-Read CLAUDE.md and `.claudevoyant/style/config.json`. Build a rule index grouped by CLAUDE.md section:
+Read CLAUDE.md and `.codevoyant/style/config.json`. Build a rule index grouped by CLAUDE.md section:
 
 ```json
 {
@@ -169,7 +169,7 @@ options:
 
 Apply selected fixes and report what changed.
 
-Update `.claudevoyant/style/compliance.json` with a run entry.
+Update `.codevoyant/style/compliance.json` with a run entry.
 
 ---
 
@@ -212,7 +212,7 @@ TaskCreate:
 
 Wait for each (TaskOutput block=true). Parse JSON. Aggregate into `COMBINED_FINDINGS[]`. Log any agent errors under `## Agent Errors` in the report.
 
-### Write `.claudevoyant/style/REVIEW.md`
+### Write `.codevoyant/style/REVIEW.md`
 
 ```markdown
 # Style Guide Review
@@ -280,14 +280,14 @@ Violations must be fixed. Warnings should be fixed. Suggestions are optional.
 ### Report to user:
 
 ```
-✓ Review complete — .claudevoyant/style/REVIEW.md written
+✓ Review complete — .codevoyant/style/REVIEW.md written
 
   Violations : {N}
   Warnings   : {N}
   Suggestions: {N}
 
   To fix all issues, run:
-    "Read .claudevoyant/style/REVIEW.md and apply every fix in the Fix Instructions section."
+    "Read .codevoyant/style/REVIEW.md and apply every fix in the Fix Instructions section."
 ```
 
 If AUTOFIX=true (`--fix` flag): immediately launch a follow-up agent with that prompt.

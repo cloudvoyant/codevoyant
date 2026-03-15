@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Clipboard body -->
+  <rect x="9" y="10" width="46" height="51" rx="4" fill="#ede9ff" stroke="#5555ff" stroke-width="2.5"/>
+  <!-- Clip tab -->
+  <rect x="22" y="5" width="20" height="11" rx="2.5" fill="#ede9ff" stroke="#5555ff" stroke-width="2.5"/>
+  <!-- Checkbox 1 -->
+  <rect x="13" y="19" width="13" height="13" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="2"/>
+  <path d="M15.5 25.5l3.5 3.5 6-7" stroke="#5555ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lines next to checkbox 1 -->
+  <line x1="30" y1="23" x2="50" y2="23" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="30" y1="29" x2="48" y2="29" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
+  <!-- Checkbox 2 -->
+  <rect x="13" y="40" width="13" height="13" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="2"/>
+  <path d="M15.5 46.5l3.5 3.5 6-7" stroke="#5555ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lines next to checkbox 2 -->
+  <line x1="30" y1="44" x2="50" y2="44" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="30" y1="50" x2="48" y2="50" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
+</svg>

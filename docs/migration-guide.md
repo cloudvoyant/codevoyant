@@ -121,4 +121,4 @@ If you encounter issues during migration:
 - Ensure README.md is properly formatted
 - Try `/list` to see if your plan is detected
 
-For questions: https://github.com/cloudvoyant/claudevoyant/issues
+For questions: https://github.com/codevoyant/codevoyant/issues

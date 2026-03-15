@@ -1,65 +1,81 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  title: 'claudevoyant',
-  description: 'Professional workflow plugins for AI coding agents — Claude Code, OpenCode, and VS Code Copilot.',
-  base: '/claudevoyant/',
+  title: "codevoyant",
+  description:
+    "Development workflow plugins for AI coding agents — Claude Code, OpenCode, and VS Code Copilot.",
+  base: "/codevoyant/",
 
   head: [
-    ['link', { rel: 'icon', href: '/claudevoyant/favicon-light.ico', media: '(prefers-color-scheme: light)' }],
-    ['link', { rel: 'icon', href: '/claudevoyant/favicon-dark.ico', media: '(prefers-color-scheme: dark)' }],
+    [
+      "link",
+      {
+        rel: "icon",
+        href: "/codevoyant/favicon-light.ico",
+        media: "(prefers-color-scheme: light)",
+      },
+    ],
+    [
+      "link",
+      {
+        rel: "icon",
+        href: "/codevoyant/favicon-dark.ico",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
   ],
 
   themeConfig: {
-    logo: { light: '/cloudvoyant-logo-light.svg', dark: '/cloudvoyant-logo-dark.svg' },
+    logo: {
+      light: "/codevoyant-logo-light.svg",
+      dark: "/codevoyant-logo-dark.svg",
+    },
 
     nav: [
-      { text: 'Guide', link: '/user-guide' },
-      { text: 'Plugins', link: '/plugins/spec' },
-      { text: 'Changelog', link: '/changelog' },
+      { text: "Guide", link: "/user-guide" },
+      { text: "Plugins", link: "/plugins/spec" },
+      { text: "Changelog", link: "/changelog" },
     ],
 
     sidebar: [
       {
-        text: 'Getting Started',
+        text: "Getting Started",
         items: [
-          { text: 'Overview', link: '/' },
-          { text: 'Installation', link: '/installation' },
-          { text: 'User Guide', link: '/user-guide' },
+          { text: "Overview", link: "/" },
+          { text: "Installation", link: "/installation" },
+          { text: "User Guide", link: "/user-guide" },
         ],
       },
       {
-        text: 'Plugins',
+        text: "Plugins",
         items: [
-          { text: 'Spec', link: '/plugins/spec' },
-          { text: 'Dev', link: '/plugins/dev' },
-          { text: 'Style', link: '/plugins/style' },
+          { text: "Spec", link: "/plugins/spec" },
+          { text: "Dev", link: "/plugins/dev" },
+          { text: "Style", link: "/plugins/style" },
         ],
       },
       {
-        text: 'Reference',
-        items: [
-          { text: 'Changelog', link: '/changelog' },
-        ],
+        text: "Reference",
+        items: [{ text: "Changelog", link: "/changelog" }],
       },
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/cloudvoyant/claudevoyant' },
+      { icon: "github", link: "https://github.com/codevoyant/codevoyant" },
     ],
 
     editLink: {
-      pattern: 'https://github.com/cloudvoyant/claudevoyant/edit/main/docs/:path',
-      text: 'Edit this page on GitHub',
+      pattern: "https://github.com/codevoyant/codevoyant/edit/main/docs/:path",
+      text: "Edit this page on GitHub",
     },
 
     footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © Cloudvoyant',
+      message: "Released under the MIT License.",
+      copyright: "Copyright © Cloudvoyant",
     },
 
     search: {
-      provider: 'local',
+      provider: "local",
     },
 
     outline: {
@@ -69,8 +85,8 @@ export default defineConfig({
 
   markdown: {
     theme: {
-      light: 'github-light',
-      dark: 'github-dark',
+      light: "github-light",
+      dark: "github-dark",
     },
   },
-})
+});

@@ -5,7 +5,7 @@ Use this pattern at the end of any background agent prompt that should notify th
 ## Preferred — use the shared script
 
 ```bash
-# Find notify.sh (works if claudevoyant plugins are in the project or in ~/.claude)
+# Find notify.sh (works if codevoyant plugins are in the project or in ~/.claude)
 _NOTIFY_SCRIPT=""
 for _candidate in \
   "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/dev/scripts/notify.sh" \

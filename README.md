@@ -42,29 +42,29 @@ into four specialized plugins. Works with Claude Code, OpenCode, and VS Code Cop
 ### Claude Code
 
 ```bash
-/plugin marketplace add cloudvoyant/claudevoyant
+/plugin marketplace add codevoyant/codevoyant
 /plugin install adr
 /plugin install dev
 /plugin install spec
 /plugin install style
 ```
 
-To install a specific version: `/plugin marketplace add cloudvoyant/claudevoyant@v1.0.3`
+To install a specific version: `/plugin marketplace add codevoyant/codevoyant@v1.0.3`
 
-To update: `claude plugin marketplace update claudevoyant`
+To update: `claude plugin marketplace update codevoyant`
 
 ### OpenCode
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloudvoyant/claudevoyant/main/scripts/install-opencode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash
 ```
 
-> If you already have claudevoyant installed for Claude Code, OpenCode picks up skills automatically from `.claude/skills/` — no separate install needed.
+> If you already have codevoyant installed for Claude Code, OpenCode picks up skills automatically from `.claude/skills/` — no separate install needed.
 
 ### VS Code Copilot
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloudvoyant/claudevoyant/main/scripts/install-vscode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-vscode.sh | bash
 ```
 
 Restart VS Code after installing. Skills appear in the Copilot Chat `/` command menu as `/spec-new`, `/spec-go`, etc.
@@ -75,18 +75,18 @@ After installation, commands are available globally. Note that command names are
 scoped to their plugin:
 
 ```bash
-# ADR plugin commands (from claudevoyant-adr)
+# ADR plugin commands (from codevoyant-adr)
 /new       # Create a new ADR
 /capture   # Capture decision from conversation
 
-# Dev plugin commands (from claudevoyant-dev)
+# Dev plugin commands (from codevoyant-dev)
 /commit    # Create professional commits
 /docs      # Generate documentation
 /review    # Perform code review
 /diff      # Compare repositories
 /actions   # Monitor GitHub Actions CI
 
-# Spec plugin commands (from claudevoyant-spec)
+# Spec plugin commands (from codevoyant-spec)
 /new       # Create a new plan
 /init      # Initialize empty plan template
 /go        # Execute the plan interactively
@@ -151,10 +151,11 @@ design documentation.
 This plugin follows [semantic versioning](https://semver.org/). Version numbers
 are automatically managed through conventional commits and semantic-release.
 
-## TODO
+## Inspirations
 
-- [ ] Introduce skills
-- [ ] Add logging
+- [chatgpt-skills](https://github.com/dkyazzentwatwa/chatgpt-skills/tree/main)
+- [awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills?tab=readme-ov-file)
+- [superpowers](https://github.com/obra/superpowers)
 
 ## License
 

@@ -5,11 +5,27 @@
     --vp-c-brand-3: #3535cc;
 }
 
+/* Lighter brand + link + button colors in dark mode for readability */
+.dark {
+    --vp-c-brand-1: #7777ff;
+    --vp-c-brand-2: #9999ff;
+    --vp-c-brand-3: #6666ee;
+    --vp-button-brand-bg: var(--vp-c-brand-3);
+    --vp-button-brand-hover-bg: var(--vp-c-brand-1);
+    --vp-button-brand-active-bg: var(--vp-c-brand-2);
+    --vp-button-brand-border: var(--vp-c-brand-1);
+    --vp-button-brand-hover-border: var(--vp-c-brand-2);
+}
 
-/* Hero text sizing */
-.VPHero .name {
+
+/* Hero text sizing + color */
+.VPHero .name,
+.VPHero .name .clip {
     font-size: 3rem !important;
     margin-bottom: 1rem;
+    color: var(--vp-c-brand-1) !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--vp-c-brand-1) !important;
 }
 
 .VPHero .text {
@@ -21,3 +37,22 @@
 .VPHero .tagline {
     font-size: 1.4rem !important;
 }
+
+@media (max-width: 900px) {
+    .VPHero .name,
+    .VPHero .name .clip {
+        margin-bottom: 1.8rem !important;
+    }
+
+    .VPHero .text {
+        font-size: 1.6rem !important;
+        line-height: 2rem !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+    .VPHero .tagline {
+        font-size: 0.85rem !important;
+        margin-bottom: 1.2rem !important;
+    }
+}
+
