@@ -3,7 +3,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "codevoyant",
   description:
-    "Development workflow plugins for AI coding agents — Claude Code, OpenCode, and VS Code Copilot.",
+    "Development workflow plugins for AI coding agents — Claude Code, OpenCode, and Copilot.",
   base: "/codevoyant/",
 
   head: [

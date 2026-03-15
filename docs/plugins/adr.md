@@ -57,7 +57,7 @@ Create a new Architecture Decision Record interactively:
 /adr:new
 ```
 
-Claude will guide you through:
+You'll be guided through:
 1. **Title** — short description of the decision
 2. **Status** — Proposed, Accepted, Deprecated, or Superseded
 3. **Context** — what situation prompted this decision
@@ -72,6 +72,6 @@ Extract an architectural decision that emerged during a coding session:
 /adr:capture
 ```
 
-Claude reviews the current conversation, identifies the decision that was made, and formats it as a proper ADR — without you having to re-explain it.
+Reviews the current conversation, identifies the decision that was made, and formats it as a proper ADR — without you having to re-explain it.
 
 Useful when you've been discussing an architectural choice and want to document it without starting from scratch.

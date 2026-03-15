@@ -6,12 +6,12 @@
 
 ## Spec — plan and execute complex work
 
-The spec plugin gives you a structured planning layer. You write a plan with Claude's help, then execute it step-by-step or hand it off to a background agent.
+The spec plugin gives you a structured planning layer. You write a plan with AI assistance, then execute it step-by-step or hand it off to a background agent.
 
 **Typical flow:**
 
 ```bash
-/spec:new my-feature        # Claude explores requirements and creates plan + implementation files
+/spec:new my-feature        # Explores requirements and creates plan + implementation files
 /spec:go my-feature         # Execute interactively, with review stops between phases
 /spec:done my-feature       # Archive the plan and optionally commit
 ```
@@ -83,7 +83,7 @@ Start by generating a style guide from your existing stack:
 /style:init     # detects your stack and creates CLAUDE.md with context tags
 ```
 
-Add rules as you go — whenever you find yourself correcting Claude on something, capture it:
+Add rules as you go — whenever you find yourself correcting the AI on something, capture it:
 
 ```bash
 /style:add "Use justfile recipes" --context build,tools

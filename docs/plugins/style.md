@@ -66,16 +66,11 @@ Contexts auto-activate based on file types, tools used, directories accessed, an
 ```
 project/
 ├── CLAUDE.md                  # Main style guide — Critical Rules block at top, context sections below
-├── .codevoyant/
-│   ├── style.json             # Settings (committed)
-│   └── style/
-│       ├── patterns.json      # Learning data (gitignored)
-│       └── compliance.json    # Validation history (gitignored)
-└── docs/style-guide/          # Detailed rule docs (committed)
-    ├── README.md
-    ├── build.md
-    ├── typescript.md
-    └── git.md
+└── .codevoyant/
+    ├── style.json             # Settings (committed)
+    └── style/
+        ├── patterns.json      # Learning data (gitignored)
+        └── compliance.json    # Validation history (gitignored)
 ```
 
 ## Skills
@@ -112,7 +107,7 @@ Examples:
 /style:learn
 ```
 
-Analyzes your work history and suggests rules based on observed patterns. When you correct Claude 3+ times on the same thing, a rule is auto-suggested.
+Analyzes your work history and suggests rules based on observed patterns. When the AI is corrected 3+ times on the same thing, a rule is auto-suggested.
 
 Confidence levels:
 - High (>0.75): Auto-apply or strongly suggest

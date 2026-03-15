@@ -151,7 +151,7 @@ Uses a pre-rebase intent snapshot to resolve conflicts correctly, preventing the
 
 2. **Confirmation dialog** — Shows a branch summary ("Branch intent: N commits, M files changed: [file list]") and the rebase target, then asks for confirmation before proceeding. You can cancel without any changes being made.
 
-3. **Conflict resolution** — During the rebase, `<<<<<<< HEAD` is actually the *base branch* (not your branch) — Claude knows this and resolves conflicts by applying your branch's intended change onto the base branch's current version. For ambiguous conflicts, Claude stops and shows you both sides clearly, asking what the resolved version should be.
+3. **Conflict resolution** — During the rebase, `<<<<<<< HEAD` is actually the *base branch* (not your branch) — the skill handles this correctly and resolves conflicts by applying your branch's intended change onto the base branch's current version. For ambiguous conflicts, it stops and shows you both sides clearly, asking what the resolved version should be.
 
 4. **Post-rebase verification** — After completing, checks that no files were silently dropped (warns if a branch-modified file is no longer changed), flags unexplained large diffs, runs formatters (auto-staged onto last commit), and runs lint + tests if available. Lint failures block the push.
 

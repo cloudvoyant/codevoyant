@@ -4,7 +4,7 @@ layout: home
 hero:
   name: codevoyant
   text: A collection of plugins for development with AI agents
-  tagline: Works with Claude Code, OpenCode, and VSC Copilot.
+  tagline: Works with Claude Code, OpenCode, and Copilot.
   image:
     light: /codevoyant-logo-light.svg
     dark: /codevoyant-logo-dark.svg
