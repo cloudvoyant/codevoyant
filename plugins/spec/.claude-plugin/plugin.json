@@ -1,6 +1,5 @@
 {
   "name": "spec",
-  "hooks": "../hooks/hooks.json",
   "version": "1.12.1",
   "description": "Specification-driven development commands for Claude Code - planning, adapting, and upgrading with specs",
   "author": {

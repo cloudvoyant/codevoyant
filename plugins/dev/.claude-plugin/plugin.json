@@ -1,6 +1,5 @@
 {
   "name": "dev",
-  "hooks": "../hooks/hooks.json",
   "version": "1.12.1",
   "description": "Development workflow commands for Claude Code - CI monitoring, commits, and rebasing",
   "author": {

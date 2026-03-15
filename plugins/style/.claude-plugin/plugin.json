@@ -1,6 +1,5 @@
 {
   "name": "style",
-  "hooks": "../hooks/hooks.json",
   "version": "1.0.0",
   "description": "Manage and enforce project style guides with contextual loading and automatic learning",
   "author": {
