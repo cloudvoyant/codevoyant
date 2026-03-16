@@ -1,3 +1,22 @@
+## [1.20.0](https://github.com/cloudvoyant/codevoyant/compare/v1.19.0...v1.20.0) (2026-03-16)
+
+### Features
+
+* **dev:** add dev:allow skill for autonomous execution permissions
+
+Generates and applies permission configs for Claude Code, OpenCode, and
+VS Code Copilot. Plugin-scoped via --plugins flag with interactive
+selection fallback. Includes explicit git push confirmation, Write/Edit
+pre-approval for .codevoyant/, and Bash(git commit -m:*) entries to
+prevent $() substitution prompts during automated commits.
+
+* **spec:** add spec-explorer agent for parallel proposal generation
+
+Introduces spec-explorer with four modes (write, update, bulk-update,
+synthesize) to replace anonymous Task agents in spec:new. Proposals
+are now generated and updated in parallel with a consistent persona.
+Adds return-to-proposals path when planning reveals a problem.
+
 ## [1.19.0](https://github.com/cloudvoyant/codevoyant/compare/v1.18.1...v1.19.0) (2026-03-16)
 
 ### Features
