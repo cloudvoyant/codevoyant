@@ -1,161 +1,92 @@
-# Claudevoyant
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/public/codevoyant-logo-dark.svg">
+    <img src="docs/public/codevoyant-logo-light.svg" alt="codevoyant" width="280">
+  </picture>
 
-> Professional workflow plugins for AI coding agents
+  <p>Professional workflow plugins for AI coding agents</p>
 
-A curated collection of plugins that streamline development workflows, organized
-into four specialized plugins. Works with Claude Code, OpenCode, and VS Code Copilot.
+  <p>
+    <a href="https://cloudvoyant.github.io/codevoyant">Docs</a> ·
+    <a href="https://cloudvoyant.github.io/codevoyant/installation">Installation</a> ·
+    <a href="https://cloudvoyant.github.io/codevoyant/user-guide">User Guide</a>
+  </p>
+</div>
 
-- adr - Architecture Decision Records
-- dev - Development workflow (docs, review, commits, diff)
-- spec - Specification-driven development (planning, upgrading)
+---
 
-## Features
+**codevoyant** is a collection of plugins that give AI coding agents structured workflows for planning, development, and style enforcement. Works with Claude Code, OpenCode, and VS Code Copilot.
 
-### ADR Plugin
+## Plugins
 
-- `/new` - Create Architecture Decision Records
-- `/capture` - Capture decisions from conversations
-
-### Dev Plugin
-
-- `/docs` - Generate and update project documentation
-- `/review` - Code review workflows
-- `/commit` - Conventional commit messages with best practices
-- `/diff` - Compare current repository with another repository
-- `/actions` - Monitor GitHub Actions workflows and verify CI passes
-
-### Spec Plugin
-
-- `/new` - Create a new plan by exploring requirements
-- `/init` - Initialize an empty plan template
-- `/go` - Execute or continue the existing plan
-- `/bg` - Execute plan in background with autonomous agent
-- `/status` - Check progress of background execution
-- `/stop` - Stop background execution gracefully
-- `/refresh` - Review and update plan checklist status
-- `/pause` - Capture insights summary from planning
-- `/done` - Mark plan as complete and optionally commit
-- `/upgrade` - Template upgrade workflow for projects
+<table>
+<tr>
+<td width="48" align="center"><img src="docs/public/icons/spec.svg" width="32"></td>
+<td><strong>spec</strong> — plan and execute complex work<br>
+Research requirements, generate architecture proposals, produce phase-by-phase implementation plans, and execute them autonomously in the background.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/dev.svg" width="32"></td>
+<td><strong>dev</strong> — commits, CI, and code review<br>
+Conventional commits with auto-formatting, background CI monitoring, safe rebasing, PR review comment resolution, and pre-approving agent permissions.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/style.svg" width="32"></td>
+<td><strong>style</strong> — evolve and enforce your style guide<br>
+Context-aware <code>CLAUDE.md</code> with tagged rule sections that load only when relevant — ~74% fewer tokens than loading everything every interaction.</td>
+</tr>
+<tr>
+<td width="48" align="center">📋</td>
+<td><strong>adr</strong> — architecture decision records<br>
+Capture decisions as structured ADRs directly from coding sessions, before you forget the context.</td>
+</tr>
+</table>
 
 ## Installation
 
 ### Claude Code
 
 ```bash
-/plugin marketplace add codevoyant/codevoyant
-/plugin install adr
-/plugin install dev
+/plugin marketplace add cloudvoyant/codevoyant
 /plugin install spec
+/plugin install dev
 /plugin install style
+/plugin install adr
 ```
-
-To install a specific version: `/plugin marketplace add codevoyant/codevoyant@v1.0.3`
-
-To update: `claude plugin marketplace update codevoyant`
 
 ### OpenCode
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-opencode.sh | bash
 ```
-
-> If you already have codevoyant installed for Claude Code, OpenCode picks up skills automatically from `.claude/skills/` — no separate install needed.
 
 ### VS Code Copilot
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-vscode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-vscode.sh | bash
 ```
 
-Restart VS Code after installing. Skills appear in the Copilot Chat `/` command menu as `/spec-new`, `/spec-go`, etc.
-
-## Usage
-
-After installation, commands are available globally. Note that command names are
-scoped to their plugin:
+## Quick Start
 
 ```bash
-# ADR plugin commands (from codevoyant-adr)
-/new       # Create a new ADR
-/capture   # Capture decision from conversation
+# Plan and execute a feature
+/spec:new my-feature          # explore requirements, generate proposals, create plan
+/spec:bg my-feature           # hand off to a background agent while you keep working
+/spec:list                    # check progress across all active plans
 
-# Dev plugin commands (from codevoyant-dev)
-/commit    # Create professional commits
-/docs      # Generate documentation
-/review    # Perform code review
-/diff      # Compare repositories
-/actions   # Monitor GitHub Actions CI
+# Ship code
+/dev:commit                   # format → conventional commit → push → CI monitor
+/dev:ci --autofix             # watch CI, auto-fix failures and re-push
 
-# Spec plugin commands (from codevoyant-spec)
-/new       # Create a new plan
-/init      # Initialize empty plan template
-/go        # Execute the plan interactively
-/bg        # Execute plan in background
-/status    # Check background execution progress
-/stop      # Stop background execution
-/refresh   # Update plan status
-/pause     # Capture insights
-/done      # Mark plan complete
-/upgrade   # Upgrade template
+# Maintain your style guide
+/style:init                   # detect stack, create context-tagged CLAUDE.md
+/style:review                 # check recent work against the guide
+
+# Pre-approve agent permissions (stop mid-run prompts)
+/dev:allow --plugins spec,dev
 ```
 
-Note: Since `/new` exists in both ADR and Spec plugins, Claude will ask
-which one you mean when you use it. You can be explicit by saying "create a new
-ADR" or "create a new plan".
-
-Run `/help` to see all available commands.
-
-## Commands
-
-### ADR Plugin Commands
-
-- `/new` - Create a new Architecture Decision Record
-- `/capture` - Extract decision from conversation into ADR
-
-### Dev Plugin Commands
-
-- `/commit` - Create professional conventional commits
-- `/docs` - Generate or update project documentation
-- `/review` - Perform structured code review
-- `/diff` - Compare current repository with another repository
-- `/actions` - Monitor GitHub Actions workflows and verify CI passes
-
-### Spec Plugin Commands
-
-- `/new` - Create a structured implementation plan
-- `/init` - Initialize an empty plan template
-- `/go` - Execute an existing plan step-by-step
-- `/bg` - Execute plan in background with autonomous agent
-- `/status` - Check progress of background execution
-- `/stop` - Stop background execution gracefully
-- `/refresh` - Update plan status and checkboxes
-- `/pause` - Pause planning with insights summary
-- `/done` - Complete plan and optionally commit changes
-- `/upgrade` - Upgrade project to newer template version
-
-## Development
-
-### Repository Structure
-
-This is a monorepo containing three independent plugins:
-
-- `plugins/adr/` - Architecture Decision Records plugin
-- `plugins/dev/` - Development workflow plugin
-- `plugins/spec/` - Specification-driven development plugin
-
-See [docs/architecture.md](docs/architecture.md) for detailed architecture and
-design documentation.
-
-## Versioning
-
-This plugin follows [semantic versioning](https://semver.org/). Version numbers
-are automatically managed through conventional commits and semantic-release.
-
-## Inspirations
-
-- [chatgpt-skills](https://github.com/dkyazzentwatwa/chatgpt-skills/tree/main)
-- [awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills?tab=readme-ov-file)
-- [superpowers](https://github.com/obra/superpowers)
+See the **[full documentation →](https://cloudvoyant.github.io/codevoyant)**
 
 ## License
 
