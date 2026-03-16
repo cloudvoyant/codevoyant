@@ -1,3 +1,18 @@
+## [1.19.0](https://github.com/cloudvoyant/codevoyant/compare/v1.18.1...v1.19.0) (2026-03-16)
+
+### Features
+
+* add agent installation to OpenCode/VS Code install scripts + fix GitHub org
+
+- install-opencode.sh: copy agent .md files to ~/.config/opencode/agents/,
+  inject name: frontmatter if absent
+- install-vscode.sh: copy agent files as .agent.md to .github/agents/ in
+  current git workspace; skip gracefully if not in a git repo
+- Fix GitHub org codevoyant → cloudvoyant across all docs and install scripts
+- Add compatibility note to bg/SKILL.md and new/SKILL.md explaining that
+  agent: and context: fork fields are Claude Code-specific and run inline
+  on OpenCode and VS Code Copilot
+
 ## [1.18.1](https://github.com/cloudvoyant/codevoyant/compare/v1.18.0...v1.18.1) (2026-03-15)
 
 ### Bug Fixes
