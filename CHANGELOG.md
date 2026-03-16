@@ -1,3 +1,23 @@
+## [1.20.1](https://github.com/cloudvoyant/codevoyant/compare/v1.20.0...v1.20.1) (2026-03-16)
+
+### Bug Fixes
+
+* add style plugin to release pipeline and fix stale org refs
+
+- style/plugin.json was stuck at 1.0.0 and excluded from the release
+  prepareCmd and git assets, so users never received path updates
+- Corrects codevoyant → cloudvoyant org in style README and metadata
+- Fixes commit skill to display full message before confirmation
+
+
+### Documentation
+
+* remove adr from readme plugin table and install commands
+
+* rewrite README with logo, plugin overview, and docs links
+
+* update README tagline
+
 ## [1.20.0](https://github.com/cloudvoyant/codevoyant/compare/v1.19.0...v1.20.0) (2026-03-16)
 
 ### Features
