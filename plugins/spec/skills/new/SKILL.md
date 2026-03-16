@@ -7,7 +7,7 @@ agent: spec-planner
 model: claude-opus-4-6
 ---
 
-> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially.
+> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially. The `agent: spec-planner` and `context: fork` frontmatter fields are Claude Code-specific — on OpenCode and VS Code Copilot they are ignored and planning runs inline using the current model.
 
 Create a new plan by exploring requirements and building a structured plan. The
 goal is to create a high quality implementation plan that can be executed

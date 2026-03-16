@@ -5,7 +5,7 @@
 Install from the marketplace:
 
 ```bash
-/plugin marketplace add codevoyant/codevoyant
+/plugin marketplace add cloudvoyant/codevoyant
 
 /plugin install spec
 /plugin install dev
@@ -24,19 +24,19 @@ For local development or testing:
 Skills install globally to `~/.config/opencode/skills/`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-opencode.sh | bash
 ```
 
 Single plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash -s spec
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-opencode.sh | bash -s spec
 ```
 
 Uninstall:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-opencode.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-opencode.sh | bash -s -- --uninstall
 ```
 
 > **Note:** If codevoyant is already installed for Claude Code, OpenCode picks up skills from `.claude/skills/` automatically.
@@ -46,19 +46,19 @@ curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/
 Skills install globally to `~/.copilot/skills/`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-vscode.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-vscode.sh | bash
 ```
 
 Single plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-vscode.sh | bash -s spec
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-vscode.sh | bash -s spec
 ```
 
 Uninstall:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codevoyant/codevoyant/main/scripts/install-vscode.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts/install-vscode.sh | bash -s -- --uninstall
 ```
 
 Restart VS Code or reload the Copilot extension after installing.
@@ -74,13 +74,13 @@ Plugins follow semantic versioning. To check what's installed:
 To update:
 
 ```bash
-/plugin marketplace update codevoyant/codevoyant
+/plugin marketplace update cloudvoyant/codevoyant
 ```
 
 To install a specific version:
 
 ```bash
-/plugin marketplace add codevoyant/codevoyant@v1.0.3
+/plugin marketplace add cloudvoyant/codevoyant@v1.0.3
 /plugin install spec
 ```
 
@@ -98,7 +98,7 @@ To install a specific version:
 **Updates not applying:**
 
 ```bash
-/plugin marketplace update codevoyant/codevoyant
+/plugin marketplace update cloudvoyant/codevoyant
 /plugin uninstall spec
 /plugin install spec
 ```

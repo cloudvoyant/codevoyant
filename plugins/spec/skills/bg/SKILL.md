@@ -7,7 +7,7 @@ agent: spec-executor
 model: claude-opus-4-6
 ---
 
-> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially.
+> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run phases sequentially in-process (no background agent). The `agent: spec-executor` and `context: fork` frontmatter fields are Claude Code-specific — on OpenCode and VS Code Copilot they are ignored and the skill runs inline using the current model.
 
 Execute the plan in the background using an autonomous agent.
 

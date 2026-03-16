@@ -14,7 +14,7 @@ The spec plugin introduces a structured planning layer to your AI coding agent. 
 
 **Claude Code:**
 ```bash
-/plugin marketplace add codevoyant/codevoyant
+/plugin marketplace add cloudvoyant/codevoyant
 /plugin install spec
 ```
 

@@ -35,7 +35,7 @@ if [[ -z "$REPO" ]]; then
     TMP_DIR="$(mktemp -d)"
     trap 'rm -rf "$TMP_DIR"' EXIT
     echo -e "${BLUE}Cloning codevoyant...${RESET}"
-    git clone --depth=1 https://github.com/codevoyant/codevoyant.git "$TMP_DIR" >/dev/null 2>&1
+    git clone --depth=1 https://github.com/cloudvoyant/codevoyant.git "$TMP_DIR" >/dev/null 2>&1
     REPO="$TMP_DIR"
   fi
 fi
@@ -89,6 +89,42 @@ for plugin in "${!PLUGINS[@]}"; do
 done
 
 echo -e "${GREEN}Installed $installed skills.${RESET}"
+
+# Install agent definitions to .github/agents/ in the current project (workspace-scoped)
+# VS Code Copilot agents are project-specific and live in .github/agents/
+if git rev-parse --git-toplevel >/dev/null 2>&1; then
+  WORKSPACE_ROOT="$(git rev-parse --show-toplevel)"
+  AGENTS_DIR="$WORKSPACE_ROOT/.github/agents"
+  echo -e "${BLUE}Installing codevoyant agents to $AGENTS_DIR ...${RESET}"
+  mkdir -p "$AGENTS_DIR"
+
+  agents_installed=0
+  for plugin in "${!PLUGINS[@]}"; do
+    [[ -n "$FILTER" && "$plugin" != "$FILTER" ]] && continue
+    agents_src="$REPO/plugins/$plugin/agents"
+    [[ -d "$agents_src" ]] || continue
+
+    for agent_src in "$agents_src"/*.md; do
+      [[ -f "$agent_src" ]] || continue
+      agent_name="$(basename "$agent_src" .md)"
+      target_file="$AGENTS_DIR/$agent_name.agent.md"
+
+      cp "$agent_src" "$target_file"
+
+      echo -e "  ${GREEN}✓ $agent_name${RESET}"
+      agents_installed=$((agents_installed + 1))
+    done
+  done
+
+  echo -e "${GREEN}Installed $agents_installed agents.${RESET}"
+  echo
+  echo -e "${YELLOW}Note:${RESET} Agent files were installed to $AGENTS_DIR"
+  echo -e "Commit .github/agents/ to share agents with your team."
+else
+  echo -e "${YELLOW}Note:${RESET} Not in a git repository — agent definitions were not installed."
+  echo -e "Run this script from your project root to install agents to .github/agents/."
+fi
+
 echo
 echo -e "Skills are available globally in all VS Code workspaces."
 echo -e "Restart VS Code or reload the Copilot extension to pick up new skills."

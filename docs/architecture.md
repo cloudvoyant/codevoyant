@@ -189,7 +189,7 @@ Plugins are distributed via Claude Code marketplace:
 
 ```bash
 # Add marketplace
-/plugin marketplace add codevoyant/codevoyant
+/plugin marketplace add cloudvoyant/codevoyant
 
 # Install individual plugins
 /plugin install adr

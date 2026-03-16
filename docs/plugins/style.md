@@ -14,7 +14,7 @@ The style plugin helps teams create, maintain, and enforce a `CLAUDE.md` style g
 
 **Claude Code:**
 ```bash
-/plugin marketplace add codevoyant/codevoyant
+/plugin marketplace add cloudvoyant/codevoyant
 /plugin install style
 ```
 

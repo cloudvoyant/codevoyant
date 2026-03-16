@@ -14,7 +14,7 @@ The dev plugin streamlines the day-to-day mechanics of software development: wri
 
 **Claude Code:**
 ```bash
-/plugin marketplace add codevoyant/codevoyant
+/plugin marketplace add cloudvoyant/codevoyant
 /plugin install dev
 ```
 

@@ -35,7 +35,7 @@ if [[ -z "$REPO" ]]; then
     TMP_DIR="$(mktemp -d)"
     trap 'rm -rf "$TMP_DIR"' EXIT
     echo -e "${BLUE}Cloning codevoyant...${RESET}"
-    git clone --depth=1 https://github.com/codevoyant/codevoyant.git "$TMP_DIR" >/dev/null 2>&1
+    git clone --depth=1 https://github.com/cloudvoyant/codevoyant.git "$TMP_DIR" >/dev/null 2>&1
     REPO="$TMP_DIR"
   fi
 fi
@@ -89,3 +89,36 @@ for plugin in "${!PLUGINS[@]}"; do
 done
 
 echo -e "${GREEN}Installed $installed skills.${RESET}"
+
+# Install agent definitions to ~/.config/opencode/agents/
+AGENTS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/agents"
+echo -e "${BLUE}Installing codevoyant agents to $AGENTS_DIR...${RESET}"
+mkdir -p "$AGENTS_DIR"
+
+agents_installed=0
+for plugin in "${!PLUGINS[@]}"; do
+  [[ -n "$FILTER" && "$plugin" != "$FILTER" ]] && continue
+  agents_src="$REPO/plugins/$plugin/agents"
+  [[ -d "$agents_src" ]] || continue
+
+  for agent_src in "$agents_src"/*.md; do
+    [[ -f "$agent_src" ]] || continue
+    agent_name="$(basename "$agent_src" .md)"
+    target_file="$AGENTS_DIR/$agent_name.md"
+
+    cp "$agent_src" "$target_file"
+
+    # Inject `name:` into frontmatter if not present (OpenCode requires it)
+    if ! grep -q "^name:" "$target_file"; then
+      awk -v name="$agent_name" '
+        /^---$/ { count++; print; if (count == 1) { print "name: " name; } next }
+        { print }
+      ' "$target_file" > "$target_file.tmp" && mv "$target_file.tmp" "$target_file"
+    fi
+
+    echo -e "  ${GREEN}✓ $agent_name${RESET}"
+    agents_installed=$((agents_installed + 1))
+  done
+done
+
+echo -e "${GREEN}Installed $agents_installed agents.${RESET}"
