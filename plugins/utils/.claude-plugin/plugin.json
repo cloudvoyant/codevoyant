@@ -1,7 +1,7 @@
 {
   "name": "utils",
   "version": "1.0.0",
-  "description": "Shared utility scripts for claudevoyant plugins — notifications and other common operations",
+  "description": "Shared utility scripts for claudevoyant plugins \u2014 notifications and other common operations",
   "author": {
     "name": "Cloudvoyant",
     "url": "https://github.com/cloudvoyant"
@@ -9,6 +9,10 @@
   "homepage": "https://github.com/cloudvoyant/codevoyant",
   "repository": "https://github.com/cloudvoyant/codevoyant",
   "license": "MIT",
-  "keywords": ["claude-code", "shared", "utils", "utilities"],
-  "skills": ["help", "notify"]
+  "keywords": [
+    "claude-code",
+    "shared",
+    "utils",
+    "utilities"
+  ]
 }

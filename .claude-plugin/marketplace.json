@@ -23,6 +23,21 @@
       "name": "style",
       "description": "Manage and enforce project style guides with contextual loading and automatic learning",
       "source": "./plugins/style"
+    },
+    {
+      "name": "em",
+      "description": "Engineering management — roadmap planning, epic breakdowns, team sync, and architecture design",
+      "source": "./plugins/em"
+    },
+    {
+      "name": "pm",
+      "description": "Product management — product roadmaps, feature PRDs, prioritization review, and product docs",
+      "source": "./plugins/pm"
+    },
+    {
+      "name": "utils",
+      "description": "Shared utility scripts (cross-platform notifications) used by em, pm, and other plugins",
+      "source": "./plugins/utils"
     }
   ]
 }

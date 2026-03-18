@@ -1,7 +1,7 @@
 {
   "name": "em",
   "version": "1.0.0",
-  "description": "Engineering management skills — epic and roadmap planning, detailed task breakdowns, and plan review",
+  "description": "Engineering management skills \u2014 epic and roadmap planning, detailed task breakdowns, and plan review",
   "author": {
     "name": "Cloudvoyant",
     "url": "https://github.com/cloudvoyant"
@@ -9,6 +9,10 @@
   "homepage": "https://github.com/cloudvoyant/codevoyant",
   "repository": "https://github.com/cloudvoyant/codevoyant",
   "license": "MIT",
-  "keywords": ["claude-code", "engineering-management", "planning", "roadmap"],
-  "skills": ["plan", "breakdown", "review", "sync", "docs", "update", "help"]
+  "keywords": [
+    "claude-code",
+    "engineering-management",
+    "planning",
+    "roadmap"
+  ]
 }
