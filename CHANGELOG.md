@@ -1,3 +1,46 @@
+## [1.21.0](https://github.com/cloudvoyant/codevoyant/compare/v1.20.1...v1.21.0) (2026-03-18)
+
+### Features
+
+* add help skills, open exploration, and bg flags to spec skills
+
+- Add help skill to spec, dev, style, adr plugins (discovers siblings
+  dynamically via $SKILL_DIR, reads plugin.json for header)
+- Rewrite spec:new Step 4.3: open-ended free-text exploration offer,
+  parallel proposal generation with file verification, post-gen
+  selection not limited to generated proposals
+- Fix spec:new user-guide generation: mark REQUIRED, add blocking
+  validation in Step 5.5 that includes plan.md and user-guide.md
+- Add --bg/--silent flags to spec:go, spec:refresh, spec:update with
+  desktop notification on completion
+- Expand dev:allow shared baseline to include Read, Glob, Grep
+- Update .gitignore: .codevoyant replaces legacy .spec/plans patterns
+
+
+### Documentation
+
+* add adr plugin, help command, and --bg flag to README
+
+- Add adr plugin to plugins table (was missing)
+- Update spec description to mention --bg flag
+- Add /plugin:help examples to quick start
+- Fix spec:bg → spec:go --bg in quick start
+
+* sync plugin docs with current skill state
+
+spec.md:
+- Update background workflow to show spec:go --bg alongside spec:bg
+- Rewrite architecture exploration description for open-ended flow
+- Add --bg/--silent flags to spec:go, spec:refresh, spec:update
+- Document spec:help command
+
+dev.md:
+- Add dev:allow section (was entirely missing)
+- Add dev:help command
+
+README.md:
+- Remove adr plugin from plugins table (not publicly listed yet)
+
 ## [1.20.1](https://github.com/cloudvoyant/codevoyant/compare/v1.20.0...v1.20.1) (2026-03-16)
 
 ### Bug Fixes
