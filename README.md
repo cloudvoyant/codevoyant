@@ -35,11 +35,6 @@ Conventional commits with auto-formatting, background CI monitoring, safe rebasi
 <td><strong>style</strong> — evolve and enforce your style guide<br>
 Context-aware <code>CLAUDE.md</code> with tagged rule sections that load only when relevant — ~74% fewer tokens than loading everything every interaction.</td>
 </tr>
-<tr>
-<td align="center"><img src="docs/public/icons/adr.svg" width="32"></td>
-<td><strong>adr</strong> — capture architecture decisions<br>
-Record and preserve architectural decisions made during development so future agents and developers understand the reasoning behind the codebase.</td>
-</tr>
 </table>
 
 ## Installation

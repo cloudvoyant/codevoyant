@@ -52,8 +52,9 @@ Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are 
 ### Background Workflow
 
 ```bash
-/spec:new my-feature        # Create detailed plan with implementation files
-/spec:bg my-feature         # Start background agent
+/spec:new my-feature --bg   # Create plan and immediately start background execution
+/spec:new my-feature        # Or: create plan, then hand off separately:
+/spec:go my-feature --bg    # Start background agent (equivalent to /spec:bg)
 # ... work on other things ...
 /spec:list                  # Check progress across all plans
 # Agent completes and sends a desktop notification
@@ -79,7 +80,7 @@ Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are 
 - **Use `/spec:new`** for real work — the planning session catches ambiguities early. Pass a Linear/GitHub/Notion URL to seed requirements automatically. Use `--blank` only when you want to write the plan yourself.
 - **Plan selection**: For all skills except `/spec:new`, if you don't specify a plan name and multiple plans exist, you'll be shown the list and asked to choose.
 - **Put detail in implementation files** — `plan.md` stays high-level; detailed specs go in `implementation/phase-N.md`
-- **Prefer `/spec:bg`** for long or routine tasks; use `/spec:go` for complex or high-risk changes
+- **Prefer `--bg`** for long or routine tasks (`/spec:go --bg` or `/spec:bg`); use interactive mode for complex or high-risk changes
 - **Annotate plans directly** — add `> note` or `line >> instruction` markers while reading, then run `/spec:update` to apply them in bulk
 - **Check `/spec:list`** before ending a session to see where all plans stand
 - **Use `/spec:stop`** to capture session insights before taking a break
@@ -107,7 +108,7 @@ Explores your requirements and creates:
 
 **Research phase:** When you run `/spec:new`, three parallel research agents run automatically: a codebase scan (reads structure, existing patterns, tech stack), a library/pattern research agent (searches for relevant libraries and design patterns), and a skills lookup agent. Results are synthesized before planning begins.
 
-**Architecture exploration (optional):** For non-trivial objectives, identifies 2–3 distinct architectural approaches and asks if you want proposal documents generated. If yes, proposals are written in parallel to `proposals/*.md`. You then pick a direction (or ask for a synthesis), and the plan is built from your choice.
+**Architecture exploration (optional):** For non-trivial objectives, identifies candidate architectural directions and presents them as inline text — asking what you want to explore in an open-ended way. You can explore all suggested directions, name specific ones, propose entirely different approaches, or skip. Proposal agents run in parallel, each writing a structured `proposals/{approach}.md` using the proposal template. You then choose a direction (or the auto-provided "Other" option for anything not listed), and the plan is built from your choice.
 
 **Worktree prompt:** If you're in a git repo and not already in a worktree, you'll be offered the option to create a dedicated git worktree for the plan during the planning session.
 
@@ -124,17 +125,27 @@ Shows all active and archived plans with:
 - Progress percentage and task counts
 - Last updated timestamps
 
-### Execute Interactively
+### Execute a Plan
 
 ```bash
-/spec:go                    # Auto-selects most recently updated plan
-/spec:go plan-name          # Execute specific plan
+/spec:go                         # Auto-selects most recently updated plan
+/spec:go plan-name               # Execute specific plan interactively
+/spec:go plan-name --bg          # Execute in background (non-blocking)
+/spec:go plan-name --bg --silent # Background, no desktop notification
+/spec:go plan-name --commit      # Allow git commits during execution
 ```
 
-Choose your execution mode:
+**Interactive mode** — choose your execution style:
 - **Fully Autonomous** — execute entire plan without stops (except errors)
 - **Phase Review** — pause after each phase for your review
 - **Targeted Review** — stop at a specific phase
+
+**Background mode (`--bg`)** — spawns an autonomous agent and returns immediately so you can keep working. A desktop notification fires when execution completes or fails. Equivalent to `/spec:bg`.
+
+**Flags:**
+- `--bg` — non-blocking background execution
+- `--silent` — suppress the desktop notification (use with `--bg`)
+- `--commit` / `-c` — allow the agent to make git commits as tasks complete
 
 **Inline annotations** — edit plan files directly while the agent runs, or before starting:
 
@@ -180,8 +191,9 @@ Monitor with `/spec:list`, stop with `/spec:stop`.
 ### Apply Plan Annotations
 
 ```bash
-/spec:update                # Auto-selects most recently updated plan
-/spec:update plan-name      # Apply annotations in specific plan
+/spec:update                     # Auto-selects most recently updated plan
+/spec:update plan-name           # Apply annotations in specific plan
+/spec:update plan-name --bg      # Apply in background, notify when done
 ```
 
 Processes inline annotations you've written directly in plan files. Two annotation forms are supported:
@@ -215,8 +227,9 @@ Works in two modes depending on state:
 ### Update Checklist Status
 
 ```bash
-/spec:refresh               # Auto-selects most recently updated plan
-/spec:refresh plan-name     # Refresh specific plan
+/spec:refresh                    # Auto-selects most recently updated plan
+/spec:refresh plan-name          # Refresh specific plan
+/spec:refresh plan-name --bg     # Refresh in background, notify when done
 ```
 
 Reviews what's been done and updates checkboxes in `plan.md` to reflect current state.
@@ -259,3 +272,10 @@ Manage git worktrees for isolated plan execution. Subcommands:
 - **`remove [branch-name]`** — remove a worktree; optionally delete the branch too
 - **`prune`** — remove stale git references to worktrees whose directories have been deleted manually
 - **`export [plan-name] [--force]`** — copy a plan from the current worktree's `.codevoyant/plans/` into the main repository's `.codevoyant/plans/`. Use `--force` to overwrite an existing entry. Re-run to push updates; the worktree copy remains the source of truth.
+
+### List All Commands
+
+```bash
+/spec:help                  # List all spec commands with descriptions
+/spec:help go               # Show full details for a specific command
+```

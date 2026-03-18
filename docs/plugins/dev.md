@@ -162,3 +162,22 @@ Uses a pre-rebase intent snapshot to resolve conflicts correctly, preventing the
 **Flags:**
 - `base-branch` (optional) — rebase target; defaults to `origin/main` or `origin/master`
 - `--push` — push with `--force-with-lease` after a successful rebase
+
+### Pre-approve Agent Permissions
+
+```bash
+/dev:allow                        # Interactive — choose plugins to pre-approve
+/dev:allow --plugins spec,dev     # Pre-approve specific plugins
+/dev:allow --plugins spec,dev,em  # Multiple plugins at once
+```
+
+When an agent runs autonomously (via `/spec:go --bg` or `/spec:bg`), it may be interrupted by permission prompts for file writes, bash commands, or network access. `/dev:allow` generates and writes the appropriate `permissions.allow` entries to `.claude/settings.json` so execution runs uninterrupted.
+
+Covers the shared baseline (Read, Glob, Grep, Write, Edit, Bash for task runners) plus plugin-specific entries for each plugin you select.
+
+### List All Commands
+
+```bash
+/dev:help                   # List all dev commands with descriptions
+/dev:help ci                # Show full details for a specific command
+```
