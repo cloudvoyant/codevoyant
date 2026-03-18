@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "1.22.0",
+  "version": "1.21.0",
   "description": "Development workflow commands for Claude Code - CI monitoring, commits, and rebasing",
   "author": {
     "name": "Cloudvoyant",
@@ -16,8 +16,5 @@
     "commits",
     "rebase",
     "development"
-  ],
-  "skills": [
-    "docs"
   ]
 }
