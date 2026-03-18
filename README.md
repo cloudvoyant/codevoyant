@@ -23,7 +23,7 @@
 <tr>
 <td width="48" align="center"><img src="docs/public/icons/spec.svg" width="32"></td>
 <td><strong>spec</strong> — plan and execute complex work<br>
-Research requirements, generate architecture proposals, produce phase-by-phase implementation plans, and execute them autonomously in the background.</td>
+Research requirements, generate architecture proposals, produce phase-by-phase implementation plans, and execute them autonomously in the background with <code>--bg</code>.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/dev.svg" width="32"></td>
@@ -34,6 +34,11 @@ Conventional commits with auto-formatting, background CI monitoring, safe rebasi
 <td align="center"><img src="docs/public/icons/style.svg" width="32"></td>
 <td><strong>style</strong> — evolve and enforce your style guide<br>
 Context-aware <code>CLAUDE.md</code> with tagged rule sections that load only when relevant — ~74% fewer tokens than loading everything every interaction.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/adr.svg" width="32"></td>
+<td><strong>adr</strong> — capture architecture decisions<br>
+Record and preserve architectural decisions made during development so future agents and developers understand the reasoning behind the codebase.</td>
 </tr>
 </table>
 
@@ -65,7 +70,7 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 ```bash
 # Plan and execute a feature
 /spec:new my-feature          # explore requirements, generate proposals, create plan
-/spec:bg my-feature           # hand off to a background agent while you keep working
+/spec:go my-feature --bg      # hand off to a background agent while you keep working
 /spec:list                    # check progress across all active plans
 
 # Ship code
@@ -78,6 +83,10 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 
 # Pre-approve agent permissions (stop mid-run prompts)
 /dev:allow --plugins spec,dev
+
+# Explore what any plugin can do
+/spec:help                    # list all spec commands
+/dev:help ci                  # show full details for a specific command
 ```
 
 See the **[full documentation →](https://cloudvoyant.github.io/codevoyant)**
