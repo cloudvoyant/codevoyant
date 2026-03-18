@@ -141,3 +141,10 @@ Two-phase command: first **diagnoses and repairs** structural issues (missing Cr
 ```
 
 List, view, and manage context tags. Contexts control which rules are loaded for which tasks.
+
+### List All Commands
+
+```bash
+/style:help                 # List all style commands with descriptions
+/style:help review          # Show full details for a specific command
+```
