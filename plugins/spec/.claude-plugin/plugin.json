@@ -1,6 +1,6 @@
 {
   "name": "spec",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "description": "Specification-driven development commands for Claude Code - planning, adapting, and upgrading with specs",
   "author": {
     "name": "Cloudvoyant",
@@ -16,5 +16,7 @@
     "spec-driven",
     "development"
   ],
-  "skills": ["review"]
+  "skills": [
+    "review"
+  ]
 }

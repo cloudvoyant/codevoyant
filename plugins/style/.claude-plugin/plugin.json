@@ -1,6 +1,6 @@
 {
   "name": "style",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "description": "Manage and enforce project style guides with contextual loading and automatic learning",
   "author": {
     "name": "Cloudvoyant",

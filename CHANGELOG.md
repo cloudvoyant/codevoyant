@@ -1,3 +1,25 @@
+## [1.22.0](https://github.com/cloudvoyant/codevoyant/compare/v1.21.0...v1.22.0) (2026-03-18)
+
+### Features
+
+* add em, pm, and utils plugins with docs and validation
+
+- New plugins: em (engineering management), pm (product management),
+  utils (shared notifications)
+- Icons for em, pm, utils in docs/public/icons/
+- Plugin docs pages: docs/plugins/em.md, pm.md, utils.md
+- Homepage: remove utils from features, EM/PM all-caps throughout
+- em:plan and pm:plan: validation loop after artifact generation
+- em:update and pm:update: annotation + conversational update skills
+- Notify calls migrated from bash paths to /utils:notify skill
+- spec and dev plugin improvements (review skill, allow skill, docs
+  skill, notify pattern refactor)
+
+
+### Documentation
+
+* add style:help to style plugin docs
+
 ## [1.21.0](https://github.com/cloudvoyant/codevoyant/compare/v1.20.1...v1.21.0) (2026-03-18)
 
 ### Features
