@@ -4,7 +4,7 @@
     <img src="docs/public/codevoyant-logo-light.svg" alt="codevoyant" width="280">
   </picture>
 
-  <p>Plugins for development with AI agents</p>
+  <p>Plugins and tools for development with AI agents</p>
 
   <p>
     <a href="https://cloudvoyant.github.io/codevoyant">Docs</a> ·
