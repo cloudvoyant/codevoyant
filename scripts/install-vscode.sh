@@ -92,7 +92,7 @@ echo -e "${GREEN}Installed $installed skills.${RESET}"
 
 # Install agent definitions to .github/agents/ in the current project (workspace-scoped)
 # VS Code Copilot agents are project-specific and live in .github/agents/
-if git rev-parse --git-toplevel >/dev/null 2>&1; then
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   WORKSPACE_ROOT="$(git rev-parse --show-toplevel)"
   AGENTS_DIR="$WORKSPACE_ROOT/.github/agents"
   echo -e "${BLUE}Installing codevoyant agents to $AGENTS_DIR ...${RESET}"

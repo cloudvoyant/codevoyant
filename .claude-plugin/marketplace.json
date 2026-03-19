@@ -33,6 +33,6 @@
       "name": "pm",
       "description": "Product management — product roadmaps, feature PRDs, prioritization review, and product docs",
       "source": "./plugins/pm"
-    },
+    }
   ]
 }
