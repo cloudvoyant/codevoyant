@@ -56,9 +56,9 @@
     }
 }
 
-/* 3 feature cards per row on desktop */
-@media (min-width: 768px) {
-    .VPFeatures .items {
-        grid-template-columns: repeat(3, 1fr) !important;
+/* 3 feature cards per row on desktop (VitePress uses flexbox, not CSS grid) */
+@media (min-width: 960px) {
+    .VPFeatures .item.grid-3 {
+        width: calc(100% / 3) !important;
     }
 }

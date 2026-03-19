@@ -13,6 +13,7 @@ The spec plugin introduces a structured planning layer to your AI coding agent. 
 ## Installation
 
 **Claude Code:**
+
 ```bash
 /plugin marketplace add cloudvoyant/codevoyant
 /plugin install spec
@@ -29,14 +30,14 @@ Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are 
 ├── spec.json                        # Plan registry, statuses, and variables
 └── plans/
     ├── my-feature/
-│   ├── plan.md                      # High-level objectives + checklist
-│   ├── implementation/
-│   │   ├── phase-1.md               # Detailed specs per phase
-│   │   └── phase-2.md
-│   ├── research/                    # Codebase + library research artifacts
-│   ├── proposals/                   # Architecture proposal files (if generated)
-│   └── execution-log.md             # Background execution history
-└── archive/                         # Completed plans
+    │   ├── plan.md                  # High-level objectives + checklist
+    │   ├── implementation/
+    │   │   ├── phase-1.md           # Detailed specs per phase
+    │   │   └── phase-2.md
+    │   ├── research/                # Codebase + library research artifacts
+    │   ├── proposals/               # Architecture proposal files (if generated)
+    │   └── execution-log.md         # Background execution history
+    └── archive/                     # Completed plans
 ```
 
 ## Typical Workflows
@@ -102,6 +103,7 @@ Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are 
 ```
 
 Explores your requirements and creates:
+
 - `plan.md` with objectives, design decisions, and task checklists
 - `implementation/phase-N.md` files with detailed specs per phase
 
@@ -124,6 +126,7 @@ Explores your requirements and creates:
 ```
 
 Shows all active and archived plans with:
+
 - Status (Active / Paused / Executing)
 - Progress percentage and task counts
 - Last updated timestamps
@@ -148,6 +151,7 @@ Reviews a plan's phase files for gaps, ordering issues, and missing validation b
 ```
 
 **Interactive mode** — choose your execution style:
+
 - **Fully Autonomous** — execute entire plan without stops (except errors)
 - **Phase Review** — pause after each phase for your review
 - **Targeted Review** — stop at a specific phase
@@ -155,6 +159,7 @@ Reviews a plan's phase files for gaps, ordering issues, and missing validation b
 **Background mode (`--bg`)** — spawns an autonomous agent and returns immediately so you can keep working. A desktop notification fires when execution completes or fails. Equivalent to `/spec:bg`.
 
 **Flags:**
+
 - `--bg` — non-blocking background execution
 - `--silent` — suppress the desktop notification (use with `--bg`)
 - `--commit` / `-c` — allow the agent to make git commits as tasks complete
@@ -165,6 +170,7 @@ Reviews a plan's phase files for gaps, ordering issues, and missing validation b
 - `content >> instruction` — inline suffix; instruction applies to that line only
 
 Examples:
+
 ```
 > rewrite this phase for OAuth — drop all JWT references
 ### Phase 2 - Authentication
@@ -186,6 +192,7 @@ Run `/spec:update` to apply annotations in bulk, or let `/spec:go` apply them au
 ```
 
 Spawns an autonomous agent that:
+
 1. Reads your implementation files for detailed specs
 2. Updates `plan.md` checkboxes in real-time
 3. Runs tests at phase boundaries
@@ -194,6 +201,7 @@ Spawns an autonomous agent that:
 6. Sends a **desktop notification** when execution completes or fails
 
 Flags:
+
 - `--yes` / `-y` — skip all confirmations (worktree creation, execution start)
 - `--commit` / `-c` — allow the agent to make git commits as tasks complete (disabled by default)
 - `--silent` — suppress the desktop notification
@@ -214,6 +222,7 @@ Processes inline annotations you've written directly in plan files. Two annotati
 - **`content >> instruction`** — inline suffix on any line; applies to that line only
 
 Examples:
+
 ```
 > rewrite this phase for OAuth — drop all JWT references
 ### Phase 2 - Authentication
