@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { spawnSync } from 'child_process';
@@ -73,14 +73,16 @@ describe('OpenCode installation', () => {
     }
   });
 
-  it('each installed SKILL.md has name: field matching its directory', () => {
+  it('each installed SKILL.md has name: field in colon format (prefix:skill)', () => {
     runScript('install-opencode.sh', [], tmpHome);
     const dir = skillsDir(tmpHome);
     for (const skillDir of readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
       const skillFile = join(dir, skillDir.name, 'SKILL.md');
       if (!existsSync(skillFile)) continue;
       const fm = parseFrontmatter(readFileSync(skillFile, 'utf-8'));
-      expect(fm.name, `${skillDir.name}/SKILL.md missing name: field`).toBe(skillDir.name);
+      // directory is e.g. "dev-commit", name should be "dev:commit"
+      const expectedName = skillDir.name.replace('-', ':');
+      expect(fm.name, `${skillDir.name}/SKILL.md missing name: field`).toBe(expectedName);
     }
   });
 
@@ -92,6 +94,21 @@ describe('OpenCode installation', () => {
       if (!existsSync(skillFile)) continue;
       const fm = parseFrontmatter(readFileSync(skillFile, 'utf-8'));
       expect(fm.description, `${skillDir.name}/SKILL.md missing description`).toBeTruthy();
+    }
+  });
+
+  it('strips Claude Code-specific fields (model, disable-model-invocation) from installed SKILL.md', () => {
+    runScript('install-opencode.sh', [], tmpHome);
+    const dir = skillsDir(tmpHome);
+    for (const skillDir of readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
+      const skillFile = join(dir, skillDir.name, 'SKILL.md');
+      if (!existsSync(skillFile)) continue;
+      const fm = parseFrontmatter(readFileSync(skillFile, 'utf-8'));
+      expect(fm.model, `${skillDir.name}/SKILL.md should not have model: field`).toBeUndefined();
+      expect(
+        fm['disable-model-invocation'],
+        `${skillDir.name}/SKILL.md should not have disable-model-invocation: field`,
+      ).toBeUndefined();
     }
   });
 
@@ -150,4 +167,43 @@ describe('OpenCode installation', () => {
       expect(result.stdout).toMatch(/spec-/);
     }
   });
+});
+
+const hasOpencode = spawnSync('which', ['opencode'], { encoding: 'utf-8' }).status === 0;
+
+describe.skipIf(!hasOpencode)('OpenCode skill invocation', () => {
+  let tmpHome: string;
+
+  const EXPECTED_COMMANDS: Record<string, string[]> = {
+    spec: ['/spec:new', '/spec:go', '/spec:bg', '/spec:list', '/spec:done'],
+    dev: ['/dev:commit', '/dev:ci', '/dev:allow', '/dev:pr-fix', '/dev:rebase'],
+    adr: ['/adr:new', '/adr:capture'],
+    style: ['/style:init', '/style:add', '/style:review', '/style:doctor'],
+  };
+
+  beforeAll(() => {
+    tmpHome = createTmpHome();
+    runScript('install-opencode.sh', [], tmpHome);
+  });
+
+  afterAll(() => cleanupTmpHome(tmpHome));
+
+  for (const plugin of OPENCODE_PLUGINS) {
+    it(`/${plugin}:help outputs expected commands`, () => {
+      const result = spawnSync('opencode', ['run', `/${plugin}:help`, '--model', 'opencode/big-pickle'], {
+        env: {
+          ...process.env,
+          HOME: tmpHome,
+          XDG_CONFIG_HOME: join(tmpHome, '.config'),
+        },
+        encoding: 'utf-8',
+        timeout: 30000,
+      });
+
+      expect(result.status, `opencode run /${plugin}:help failed: ${result.stderr}`).toBe(0);
+      for (const cmd of EXPECTED_COMMANDS[plugin]) {
+        expect(result.stdout, `expected ${cmd} in /${plugin}:help output`).toContain(cmd);
+      }
+    });
+  }
 });

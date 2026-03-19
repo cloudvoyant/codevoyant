@@ -10,7 +10,7 @@ function skillsDir(tmpHome: string): string {
 }
 
 function agentsDir(tmpHome: string): string {
-  return join(tmpHome, 'workspace/.github/agents');
+  return join(tmpHome, '.copilot/agents');
 }
 
 function installedSkillsFor(tmpHome: string, prefix: string): string[] {
@@ -69,14 +69,16 @@ describe('VS Code Copilot installation', () => {
     }
   });
 
-  it('each installed SKILL.md has name: field matching its directory', () => {
+  it('each installed SKILL.md has name: field in colon format (prefix:skill)', () => {
     runScript('install-vscode.sh', [], tmpHome);
     const dir = skillsDir(tmpHome);
     for (const skillDir of readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
       const skillFile = join(dir, skillDir.name, 'SKILL.md');
       if (!existsSync(skillFile)) continue;
       const fm = parseFrontmatter(readFileSync(skillFile, 'utf-8'));
-      expect(fm.name, `${skillDir.name}/SKILL.md missing name: field`).toBe(skillDir.name);
+      // directory is e.g. "dev-commit", name should be "dev:commit"
+      const expectedName = skillDir.name.replace('-', ':');
+      expect(fm.name, `${skillDir.name}/SKILL.md missing name: field`).toBe(expectedName);
     }
   });
 
@@ -91,7 +93,7 @@ describe('VS Code Copilot installation', () => {
     }
   });
 
-  it('installs agents to workspace .github/agents/', () => {
+  it('installs agents to ~/.copilot/agents/', () => {
     runScript('install-vscode.sh', [], tmpHome);
     const dir = agentsDir(tmpHome);
     expect(existsSync(dir)).toBe(true);
