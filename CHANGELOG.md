@@ -1,3 +1,16 @@
+## [1.23.3](https://github.com/cloudvoyant/codevoyant/compare/v1.23.2...v1.23.3) (2026-03-19)
+
+### Bug Fixes
+
+* add e2e tests for plugin installation and remove justfile
+
+- packages/e2e: vitest tests for Claude marketplace structure,
+  OpenCode install (uninstall→install→verify→uninstall), and
+  VS Code Copilot install; 178 tests covering all plugins/skills
+- fix install-vscode.sh: --git-toplevel → --is-inside-work-tree
+- fix marketplace.json: remove trailing comma (invalid JSON)
+- delete justfile: fully superseded by mise.toml
+
 ## [1.23.2](https://github.com/cloudvoyant/codevoyant/compare/v1.23.1...v1.23.2) (2026-03-19)
 
 ### Bug Fixes
