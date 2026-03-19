@@ -62,27 +62,44 @@ Create a git commit following conventional commit standards with a professional,
 - Be professional and concise
 - Do NOT include self-attribution (no "Generated with Claude Code", no
   "Co-Authored-By: Claude")
-- Body is optional - only add if the "why" isn't obvious from the type and
-  description
-- Keep body lines under 72 characters
+- **Body: use bullet points, not prose paragraphs.** Each bullet is one
+  change or reason. Keep bullets terse — one line each, under 72 chars.
+- Body is optional — only include if the changes aren't obvious from the
+  subject line
+- **Use `type(scope)` format** when changes touch a distinct subsystem —
+  especially with `--atomic` commits. Scope groups entries in the changelog
+  under that feature/fix category (e.g. `feat(opencode)`, `fix(vscode)`).
+
+### Scoped vs. unscoped
+
+- Use `feat(scope)` / `fix(scope)` when the change is clearly bounded to one
+  area: a plugin, tool, subsystem, or named feature
+- Use plain `feat:` / `fix:` for cross-cutting changes with no single scope
+- Scope should be short, lowercase, no spaces: `opencode`, `vscode`, `spec`,
+  `help`, `e2e`, `docs`, `install`
 
 ## Examples
 
 Good:
 
 ```text
-docs: remove bold formatting from markdown headings
+fix(opencode): strip model field from skills on install
+```
 
-Improves readability by using plain text for structural elements
-and reserving bold for emphasis within content.
+```text
+feat(vscode): install agents globally to ~/.copilot/agents
+```
+
+```text
+feat(help): rewrite all help skills as hardcoded responses
+
+- Add disable-model-invocation: true to prevent reformatting
+- Use haiku model for fastest invocation
+- Remove inaccurate trailing "Run /plugin:help" line
 ```
 
 ```text
 feat: add user authentication with JWT
-```
-
-```text
-fix: prevent memory leak in connection pool
 ```
 
 Bad:
@@ -102,7 +119,7 @@ from the headings because it looks better in code editors.
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
-(Casual tone, self-attribution, obvious explanation)
+(Prose body, casual tone, self-attribution)
 
 ## Flags
 
@@ -183,10 +200,15 @@ If linting fails: report the errors and **stop** — do not proceed to staging u
 Create a conventional commit message following this format:
 
 ```text
-<type>: <short description>
+<type>[(<scope>)]: <short description>
 
-[optional body paragraph explaining why, not what]
+[optional bullet-point body]
+- bullet one
+- bullet two
 ```
+
+Use `(scope)` when the change belongs to a clear subsystem. Omit for
+cross-cutting changes. Body bullets are optional — only when useful.
 
 Type must be one of:
 
