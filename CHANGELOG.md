@@ -1,3 +1,47 @@
+## [1.23.0](https://github.com/cloudvoyant/codevoyant/compare/v1.22.1...v1.23.0) (2026-03-19)
+
+### Features
+
+* add @codevoyant/agent-kit pnpm monorepo package
+
+Introduces packages/agent-kit — a TypeScript package that ships both a
+CLI binary (codevoyant) and a library API. Replaces inline JSON prose
+and notify.sh path-resolution loops across all ~20 skill plugins.
+
+- CLI commands: init, plans (register/update/archive/migrate),
+  notify (node-notifier), worktrees (create/remove/prune/export)
+- Library exports: readConfig, writeConfig, getConfigPath, readSettings
+- Atomic config writes (tmp + rename) to .codevoyant/codevoyant.json
+- 40 passing tests (unit + integration)
+- mise task runner replacing justfile; jdx/mise-action@v2 in CI/CD
+- 48 notify.sh files deleted; all skills updated to use CLI
+- VitePress reference docs: cli.md and agent-kit.md
+
+
+### Bug Fixes
+
+* pass NODE_AUTH_TOKEN to semantic-release upversion step
+
+
+### Code Refactoring
+
+* convert utils to internal shared source, not an installable plugin
+
+- Remove utils from marketplace and delete its plugin.json
+- Add just sync-utils recipe: copies scripts/* to every skill's scripts/,
+  utils.md to every skill's references/ (no-clobber), and skills/* to
+  every plugin's skills/ with {plugin} substitution
+- Consolidate help skill into utils/skills/help/SKILL.md as single source
+  of truth; synced to all plugins with plugin name substituted
+- Move notify from skill to utils.md (pattern docs) + notify.sh (script)
+- Update em/pm skills to call notify.sh via bash directly
+- Update spec skills to use local plugins/spec/scripts/notify.sh
+- Update dev:docs to use local plugins/dev/scripts/notify.sh
+- Remove utils plugin section from dev:allow
+- Update README and docs to remove utils install instructions
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## [1.22.1](https://github.com/cloudvoyant/codevoyant/compare/v1.22.0...v1.22.1) (2026-03-18)
 
 ### Bug Fixes
