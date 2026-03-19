@@ -214,9 +214,9 @@ If `BG_MODE=true` and `SILENT=false`, send a desktop notification:
 ```bash
 _NOTIFY_SCRIPT=""
 for _c in \
-  "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/utils/scripts/notify.sh" \
+  "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/spec/scripts/notify.sh" \
   "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/dev/scripts/notify.sh" \
-  "$HOME/.claude/plugins/utils/scripts/notify.sh" \
+  "$HOME/.claude/plugins/spec/scripts/notify.sh" \
   "$HOME/.claude/plugins/dev/scripts/notify.sh"; do
   [ -f "$_c" ] && _NOTIFY_SCRIPT="$_c" && break
 done

@@ -146,7 +146,7 @@ Write all five documentation files using the `Write` tool.
 If `BG` is true and `SILENT` is not true, send a completion notification:
 
 ```bash
-bash "$(git rev-parse --show-toplevel)/plugins/utils/scripts/notify.sh" "dev:docs complete" "Architecture docs written to docs/architecture/"
+bash "$(git rev-parse --show-toplevel)/plugins/dev/scripts/notify.sh" "dev:docs complete" "Architecture docs written to docs/architecture/"
 ```
 
 Report the files written and their sizes.

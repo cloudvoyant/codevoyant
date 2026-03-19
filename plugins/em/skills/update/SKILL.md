@@ -178,5 +178,5 @@ If an annotation was ambiguous or could not be applied:
 If `BG_MODE=true` and `SILENT=false`:
 
 ```
-/utils:notify "em:update complete" "Roadmap '{slug}' updated ✓"
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/em/scripts/notify.sh" "$HOME/.claude/plugins/em/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "em:update complete" "Roadmap '{slug}' updated ✓" && break; done
 ```

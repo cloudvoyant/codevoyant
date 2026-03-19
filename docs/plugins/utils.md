@@ -4,35 +4,36 @@ import { withBase } from 'vitepress'
 
 <img :src="withBase('/icons/utils.svg')" width="64" height="64" style="margin-bottom: 1rem" />
 
-# Utils Plugin
+# Utils (Internal)
 
-Shared utility scripts used by other codevoyant plugins.
+Shared utility content used by all codevoyant plugins. Not a plugin — not installed directly.
 
-`utils` is an infrastructure plugin — it provides common scripts (notifications, etc.) that other plugins call via bash. You don't invoke `utils` skills directly; install it so that `em`, `pm`, and other plugins that depend on it work correctly.
-
-## Installation
-
-**Claude Code:**
-```bash
-/plugin marketplace add cloudvoyant/codevoyant
-/plugin install utils
-```
+`utils` is a source directory. Its scripts, markdown patterns, and skills are distributed into every plugin automatically via `just sync-utils`. You never install utils separately; each plugin already includes its own copy.
 
 ## What's Included
 
-### `utils/scripts/notify.sh`
+### `scripts/notify.sh`
 
 Cross-platform desktop notification script. Supports macOS (osascript / terminal-notifier), Linux (notify-send / kdialog / zenity), Windows, and WSL.
 
-Automatically prepends `[project @ branch]` to every notification so you can tell which project and branch a background agent is reporting from — useful when multiple windows are open.
+Automatically prepends `[project @ branch]` to every notification so you can tell which project and branch a background agent is reporting from.
 
-**Usage (for plugin authors):**
+Each plugin gets its own copy at `plugins/{name}/scripts/notify.sh`.
+
+### `md/notify.md`
+
+Documents the notification invocation pattern. Copied to `plugins/{name}/references/notify.md`.
+
+### `skills/help/SKILL.md`
+
+Canonical help skill. Copied to every plugin with `{plugin}` substituted for the plugin name. Maintains a single source of truth for the `/help` command across all plugins.
+
+## For Plugin Authors
+
+After modifying anything in `plugins/utils/`, run:
+
 ```bash
-bash "$(git rev-parse --show-toplevel)/plugins/utils/scripts/notify.sh" "Title" "Message"
+just sync-utils
 ```
 
-## Skills
-
-| Skill | Description |
-|---|---|
-| `utils:help` | List all utils scripts and their usage |
+This propagates changes to all plugins.

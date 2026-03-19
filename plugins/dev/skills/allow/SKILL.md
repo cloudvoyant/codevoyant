@@ -62,8 +62,6 @@ options:
     description: "em:plan, em:breakdown, em:review, em:sync — epic and roadmap planning"
   - label: "pm"
     description: "pm:plan, pm:breakdown, pm:prd, pm:review — product roadmaps and PRDs"
-  - label: "utils"
-    description: "Shared utility scripts — notify.sh and others"
   - label: "adr"
     description: "adr:new, adr:capture — architecture decision records"
 ```
@@ -247,14 +245,6 @@ WebFetch
 ```
 
 **OpenCode (add to baseline):** `"bash": "allow"`, `"webfetch": "allow"`, `"websearch": "allow"`
-
----
-
-### `utils` plugin
-
-Shared utility scripts (notify.sh and others).
-
-No additional entries beyond the shared baseline — utils scripts are invoked via `Bash(bash:*)` which is already in the baseline.
 
 ---
 

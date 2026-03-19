@@ -55,7 +55,7 @@ Write all generated files to `docs/product/`.
 If `--bg`, notify:
 
 ```
-/utils:notify "pm:docs complete" "Product docs written to docs/product/"
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/pm/scripts/notify.sh" "$HOME/.claude/plugins/pm/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "pm:docs complete" "Product docs written to docs/product/" && break; done
 ```
 
 Report: `Product docs written to docs/product/ ({N} feature pages + roadmap + overview)`

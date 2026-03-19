@@ -312,5 +312,5 @@ Report: `Plan written to {PLAN_DIR}/. Breakdowns: {N} epics. Review running in b
 If `BG_MODE=true`, send a desktop notification:
 
 ```
-/utils:notify "em:plan complete" "{N} epics planned and broken down. Review running."
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/em/scripts/notify.sh" "$HOME/.claude/plugins/em/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "em:plan complete" "{N} epics planned and broken down. Review running." && break; done
 ```

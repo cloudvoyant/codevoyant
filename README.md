@@ -63,7 +63,6 @@ Cross-platform notification script (macOS, Linux, Windows, WSL) with automatic <
 /plugin install style
 /plugin install em
 /plugin install pm
-/plugin install utils
 ```
 
 ### OpenCode

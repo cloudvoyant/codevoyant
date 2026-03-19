@@ -123,5 +123,5 @@ Options:
 If `--silent` is not set, notify:
 
 ```
-/utils:notify "pm:review complete" "Review written to {PLAN_DIR}/review.md"
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/pm/scripts/notify.sh" "$HOME/.claude/plugins/pm/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "pm:review complete" "Review written to {PLAN_DIR}/review.md" && break; done
 ```

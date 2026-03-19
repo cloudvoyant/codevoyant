@@ -155,5 +155,5 @@ Report: list of created/updated items with links where available.
 If `BG_MODE=true`, send a desktop notification:
 
 ```
-/utils:notify "em:sync complete" "{direction} {N} items {to|from} {tracker}"
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/em/scripts/notify.sh" "$HOME/.claude/plugins/em/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "em:sync complete" "{direction} {N} items {to|from} {tracker}" && break; done
 ```

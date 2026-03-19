@@ -34,10 +34,5 @@
       "description": "Product management — product roadmaps, feature PRDs, prioritization review, and product docs",
       "source": "./plugins/pm"
     },
-    {
-      "name": "utils",
-      "description": "Shared utility scripts (cross-platform notifications) used by em, pm, and other plugins",
-      "source": "./plugins/utils"
-    }
   ]
 }

@@ -169,5 +169,5 @@ Report: `Product roadmap written to {PLAN_DIR}/. PRDs: {N} features. Review runn
 If `--bg`, notify:
 
 ```
-/utils:notify "pm:plan complete" "{N} features planned with PRDs. Review running."
+for _c in "$(git rev-parse --show-toplevel 2>/dev/null)/plugins/pm/scripts/notify.sh" "$HOME/.claude/plugins/pm/scripts/notify.sh"; do [ -f "$_c" ] && bash "$_c" "pm:plan complete" "{N} features planned with PRDs. Review running." && break; done
 ```

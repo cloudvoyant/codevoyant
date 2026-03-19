@@ -23,6 +23,57 @@ _default:
     @just --list --unsorted
 
 # ==============================================================================
+# UTILS SYNC
+# ==============================================================================
+
+# Sync shared utils into all plugins — run after changing anything in plugins/utils/
+[group('dev')]
+sync-utils:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    UTILS="plugins/utils"
+    PLUGINS=(adr dev em pm spec style)
+    echo "Syncing utils..."
+
+    # scripts + md → every skill dir in every plugin
+    for plugin in "${PLUGINS[@]}"; do
+        for skill_dir in "plugins/$plugin/skills"/*/; do
+            [ -d "$skill_dir" ] || continue
+            skill="$(basename "$skill_dir")"
+            if [ -d "$UTILS/scripts" ] && [ -n "$(ls "$UTILS/scripts"/*.sh 2>/dev/null)" ]; then
+                mkdir -p "$skill_dir/scripts"
+                for f in "$UTILS/scripts"/*.sh; do
+                    cp "$f" "$skill_dir/scripts/$(basename "$f")"
+                    chmod +x "$skill_dir/scripts/$(basename "$f")"
+                done
+                echo "  ✓ scripts/* → plugins/$plugin/skills/$skill/scripts/"
+            fi
+            if [ -f "$UTILS/utils.md" ]; then
+                mkdir -p "$skill_dir/references"
+                cp -n "$UTILS/utils.md" "$skill_dir/references/utils.md"
+                echo "  ✓ utils.md → plugins/$plugin/skills/$skill/references/ (no-clobber)"
+            fi
+        done
+    done
+
+    # skills → plugins/{name}/skills/{skill}/ with {plugin} substituted
+    for plugin in "${PLUGINS[@]}"; do
+        if [ -d "$UTILS/skills" ]; then
+            for skill_dir in "$UTILS/skills"/*/; do
+                skill="$(basename "$skill_dir")"
+                mkdir -p "plugins/$plugin/skills/$skill"
+                for f in "$skill_dir"*.md; do
+                    [ -f "$f" ] || continue
+                    sed "s/{plugin}/$plugin/g" "$f" > "plugins/$plugin/skills/$skill/$(basename "$f")"
+                    echo "  ✓ skills/$skill/$(basename "$f") → plugins/$plugin/skills/$skill/ [{plugin}=$plugin]"
+                done
+            done
+        fi
+    done
+
+    echo "Done."
+
+# ==============================================================================
 # TESTING
 # ==============================================================================
 

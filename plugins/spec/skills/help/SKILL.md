@@ -27,15 +27,15 @@ If no argument given, show the full plugin reference:
 ```
 {plugin-name} — {plugin description}
 
-  /{plugin}:{skill}  [{argument-hint}]
+  /spec:{skill}  [{argument-hint}]
       {first sentence of description}
 
-  /{plugin}:{skill}  [{argument-hint}]
+  /spec:{skill}  [{argument-hint}]
       {first sentence of description}
 
   ...
 
-Run /{plugin}:help <skill> for details on a specific skill.
+Run /spec:help <skill> for details on a specific skill.
 ```
 
 Sort skills alphabetically. If `disable-model-invocation: true`, append `(invoke explicitly)` after the skill name.
