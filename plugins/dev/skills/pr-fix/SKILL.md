@@ -5,7 +5,7 @@ disable-model-invocation: true
 model: claude-sonnet-4-6
 ---
 
-> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially.
+> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially. On OpenCode, interpret `Agent:` blocks as `Task:` tool invocations (spawns a child session instead of a true background process).
 
 
 ## Arguments
@@ -74,7 +74,7 @@ Report: `✓ Created .codevoyant/pr-fix/{pr-id}.md — {N} change request(s)`
 For each created document, launch a Task agent in parallel (`run_in_background: true`, `model: claude-sonnet-4-6`):
 
 ```
-TaskCreate:
+Agent:
   description: "pr-fix: propose fixes for PR #{id}"
   run_in_background: true
   prompt: |

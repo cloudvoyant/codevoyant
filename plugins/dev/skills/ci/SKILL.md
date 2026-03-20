@@ -3,6 +3,8 @@ description: 'Use when checking CI/CD pipeline status after pushing. Triggers on
 argument-hint: '[--autofix] [--silent]'
 ---
 
+> **Compatibility**: On OpenCode, interpret `Agent:` blocks as `Task:` tool invocations (spawns a child session instead of a true background process).
+
 Monitor CI/CD workflows after a push. Always runs in the background — you'll be notified when done.
 
 ## Flags
@@ -49,7 +51,7 @@ Filter for runs on the current branch triggered within the last 10 minutes. If n
 ## Step 3: Launch Background Monitor
 
 ```
-TaskCreate:
+Agent:
   subagent_type: general-purpose
   run_in_background: true
   description: 'CI: {branch} ({provider})'

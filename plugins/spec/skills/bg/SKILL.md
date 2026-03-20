@@ -7,7 +7,7 @@ agent: spec-executor
 model: claude-opus-4-6
 ---
 
-> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run phases sequentially in-process (no background agent). The `agent: spec-executor` and `context: fork` frontmatter fields are Claude Code-specific — on OpenCode and VS Code Copilot they are ignored and the skill runs inline using the current model.
+> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run phases sequentially in-process (no background agent). The `agent: spec-executor` and `context: fork` frontmatter fields are Claude Code-specific — on OpenCode and VS Code Copilot they are ignored and the skill runs inline using the current model. On OpenCode, interpret `Agent:` blocks as `Task:` tool invocations (spawns a child session instead of a true background process).
 
 Execute the plan in the background using an autonomous agent.
 
@@ -329,7 +329,7 @@ cd "$EXECUTION_DIR"
 Use the Task tool to spawn a `spec-executor` agent for each phase in sequence:
 
 ```
-TaskCreate:
+Agent:
   subagent_type: spec-executor
   description: "spec-executor: Phase {N} — {phase-name}"
   prompt: [agent-prompt.md content with variables substituted]

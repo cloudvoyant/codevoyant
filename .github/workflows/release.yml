@@ -43,8 +43,11 @@ jobs:
           generate_release_notes: true
           files: |
             CHANGELOG.md
-            plugins/adr/.claude-plugin/plugin.json
             plugins/dev/.claude-plugin/plugin.json
+            plugins/em/.claude-plugin/plugin.json
+            plugins/memory/.claude-plugin/plugin.json
+            plugins/pm/.claude-plugin/plugin.json
             plugins/spec/.claude-plugin/plugin.json
+            plugins/ux/.claude-plugin/plugin.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

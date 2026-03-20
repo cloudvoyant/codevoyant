@@ -7,6 +7,8 @@ agent: general-purpose
 model: claude-opus-4-6
 ---
 
+> **Compatibility**: On OpenCode, interpret `Agent:` blocks as `Task:` tool invocations (spawns a child session instead of a true background process).
+
 Plan a product roadmap with inline PRD generation and Linear initiative attachment.
 
 ## Step 0: Product audit
@@ -230,7 +232,7 @@ Report: "Validation complete ({N} rounds) — {PASS | X issues remain}"
 Launch `pm:review` in background (always):
 
 ```
-TaskCreate:
+Agent:
   subagent_type: general-purpose
   run_in_background: true
   prompt: "Run /pm:review {OUTPUT_FILE} --silent. Review roadmap and all PRDs in docs/prd/{DATE_PREFIX}-*-prd.md, append findings to {SCRATCH_DIR}/review.md."

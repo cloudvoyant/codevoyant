@@ -4,7 +4,7 @@ argument-hint: '[--yes|-y] [--no-push] [--autofix] [--atomic] [--single]'
 disable-model-invocation: true
 ---
 
-> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially.
+> **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially. On OpenCode, interpret `Agent:` blocks as `Task:` tool invocations (spawns a child session instead of a true background process).
 
 Create a git commit following conventional commit standards with a professional, concise message.
 
@@ -280,7 +280,7 @@ EOF
 2. After push succeeds, launch CI monitoring as a background Task — do NOT wait for it:
 
 ```
-TaskCreate:
+Agent:
   subagent_type: general-purpose
   run_in_background: true
   description: "CI monitoring"
