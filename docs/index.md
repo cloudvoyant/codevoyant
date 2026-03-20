@@ -38,4 +38,9 @@ features:
     title: PM Plugin (Experimental)
     details: Product roadmaps, per-feature PRDs, prioritization review, and product documentation generation.
     link: /plugins/pm
+  - icon:
+      src: /icons/ux.svg
+    title: UX Plugin (Experimental)
+    details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
+    link: /plugins/ux
 ---

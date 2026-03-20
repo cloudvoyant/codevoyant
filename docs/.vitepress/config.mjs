@@ -53,6 +53,7 @@ export default defineConfig({
           { text: "Dev", link: "/plugins/dev" },
           { text: "EM · Experimental", link: "/plugins/em" },
           { text: "PM · Experimental", link: "/plugins/pm" },
+          { text: "UX · Experimental", link: "/plugins/ux" },
         ],
       },
       {

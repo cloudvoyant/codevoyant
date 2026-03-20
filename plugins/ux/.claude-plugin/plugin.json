@@ -1,0 +1,20 @@
+{
+  "name": "ux",
+  "version": "1.0.0",
+  "description": "UX prototyping — scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites",
+  "author": {
+    "name": "Cloudvoyant",
+    "url": "https://github.com/codevoyant"
+  },
+  "homepage": "https://github.com/codevoyant/codevoyant",
+  "repository": "https://github.com/codevoyant/codevoyant",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "ux",
+    "prototype",
+    "sveltekit",
+    "design",
+    "wireframe"
+  ]
+}

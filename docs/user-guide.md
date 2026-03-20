@@ -114,3 +114,36 @@ The pm plugin covers product planning: phased roadmaps with market context and f
 ```
 
 See the [Pm plugin reference](/plugins/pm) for all skills.
+
+---
+
+## UX — prototyping and style research *(Experimental)*
+
+The ux plugin supports frontend design exploration: full SvelteKit prototypes with feature-slice architecture, lightweight single-file wireframes, and automated style extraction from live sites.
+
+**Scaffold a prototype:**
+
+```bash
+/ux:prototype "admin dashboard"    # full SvelteKit + shadcn-svelte prototype
+```
+
+Asks whether to scaffold in-repo (single package or monorepo) or out-of-repo. Builds feature-slice structure, implements a layout first, then generates each feature with view-models, factories, and fake data.
+
+**Quick wireframe or approach comparison:**
+
+```bash
+/ux:explore "checkout flow"              # single HTML wireframe, no build step
+/ux:explore "nav layouts" --slideshow    # compare multiple approaches in one file
+```
+
+Outputs a self-contained `.html` file using Tailwind CDN — open directly in a browser.
+
+**Extract styles from a live site:**
+
+```bash
+/ux:style-synthesize https://example.com
+```
+
+Screenshots the site at mobile/tablet/desktop breakpoints, analyzes typography, color, and layout patterns, and writes `docs/ux/style-research/{source}/style-report.md` + `theme.css`.
+
+See the [UX plugin reference](/plugins/ux) for all skills.

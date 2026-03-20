@@ -28,6 +28,11 @@
       "name": "pm",
       "description": "Product management — product roadmaps, feature PRDs, prioritization review, and product docs",
       "source": "./plugins/pm"
+    },
+    {
+      "name": "ux",
+      "description": "UX prototyping — scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites",
+      "source": "./plugins/ux"
     }
   ]
 }
