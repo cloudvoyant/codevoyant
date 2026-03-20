@@ -1,3 +1,9 @@
+<script setup>
+import { withBase } from 'vitepress'
+</script>
+
+<img :src="withBase('/icons/mem.png')" width="64" height="64" style="margin-bottom: 1rem" />
+
 # Memory Plugin
 
 Team knowledge capture and recall -- structured markdown docs with frontmatter, indexed for fast lookup.
@@ -11,7 +17,7 @@ All functionality also works **without the plugin** via `npx @codevoyant/agent-k
 **Claude Code:**
 ```bash
 /plugin marketplace add cloudvoyant/codevoyant
-/plugin install memory
+/plugin install mem
 ```
 
 **OpenCode / VS Code Copilot:** See the [installation guide](/user-guide#installation).

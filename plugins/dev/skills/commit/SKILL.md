@@ -20,16 +20,7 @@ Create a git commit following conventional commit standards with a professional,
 6. Does it only affect tests? → `test`
 7. Does it only affect build/CI? → `chore`
 
-### Special consideration for template projects
-
-- **Template files are distributed to users** (workflows, configs, scripts,
-  etc.)
-- Changes to template files that improve user experience → `feat`
-- Examples:
-  - Faster CI builds (workflow caching) → `feat` (users benefit)
-  - Better error messages in scripts → `feat` (users benefit)
-  - Internal refactoring of template-only code → `refactor` (users don't see it)
-- If users scaffold projects with these files, improvements are features!
+> Bump behavior is determined by your project's release config (`.releaserc.*`, `commitizen.config.*`, `[tool.commitizen]`). Do not predict version bumps — check those files if needed.
 
 ### Never commit secrets
 
@@ -43,65 +34,17 @@ Create a git commit following conventional commit standards with a professional,
 - Use imperative mood: "add feature" not "added feature" or "adds feature"
 - No period at end of first line
 - Be professional and concise
-- Do NOT include self-attribution (no "Generated with Claude Code", no
-  "Co-Authored-By: Claude")
+- Do NOT include self-attribution (no "Generated with Claude Code", no "Co-Authored-By: Claude")
 - **Body: use bullet points, not prose paragraphs.** Each bullet is one change or reason. Keep bullets terse — one line each, under 72 chars.
-- Body is optional — only include if the changes aren't obvious from the
-  subject line
-- **Use `type(scope)` format** when changes touch a distinct subsystem —
-  especially with `--atomic` commits. Scope groups entries in the changelog
-  under that feature/fix category (e.g. `feat(opencode)`, `fix(vscode)`).
+- Body is optional — only include if the changes aren't obvious from the subject line
+- Make body as short as possible, as few bullets as possible
+- **Use `type(scope)` format** when changes touch a distinct subsystem — especially with `--atomic` commits. Scope groups entries in the changelog under that feature/fix category (e.g. `feat(opencode)`, `fix(vscode)`).
 
 ### Scoped vs. unscoped
 
-- Use `feat(scope)` / `fix(scope)` when the change is clearly bounded to one
-  area: a plugin, tool, subsystem, or named feature
+- Use `feat(scope)` / `fix(scope)` when the change is clearly bounded to one area: a plugin, tool, subsystem, or named feature
 - Use plain `feat:` / `fix:` for cross-cutting changes with no single scope
-- Scope should be short, lowercase, no spaces: `opencode`, `vscode`, `spec`,
-  `help`, `e2e`, `docs`, `install`
-
-## Examples
-
-Good:
-
-```text
-fix(opencode): strip model field from skills on install
-```
-
-```text
-feat(vscode): install agents globally to ~/.copilot/agents
-```
-
-```text
-feat(help): rewrite all help skills as hardcoded responses
-
-- Add disable-model-invocation: true to prevent reformatting
-- Use haiku model for fastest invocation
-- Remove inaccurate trailing "Run /plugin:help" line
-```
-
-```text
-feat: add user authentication with JWT
-```
-
-Bad:
-
-```text
-Update documentation files and also added new commit command
-```
-
-(Too long, mixed changes, wrong mood)
-
-```text
-docs: updated the markdown files to make them look better
-
-I went through all the markdown files and removed the bold formatting
-from the headings because it looks better in code editors.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-```
-
-(Prose body, casual tone, self-attribution)
+- Scope should be short, lowercase, no spaces: `opencod`, `vscode`, `spec`, `help`, `e2e`, `docs`, `install`
 
 ## Flags
 
@@ -115,13 +58,13 @@ from the headings because it looks better in code editors.
 
 ### Step 0: Parse Flags
 
-Check `$ARGUMENTS` for these flags — each defaults to false if absent:
-
-- `--yes` or `-y` → AUTO_APPROVE (skip the confirmation prompt)
-- `--no-push` → NO_PUSH (commit but don't push or monitor CI)
-- `--autofix` → AUTOFIX (if CI fails, attempt automatic fixes)
-- `--atomic` → ATOMIC (create one commit per logical change group)
-- `--single` → SINGLE (default; all staged changes in one commit)
+```bash
+YES=false; NO_PUSH=false; AUTOFIX=false; ATOMIC=false
+[[ "$*" =~ --yes|-y ]]    && YES=true
+[[ "$*" =~ --no-push ]]   && NO_PUSH=true
+[[ "$*" =~ --autofix ]]   && AUTOFIX=true
+[[ "$*" =~ --atomic ]]    && ATOMIC=true
+```
 
 ### Step 1: Check Git Status (Fast Path)
 
@@ -171,95 +114,81 @@ If linting fails: report the errors and **stop** — do not proceed to staging u
 
 **Skip silently** if no formatter or linter is configured.
 
-### Step 2: Draft Commit Message
+### Step 2: Review with User
 
-Create a conventional commit message following this format:
+**If ATOMIC is true:**
+
+Analyze staged file paths and detect logical groups (by component, package, or directory). Draft a commit message for each group. Output all proposed commits:
 
 ```text
-<type>[(<scope>)]: <short description>
+Proposed commits:
 
-[optional bullet-point body]
-- bullet one
-- bullet two
+1. feat(auth): add JWT token validation
+2. docs: update API reference
+3. test(auth): add token expiry tests
 ```
 
-Use `(scope)` when the change belongs to a clear subsystem. Omit for
-cross-cutting changes. Body bullets are optional — only when useful.
+Then ask for confirmation using the AskUserQuestion tool:
 
-Type must be one of:
+```yaml
+questions:
+  - question: 'Do these commits look good?'
+    header: 'Review Commits'
+    multiSelect: false
+    options:
+      - label: 'Looks good — commit all'
+        description: '{N} commits'
+      - label: 'Cancel'
+        description: "Don't commit"
+```
 
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes (appears in changelog)
-- `refactor`: Code refactoring with no functionality change (appears in changelog)
-- `test`: Test additions or changes (appears in changelog)
-- `chore`: Build, CI, or tooling changes (hidden from changelog)
-- `feat!` or `fix!`: Breaking change
+- If **"Looks good — commit all"**: proceed to Step 3.
+- If **"Cancel"**: exit without committing.
+- If **Other** (user edits): apply their changes and proceed to Step 3.
 
-> **Note:** Bump behavior is determined by your project's release config
-> (`.releaserc.*`, `commitizen.config.*`, `[tool.commitizen]` in
-> `pyproject.toml`). Do not predict version bumps — check those files if needed.
+**If SINGLE (default):**
 
-### Step 3: Review with User
-
-Output the full proposed commit message as a code block in your response text:
-
-````
-Proposed commit message:
+Output the full proposed commit message:
 
 ```text
+Proposed commit message:
+
 {full commit message, including body if present}
-````
 
 ```
 
 Then ask for confirmation using the AskUserQuestion tool:
 
+```yaml
+questions:
+  - question: 'Does this commit message look good?'
+    header: 'Review Commit'
+    multiSelect: false
+    options:
+      - label: 'Looks good — commit'
+        description: '{first line of proposed message}'
+      - label: 'Cancel'
+        description: "Don't commit"
 ```
 
-question: "Does this commit message look good?"
-header: "Review Commit"
-multiSelect: false
-options:
-
-- label: "Looks good — commit"
-  description: "{first line of proposed message}"
-- label: "Edit the message"
-  description: "Let me rephrase it"
-- label: "Cancel"
-  description: "Don't commit"
-
-````
-
-- If **"Edit the message"**: ask follow-up: "How would you like to phrase the commit message?" (accept free-form answer), then proceed with the user's revised message.
+- If **"Looks good — commit"**: proceed to Step 3.
 - If **"Cancel"**: exit without committing.
-- If **"Looks good — commit"**: proceed to Step 4.
+- If **Other** (user typed a custom message): use it as-is and proceed to Step 3.
 
-**If AUTO_APPROVE is true:** skip this prompt entirely and proceed directly to Step 4. Report: `✓ Auto-approved with --yes flag`.
+**If AUTO_APPROVE is true:** skip this prompt entirely and proceed directly to Step 3. Report: `✓ Auto-approved with --yes flag`.
 
-### Step 4: Stage and Commit
+### Step 3: Stage and Commit
 
-**If ATOMIC is true:**
-
-Before staging, detect logical groups by analyzing staged file paths — group by component, package, or directory. For example:
-
-- `src/auth/**` → auth group
-- `src/api/**` → api group
-- `docs/**` → docs group
-- `tests/**` → tests group
-
-Present the proposed grouping to the user and ask them to confirm before proceeding. Then create one commit per group in order:
+**If ATOMIC is true:** create one commit per group in order:
 
 ```bash
 git add <files-in-group> && git commit -m "$(cat <<'EOF'
 <type>(<scope>): <description for this group>
 EOF
 )"
-````
+```
 
 **Default (SINGLE):**
-
-Stage all changes and create one commit:
 
 ```bash
 git add -A && git commit -m "$(cat <<'EOF'

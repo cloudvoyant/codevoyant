@@ -149,7 +149,11 @@ Target repository: $ARGUMENTS
 
 ### Step 5: Generate Diff Report
 
-Create `.claude/diff.md` using the full report structure in `references/report-template.md` (in this skill's directory). Load that file — it covers both similar-structure (file-by-file diff) and different-structure (architectural comparison) layouts, with all section headers and placeholders ready to fill in.
+**Check for changelog:** Look for `CHANGELOG.md`, `CHANGELOG`, or `RELEASES.md` in both repos. If found, scan recent entries to guide characterization of changes — they often name features and breaking changes explicitly.
+
+Determine the output filename: `.codevoyant/diffs/{YYYY-MM-DD}-{target-repo-name}.md`
+
+Write the report using `references/report-template.md` as the structure. Keep each section to **5 bullets or fewer**. File trees should show `*` next to modified/added files. Only include sections that have meaningful content.
 
 ### Step 6: Cleanup
 
@@ -160,18 +164,7 @@ Create `.claude/diff.md` using the full report structure in `references/report-t
 
 2. Confirm successful cleanup
 
-3. Display completion message:
-
-   ```
-   ✅ Repository comparison complete!
-
-   Report saved to: .claude/diff.md
-
-   Summary:
-   - <X> files analyzed
-   - <Y> meaningful change groups identified
-   - <Z> key insights extracted
-   ```
+3. Report: `✓ Diff saved to .codevoyant/diffs/{filename}`
 
 ## Error Handling
 
@@ -202,34 +195,3 @@ Create `.claude/diff.md` using the full report structure in `references/report-t
    - Limit diff context for very large files
    - Sample files if repository has thousands of files
 
-## Examples
-
-### Example 1: Template Comparison
-
-```bash
-/diff https://github.com/original/template-repo
-```
-
-**User Objective:** "Track changes from template/fork"
-
-**Result:** Detailed file-by-file diff showing customizations made to template
-
-### Example 2: Architectural Study
-
-```bash
-/diff https://github.com/competitor/similar-product
-```
-
-**User Objective:** "Architectural comparison"
-
-**Result:** High-level comparison of design patterns, tech stack, and organization
-
-### Example 3: Migration Analysis
-
-```bash
-/diff https://github.com/company/legacy-app
-```
-
-**User Objective:** "Migration analysis"
-
-**Result:** Detailed breakdown of changes needed for migration, grouped by complexity

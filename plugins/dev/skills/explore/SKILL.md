@@ -46,26 +46,43 @@ Create the exploration directory structure:
 mkdir -p "$EXPLORE_DIR/research" "$EXPLORE_DIR/proposals"
 ```
 
-Launch three research agents simultaneously via the Task tool (`run_in_background: true`), then collect all results before proceeding:
+Launch all three simultaneously, wait for all to complete, then synthesize:
 
-**Agent R1 -- Codebase scan** (`model: claude-haiku-4-5-20251001`)
-- Glob/Grep the repo for files, patterns, and existing abstractions relevant to the topic
-- Identify files/systems that will be affected
-- Map the existing architecture and note conventions (naming, structure, patterns in use)
-- Save findings to `$EXPLORE_DIR/research/codebase-analysis.md`
+```yaml
+Agent:
+  subagent_type: dev:researcher
+  run_in_background: true
+  description: "explore/R1: codebase scan"
+  prompt: |
+    mode: codebase
+    topic: {topic}
+    output: {EXPLORE_DIR}/research/codebase-analysis.md
+```
 
-**Agent R2 -- External research** (`model: claude-sonnet-4-6`)
-- Research existing libraries and solutions for the detected stack
-- Research architectural and design patterns applicable to the topic
-- Keep track of URLs for all resources
-- Save findings to `$EXPLORE_DIR/research/library-research.md`
+```yaml
+Agent:
+  subagent_type: dev:researcher
+  run_in_background: true
+  description: "explore/R2: external research"
+  prompt: |
+    mode: external
+    topic: {topic}
+    stack: {detected stack}
+    output: {EXPLORE_DIR}/research/library-research.md
+```
 
-**Agent R3 -- Skills lookup** (`model: claude-haiku-4-5-20251001`)
-- Check [agentskill.sh](https://agentskill.sh/) for published skills relevant to the tech stack or topic
-- Check local `.claude/skills/` for installed skills that apply
-- Save a brief list to `$EXPLORE_DIR/research/available-skills.md`
-
-Wait for all three agents to complete, then synthesize their findings.
+```yaml
+Agent:
+  subagent_type: general-purpose
+  model: claude-haiku-4-5-20251001
+  run_in_background: true
+  description: "explore/R3: skills lookup"
+  prompt: |
+    Find skills relevant to: {topic} (stack: {detected stack})
+    - Check https://agentskill.sh/ for published skills
+    - Check local .claude/skills/ for installed skills that apply
+    Save a brief list to {EXPLORE_DIR}/research/available-skills.md
+```
 
 ## Step 3: Identify Directions
 
@@ -77,55 +94,21 @@ Wait for user response before proceeding.
 
 ## Step 4: Generate Proposals in Parallel
 
-For each direction the user selected, launch a spec-explorer Task simultaneously (`run_in_background: true`):
+For each selected direction, launch a `proposal-writer` Agent simultaneously:
 
-**Proposal agent prompt** (`model: claude-sonnet-4-6`):
-```
-You are exploring the "{direction-name}" approach for: {topic}.
-
-Research context:
-{contents of $EXPLORE_DIR/research/codebase-analysis.md}
-{contents of $EXPLORE_DIR/research/library-research.md}
-
-Write a proposal to: $EXPLORE_DIR/proposals/{approach-slug}.md
-
-Use this structure:
-
-# {Approach Name}
-
-> {One-sentence verdict: what this approach is best suited for}
-
-## Summary
-{2-4 sentences describing the approach and how it fits the existing codebase.}
-
-## Architecture
-{Prose. Describe modules, layers, or components and how they relate. Reference
-existing code/directories where concrete. 5-10 sentences max.}
-
-## Directory Structure
-{Show the key directories/files this approach would create or modify.}
-
-## API Surface
-{Key interfaces, components, routes, hooks, or data shapes -- signatures/shapes
-only, no implementations. 10-20 lines.}
-
-## Technical Decisions
-{For each major concern, explain the decision and rationale. 1-3 sentences each.}
-
-## Flow Diagram
-{Use mermaid or ASCII to show the primary flow.}
-
-## Implications
-- **DX**: {developer experience}
-- **Performance**: {latency, bundle size, query cost}
-- **Security**: {surface area changes}
-- **Future work**: {what this opens up or forecloses}
-
-## Trade-offs
-{2-3 sentences honestly naming the downsides of this approach.}
-
-## References
-- {Links to relevant docs, libraries, prior art}
+```yaml
+Agent:
+  subagent_type: dev:proposal-writer
+  run_in_background: true
+  description: "explore/proposal: {direction-name}"
+  prompt: |
+    topic: {topic}
+    approach: {direction-name}
+    research:
+      - {EXPLORE_DIR}/research/codebase-analysis.md
+      - {EXPLORE_DIR}/research/library-research.md
+    template: references/proposal-template.md
+    output: {EXPLORE_DIR}/proposals/{approach-slug}.md
 ```
 
 Wait for all proposal agents to complete.
@@ -168,34 +151,7 @@ Based on response:
 
 ## Step 6: Save Summary
 
-Write `$EXPLORE_DIR/summary.md` with:
-
-```markdown
-# Exploration: {EXPLORATION_NAME}
-
-## Chosen Direction
-{Name of chosen approach, or "undecided" if user didn't pick}
-
-## Key Findings
-- {Finding 1 from research}
-- {Finding 2 from research}
-- {Finding 3 from research}
-
-## Proposals
-- [{Approach A}](proposals/{approach-a}.md)
-- [{Approach B}](proposals/{approach-b}.md)
-{if synthesis exists:}
-- [Synthesis](proposals/synthesis.md)
-
-## Research
-- [Codebase Analysis](research/codebase-analysis.md)
-- [Library Research](research/library-research.md)
-- [Available Skills](research/available-skills.md)
-
-## Recommended Next Step
-{e.g., "Run `/spec:new {plan-name}` with the {chosen approach} proposal as context"
-or "Further exploration needed on {topic}"}
-```
+Write `$EXPLORE_DIR/summary.md` using `references/summary-template.md` (in this skill's directory). Add synthesis link if one was generated.
 
 Report to the user:
 ```

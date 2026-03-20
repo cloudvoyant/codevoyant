@@ -1,130 +1,47 @@
-# Repository Comparison Report Template
+# Diff: {source-repo} vs {target-repo}
 
-Use this structure when writing `.claude/diff.md`. Fill in all placeholder values — don't leave `<angle bracket>` tokens in the output.
-
----
-
-# Repository Comparison Report
-
-Generated: <timestamp>
-Skill: `/diff <repository-url>`
-
-## Objective
-
-<User's stated objective>
-
-**Source Repository:** <current repo path/name>
-**Target Repository:** <cloned repo URL>
-**Relationship:** <Similar Structure | Different Structure>
-
-## Executive Summary
-
-<2-3 sentence overview of key findings>
-
-## Insights
-
-### Meaningful Change Groups
-
-<For similar structures: Group changes by theme/feature/type>
-<For different structures: Key architectural and design differences>
-
-#### Group 1: <Category Name>
-
-- <Insight point 1>
-- <Insight point 2>
-- <Insight point 3>
-
-<Continue for all groups>
-
-### Key Differences Summary
-
-**Added Features/Files:**
-
-- <Feature/file 1>
-
-**Removed Features/Files:**
-
-- <Feature/file 1>
-
-**Architectural Differences:**
-
-- <Difference 1>
-
-## Detailed Diff
-
-### Repository Statistics
-
-| Metric        | Source  | Target  |
-| ------------- | ------- | ------- |
-| Total Files   | <count> | <count> |
-| Source Files  | <count> | <count> |
-| Config Files  | <count> | <count> |
-| Documentation | <count> | <count> |
-| Lines of Code | <count> | <count> |
+{timestamp} · `{target-url}`
 
 ---
 
-## For Similar Structures: File Changes
+## Repository Structure
 
-### Modified Files (<count>)
-
-#### `<file-path>`
-
-**Change Summary:** <Brief description>
-
-**Key Changes:**
-- <Change 1>
-- <Change 2>
-
-```diff
-<diff content for significant files>
+**{target-repo}:**
+```
+{target directory tree — use * to mark files that differ from source}
 ```
 
-### Added Files (<count>)
+**{source-repo}:**
+```
+{source directory tree — use * to mark files that differ from target}
+```
 
-- `<file-path>` — <purpose>
+`*` = modified or added
 
-### Removed Files (<count>)
-
-- `<file-path>` — <purpose>
+- {1-2 bullets noting the most significant structural differences}
 
 ---
 
-## For Different Structures: Architectural Comparison
+## Architectural Changes
 
-### Project Structure
+- {up to 5 bullets — high-level design, layering, module boundaries}
+- {point to a file where this is clearly visible, e.g. "see `src/core/index.ts`"}
 
-**Source:**
-```
-<directory tree>
-```
+## Dependency Changes
 
-**Target:**
-```
-<directory tree>
-```
+- {up to 5 bullets — added, removed, or upgraded packages}
+- {note version pins or peer dep changes if notable}
 
-### Technology Stack
+## Features Added / Deprecated
 
-| Component       | Source      | Target      |
-| --------------- | ----------- | ----------- |
-| Language        | <lang>      | <lang>      |
-| Framework       | <framework> | <framework> |
-| Build Tool      | <tool>      | <tool>      |
-| Package Manager | <manager>   | <manager>   |
+- {up to 5 bullets — new capabilities or removed functionality}
+- {point to relevant file if it illustrates the change clearly}
 
-### Key Architectural Differences
+## Code Style Changes
 
-1. <Difference 1 with explanation>
-2. <Difference 2 with explanation>
+- {up to 5 bullets — conventions, formatting, naming, patterns}
 
----
+## Tooling / CI/CD Changes
 
-## Recommendations
-
-1. <Recommendation 1>
-2. <Recommendation 2>
-
-## Appendix
-
-**Temp Directory:** `<temp-dir-path>` (cleaned up after analysis)
+- {up to 5 bullets — build config, workflows, linting, test setup}
+- {point to changed config files}

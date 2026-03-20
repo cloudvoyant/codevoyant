@@ -45,7 +45,7 @@ jobs:
             CHANGELOG.md
             plugins/dev/.claude-plugin/plugin.json
             plugins/em/.claude-plugin/plugin.json
-            plugins/memory/.claude-plugin/plugin.json
+            plugins/mem/.claude-plugin/plugin.json
             plugins/pm/.claude-plugin/plugin.json
             plugins/spec/.claude-plugin/plugin.json
             plugins/ux/.claude-plugin/plugin.json

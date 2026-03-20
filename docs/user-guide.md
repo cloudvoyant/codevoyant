@@ -162,7 +162,7 @@ status: active
 
 **Works without the plugin:** All `mem` commands are available via `npx @codevoyant/agent-kit mem <command>` -- no plugin installation required.
 
-See the [Memory plugin reference](/plugins/memory) for all skills.
+See the [Memory plugin reference](/plugins/mem) for all skills.
 
 ---
 

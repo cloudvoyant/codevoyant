@@ -40,7 +40,7 @@ if [[ -z "$REPO" ]]; then
   fi
 fi
 
-declare -A PLUGINS=( ["spec"]="spec" ["dev"]="dev" ["style"]="style" ["pm"]="pm" ["em"]="em" ["memory"]="mem" )
+declare -A PLUGINS=( ["spec"]="spec" ["dev"]="dev" ["style"]="style" ["pm"]="pm" ["em"]="em" ["mem"]="mem" )
 
 if $UNINSTALL; then
   echo -e "${YELLOW}Uninstalling codevoyant skills from $INSTALL_DIR...${RESET}"

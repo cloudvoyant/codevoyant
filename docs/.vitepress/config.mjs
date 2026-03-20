@@ -54,7 +54,7 @@ export default defineConfig({
           { text: "EM · Experimental", link: "/plugins/em" },
           { text: "PM · Experimental", link: "/plugins/pm" },
           { text: "UX · Experimental", link: "/plugins/ux" },
-          { text: "Memory", link: "/plugins/memory" },
+          { text: "Memory", link: "/plugins/mem" },
         ],
       },
       {

@@ -91,6 +91,6 @@ Report immediately:
 
 ## Error Handling
 
-- **CLI not installed:** `gh auth status` / `glab --version` fails → tell user to install and authenticate
+- **CLI not installed:** should not happen, `npx @codevoyant/agent-kit ci detect` returning unknown for `provider` in its response
 - **Not authenticated:** prompt to run `gh auth login` / `glab auth login`
 - **Autofix loop guard:** stop after 2 attempts and report remaining errors

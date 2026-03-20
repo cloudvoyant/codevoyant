@@ -30,9 +30,9 @@
       "source": "./plugins/ux"
     },
     {
-      "name": "memory",
+      "name": "mem",
       "description": "Team knowledge capture and recall via structured markdown docs",
-      "source": "./plugins/memory"
+      "source": "./plugins/mem"
     }
   ]
 }
