@@ -1,5 +1,5 @@
 ---
-description: Plan a single epic or a multi-epic roadmap. Produces a phased roadmap with capacity, dependencies, NOT-this-period list, per-epic ASCII architecture diagrams, data flows, failure modes, and hidden assumptions. Auto-invokes em:breakdown per epic and em:review on completion. Triggers on: em plan, roadmap, epic planning, quarterly planning, q1 q2 q3 q4 planning, half year plan, engineering roadmap, multi epic, architecture plan, design plan.
+description: "Use when planning an engineering roadmap or single epic. Triggers on: \"em plan\", \"roadmap\", \"epic planning\", \"quarterly planning\", \"engineering roadmap\", \"architecture plan\". Produces phased roadmap with capacity, dependencies, architecture diagrams, and failure modes. Auto-invokes em:breakdown and em:review."
 argument-hint: "[quarter|half|<horizon>] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

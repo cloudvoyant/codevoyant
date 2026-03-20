@@ -1,5 +1,5 @@
 ---
-description: Compare the current repository with another to identify structural differences, changes, and insights. Use this whenever a user wants to compare two repos, see how a fork has diverged from its template, plan a migration, or do an architectural study — even if they just say "how does this compare to X" or "what changed since we forked".
+description: "Use when comparing two repositories for structural differences. Triggers on: \"compare repos\", \"how does this compare to\", \"what changed since we forked\", \"dev diff\", \"diff against\", \"repo comparison\". Identifies divergence from a template or upstream, useful for migration planning and architectural study."
 argument-hint: "<repository-url>"
 disable-model-invocation: true
 context: fork

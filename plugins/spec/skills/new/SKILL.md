@@ -1,5 +1,5 @@
 ---
-description: Create a new spec plan by exploring requirements and building a structured implementation plan. Proactively suggest this when a user describes a feature, refactor, or project they want to build — even if they don't say "plan". Pass --blank to skip planning and create an empty template directly. Pass --bg to automatically launch background execution after the plan is created. Pass a Linear issue URL, Notion page URL, or GitHub/GitLab issue URL to seed requirements automatically. Triggers on keywords like new plan, create plan, plan, spec new, I want to build, let's implement, init plan, initialize plan, create empty plan, plan template, scaffold plan, spec, spec out, spec this, spec it out, let's spec, create a spec, write a spec, spec the, speccing.
+description: "Use when starting new work that needs a structured plan. Triggers on: \"create a plan\", \"plan this feature\", \"spec new\", \"I want to build\", \"let's implement\", \"spec it out\", \"let's spec\", \"new spec\". Creates a multi-phase implementation plan with research and task checklists. Supports --blank for empty template, --bg for background execution, and seeding from Linear/Notion/GitHub/GitLab issue URLs."
 argument-hint: "[plan-name|url] [--branch branch-name] [--blank] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork
@@ -165,7 +165,7 @@ npx @codevoyant/agent-kit worktrees create \
   --plan "$PLAN_NAME"
 ```
 
-After completion, store `PLAN_WORKTREE=".codevoyant/worktrees/$TARGET_BRANCH"` (or `""` if `SHOULD_CREATE_WORKTREE=false`).
+The worktree is created at the global path `~/codevoyant/[repo-name]/worktrees/$PLAN_NAME`. Capture the path from the command output. Store `PLAN_WORKTREE` as the reported path (or `""` if `SHOULD_CREATE_WORKTREE=false`).
 
 **Error Handling:**
 - If worktree already exists, show error and exit
@@ -239,114 +239,16 @@ Check for skills that could accelerate or improve execution:
 
 3. Ask follow-up questions **only if still needed** after research.
 
-   - If Step 4.3 exploration is planned (see below), hold off — the proposal selection will likely resolve architectural choices.
    - Ask questions whose answers would meaningfully change the plan; skip anything the research already answered.
    - Ask any questions needed to unblock autonomous execution by Claude.
 
-4. Break Down Work — **after Step 4.3 if exploration was done**.
+4. Break Down Work
 
-   - Identify logical phases or groupings of work informed by the selected proposal (or the objective if no exploration)
+   - Identify logical phases or groupings of work
    - For each phase, identify specific tasks
    - Consider dependencies between phases
    - **Always include a final validation phase** that runs the project's actual build/test commands via the detected task runners — never skip this
    - Estimate complexity and risks
-
-## Step 4.3: Offer Architecture Exploration (Optional)
-
-Run this after research (Step 4 item 2) and before breaking down work (Step 4 item 4). Skip if:
-- `--blank` flag is set
-- Objective is straightforward — simple bug fix, small config change, or clear single-path refactor (use judgment)
-
-**Identify candidate approaches:**
-
-Based on research findings and objective, identify 2–3 genuinely distinct directions worth comparing. Each must differ in structure or trade-offs, not just naming. Examples by task type:
-
-| Task type | Possible approaches |
-|---|---|
-| Feature (e.g., feed, auth) | Client-driven vs. server-driven vs. hybrid; pull vs. push data model |
-| Refactor | Extract service layer vs. functional core vs. domain model |
-| Data schema change | Normalised relational vs. denormalised vs. document vs. event-sourced |
-| API design | REST vs. GraphQL vs. RPC; monolithic handler vs. resource-based |
-
-**Offer exploration — open-ended:**
-
-Present candidate directions as inline text and ask the user what they want to explore. Do NOT use a structured yes/no select here — the user may want directions the agent didn't identify. Say something like:
-
-```
-Based on the research, here are some directions worth exploring before we plan:
-
-  A. {Approach 1 name} — {one sentence: what it is and its key trade-off}
-  B. {Approach 2 name} — {one sentence: what it is and its key trade-off}
-  C. {Approach 3 name if applicable} — {one sentence}
-
-Want me to generate full proposals for any of these? You can say yes to explore all of them, name specific ones, suggest completely different directions, or skip straight to planning.
-```
-
-Wait for the user's free-text response. Parse it for:
-- **All / yes / go**: explore all identified directions
-- **Subset** (e.g. "A and C", "just the first one"): explore only those
-- **Custom directions**: user named approaches not on the list — add them; drop or keep agent-identified ones as the user specifies
-- **Skip / no / directly**: proceed to Step 4 item 4 (Break Down Work) immediately
-
-**Build `DIRECTIONS[]`** from the parsed response — the list of directions to explore in parallel. There is no cap; explore whatever the user asks for.
-
-**Generate proposals in parallel:**
-
-For each direction in `DIRECTIONS[]`, launch one Task simultaneously (`subagent_type: spec-explorer`, `run_in_background: true`). Launch ALL before waiting for any:
-
-```
-mode: write
-objective: {plan objective and requirements gathered so far}
-approach-name: {direction name}
-approach-description: {one-sentence description of this direction's key structural idea}
-codebase-research-path: {absolute path to $PLAN_DIR/research/codebase-analysis.md}
-library-research-path: {absolute path to $PLAN_DIR/research/library-research.md}
-template-path: {absolute path to references/proposal-template.md}
-output-path: {absolute path to $PLAN_DIR/proposals/{approach-slug}.md}
-
-CRITICAL: Read template-path before writing. Write the full proposal to output-path
-using the exact section structure from the template. Confirm by printing: "Written: {output-path}"
-```
-
-After launching all Tasks, wait for all with `TaskOutput(block=true)`.
-
-**Verify — do not skip this:**
-```bash
-for f in "$PLAN_DIR/proposals/"*.md; do
-  [ -f "$f" ] && echo "✓ $f" || echo "✗ MISSING"
-done
-```
-If any proposal file is missing (agent completed but didn't write), write it directly using the template and the Task's output — do not proceed without all files present.
-
-**Present and choose:**
-
-Read each proposal file. Extract its verdict line (the `> {one-sentence verdict}` at the top). Then ask:
-
-```
-AskUserQuestion:
-  question: "Proposals ready — which direction should the plan follow?"
-  header: "Choose Approach"
-  multiSelect: false
-  options:
-    - label: "{direction-1 name}"
-      description: "{verdict from $PLAN_DIR/proposals/{slug-1}.md}"
-    - label: "{direction-2 name}"
-      description: "{verdict from $PLAN_DIR/proposals/{slug-2}.md}"
-    {... one option per proposal ...}
-    - label: "Synthesize — blend the best elements"
-      description: "Draw from multiple proposals rather than picking one"
-    - label: "Update proposals before deciding"
-      description: "Refine one or more proposals with additional context, then re-choose"
-```
-
-The built-in "Other" option (automatically provided by AskUserQuestion) handles any direction not listed — treat it as `SELECTED_APPROACH` and store it as a short description. The selection is **not limited to the generated proposals**.
-
-- **Direction selected**: store as `SELECTED_APPROACH`, note the proposal file path — the proposal resolves all architectural choices for this plan
-- **Synthesize**: launch a `spec-explorer` Task in `mode: synthesize` with all proposal paths and the user's stated intent. Wait for completion, then reference `$PLAN_DIR/proposals/synthesis.md`.
-- **Update proposals before deciding**: ask "Which proposals need updating and what should change?" (free-text). Launch `spec-explorer` in `mode: update` (single) or `mode: bulk-update` (multiple). Wait, then re-present.
-- **Other / custom text**: store as `SELECTED_APPROACH` description; ask one clarifying question only if the direction is ambiguous.
-
-**The selected approach drives Step 4 item 4 and Step 5.** Plan phases, implementation files, and architecture decisions should reflect it. Add a `Proposal` metadata line to plan.md referencing the chosen file.
 
 ## Step 4.5: Offer Worktree Creation (Optional)
 
@@ -357,7 +259,7 @@ If user did NOT provide `--branch` flag, optionally offer to create a worktree:
 - Not already in a worktree
 - No --branch flag was provided
 
-Check if already in worktree: run `scripts/check-worktree.sh` — exits 0 if in a worktree, 1 if not. Set `IN_WORKTREE=true/false` accordingly.
+Check if already in worktree: run `npx @codevoyant/agent-kit worktrees detect` and check the `isWorktree` field. Set `IN_WORKTREE=true/false` accordingly.
 
 If conditions are met (in git repo, not in worktree, no --branch flag):
 1. Derive suggested branch name from plan name (once determined)
@@ -369,7 +271,7 @@ header: "Worktree Setup"
 multiSelect: false
 options:
   - label: "Yes, create worktree"
-    description: "Create branch 'feature-{plan-name}' with worktree at .codevoyant/worktrees/feature-{plan-name}"
+    description: "Create branch 'feature-{plan-name}' with worktree at ~/codevoyant/[repo-name]/worktrees/{plan-name}"
   - label: "Custom branch name"
     description: "Create worktree with a different branch name"
   - label: "No, continue on current branch"
@@ -407,7 +309,7 @@ After gathering requirements:
 
 If `PLAN_WORKTREE` is set and not `"(none)"`: `PLAN_BASE_DIR="$PLAN_WORKTREE/.codevoyant/plans"`, else `PLAN_BASE_DIR=".codevoyant/plans"`. `PLAN_DIR="$PLAN_BASE_DIR/{plan-name}"`.
 
-Create: `$PLAN_BASE_DIR/`, `$PLAN_DIR/`, `$PLAN_DIR/implementation/`, `$PLAN_DIR/research/`, `$PLAN_DIR/proposals/` (for exploration artifacts).
+Create: `$PLAN_BASE_DIR/`, `$PLAN_DIR/`, `$PLAN_DIR/implementation/`, `$PLAN_DIR/research/`.
 
 Report: `✓ Plan directory created at: $PLAN_DIR` — note if in worktree or main repo.
 
@@ -596,19 +498,10 @@ options:
     description: "Plan is ready for execution"
   - label: "Minor adjustments needed"
     description: "I'll describe what to change"
-  - label: "Revisit proposals — planning revealed a problem"
-    description: "Go back and update proposals with what we discovered, then re-plan"
 ```
 
 - **Looks good**: if `BG_MODE=true`, immediately launch background execution for the new plan (invoke `spec:go --bg {plan-name}` — pass `--silent` if `SILENT=true`). Report: `→ Launching background execution for "{plan-name}"…` and then notify on completion. If `BG_MODE=false`, report completion and next steps (`/spec:go` or `/spec:go --bg`)
 - **Minor adjustments**: accept free-text, apply changes to plan.md and/or implementation files, re-run Step 5.6 validation if structural changes were made, then return to this Step 6 prompt
-- **Revisit proposals**: ask "What did planning reveal that should change the proposals?" (free-text). Then:
-  1. Launch a `spec-explorer` Task in `mode: bulk-update` with all proposal paths in `$PLAN_DIR/proposals/` and the user's stated new context. Wait for completion.
-  2. Report which proposals changed and what was updated.
-  3. Re-run **Step 4.3** from "Present and choose" — present the updated proposals for a new selection decision.
-  4. Once a new approach is selected, re-run **Step 4 item 4** (Break Down Work) and **Step 5** (Create Structured Plan) — overwriting the previous plan files.
-
-**Note:** "Revisit proposals" is only available if proposals exist in `$PLAN_DIR/proposals/`. If no proposals were generated (user chose "Skip" at Step 4.3), offer free-text plan adjustment only.
 
 ## Best Practices and Execution Constraints
 

@@ -1,5 +1,5 @@
 ---
-description: Review a product roadmap for coverage gaps, prioritization quality, missing PRDs, and strategic coherence. Auto-launched after pm:plan; also invoke manually before committing to a roadmap. Triggers on: pm review, review product roadmap, review pm plan, sanity check roadmap, product plan review.
+description: "Use when reviewing a product roadmap for quality and coverage. Triggers on: \"pm review\", \"review product roadmap\", \"review pm plan\", \"sanity check roadmap\", \"product plan review\". Checks coverage gaps, prioritization, missing PRDs, and strategic coherence. Auto-launched after pm:plan."
 argument-hint: "[plan-dir] [--silent]"
 disable-model-invocation: true
 context: fork

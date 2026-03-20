@@ -52,7 +52,6 @@ describe('config', () => {
       expect(config.activePlans).toEqual([]);
       expect(config.archivedPlans).toEqual([]);
       expect(config.worktrees).toEqual([]);
-      expect(config.style).toEqual([]);
     });
 
     it('should throw on corrupt JSON', () => {

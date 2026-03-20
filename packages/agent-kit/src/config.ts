@@ -7,7 +7,6 @@ const DEFAULT_CONFIG: CodevoyantConfig = {
   activePlans: [],
   archivedPlans: [],
   worktrees: [],
-  style: [],
 };
 
 export function getConfigPath(registry?: string): string {
@@ -30,4 +29,12 @@ export function readSettings(dir = '.codevoyant'): CodevoyantSettings {
   const p = path.join(dir, 'settings.json');
   if (!fs.existsSync(p)) return {};
   return JSON.parse(fs.readFileSync(p, 'utf-8')) as CodevoyantSettings;
+}
+
+export function writeSettings(settings: CodevoyantSettings, dir = '.codevoyant'): void {
+  fs.mkdirSync(dir, { recursive: true });
+  const p = path.join(dir, 'settings.json');
+  const tmp = `${p}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(settings, null, 2) + '\n');
+  fs.renameSync(tmp, p);
 }

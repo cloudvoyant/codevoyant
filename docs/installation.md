@@ -9,7 +9,6 @@ Install from the marketplace:
 
 /plugin install spec
 /plugin install dev
-/plugin install style
 ```
 
 For local development or testing:

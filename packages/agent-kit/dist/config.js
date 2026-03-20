@@ -5,7 +5,6 @@ const DEFAULT_CONFIG = {
     activePlans: [],
     archivedPlans: [],
     worktrees: [],
-    style: [],
 };
 export function getConfigPath(registry) {
     return registry ?? path.join('.codevoyant', 'codevoyant.json');
@@ -26,5 +25,12 @@ export function readSettings(dir = '.codevoyant') {
     if (!fs.existsSync(p))
         return {};
     return JSON.parse(fs.readFileSync(p, 'utf-8'));
+}
+export function writeSettings(settings, dir = '.codevoyant') {
+    fs.mkdirSync(dir, { recursive: true });
+    const p = path.join(dir, 'settings.json');
+    const tmp = `${p}.tmp`;
+    fs.writeFileSync(tmp, JSON.stringify(settings, null, 2) + '\n');
+    fs.renameSync(tmp, p);
 }
 //# sourceMappingURL=config.js.map

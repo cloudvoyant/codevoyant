@@ -1,5 +1,5 @@
 ---
-description: Generate or update planning documentation in docs/planning/ from em plan artifacts. Produces architecture diagrams, roadmap summaries, and epic breakdowns in a format suitable for team wikis or GitHub Pages. Triggers on: em docs, generate planning docs, update docs planning, publish roadmap, document roadmap.
+description: "Use when generating or updating planning documentation from em artifacts. Triggers on: \"em docs\", \"generate planning docs\", \"publish roadmap\", \"document roadmap\", \"update docs planning\". Produces architecture diagrams, roadmap summaries, and epic breakdowns in docs/planning/."
 argument-hint: "[plan-slug] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

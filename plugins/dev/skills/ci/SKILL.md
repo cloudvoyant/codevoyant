@@ -1,5 +1,5 @@
 ---
-description: Monitor CI/CD workflows (GitHub Actions or GitLab CI). Always use this after any push to verify checks pass before declaring work done — never push and move on without checking CI. Runs in background by default so you can keep working; use --wait to block until complete. Supports --autofix to fix failures and re-push automatically.
+description: "Use when checking CI/CD pipeline status after pushing. Triggers on: \"check CI\", \"monitor CI\", \"dev ci\", \"did CI pass\", \"watch pipeline\", \"CI status\". Runs in background by default and sends desktop notification when done. Supports --wait to block and --autofix to fix failures and re-push automatically."
 argument-hint: "[--wait] [--autofix] [--silent]"
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Produce a detailed task breakdown for an epic — sub-tasks with estimates, acceptance criteria, dependencies, and T-shirt sizing. Use before adding an epic to a roadmap or sprint. Triggers on: em breakdown, break down epic, task breakdown, em scope, estimate epic, decompose feature, what are the tasks for.
+description: "Use when breaking down an epic into detailed sub-tasks. Triggers on: \"em breakdown\", \"break down epic\", \"task breakdown\", \"estimate epic\", \"decompose feature\", \"what are the tasks for\". Produces sub-tasks with estimates, acceptance criteria, dependencies, and T-shirt sizing."
 argument-hint: "[ticket-url|epic-description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

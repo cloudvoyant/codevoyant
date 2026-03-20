@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { spawnCLI, mkTmpDir, cleanTmpDir, initGitRepo } from './helpers.js';
 
 describe('worktrees command', () => {
   let tmpDir: string;
   let registryPath: string;
+  let globalWorktreeBase: string;
 
   beforeEach(() => {
     tmpDir = mkTmpDir();
@@ -13,9 +15,17 @@ describe('worktrees command', () => {
     // Initialize codevoyant
     spawnCLI(['init', '--dir', tmpDir], tmpDir);
     registryPath = path.join(tmpDir, '.codevoyant', 'codevoyant.json');
+    // Global worktree base: ~/codevoyant/[repo-name]/worktrees/
+    // repo-name falls back to tmpDir basename since there's no remote
+    const repoName = path.basename(tmpDir);
+    globalWorktreeBase = path.join(os.homedir(), 'codevoyant', repoName, 'worktrees');
   });
 
   afterEach(() => {
+    // Clean up global worktree directory if created
+    if (fs.existsSync(globalWorktreeBase)) {
+      fs.rmSync(path.dirname(globalWorktreeBase), { recursive: true, force: true });
+    }
     cleanTmpDir(tmpDir);
   });
 
@@ -71,12 +81,14 @@ describe('worktrees command', () => {
       expect(result.status).toBe(0);
       expect(result.stdout).toContain('Worktree created');
 
-      const wtPath = path.join(tmpDir, '.codevoyant', 'worktrees', 'feat-wt-test');
+      // Worktree is now at the global path: ~/codevoyant/[repo-name]/worktrees/feat-wt-test
+      const wtPath = path.join(globalWorktreeBase, 'feat-wt-test');
       expect(fs.existsSync(wtPath)).toBe(true);
 
       const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
       expect(config.worktrees).toHaveLength(1);
       expect(config.worktrees[0].branch).toBe('feat-wt-test');
+      expect(config.worktrees[0].path).toBe(wtPath);
     });
 
     it('should reject invalid branch names', () => {

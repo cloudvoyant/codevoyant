@@ -17,13 +17,12 @@ function findInstalledPlugin(home: string, plugin: string): string | null {
 describe.skipIf(!hasClaude)('Claude CLI plugin installation', () => {
   let tmpHome: string;
 
-  const PLUGINS = ['spec', 'dev', 'adr', 'style', 'em', 'pm'] as const;
+  const PLUGINS = ['spec', 'dev', 'adr', 'em', 'pm'] as const;
 
   const EXPECTED_COMMANDS: Record<string, string[]> = {
-    spec: ['/spec:new', '/spec:go', '/spec:list', '/spec:done', '/spec:worktree'],
+    spec: ['/spec:new', '/spec:go', '/spec:list', '/spec:done'],
     dev: ['/dev:commit', '/dev:ci', '/dev:allow', '/dev:pr-fix', '/dev:rebase'],
     adr: ['/adr:new', '/adr:capture'],
-    style: ['/style:init', '/style:add', '/style:review', '/style:doctor'],
     em: ['/em:plan', '/em:breakdown', '/em:review', '/em:update'],
     pm: ['/pm:plan', '/pm:prd', '/pm:breakdown', '/pm:review'],
   };

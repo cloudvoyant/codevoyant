@@ -1,5 +1,5 @@
 ---
-description: Update a PM roadmap or PRD — apply inline > and >> annotations written directly in roadmap.md or prds/*.md, or describe changes conversationally. Use when adding/removing features, adjusting phases, updating priorities, marking items done, rewording user stories, or any change to an existing product plan. Triggers on: update pm, change product roadmap, modify feature, update prd, add feature, remove feature, rename phase, apply annotations, edit product roadmap, adjust pm plan.
+description: "Use when modifying an existing pm roadmap or PRD. Triggers on: \"update pm\", \"change product roadmap\", \"modify feature\", \"update prd\", \"add feature\", \"remove feature\", \"apply annotations\", \"edit product roadmap\". Applies inline > and >> annotations or accepts conversational changes to roadmap.md or prds."
 argument-hint: "[plan-slug] [change description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

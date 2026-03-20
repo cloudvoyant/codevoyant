@@ -87,6 +87,105 @@ Read user preferences from `settings.json`. Returns an empty object if the file 
 
 ---
 
+### `findProjectRoot`
+
+```ts
+function findProjectRoot(startDir?: string): string | null
+```
+
+Walk up from the given directory (default `cwd`) to find a `.git` directory or file. Returns the project root path, or `null` if not inside a git repository.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `startDir` | `string` | `process.cwd()` | Directory to start searching from |
+
+**Returns:** `string | null`
+
+---
+
+### `isInWorktree`
+
+```ts
+function isInWorktree(startDir?: string): boolean
+```
+
+Returns `true` if the current directory is inside a git worktree (not the main working tree). Detection is based on whether `.git` is a file (worktree) rather than a directory (main tree).
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `startDir` | `string` | `process.cwd()` | Directory to check |
+
+**Returns:** `boolean`
+
+---
+
+### `getRepoName`
+
+```ts
+function getRepoName(cwd?: string): string
+```
+
+Returns the repository name extracted from the git remote URL. Falls back to the basename of the project root directory when no remote is configured.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `cwd` | `string` | `process.cwd()` | Working directory |
+
+**Returns:** `string`
+
+---
+
+### `getCurrentPlan`
+
+```ts
+function getCurrentPlan(cwd?: string): string | null
+```
+
+Returns the plan name associated with the current worktree, if any. Looks up the worktree path in the main repository's `.codevoyant/settings.json` worktreeMap.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `cwd` | `string` | `process.cwd()` | Working directory |
+
+**Returns:** `string | null`
+
+---
+
+### `getWorktreeBasePath`
+
+```ts
+function getWorktreeBasePath(repoName?: string, cwd?: string): string
+```
+
+Returns the global worktree base path for the current repository: `~/codevoyant/[repo-name]/worktrees/`.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `repoName` | `string` | auto-detected | Repository name override |
+| `cwd` | `string` | `process.cwd()` | Working directory |
+
+**Returns:** `string`
+
+---
+
+### `getWorktreePath`
+
+```ts
+function getWorktreePath(planName: string, repoName?: string, cwd?: string): string
+```
+
+Returns the full worktree path for a given plan name: `~/codevoyant/[repo-name]/worktrees/[plan-name]`.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `planName` | `string` | **(required)** | Plan name |
+| `repoName` | `string` | auto-detected | Repository name override |
+| `cwd` | `string` | `process.cwd()` | Working directory |
+
+**Returns:** `string`
+
+---
+
 ## Types
 
 ### `CodevoyantConfig`
@@ -99,7 +198,6 @@ interface CodevoyantConfig {
   activePlans: PlanEntry[]; // Plans currently in progress
   archivedPlans: PlanEntry[]; // Completed or abandoned plans
   worktrees: WorktreeEntry[]; // Registered git worktrees
-  style: StyleContext[];    // Learned style preferences
 }
 ```
 
@@ -139,21 +237,6 @@ interface WorktreeEntry {
   path: string;             // Worktree directory path
   planName: string | null;  // Associated plan name
   createdAt: string;        // ISO 8601 timestamp
-}
-```
-
----
-
-### `StyleContext`
-
-A learned coding style preference.
-
-```ts
-interface StyleContext {
-  name: string;             // Style rule name
-  description: string;      // Human-readable description
-  learnedAt: string;        // ISO 8601 timestamp
-  examples: string[];       // Code examples demonstrating the style
 }
 ```
 

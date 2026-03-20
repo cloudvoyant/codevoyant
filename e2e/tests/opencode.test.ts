@@ -5,7 +5,7 @@ import { spawnSync } from 'child_process';
 import { createTmpHome, cleanupTmpHome, runScript, parseFrontmatter, REPO_ROOT } from './helpers.js';
 
 // Plugins and expected skill prefixes the opencode install script handles
-const OPENCODE_PLUGINS = ['spec', 'dev', 'style', 'adr'] as const;
+const OPENCODE_PLUGINS = ['spec', 'dev', 'adr'] as const;
 
 function skillsDir(tmpHome: string): string {
   return join(tmpHome, '.config/opencode/skills');
@@ -178,7 +178,6 @@ describe.skipIf(!hasOpencode)('OpenCode skill invocation', () => {
     spec: ['/spec:new', '/spec:go', '/spec:bg', '/spec:list', '/spec:done'],
     dev: ['/dev:commit', '/dev:ci', '/dev:allow', '/dev:pr-fix', '/dev:rebase'],
     adr: ['/adr:new', '/adr:capture'],
-    style: ['/style:init', '/style:add', '/style:review', '/style:doctor'],
   };
 
   beforeAll(() => {

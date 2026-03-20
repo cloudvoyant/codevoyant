@@ -1,5 +1,5 @@
 ---
-description: Interactively guide the user through creating a new Architectural Decision Record (ADR). Use when the user wants to document a new architectural or technical decision.
+description: "Use when creating a new Architectural Decision Record from scratch. Triggers on: \"new adr\", \"adr new\", \"create adr\", \"document decision\", \"new architecture decision\", \"record a decision\". Interactively guides through context, decision, and consequences."
 disable-model-invocation: true
 hooks:
   PostToolUse:
@@ -70,7 +70,7 @@ Wait for the user to specify:
 
 1. Determine the next ADR number by reading docs/decisions/README.md
 2. Create ADR file: `docs/decisions/XXX-title-in-kebab-case.md`
-3. Use the template from .claude/style.md with:
+3. Create the ADR with:
    - Status: Ask user if this should be "Accepted" or "Work In Progress"
    - Date: Today's date (from env)
    - Context: Summarize why this decision is needed

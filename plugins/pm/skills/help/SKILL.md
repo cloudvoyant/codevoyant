@@ -1,5 +1,5 @@
 ---
-description: List all pm commands with descriptions, arguments, and when to use them. Use when the user wants to know what pm can do, asks for pm commands, or is unsure which skill to use. Triggers on: pm help, help pm, what can pm do, pm commands, list pm skills, pm reference.
+description: "Use when the user asks about available pm commands or needs help choosing a skill. Triggers on: \"pm help\", \"help pm\", \"what can pm do\", \"pm commands\", \"list pm skills\", \"pm reference\". Lists all pm commands with descriptions, arguments, and usage guidance."
 argument-hint: "[skill-name]"
 model: claude-haiku-4-5-20251001
 disable-model-invocation: true

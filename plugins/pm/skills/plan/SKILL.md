@@ -1,5 +1,5 @@
 ---
-description: Plan a product roadmap — takes strategic context, market signals, and feature ideas to produce a phased product roadmap. Invokes pm:breakdown (which uses pm:prd) for each feature automatically. Auto-launches pm:review on completion. Triggers on: pm plan, product roadmap, product planning, q1 q2 roadmap, feature roadmap, what are we building, product strategy.
+description: "Use when planning a product roadmap from strategic context and feature ideas. Triggers on: \"pm plan\", \"product roadmap\", \"product planning\", \"feature roadmap\", \"what are we building\", \"product strategy\". Produces phased roadmap, auto-invokes pm:breakdown per feature, and launches pm:review on completion."
 argument-hint: "[quarter|half|<horizon>] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

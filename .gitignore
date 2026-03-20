@@ -89,3 +89,6 @@ test-results/
 
 # Git worktrees
 .worktrees/
+
+# codevoyant
+.codevoyant/worktrees/

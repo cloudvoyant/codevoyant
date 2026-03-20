@@ -3,63 +3,8 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { readConfig, writeConfig, getConfigPath } from '../config.js';
+import { findProjectRoot, isInWorktree, getRepoName, getCurrentPlan, getWorktreeBasePath } from '../project.js';
 import type { WorktreeEntry } from '../types.js';
-
-function git(args: string[], cwd?: string): string {
-  const result = spawnSync('git', args, { encoding: 'utf-8', cwd });
-  if (result.status !== 0) throw new Error(result.stderr?.trim() || `git ${args[0]} failed`);
-  return result.stdout?.trim() ?? '';
-}
-
-interface ParsedWorktree {
-  worktree: string;
-  branch: string;
-  HEAD: string;
-  bare?: boolean;
-}
-
-function parseWorktreeList(cwd?: string): ParsedWorktree[] {
-  const output = git(['worktree', 'list', '--porcelain'], cwd);
-  if (!output) return [];
-
-  const entries: ParsedWorktree[] = [];
-  let current: Partial<ParsedWorktree> = {};
-
-  for (const line of output.split('\n')) {
-    if (line === '') {
-      if (current.worktree) {
-        entries.push(current as ParsedWorktree);
-      }
-      current = {};
-    } else if (line.startsWith('worktree ')) {
-      current.worktree = line.slice('worktree '.length);
-    } else if (line.startsWith('HEAD ')) {
-      current.HEAD = line.slice('HEAD '.length);
-    } else if (line.startsWith('branch ')) {
-      current.branch = line.slice('branch '.length).replace('refs/heads/', '');
-    } else if (line === 'bare') {
-      current.bare = true;
-    }
-  }
-  if (current.worktree) {
-    entries.push(current as ParsedWorktree);
-  }
-
-  return entries;
-}
-
-function ensureGitignoreEntry(dir: string): void {
-  const gitignorePath = path.join(dir, '.gitignore');
-  const entry = '.codevoyant/worktrees/';
-  if (fs.existsSync(gitignorePath)) {
-    const existing = fs.readFileSync(gitignorePath, 'utf-8');
-    if (!existing.includes(entry)) {
-      fs.appendFileSync(gitignorePath, '\n# codevoyant\n' + entry + '\n');
-    }
-  } else {
-    fs.writeFileSync(gitignorePath, '# codevoyant\n' + entry + '\n');
-  }
-}
 
 export function worktreesCommand(): Command {
   const wt = new Command('worktrees').description('Manage git worktrees');
@@ -69,39 +14,44 @@ export function worktreesCommand(): Command {
     .requiredOption('--branch <branch>', 'Branch name')
     .option('--base <base>', 'Base branch/commit', 'HEAD')
     .option('--plan <plan>', 'Associated plan name')
+    .option('--base-path <basePath>', 'Custom base path for worktrees')
     .option('--registry <path>', 'Path to codevoyant.json')
     .action((opts) => {
-      // Validate branch name
+      const projectRoot = requireProjectRoot();
+
       if (!/^[\w/.-]+$/.test(opts.branch)) {
         console.error('Invalid branch name: only alphanumeric, hyphens, underscores, slashes, and dots allowed');
         process.exit(1);
       }
 
-      // Check not already a worktree
-      const existing = parseWorktreeList();
+      const existing = parseWorktreeList(projectRoot);
       if (existing.some((e) => e.branch === opts.branch)) {
         console.error(`Branch "${opts.branch}" is already a worktree`);
         process.exit(1);
       }
 
-      const wtPath = path.join('.codevoyant', 'worktrees', opts.branch);
+      const repoName = getRepoName(projectRoot);
+      const basePath = opts.basePath ?? getWorktreeBasePath(repoName, projectRoot);
+      const wtName = opts.plan ?? opts.branch;
+      const wtPath = path.join(basePath, wtName);
+
       if (fs.existsSync(wtPath)) {
         console.error(`Directory already exists: ${wtPath}`);
         process.exit(1);
       }
 
-      // Check if branch exists
-      const branchCheck = spawnSync('git', ['rev-parse', '--verify', opts.branch], { encoding: 'utf-8' });
+      fs.mkdirSync(basePath, { recursive: true });
+
+      const branchCheck = spawnSync('git', ['rev-parse', '--verify', opts.branch], {
+        encoding: 'utf-8',
+        cwd: projectRoot,
+      });
       if (branchCheck.status === 0) {
-        git(['worktree', 'add', wtPath, opts.branch]);
+        gitExec(['worktree', 'add', wtPath, opts.branch], projectRoot);
       } else {
-        git(['worktree', 'add', '-b', opts.branch, wtPath, opts.base]);
+        gitExec(['worktree', 'add', '-b', opts.branch, wtPath, opts.base], projectRoot);
       }
 
-      // Ensure .gitignore entry
-      ensureGitignoreEntry('.');
-
-      // Register in config
       const configPath = getConfigPath(opts.registry);
       const config = readConfig(configPath);
       const entry: WorktreeEntry = {
@@ -123,32 +73,29 @@ export function worktreesCommand(): Command {
     .option('--force', 'Force removal', false)
     .option('--registry <path>', 'Path to codevoyant.json')
     .action((opts) => {
-      const worktrees = parseWorktreeList();
+      const projectRoot = requireProjectRoot();
+      const worktrees = parseWorktreeList(projectRoot);
       const wte = worktrees.find((e) => e.branch === opts.branch);
       if (!wte) {
         console.error(`Worktree for branch "${opts.branch}" not found`);
         process.exit(1);
       }
 
-      // Warn if uncommitted changes
       const statusResult = spawnSync('git', ['-C', wte.worktree, 'status', '--porcelain'], { encoding: 'utf-8' });
       if (statusResult.stdout && statusResult.stdout.trim() && !opts.force) {
         console.error(`Worktree has uncommitted changes. Use --force to remove anyway.`);
         process.exit(1);
       }
 
-      // Remove worktree
       const removeArgs = ['worktree', 'remove', wte.worktree];
       if (opts.force) removeArgs.push('--force');
-      git(removeArgs);
+      gitExec(removeArgs, projectRoot);
 
-      // Delete branch if requested
       if (opts.deleteBranch) {
         const deleteFlag = opts.force ? '-D' : '-d';
-        git(['branch', deleteFlag, opts.branch]);
+        gitExec(['branch', deleteFlag, opts.branch], projectRoot);
       }
 
-      // Remove from config
       const configPath = getConfigPath(opts.registry);
       const config = readConfig(configPath);
       config.worktrees = config.worktrees.filter((w) => w.branch !== opts.branch);
@@ -161,7 +108,8 @@ export function worktreesCommand(): Command {
     .description('Prune stale worktrees')
     .option('--registry <path>', 'Path to codevoyant.json')
     .action((opts) => {
-      git(['worktree', 'prune', '--verbose']);
+      const projectRoot = findProjectRoot() ?? '.';
+      gitExec(['worktree', 'prune', '--verbose'], projectRoot);
 
       const configPath = getConfigPath(opts.registry);
       const config = readConfig(configPath);
@@ -176,17 +124,18 @@ export function worktreesCommand(): Command {
   wt.command('list')
     .description('List worktrees')
     .option('--json', 'Output as JSON', false)
+    .option('--filter <plan>', 'Filter by plan name')
     .option('--registry <path>', 'Path to codevoyant.json')
     .action((opts) => {
-      const worktrees = parseWorktreeList();
+      const projectRoot = findProjectRoot() ?? '.';
+      const worktrees = parseWorktreeList(projectRoot);
       const configPath = getConfigPath(opts.registry);
       const config = readConfig(configPath);
 
-      const enriched = worktrees.map((wte) => {
+      let enriched = worktrees.map((wte) => {
         const registered = config.worktrees.find((w) => w.branch === wte.branch);
         const plan = config.activePlans.find((p) => p.worktree === wte.worktree || p.branch === wte.branch);
 
-        // Check dirty status
         let dirty = false;
         try {
           const status = spawnSync('git', ['-C', wte.worktree, 'status', '--porcelain'], { encoding: 'utf-8' });
@@ -203,6 +152,10 @@ export function worktreesCommand(): Command {
           plan: plan?.name ?? registered?.planName ?? null,
         };
       });
+
+      if (opts.filter) {
+        enriched = enriched.filter((e) => e.plan && e.plan.toLowerCase().includes(opts.filter.toLowerCase()));
+      }
 
       if (opts.json) {
         console.log(JSON.stringify(enriched, null, 2));
@@ -223,7 +176,6 @@ export function worktreesCommand(): Command {
       const configPath = getConfigPath(opts.registry);
       const config = readConfig(configPath);
 
-      // Auto-detect plan if not given
       let planName = opts.plan;
       if (!planName) {
         const sorted = [...config.activePlans].sort(
@@ -237,7 +189,6 @@ export function worktreesCommand(): Command {
         console.log(`Auto-detected plan: ${planName}`);
       }
 
-      // Verify plan.md exists
       const planDir = path.join('.codevoyant', 'plans', planName);
       const planMd = path.join(planDir, 'plan.md');
       if (!fs.existsSync(planMd)) {
@@ -245,8 +196,7 @@ export function worktreesCommand(): Command {
         process.exit(1);
       }
 
-      // Resolve main repo root
-      const gitCommonDir = git(['rev-parse', '--git-common-dir']);
+      const gitCommonDir = gitExec(['rev-parse', '--git-common-dir']);
       const mainRoot = path.resolve(path.dirname(gitCommonDir));
       const currentRoot = path.resolve('.');
 
@@ -255,17 +205,14 @@ export function worktreesCommand(): Command {
         process.exit(1);
       }
 
-      // Check destination
       const destDir = path.join(mainRoot, '.codevoyant', 'plans', planName);
       if (fs.existsSync(destDir) && !opts.force) {
         console.error(`Destination already exists: ${destDir}. Use --force to overwrite.`);
         process.exit(1);
       }
 
-      // Copy plan directory
       fs.cpSync(planDir, destDir, { recursive: true, force: true });
 
-      // Upsert plan entry in main repo config
       const mainConfigPath = path.join(mainRoot, '.codevoyant', 'codevoyant.json');
       const mainConfig = readConfig(mainConfigPath);
       const existingPlan = mainConfig.activePlans.find((p) => p.name === planName);
@@ -323,5 +270,132 @@ export function worktreesCommand(): Command {
       console.log(`Unregistered worktree: ${opts.branch}`);
     });
 
+  wt.command('attach')
+    .description('Register a manually-created worktree')
+    .requiredOption('--path <path>', 'Path to existing worktree')
+    .requiredOption('--plan <plan>', 'Associated plan name')
+    .option('--registry <registryPath>', 'Path to codevoyant.json')
+    .action((opts) => {
+      const wtPath = path.resolve(opts.path);
+
+      if (!fs.existsSync(wtPath)) {
+        console.error(`Path does not exist: ${wtPath}`);
+        process.exit(1);
+      }
+
+      const gitPath = path.join(wtPath, '.git');
+      if (!fs.existsSync(gitPath)) {
+        console.error(`Not a git worktree: ${wtPath} (no .git found)`);
+        process.exit(1);
+      }
+
+      let branch: string;
+      try {
+        branch = gitExec(['rev-parse', '--abbrev-ref', 'HEAD'], wtPath);
+      } catch {
+        console.error(`Cannot determine branch for worktree at: ${wtPath}`);
+        process.exit(1);
+        return;
+      }
+
+      const configPath = getConfigPath(opts.registryPath);
+      const config = readConfig(configPath);
+
+      if (config.worktrees.some((w) => w.path === wtPath)) {
+        console.error(`Worktree already registered: ${wtPath}`);
+        process.exit(1);
+      }
+
+      const entry: WorktreeEntry = {
+        branch,
+        path: wtPath,
+        planName: opts.plan,
+        createdAt: new Date().toISOString(),
+      };
+      config.worktrees.push(entry);
+      writeConfig(configPath, config);
+
+      console.log(`Attached worktree: ${wtPath} (branch: ${branch}, plan: ${opts.plan})`);
+    });
+
+  wt.command('detect')
+    .description('Print current worktree context (repo, plan, branch)')
+    .action(() => {
+      const projectRoot = findProjectRoot();
+      const inWorktree = isInWorktree();
+      const repoName = getRepoName();
+      const plan = getCurrentPlan();
+
+      let branch = '';
+      try {
+        branch = gitExec(['rev-parse', '--abbrev-ref', 'HEAD']);
+      } catch {
+        // not in a git repo
+      }
+
+      const info = {
+        projectRoot: projectRoot ?? null,
+        repoName,
+        branch: branch || null,
+        isWorktree: inWorktree,
+        plan: plan ?? null,
+      };
+
+      console.log(JSON.stringify(info, null, 2));
+    });
+
   return wt;
+}
+
+// HELPERS -----------------------------------------------------------------------------------------
+
+interface ParsedWorktree {
+  worktree: string;
+  branch: string;
+  HEAD: string;
+  bare?: boolean;
+}
+
+/** Run a git command, throw on failure. */
+function gitExec(args: string[], cwd?: string): string {
+  const result = spawnSync('git', args, { encoding: 'utf-8', cwd });
+  if (result.status !== 0) throw new Error(result.stderr?.trim() || `git ${args[0]} failed`);
+  return result.stdout?.trim() ?? '';
+}
+
+/** Parse `git worktree list --porcelain` output into structured entries. */
+function parseWorktreeList(cwd?: string): ParsedWorktree[] {
+  const output = gitExec(['worktree', 'list', '--porcelain'], cwd);
+  if (!output) return [];
+
+  const entries: ParsedWorktree[] = [];
+  let current: Partial<ParsedWorktree> = {};
+
+  for (const line of output.split('\n')) {
+    if (line === '') {
+      if (current.worktree) entries.push(current as ParsedWorktree);
+      current = {};
+    } else if (line.startsWith('worktree ')) {
+      current.worktree = line.slice('worktree '.length);
+    } else if (line.startsWith('HEAD ')) {
+      current.HEAD = line.slice('HEAD '.length);
+    } else if (line.startsWith('branch ')) {
+      current.branch = line.slice('branch '.length).replace('refs/heads/', '');
+    } else if (line === 'bare') {
+      current.bare = true;
+    }
+  }
+  if (current.worktree) entries.push(current as ParsedWorktree);
+
+  return entries;
+}
+
+/** Resolve the project root. Exits with code 1 if not in a git repo. */
+function requireProjectRoot(): string {
+  const root = findProjectRoot();
+  if (!root) {
+    console.error('Not in a git repository');
+    process.exit(1);
+  }
+  return root;
 }

@@ -1,5 +1,5 @@
 ---
-description: Safely rebase a branch using an intent snapshot to drive every conflict resolution correctly — preventing the silent change loss that happens with naive rebasing. Use this whenever the user needs to rebase, sync with upstream, or update main/master. Even if they just say "rebase" or "get latest from main", use this skill.
+description: "Use when rebasing a branch or syncing with upstream. Triggers on: \"rebase\", \"get latest from main\", \"sync with upstream\", \"update from main\", \"dev rebase\". Uses an intent snapshot to drive conflict resolution correctly, preventing silent change loss that happens with naive rebasing."
 argument-hint: "[base-branch] [--push]"
 disable-model-invocation: true
 hooks:
@@ -342,22 +342,13 @@ For each file this branch modified, compare the pre-rebase branch version agains
 
 Run formatters first (they auto-fix, so any changes get committed if the user later commits):
 ```bash
-if just --list 2>/dev/null | grep -qE "^format\b"; then
-  just format
-elif [ -f package.json ] && node -e "require('./package.json').scripts.format" 2>/dev/null; then
-  npm run format
-fi
+npx @codevoyant/agent-kit task-runner run format 2>/dev/null || true
 ```
 
 Then run linters — **block push if they fail**:
 ```bash
-if just --list 2>/dev/null | grep -qE "^lint\b"; then
-  just lint
-elif just --list 2>/dev/null | grep -qE "^check\b"; then
-  just check
-elif [ -f package.json ] && node -e "require('./package.json').scripts.lint" 2>/dev/null; then
-  npm run lint
-fi
+npx @codevoyant/agent-kit task-runner run lint 2>/dev/null || \
+npx @codevoyant/agent-kit task-runner run check 2>/dev/null || true
 ```
 
 If the formatter modified files: stage and amend them onto the last rebased commit:
@@ -370,11 +361,7 @@ fi
 
 **Check 4 — Run tests if available:**
 ```bash
-if just --list 2>/dev/null | grep -qE "^test\b"; then
-  just test
-elif [ -f package.json ] && node -e "require('./package.json').scripts.test" 2>/dev/null; then
-  npm test
-fi
+npx @codevoyant/agent-kit task-runner run test 2>/dev/null || true
 ```
 
 If tests or linting fail: report errors and stop. Do not proceed to push.

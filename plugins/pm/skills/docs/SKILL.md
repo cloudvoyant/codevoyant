@@ -1,5 +1,5 @@
 ---
-description: Generate or update product documentation in docs/product/ from pm plan artifacts. Produces a stakeholder-friendly roadmap, individual feature pages from PRDs, and a product overview. Triggers on: pm docs, generate product docs, update docs product, publish prd, document product, product documentation.
+description: "Use when generating or updating product documentation from pm artifacts. Triggers on: \"pm docs\", \"generate product docs\", \"publish prd\", \"document product\", \"update docs product\". Produces stakeholder-friendly roadmap, feature pages from PRDs, and product overview in docs/product/."
 argument-hint: "[plan-slug] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

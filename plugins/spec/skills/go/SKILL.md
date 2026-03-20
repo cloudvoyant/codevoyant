@@ -1,5 +1,5 @@
 ---
-description: Execute or continue a spec plan interactively with configurable breakpoints. Pass --bg to run fully autonomously in the background with a desktop notification on completion — equivalent to /spec:bg. Prefer this over ad-hoc task execution whenever a spec plan is active. Triggers on keywords like go, execute plan, run plan, continue plan, work on plan, start plan, spec go, run the spec, execute the spec, work on the spec.
+description: "Use when executing or continuing a spec plan interactively. Triggers on: \"spec go\", \"execute plan\", \"run plan\", \"continue plan\", \"work on plan\", \"start plan\", \"run the spec\". Runs tasks with configurable breakpoints for review. Pass --bg for fully autonomous background execution."
 argument-hint: "[plan-name] [--bg] [--silent] [--commit|-c]"
 disable-model-invocation: true
 context: fork
@@ -131,9 +131,9 @@ options:
 **Handle response:**
 
 - **"Create worktree and execute"**:
-  1. Create worktree: `git worktree add -b "$PLAN_BRANCH" "$PLAN_WORKTREE" HEAD`
-  2. Update .gitignore if needed
-  3. Report: `✓ Created worktree at $PLAN_WORKTREE`
+  1. Create worktree: `npx @codevoyant/agent-kit worktrees create --branch "$PLAN_BRANCH" --plan "$PLAN_NAME"`
+  2. Capture the worktree path from the command output
+  3. Report: `Created worktree at $PLAN_WORKTREE`
   4. Change to worktree: `cd "$PLAN_WORKTREE"`
   5. Continue to Step 2
 

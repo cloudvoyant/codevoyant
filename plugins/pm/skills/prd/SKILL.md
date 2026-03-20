@@ -1,5 +1,5 @@
 ---
-description: Generate a structured PRD (Product Requirements Document) for a single feature or initiative. Produces a PRD.md with problem statement, goals, user stories, success metrics, and explicit out-of-scope items. Can be seeded from a Linear/GitHub/Notion ticket URL. Triggers on: write prd, create prd, product requirements, requirements doc, spec out feature, pm prd, feature spec.
+description: "Use when writing a PRD for a single feature or initiative. Triggers on: \"write prd\", \"create prd\", \"product requirements\", \"requirements doc\", \"pm prd\", \"feature spec\". Produces PRD.md with problem statement, goals, user stories, success metrics, and out-of-scope items. Can seed from a ticket URL."
 argument-hint: "[ticket-url|feature-description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

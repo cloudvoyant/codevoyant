@@ -20,11 +20,6 @@
       "source": "./plugins/spec"
     },
     {
-      "name": "style",
-      "description": "Manage and enforce project style guides with contextual loading and automatic learning",
-      "source": "./plugins/style"
-    },
-    {
       "name": "em",
       "description": "Engineering management — roadmap planning, epic breakdowns, team sync, and architecture design",
       "source": "./plugins/em"

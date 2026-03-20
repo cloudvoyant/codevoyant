@@ -1,5 +1,5 @@
 ---
-description: Break down a feature from the product roadmap into a full PRD using pm:prd. Called automatically by pm:plan for each feature, or invoke directly to produce a PRD for a single feature. Triggers on: pm breakdown, break down feature, feature breakdown, design feature, pm prd for feature.
+description: "Use when breaking down a product feature into a full PRD. Triggers on: \"pm breakdown\", \"break down feature\", \"feature breakdown\", \"design feature\", \"pm prd for feature\". Called automatically by pm:plan, or invoke directly for a single feature PRD."
 argument-hint: "[feature-name|ticket-url] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

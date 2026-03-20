@@ -1,5 +1,5 @@
 ---
-description: Import or export an em roadmap to/from Linear, Notion, or GitHub. Bidirectional — pull epics/projects from your tracker into a local roadmap, or push a local em:plan roadmap back to the tracker. Respects team work-style (epic-based vs project-based) and tracker idioms. Triggers on: em sync, push to linear, pull from linear, sync roadmap, export to notion, import from linear, sync to github.
+description: "Use when syncing an em roadmap with Linear, Notion, or GitHub. Triggers on: \"em sync\", \"push to linear\", \"pull from linear\", \"sync roadmap\", \"export to notion\", \"import from linear\". Bidirectional: pull epics into a local roadmap or push a local roadmap back to the tracker."
 argument-hint: "[push|pull] [--tracker linear|notion|github] [--plan slug] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

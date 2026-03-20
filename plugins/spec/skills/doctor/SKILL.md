@@ -1,5 +1,5 @@
 ---
-description: Diagnose and fix spec setup issues — detects old path layouts and migrates them to the current .codevoyant/ structure, updates .gitignore, and confirms when everything is already correct. Use when plan files aren't found, paths look wrong, or after upgrading the plugin. Triggers on keywords like spec doctor, diagnose spec, fix spec setup, spec issues, migrate spec paths.
+description: "Use when spec setup seems broken or paths look wrong. Triggers on: \"spec doctor\", \"diagnose spec\", \"fix spec setup\", \"spec issues\", \"migrate spec paths\". Detects old path layouts and migrates to .codevoyant/ structure, updates .gitignore, and confirms when everything is correct."
 disable-model-invocation: true
 model: claude-sonnet-4-6
 ---

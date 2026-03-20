@@ -18,23 +18,23 @@ export interface WorktreeEntry {
   createdAt: string;
 }
 
-export interface StyleContext {
-  name: string;
-  description: string;
-  learnedAt: string;
-  examples: string[];
-}
-
 export interface CodevoyantConfig {
   version: string;
   activePlans: PlanEntry[];
   archivedPlans: PlanEntry[];
   worktrees: WorktreeEntry[];
-  style: StyleContext[];
+}
+
+export interface TaskRunnerInfo {
+  runner: string;
+  command: string;
+  configFile: string;
+  detectedAt: string;
 }
 
 export interface CodevoyantSettings {
   notifications?: boolean;
   defaultPlugin?: string;
+  taskRunner?: TaskRunnerInfo;
   [key: string]: unknown;
 }

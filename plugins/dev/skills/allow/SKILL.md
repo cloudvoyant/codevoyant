@@ -1,6 +1,6 @@
 ---
-description: Generate and apply the permission config needed for uninterrupted autonomous agent execution — prevents mid-run permission prompts when using /spec:bg, /spec:go, /dev:commit, /dev:ci, or any background agent. Triggers on keywords like allow agent, agent permissions, pre-approve, permission config, allow tools, stop asking for permission, autonomous execution permissions, unblock agent, dev allow, agent interrupted, perms, interrupted execution.
-argument-hint: "[--plugins spec,dev,style,adr] [--global] [--apply]"
+description: "Use when setting up permissions for uninterrupted agent execution. Triggers on: \"allow agent\", \"agent permissions\", \"dev allow\", \"stop asking for permission\", \"permission config\", \"pre-approve\", \"agent interrupted\". Generates permission config to prevent mid-run prompts for /spec:bg, /spec:go, /dev:commit, and /dev:ci."
+argument-hint: "[--plugins spec,dev,adr] [--global] [--apply]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001
 ---
@@ -11,7 +11,7 @@ Generate and apply the minimal permission configuration for uninterrupted autono
 
 ## Flags
 
-- `--plugins <list>`: Comma-separated plugin names to include (e.g. `--plugins spec,dev`). Valid values: `spec`, `dev`, `style`, `adr`. If omitted, asks the user.
+- `--plugins <list>`: Comma-separated plugin names to include (e.g. `--plugins spec,dev`). Valid values: `spec`, `dev`, `adr`, `em`, `pm`. If omitted, asks the user.
 - `--global`: Apply to global config instead of project-level (Claude Code only; OpenCode is always global)
 - `--apply`: Write config directly after confirmation steps, without a separate "apply?" prompt
 
@@ -56,8 +56,6 @@ options:
     description: "spec:bg, spec:go, spec:new — background agents, plan execution, research"
   - label: "dev"
     description: "dev:commit, dev:ci, dev:rebase, dev:pr-fix — includes git push and gh/glab CLI"
-  - label: "style"
-    description: "style:init, style:review, style:doctor — CLAUDE.md management"
   - label: "em"
     description: "em:plan, em:breakdown, em:review, em:sync — epic and roadmap planning"
   - label: "pm"
@@ -194,22 +192,6 @@ Bash(notify-send:*)
 **`git push` is handled separately in Step 4 — do not include it here yet.**
 
 **OpenCode (add to baseline):** `"bash": "allow"`, `"task": "allow"`, `"webfetch": "allow"`, `"websearch": "allow"`
-
----
-
-### `style` plugin
-
-Skills: `style:init`, `style:add`, `style:review`, `style:doctor`, `style:learn`, `style:contexts`
-
-**Claude Code allow entries (add to baseline):**
-```
-Bash(git status:*)
-Bash(git diff:*)
-Bash(git log:*)
-+ TASK_RUNNER_CMDS
-```
-
-**OpenCode (add to baseline):** `"bash": "allow"`, `"task": "allow"`
 
 ---
 

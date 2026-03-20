@@ -73,29 +73,6 @@ See the [Dev plugin reference](/plugins/dev) for all skills.
 
 ---
 
-## Style — build, evolve, and enforce your CLAUDE.md style guide
-
-The style plugin manages a context-aware `CLAUDE.md`. Rules are tagged so only the relevant ones load per task — about 74% fewer tokens than loading everything.
-
-Start by generating a style guide from your existing stack:
-
-```bash
-/style:init     # detects your stack and creates CLAUDE.md with context tags
-```
-
-Add rules as you go — whenever you find yourself correcting the AI on something, capture it:
-
-```bash
-/style:add "Use justfile recipes" --context build,tools
-/style:add "Prefer const over let" --context code,typescript
-```
-
-The plugin also learns on its own. Run `/style:learn` periodically and it'll suggest rules based on patterns it observed in your sessions. Once you've built up a guide, `/style:review` checks recent work against it and `/style:doctor` trims bloat and fixes structural issues.
-
-See the [Style plugin reference](/plugins/style) for all skills.
-
----
-
 ## Em — engineering roadmaps and epic planning *(Experimental)*
 
 The em plugin structures engineering planning: roadmaps with architecture diagrams, detailed epic breakdowns, capacity and dependency review, and sync with your team's tracker.

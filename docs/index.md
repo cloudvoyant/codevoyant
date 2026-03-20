@@ -29,11 +29,6 @@ features:
     details: For conventional commits, CI monitoring, MR fixes, easy rebasing, and more.
     link: /plugins/dev
   - icon:
-      src: /icons/style.svg
-    title: Style Plugin
-    details: For evolving and enforcing project styleguides.
-    link: /plugins/style
-  - icon:
       src: /icons/em.svg
     title: EM Plugin (Experimental)
     details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.

@@ -1,5 +1,5 @@
 ---
-description: Update a spec plan — either by applying inline > and >> annotations already written in the plan files, or by describing changes conversationally. Pass --bg to auto-approve and run non-blocking with a desktop notification on completion. Use when the user says things like "add a task to phase 2", "remove the auth phase", "rename this task", "I want to change the approach", or edits a plan file with > or >> comments. Triggers on keywords like update plan, change plan, modify plan, add task, remove task, rename phase, apply annotations, process comments, apply changes to plan, update plan from notes, edit plan, adjust plan.
+description: "Use when modifying an existing spec plan. Triggers on: \"update plan\", \"change plan\", \"add task\", \"remove task\", \"rename phase\", \"apply annotations\", \"edit plan\", \"adjust plan\", \"spec update\". Applies inline > and >> annotations from plan files or accepts conversational changes. Supports --bg for background execution."
 argument-hint: "[plan-name] [change description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

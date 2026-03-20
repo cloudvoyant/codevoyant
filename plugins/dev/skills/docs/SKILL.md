@@ -1,5 +1,5 @@
 ---
-description: Generate or update architecture documentation in docs/architecture/ from a codebase scan. Produces a component map, data flow diagrams (ASCII), API inventory, and dependency graph. Run after major structural changes or as a one-time baseline. Triggers on: dev docs, generate architecture docs, document architecture, update docs architecture, codebase documentation, architecture diagram.
+description: "Use when generating or updating architecture documentation from codebase. Triggers on: \"dev docs\", \"generate architecture docs\", \"document architecture\", \"codebase documentation\", \"architecture diagram\". Produces component map, data flow diagrams, API inventory, and dependency graph in docs/architecture/."
 argument-hint: "[--bg] [--silent]"
 disable-model-invocation: true
 context: fork

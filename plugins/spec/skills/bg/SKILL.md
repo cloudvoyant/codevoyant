@@ -1,5 +1,5 @@
 ---
-description: Launch a plan hands-free so you can keep working — the agent executes every task autonomously and updates progress in real-time. Use instead of /go whenever you want to stay unblocked. Triggers on keywords like bg, background, run in background, autonomous execution, run plan unattended, hands-free, let the agent handle it, don't wait for me, run without me, execute autonomously, spec bg, run spec in background, spec background.
+description: "Use when running a plan autonomously in the background. Triggers on: \"spec bg\", \"run in background\", \"hands-free\", \"run plan unattended\", \"execute autonomously\", \"let the agent handle it\", \"run without me\". Executes every task autonomously and updates progress in real-time while you keep working."
 argument-hint: "[plan-name] [--yes|-y] [--commit|-c] [--silent]"
 disable-model-invocation: true
 context: fork

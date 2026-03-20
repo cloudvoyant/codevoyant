@@ -1,5 +1,5 @@
 ---
-description: List all spec plans with status and progress, or show detailed status for one plan. Proactively use before suggesting /go or /new, when the user asks what they're working on, how execution is going, or at the start of a session. Always use after /bg to monitor execution. Triggers on keywords like list plans, show plans, plans overview, what am I working on, what plans exist, status, check progress, plan status, how's the plan going, what's running, what's the status, where am I, plan progress, show me my plans.
+description: "Use when checking active plans and their progress. Triggers on: \"show plans\", \"what plans do I have\", \"spec list\", \"plan status\", \"list specs\", \"what am I working on\", \"check progress\", \"what's running\". Shows status, completion percentage, and current phase for each plan. Pass a plan name for detailed single-plan view."
 argument-hint: "[plan-name]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001

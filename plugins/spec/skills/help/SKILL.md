@@ -1,5 +1,5 @@
 ---
-description: List all spec commands with descriptions, arguments, and when to use them. Use when the user wants to know what spec can do, asks for spec commands, or is unsure which skill to use. Triggers on: spec help, help spec, what can spec do, spec commands, list spec skills, spec reference.
+description: "Use when the user asks about available spec commands or needs help choosing a skill. Triggers on: \"spec help\", \"help spec\", \"what can spec do\", \"spec commands\", \"list spec skills\", \"spec reference\". Lists all spec commands with descriptions, arguments, and usage guidance."
 argument-hint: "[skill-name]"
 model: claude-haiku-4-5-20251001
 disable-model-invocation: true
@@ -41,9 +41,6 @@ spec — Specification-driven development commands for Claude Code
 
   /spec:rename  [old-name] [new-name]
       Rename a spec plan and update all references
-
-  /spec:worktree  <list|create|remove|prune|export> [branch-name|plan-name] [--force]
-      Manage git worktrees for spec-driven development
 
   /spec:doctor
       Diagnose and fix spec setup issues — detects old path layouts and migrates them

@@ -1,5 +1,5 @@
 ---
-description: List all adr commands with descriptions, arguments, and when to use them. Use when the user wants to know what adr can do, asks for adr commands, or is unsure which skill to use. Triggers on: adr help, help adr, what can adr do, adr commands, list adr skills, adr reference.
+description: "Use when the user asks about available adr commands or needs help choosing a skill. Triggers on: \"adr help\", \"help adr\", \"what can adr do\", \"adr commands\", \"list adr skills\", \"adr reference\". Lists all adr commands with descriptions, arguments, and usage guidance."
 argument-hint: "[skill-name]"
 model: claude-haiku-4-5-20251001
 disable-model-invocation: true

@@ -1,5 +1,5 @@
 ---
-description: Fetch open PR/MR change requests and propose fixes. Use when a PR has review comments needing attention. Works with both GitHub and GitLab. Triggers on keywords like pr fix, fix review comments, address pr feedback, fix change requests, respond to review, mr fix, fix pr comments.
+description: "Use when a PR or MR has review comments needing attention. Triggers on: \"pr fix\", \"fix review comments\", \"address pr feedback\", \"fix change requests\", \"respond to review\", \"mr fix\". Fetches open change requests and proposes fixes. Works with both GitHub and GitLab."
 argument-hint: "[pr-id] [--github|--gitlab] [--silent]"
 disable-model-invocation: true
 model: claude-sonnet-4-6

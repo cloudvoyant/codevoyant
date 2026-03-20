@@ -1,5 +1,5 @@
 ---
-description: Review the current session and capture significant technical decisions as ADRs (Architectural Decision Records). Use after making architecture, technology, or process decisions that should be documented.
+description: "Use when capturing technical decisions made during a session as ADRs. Triggers on: \"capture decisions\", \"adr capture\", \"save decisions\", \"record architecture decision\", \"document decision\". Reviews the current session and writes Architectural Decision Records for significant choices."
 disable-model-invocation: true
 hooks:
   PostToolUse:
@@ -37,7 +37,6 @@ Review the current session conversation and capture any significant technical de
 2. For each decision identified:
    - Determine the next available ADR number by reading docs/decisions/README.md
    - Create a new ADR file: `docs/decisions/XXX-title-in-kebab-case.md`
-   - Follow the ADR template from .claude/style.md
    - Include:
      - Clear title describing the decision
      - Status: Accepted (for decisions already made in session)

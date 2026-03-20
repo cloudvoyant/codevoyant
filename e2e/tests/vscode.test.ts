@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { createTmpHome, cleanupTmpHome, runScript, parseFrontmatter, REPO_ROOT } from './helpers.js';
 
-const VSCODE_PLUGINS = ['spec', 'dev', 'style', 'adr'] as const;
+const VSCODE_PLUGINS = ['spec', 'dev', 'adr'] as const;
 
 function skillsDir(tmpHome: string): string {
   return join(tmpHome, '.copilot/skills');

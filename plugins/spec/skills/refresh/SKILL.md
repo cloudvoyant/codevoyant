@@ -1,5 +1,5 @@
 ---
-description: Review an existing spec plan and update checklist status and phase markers. Proactively use before reporting plan status, after completing tasks, or whenever the user asks about plan progress. Pass --bg to run non-blocking with a desktop notification on completion. Triggers on keywords like refresh plan, update plan status, sync plan, plan progress, spec refresh, spec list.
+description: "Use when updating task checkboxes in a plan to match what has actually been done. Triggers on: \"refresh plan\", \"update checklist\", \"spec refresh\", \"sync plan progress\", \"mark tasks done\", \"update plan status\". Walks implementation files and marks completed tasks. Supports --bg for non-blocking execution with desktop notification."
 argument-hint: "[plan-name] [--bg] [--silent]"
 disable-model-invocation: true
 model: claude-haiku-4-5-20251001

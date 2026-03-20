@@ -1,5 +1,5 @@
 ---
-description: Review a spec plan before execution — checks plan.md and all implementation phase files for ambiguous tasks, missing validation, unrealistic ordering, dependency gaps, and mismatches between plan.md and implementation files. Run before /spec:go to catch issues early. Triggers on: spec review, review plan, check plan, plan review, review before executing, audit plan, is this plan ready.
+description: "Use when reviewing a spec plan before execution. Triggers on: \"spec review\", \"review plan\", \"check plan\", \"plan review\", \"audit plan\", \"is this plan ready\". Checks for ambiguous tasks, missing validation, unrealistic ordering, dependency gaps, and plan-vs-implementation mismatches."
 argument-hint: "[plan-name] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

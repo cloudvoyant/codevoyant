@@ -1,5 +1,5 @@
 ---
-description: Review an engineering roadmap or epic plan for capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after em:plan; also invoke manually before committing to a roadmap. Triggers on: em review, review roadmap, review plan, sanity check roadmap, em check, review this plan.
+description: "Use when reviewing an engineering roadmap for quality and realism. Triggers on: \"em review\", \"review roadmap\", \"sanity check roadmap\", \"em check\", \"review this plan\". Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after em:plan."
 argument-hint: "[roadmap-file] [--silent]"
 disable-model-invocation: true
 context: fork

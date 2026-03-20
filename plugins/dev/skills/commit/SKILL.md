@@ -1,5 +1,5 @@
 ---
-description: Create a conventional commit with formatting, linting, push, and CI monitoring in one workflow. Use this every time the user wants to commit — it handles everything so raw git commits should be avoided. Supports --yes to skip confirmation, --no-push to skip pushing, --autofix to fix CI failures, --atomic to create one commit per logical change group, and --single (default) for one commit with all staged changes.
+description: "Use when creating a git commit with a conventional commit message. Triggers on: \"commit\", \"commit my changes\", \"dev commit\", \"make a commit\", \"stage and commit\". Handles formatting, linting, push, and CI monitoring in one workflow. Supports --yes to skip confirmation, --atomic for multiple logical commits, and --autofix for CI failures."
 argument-hint: "[--yes|-y] [--no-push] [--autofix] [--atomic] [--single]"
 disable-model-invocation: true
 hooks:
@@ -167,25 +167,15 @@ Run formatters and linters before staging so any auto-fixes are included in the 
 
 **Formatters** (auto-fix, run unconditionally if available):
 ```bash
-# Prefer justfile recipes
-if just --list 2>/dev/null | grep -qE "^format\b"; then
-  just format
-elif [ -f package.json ] && node -e "require('./package.json').scripts.format" 2>/dev/null; then
-  npm run format
-fi
+npx @codevoyant/agent-kit task-runner run format 2>/dev/null || true
 ```
 
 If formatter ran and modified files: report `✓ Formatter applied — changes will be included in commit`.
 
 **Linters** (report errors, block commit if they fail):
 ```bash
-if just --list 2>/dev/null | grep -qE "^lint\b"; then
-  just lint
-elif just --list 2>/dev/null | grep -qE "^check\b"; then
-  just check
-elif [ -f package.json ] && node -e "require('./package.json').scripts.lint" 2>/dev/null; then
-  npm run lint
-fi
+npx @codevoyant/agent-kit task-runner run lint 2>/dev/null || \
+npx @codevoyant/agent-kit task-runner run check 2>/dev/null || true
 ```
 
 If linting fails: report the errors and **stop** — do not proceed to staging until fixed:

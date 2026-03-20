@@ -1,5 +1,5 @@
 ---
-description: Update an EM roadmap or breakdown — apply inline > and >> annotations written directly in roadmap.md or breakdowns/*.md, or describe changes conversationally. Use when adding/removing epics, adjusting phases, marking items done, rewording tasks, or any change to an existing plan. Triggers on: update em, change roadmap, modify epic, add task, remove epic, rename phase, update breakdown, apply annotations, edit roadmap, adjust em plan.
+description: "Use when modifying an existing em roadmap or breakdown. Triggers on: \"update em\", \"change roadmap\", \"modify epic\", \"add task\", \"remove epic\", \"rename phase\", \"apply annotations\", \"edit roadmap\". Applies inline > and >> annotations or accepts conversational changes to roadmap.md or breakdowns."
 argument-hint: "[plan-slug] [change description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork

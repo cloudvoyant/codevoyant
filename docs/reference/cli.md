@@ -21,7 +21,7 @@ npx @codevoyant/agent-kit <command>
 
 ### `init`
 
-Initialize the `.codevoyant/` directory structure. Creates `codevoyant.json`, `settings.json`, `plans/` and `worktrees/` directories, and adds `.codevoyant/worktrees/` to `.gitignore`. Auto-migrates legacy `spec.json` or `plans.json` if found.
+Initialize the `.codevoyant/` directory structure. Creates `codevoyant.json`, `settings.json`, and `plans/` directory. Auto-migrates legacy `spec.json` or `plans.json` if found. Worktrees are managed globally at `~/codevoyant/[repo-name]/worktrees/`.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -202,13 +202,14 @@ npx @codevoyant/agent-kit notify --title "Build Complete" --message "All tests p
 
 ### `worktrees create`
 
-Create a new git worktree under `.codevoyant/worktrees/` and register it in the config.
+Create a new git worktree at `~/codevoyant/[repo-name]/worktrees/[plan-name]` and register it in the config. The repo name is auto-detected from the git remote URL (or falls back to the directory name).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--branch <branch>` | `string` | **(required)** | Branch name |
 | `--base <base>` | `string` | `"HEAD"` | Base branch or commit |
-| `--plan <plan>` | `string` | `null` | Associated plan name |
+| `--plan <plan>` | `string` | `null` | Associated plan name (used as directory name) |
+| `--base-path <path>` | `string` | `~/codevoyant/[repo]/worktrees/` | Custom base path for worktrees |
 | `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
 
 ```bash
@@ -255,11 +256,13 @@ List all git worktrees with enriched information (plan association, dirty status
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--json` | `boolean` | `false` | Output as JSON |
+| `--filter <plan>` | `string` | *(none)* | Filter worktrees by plan name (case-insensitive substring match) |
 | `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees list
 npx @codevoyant/agent-kit worktrees list --json
+npx @codevoyant/agent-kit worktrees list --filter my-plan
 ```
 
 ---
@@ -310,3 +313,200 @@ Remove a worktree from the config registry without performing any git operations
 ```bash
 npx @codevoyant/agent-kit worktrees unregister --branch feat/existing
 ```
+
+---
+
+### `worktrees attach`
+
+Register a manually-created worktree in the config registry. Validates that the path exists and contains a `.git` entry, and auto-detects the branch name.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--path <path>` | `string` | **(required)** | Path to existing worktree |
+| `--plan <plan>` | `string` | **(required)** | Associated plan name |
+| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+
+```bash
+npx @codevoyant/agent-kit worktrees attach --path ~/codevoyant/myrepo/worktrees/my-plan --plan my-plan
+```
+
+---
+
+### `worktrees detect`
+
+Print current worktree context as JSON: project root, repo name, branch, whether inside a worktree, and associated plan name.
+
+```bash
+npx @codevoyant/agent-kit worktrees detect
+```
+
+Example output:
+```json
+{
+  "projectRoot": "/Users/me/projects/myrepo",
+  "repoName": "myrepo",
+  "branch": "feature-my-plan",
+  "isWorktree": true,
+  "plan": "my-plan"
+}
+```
+
+---
+
+### `git repo-name`
+
+Extract the repository name from the git remote URL. Falls back to the project root directory name when no remote is configured.
+
+```bash
+npx @codevoyant/agent-kit git repo-name
+# → "codevoyant"
+```
+
+---
+
+### `git branch`
+
+Get the current branch name, with optional prefix stripping and issue ID removal.
+
+| Option | Description |
+|--------|-------------|
+| `--clean` | Strip common prefixes: `feature/`, `bugfix/`, `hotfix/`, `fix/`, `release/`, `chore/`, `refactor/` |
+| `--strip-issue` | Also strip the leading issue ID (e.g. `ENG-123-`) from the branch name |
+
+```bash
+npx @codevoyant/agent-kit git branch
+# → "feature/ENG-123-my-feature"
+
+npx @codevoyant/agent-kit git branch --clean
+# → "ENG-123-my-feature"
+
+npx @codevoyant/agent-kit git branch --clean --strip-issue
+# → "my-feature"
+```
+
+Returns `"HEAD"` when in detached HEAD state.
+
+---
+
+### `git issue-id`
+
+Extract an issue ID from the current branch name. Matches the pattern `[A-Z]{2,}[_-][0-9]+` (e.g. `ENG-123`, `LINEAR-456`, `JIRA_789`).
+
+```bash
+npx @codevoyant/agent-kit git issue-id
+# → "ENG-123"
+```
+
+Always exits with code 0. Prints an empty string if no issue ID is found.
+
+---
+
+### `git info`
+
+Return all git metadata as a single JSON object. Useful for skills that need multiple values in one call.
+
+```bash
+npx @codevoyant/agent-kit git info
+```
+
+Example output:
+```json
+{
+  "repoName": "codevoyant",
+  "branch": "feature/ENG-123-my-feature",
+  "branchClean": "ENG-123-my-feature",
+  "issueId": "ENG-123",
+  "isWorktree": false,
+  "remoteUrl": "https://github.com/cloudvoyant/codevoyant.git"
+}
+```
+
+Edge case behaviour:
+- **Detached HEAD**: `branch` and `branchClean` return `"HEAD"`, `issueId` is `null`
+- **No remote**: `remoteUrl` is `null`, `repoName` falls back to the directory name
+- **Not in a git repo**: exits with code 1 and an error message
+
+---
+
+### `task-runner detect`
+
+Detect the active task runner by scanning for config files in priority order, then cache the result in `.codevoyant/settings.json`.
+
+Detection priority:
+1. `justfile` / `Justfile` -- runner: `just`
+2. `Taskfile.yml` / `Taskfile.yaml` -- runner: `task`
+3. `mise.toml` / `.mise.toml` -- runner: `mise run`
+4. `Makefile` -- runner: `make`
+5. `pyproject.toml` (with `[tool.poe]`) -- runner: `poe`
+6. `package.json` (with `scripts`) -- runner: `npm run` / `pnpm run` / `yarn run`
+
+For `package.json`, the command adapts based on lockfile: `pnpm-lock.yaml` selects `pnpm run`, `yarn.lock` selects `yarn run`, otherwise `npm run`.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--dir <dir>` | `string` | `.` | Directory to scan |
+| `--settings-dir <dir>` | `string` | `.codevoyant` | Directory for settings.json |
+
+```bash
+npx @codevoyant/agent-kit task-runner detect
+```
+
+Example output:
+```json
+{
+  "runner": "pnpm",
+  "command": "pnpm run",
+  "configFile": "package.json",
+  "detectedAt": "2026-03-19T20:00:00.000Z",
+  "cached": true
+}
+```
+
+Cache location: `.codevoyant/settings.json` under the `taskRunner` key.
+
+---
+
+### `task-runner list`
+
+List available tasks for the detected (or cached) runner.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--json` | `boolean` | `false` | Output as JSON |
+| `--dir <dir>` | `string` | `.` | Directory to scan |
+| `--settings-dir <dir>` | `string` | `.codevoyant` | Directory for settings.json |
+
+```bash
+npx @codevoyant/agent-kit task-runner list
+npx @codevoyant/agent-kit task-runner list --json
+```
+
+Structured listing per runner type:
+- **just**: `just --dump --dump-format json`
+- **mise**: `mise tasks ls --json`
+- **task**: `task --list-all --json`
+- **make**: parses Makefile targets via `make -pRrq`
+- **npm/pnpm/yarn**: reads `scripts` from `package.json`
+- **poe**: parses `poe --help` output
+
+---
+
+### `task-runner run`
+
+Run a task using the detected runner. Acts as a proxy that resolves the correct runner invocation.
+
+```bash
+npx @codevoyant/agent-kit task-runner run <task> [args...]
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--dir <dir>` | `string` | `.` | Directory to run in |
+| `--settings-dir <dir>` | `string` | `.codevoyant` | Directory for settings.json |
+
+```bash
+npx @codevoyant/agent-kit task-runner run test
+npx @codevoyant/agent-kit task-runner run build --watch
+```
+
+If no runner is cached, it runs detection first. Exits with code 1 if the task fails or no runner is found.
