@@ -32,13 +32,13 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "echo ${nextRelease.version} > version.txt && node -e \"const fs=require('fs'); ['adr','dev','spec'].forEach(p => { const path = 'plugins/' + p + '/.claude-plugin/plugin.json'; const data = JSON.parse(fs.readFileSync(path)); data.version='${nextRelease.version}'; fs.writeFileSync(path, JSON.stringify(data,null,2)); }); const pkgPath='packages/agent-kit/package.json'; const pkgData=JSON.parse(fs.readFileSync(pkgPath)); pkgData.version='${nextRelease.version}'; fs.writeFileSync(pkgPath, JSON.stringify(pkgData,null,2)+'\\n');\""
+        "prepareCmd": "echo ${nextRelease.version} > version.txt && node -e \"const fs=require('fs'); ['dev','em','memory','pm','spec','ux'].forEach(p => { const path = 'plugins/' + p + '/.claude-plugin/plugin.json'; const data = JSON.parse(fs.readFileSync(path)); data.version='${nextRelease.version}'; fs.writeFileSync(path, JSON.stringify(data,null,2)); }); const pkgPath='packages/agent-kit/package.json'; const pkgData=JSON.parse(fs.readFileSync(pkgPath)); pkgData.version='${nextRelease.version}'; fs.writeFileSync(pkgPath, JSON.stringify(pkgData,null,2)+'\\n');\""
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "version.txt", "plugins/adr/.claude-plugin/plugin.json", "plugins/dev/.claude-plugin/plugin.json", "plugins/spec/.claude-plugin/plugin.json", "packages/agent-kit/package.json"],
+        "assets": ["CHANGELOG.md", "version.txt", "plugins/dev/.claude-plugin/plugin.json", "plugins/em/.claude-plugin/plugin.json", "plugins/memory/.claude-plugin/plugin.json", "plugins/pm/.claude-plugin/plugin.json", "plugins/spec/.claude-plugin/plugin.json", "plugins/ux/.claude-plugin/plugin.json", "packages/agent-kit/package.json"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
