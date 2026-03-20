@@ -9,21 +9,17 @@ Print the following text exactly as written. Do not reformat, create tables, add
 
 pm — Product management planning commands for Claude Code
 
-  /pm:plan  [quarter|half|<horizon>] [--bg] [--silent]
-      Plan a product roadmap from strategic context, market signals, and feature ideas
+  /pm:plan  [quarter|half|annual] [--bg] [--silent]
+      Plan a product roadmap. Writes docs/product/roadmaps/YYMMDD-{type}-roadmap.md
+      and optionally attaches to a Linear initiative.
 
-  /pm:prd  [ticket-url|feature-description] [--bg] [--silent]
-      Generate a structured PRD (Product Requirements Document) for a single feature or initiative
-
-  /pm:breakdown  [feature-name|ticket-url] [--bg] [--silent]
-      Break down a feature from the product roadmap into a full PRD
+  /pm:prd  [feature|linear-url] [--bg] [--silent]
+      Write a PRD. Writes docs/prd/YYMMDD-{scope}-prd.md
+      and optionally attaches to a Linear project or initiative.
 
   /pm:review  [plan-dir] [--silent]
       Review a product roadmap for coverage gaps, prioritization quality, and strategic coherence
 
   /pm:update  [plan-slug] [change description] [--bg] [--silent]
       Update a PM roadmap or PRD by applying annotations or describing changes conversationally
-
-  /pm:docs  [plan-slug] [--bg] [--silent]
-      Generate or update product documentation in docs/product/ from pm plan artifacts
 

@@ -1,8 +1,9 @@
 ---
-description: "Use when writing a PRD for a single feature or initiative. Triggers on: \"write prd\", \"create prd\", \"product requirements\", \"requirements doc\", \"pm prd\", \"feature spec\". Produces PRD.md with problem statement, goals, user stories, success metrics, and out-of-scope items. Can seed from a ticket URL."
+description: "Use when writing a PRD for a single feature or initiative. Triggers on: \"write prd\", \"create prd\", \"product requirements\", \"requirements doc\", \"pm prd\", \"feature spec\". Produces PRD with problem statement, goals, requirements tables, acceptance criteria, and non-goals. Can seed from a ticket URL."
 argument-hint: "[ticket-url|feature-description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork
+agent: general-purpose
 model: claude-opus-4-6
 ---
 
@@ -15,11 +16,12 @@ Parse the user's input for:
 - A feature description string
 - Flags: `--bg` (background notification on completion), `--silent` (suppress output)
 
-Derive `SLUG`: use ticket ID (e.g. `ENG-42`) or slugify the feature name (lowercase, hyphens, no special chars).
+Derive:
+- `DATE_PREFIX = $(date +%y%m%d)` (YYMMDD format)
+- `SCOPE` = slugified feature/initiative name (from ticket title or user input, lowercase, hyphens, no special chars)
+- `OUTPUT_FILE = docs/prd/{DATE_PREFIX}-{SCOPE}-prd.md`
 
-Determine `PLAN_DIR`:
-- If called from `pm:breakdown`, `PLAN_DIR` is passed in context — use it directly.
-- If standalone, locate the most recently modified plan under `.codevoyant/pm/plans/`. If none exists, create `.codevoyant/pm/plans/{SLUG}/prds/`.
+Create directory: `mkdir -p docs/prd/`
 
 ## Step 1: Load feature context
 
@@ -30,7 +32,7 @@ Otherwise, ask the user:
 
 ## Step 2: Clarify requirements (standalone only)
 
-**Skip this step if called from pm:breakdown with sufficient context.**
+**Skip this step if called from pm:plan's inline PRD generation with sufficient context.**
 
 Ask the user with AskUserQuestion:
 > A few quick questions to shape the PRD:
@@ -42,36 +44,38 @@ Then ask as follow-ups:
 
 ## Step 3: Draft the PRD
 
-Generate a PRD document with these sections:
+Generate a PRD document using the structure from `references/prd-template.md`:
 
-### Problem Statement
-What problem does this solve, for whom, and why now?
+### Problem
+What problem does this solve, for whom, and why now? (1-3 sentences)
 
-### Goals & Success Metrics
-Measurable outcomes in OKR-style format. Include 2-4 metrics with baselines and targets where possible.
+### Goals
+Measurable outcomes. Include baseline and target where known.
 
-### User Stories
-Formatted as: `As a [persona], I want [action] so that [outcome]`
-Prioritized as P0 (must-have), P1 (should-have), P2 (nice-to-have).
+### Non-Goals
+Explicit out-of-scope items with rationale — one line each.
 
-### Functional Requirements
-Numbered list of what the system must do.
+### Users
+Primary user persona in one sentence. Secondary personas if relevant.
 
-### Non-functional Requirements
-Performance, security, scale, and accessibility considerations.
+### Requirements — Functional
+Table with columns: #, Requirement, Priority (P0/P1/P2), Notes.
 
-### Out of Scope
-Explicit deferrals with rationale for why each item is not included in this iteration.
+### Requirements — Non-Functional
+Table with columns: #, Requirement, Target (measurable).
+
+### Acceptance Criteria
+Checklist of verifiable conditions.
 
 ### Open Questions
-Unknowns that need resolution before or during implementation.
+Table with columns: Question, Owner, Due.
 
 ### Dependencies
 Upstream and downstream systems, teams, and external services.
 
 ## Step 4: Preview and confirm (standalone only)
 
-**If called from pm:breakdown, skip this step and write directly.**
+**If called from pm:plan's inline PRD generation, skip this step and write directly.**
 
 Show a one-paragraph summary of the PRD and ask with AskUserQuestion:
 > Does this PRD capture the requirements?
@@ -79,19 +83,53 @@ Show a one-paragraph summary of the PRD and ask with AskUserQuestion:
 Options:
 - `Looks good — write it`
 - `Adjust problem statement`
-- `Adjust user stories`
-- `Adjust out of scope`
+- `Adjust requirements`
+- `Adjust non-goals`
 
 If the user requests adjustments, revise the relevant section and re-present. Loop until "Looks good — write it".
 
 ## Step 5: Write the PRD
 
-Write the PRD to `{PLAN_DIR}/prds/{SLUG}.md`.
+Write the PRD to `{OUTPUT_FILE}` using the structure from `references/prd-template.md`.
 
-If `--bg` and standalone, notify:
+Report: `PRD written to {OUTPUT_FILE}`
+
+## Step 5.5: Linear Attachment (standalone only)
+
+Skip this step if called from pm:plan's inline PRD generation.
+
+AskUserQuestion:
+  question: "Attach PRD to Linear?"
+  header: "Linear"
+  multiSelect: false
+  options:
+    - label: "Yes — attach to a project"
+      description: "Attach to an existing or new Linear project"
+    - label: "Yes — attach to an initiative"
+      description: "Attach to an existing Linear initiative"
+    - label: "No — repo only"
+
+If "Yes — attach to a project":
+  1. `mcp__claude_ai_Linear__list_projects` — user selects or creates new
+  2. If creating new: `mcp__claude_ai_Linear__save_project` — store PROJECT_ID
+  3. `mcp__claude_ai_Linear__create_document`:
+       title: "{DATE_PREFIX} {SCOPE} PRD"
+       content: (full Markdown content of OUTPUT_FILE)
+       projectId: PROJECT_ID
+
+If "Yes — attach to an initiative":
+  1. `mcp__claude_ai_Linear__list_initiatives` — user selects — store INITIATIVE_ID
+  2. `mcp__claude_ai_Linear__create_document`:
+       title: "{DATE_PREFIX} {SCOPE} PRD"
+       content: (full Markdown content of OUTPUT_FILE)
+       initiativeId: INITIATIVE_ID
+
+If "No — repo only": skip. Report: "PRD saved to {OUTPUT_FILE}."
+
+## Step 6: Notify
+
+If `--bg`, notify:
 
 ```bash
-npx @codevoyant/agent-kit notify --title "pm:prd complete" --message "PRD written to {PLAN_DIR}/prds/{SLUG}.md"
+npx @codevoyant/agent-kit notify --title "pm:prd complete" --message "PRD written to {OUTPUT_FILE}"
 ```
-
-Report: `PRD written to {PLAN_DIR}/prds/{SLUG}.md`
