@@ -6,9 +6,9 @@ import { withBase } from 'vitepress'
 
 # PM Plugin <Badge type="warning" text="Experimental" />
 
-Product management — product roadmaps, feature PRDs, prioritization review, and product docs.
+Product management -- product roadmaps, feature PRDs, prioritization review, and Linear integration.
 
-The pm plugin structures product planning work: phased roadmaps with market context and feature prioritization, per-feature PRDs with acceptance criteria and metrics, coverage and feasibility review, and doc generation.
+The pm plugin structures product planning work: phased roadmaps with market context and feature prioritization, per-feature PRDs with acceptance criteria and metrics, coverage and feasibility review, and conversational plan updates.
 
 ## Installation
 
@@ -25,55 +25,48 @@ The pm plugin structures product planning work: phased roadmaps with market cont
 ### Plan a product roadmap
 
 ```bash
-/pm:plan "mobile onboarding redesign"     # auto-invokes pm:breakdown per feature
+/pm:plan quarter                                  # Quarterly product roadmap
+/pm:plan half                                     # Half-year roadmap
+/pm:plan annual                                   # Annual roadmap
 ```
 
-Produces `roadmap.md` in `.codevoyant/pm/plans/{slug}/` with phased feature prioritization and failure mode analysis. `pm:review` launches automatically in the background.
+Produces `roadmap.md` in `docs/product/roadmaps/` with phased feature prioritization. Generates inline PRDs per feature and optionally attaches to a Linear initiative. `pm:review` launches automatically in the background on completion.
 
 ### Write a PRD for a single feature
 
 ```bash
-/pm:prd "user authentication"             # standalone PRD in prds/{slug}.md
+/pm:prd "user authentication"                     # Standalone PRD
+/pm:prd https://linear.app/team/issue/ENG-42      # Seed from a Linear issue
 ```
 
-### Break down features from a roadmap
-
-```bash
-/pm:breakdown {slug} "feature name"       # calls pm:prd; writes to prds/{feature}.md
-```
+Writes a structured PRD to `docs/prd/` with problem statement, goals, requirements tables, acceptance criteria, and non-goals.
 
 ### Review a roadmap
 
 ```bash
-/pm:review {slug}                         # coverage, prioritization, PRD quality, strategy
-/pm:review {slug} --bg
+/pm:review                          # Auto-selects most recent plan
+/pm:review my-roadmap               # Review specific plan
+/pm:review my-roadmap --silent      # Suppress output
 ```
 
-### Generate product docs
+Checks coverage gaps, prioritization quality, missing PRDs, and strategic coherence.
+
+### Update a plan
 
 ```bash
-/pm:docs {slug}                           # writes docs/product/ from plan artifacts
+/pm:update my-plan "add mobile support feature"    # Conversational change
+/pm:update my-plan --bg                            # Apply annotations in background
 ```
+
+Applies inline `>` and `>>` annotations or accepts conversational changes to roadmap and PRD files.
 
 ## Skills
 
 | Skill | Description |
 |---|---|
-| `pm:plan` | Product roadmap planning with feature prioritization and market context |
-| `pm:breakdown` | Feature breakdown using pm:prd (one PRD per feature) |
-| `pm:prd` | Structured PRD from a feature description or ticket |
+| `pm:plan` | Product roadmap planning with feature prioritization and Linear attachment |
+| `pm:prd` | Structured PRD from a feature description or ticket URL |
 | `pm:review` | Review a product roadmap for coverage, prioritization, and feasibility |
-| `pm:docs` | Generate `docs/product/` from plan artifacts |
+| `pm:update` | Update a PM roadmap or PRD via annotations or conversational changes |
 | `pm:allow` | Pre-approve pm plugin permissions for uninterrupted agent execution |
 | `pm:help` | List all pm commands |
-
-## Plan Artifacts
-
-```
-.codevoyant/pm/plans/{slug}/
-├── roadmap.md          # phased product roadmap
-├── prds/
-│   └── {feature}.md    # per-feature PRD
-├── review.md           # latest review report
-└── research/           # analysis agents' findings
-```

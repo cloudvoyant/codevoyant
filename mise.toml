@@ -9,6 +9,8 @@ pnpm       = "latest"
 bats       = "latest"
 shellcheck = "latest"
 shfmt      = "latest"
+gh         = "latest"
+glab       = "latest"
 
 # ==============================================================================
 # UTILS

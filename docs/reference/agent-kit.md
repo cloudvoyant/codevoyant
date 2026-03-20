@@ -1,6 +1,6 @@
 # Library API Reference
 
-`@codevoyant/agent-kit` exports config utilities and TypeScript types for programmatic access to codevoyant state.
+`@codevoyant/agent-kit` exports config utilities and TypeScript types for programmatic access to codevoyant state. It also provides CLI commands for plan management, team knowledge (mem), and settings.
 
 ## Installation
 
@@ -8,7 +8,63 @@
 npm install @codevoyant/agent-kit
 ```
 
-## Usage
+## CLI Commands
+
+### mem
+
+Team knowledge indexing and lookup. All `mem` commands work via `npx` without any plugin installed.
+
+#### `mem index`
+
+Scan the project root for `.md` files with YAML frontmatter and write `.codevoyant/mem.json`.
+
+```bash
+npx @codevoyant/agent-kit mem index
+```
+
+Excludes `node_modules/`, `.codevoyant/`, `docs/`, and `.git/`. Only files with `status: active` or `status: draft` (or no status field) are included; `status: archived` files are excluded.
+
+Run after adding or editing team knowledge docs outside of `/mem:learn`.
+
+#### `mem find`
+
+Query the index for matching knowledge docs.
+
+```bash
+npx @codevoyant/agent-kit mem find --tag <tag> [--type <type>] [--json]
+```
+
+| Flag | Description |
+|------|-------------|
+| `--tag <tag>` | Filter by tag (repeatable, AND logic) |
+| `--type <type>` | Filter by type (`styleguide`, `recipe`, etc.) |
+| `--json` | Return full JSON entries instead of paths |
+
+Returns matching file paths by default, or full JSON entries with `--json`.
+
+#### `mem remember`
+
+Format the index as a terse table suitable for LLM context injection.
+
+```bash
+npx @codevoyant/agent-kit mem remember
+```
+
+Invoked by `/mem:remember` at session start, or automatically via the `CLAUDE.md` convention set up by `/mem:init`.
+
+### settings
+
+#### `settings get <dotpath>`
+
+Read a value from `.codevoyant/settings.json` using dot-notation.
+
+```bash
+npx @codevoyant/agent-kit settings get plugins.dev.docs
+```
+
+Used by skills to read plugin-specific configuration (e.g., doc relevance scoping for `mem find` calls).
+
+## Programmatic Usage
 
 ```ts
 import { readConfig, writeConfig, getConfigPath } from '@codevoyant/agent-kit';

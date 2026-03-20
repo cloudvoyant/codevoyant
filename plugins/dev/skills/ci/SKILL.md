@@ -26,7 +26,7 @@ npx @codevoyant/agent-kit ci detect
 
 Store `provider` (github | gitlab | unknown) and `remote` from the JSON output.
 
-If `provider` is `unknown`: inform user no CI provider could be detected, and that only Github Actions and Gitlab CI are supported at this time. Exit.
+If `provider` is `unknown`: inform the user "No CI provider could be detected. Only Github Actions and Gitlab CI are supported at this time." Exit.
 
 ## Step 2: Get Recent Runs
 
@@ -52,7 +52,7 @@ Filter for runs on the current branch triggered within the last 10 minutes. If n
 TaskCreate:
   subagent_type: general-purpose
   run_in_background: true
-  description: "CI: {branch} ({provider})"
+  description: 'CI: {branch} ({provider})'
   prompt: |
     Watch {provider} CI for branch {branch}. Run IDs: {run-ids}.
 

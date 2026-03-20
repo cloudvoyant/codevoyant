@@ -6,9 +6,9 @@ import { withBase } from 'vitepress'
 
 # Dev Plugin
 
-Development workflow commands — commits, review, diffing, and CI monitoring.
+Development workflow commands -- commits, CI monitoring, rebasing, architecture docs, and technical exploration.
 
-The dev plugin streamlines the day-to-day mechanics of software development: writing good commits, reviewing code systematically, comparing repositories, and keeping an eye on CI.
+The dev plugin streamlines the day-to-day mechanics of software development: writing good commits, monitoring CI, comparing repositories, resolving PR comments, rebasing safely, exploring technical approaches, and generating architecture documentation.
 
 ## Installation
 
@@ -24,7 +24,7 @@ The dev plugin streamlines the day-to-day mechanics of software development: wri
 
 ### Commit Workflow
 
-Use `/dev:commit` frequently — small, focused commits with clear messages are easier to review, revert, and understand in history.
+Use `/dev:commit` frequently -- small, focused commits with clear messages are easier to review, revert, and understand in history.
 
 ```bash
 # Stage your changes, then:
@@ -34,14 +34,11 @@ Use `/dev:commit` frequently — small, focused commits with clear messages are 
 # /dev:ci runs automatically in background after push
 ```
 
-### Review Before PR
-
-Run `/dev:review` before opening a pull request to catch issues early:
+### Before Opening a PR
 
 ```bash
-/dev:review
-# Address any flagged issues
 /dev:commit
+/dev:pr-fix     # if there are open review comments
 ```
 
 ### Tracking Template Drift
@@ -53,6 +50,19 @@ If your project was bootstrapped from a template, use `/dev:diff` periodically t
 # Review .claude/diff.md for structural differences
 ```
 
+### Architecture Documentation
+
+```bash
+/dev:docs                          # Generate docs/architecture/ from codebase scan
+/dev:plan "authentication system"  # Plan architecture for a specific feature
+```
+
+### Technical Research
+
+```bash
+/dev:explore "caching strategy"    # Research approaches, generate parallel proposals
+```
+
 ## Skills
 
 ### Conventional Commits
@@ -61,23 +71,27 @@ Write conventional commit messages:
 
 ```bash
 /dev:commit
+/dev:commit --atomic    # Split logical change groups into separate commits
+/dev:commit --yes       # Skip confirmation, auto-approve message
+/dev:commit --no-push   # Commit only, do not push or monitor CI
+/dev:commit --autofix   # If CI fails after push, automatically fix and re-push
 ```
 
 What happens:
 1. Runs formatters and linters before staging (auto-fixes are included in the commit)
 2. Analyzes your staged and unstaged changes
 3. Generates a conventional commit message (`feat:`, `fix:`, `chore:`, etc.)
-4. Shows the message for review — you can approve, edit, or cancel
+4. Shows the message for review -- you can approve, edit, or cancel
 5. Creates the commit, pushes, and launches CI monitoring in the background
 
-Follows the [Conventional Commits](https://www.conventionalcommits.org/) specification, which feeds directly into semantic versioning and changelog generation.
+Follows the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
 **Flags:**
-- `--atomic` — detect logical change groups and create one commit per group
-- `--single` — all staged changes in one commit (default)
-- `--yes` / `-y` — skip confirmation and auto-approve the message
-- `--no-push` — commit only, do not push or monitor CI
-- `--autofix` — if CI fails after push, automatically fix and re-push
+- `--atomic` -- detect logical change groups and create one commit per group
+- `--single` -- all staged changes in one commit (default)
+- `--yes` / `-y` -- skip confirmation and auto-approve the message
+- `--no-push` -- commit only, do not push or monitor CI
+- `--autofix` -- if CI fails after push, automatically fix and re-push
 
 ### CI Monitor
 
@@ -85,16 +99,12 @@ Monitor CI/CD workflows and verify status after a push:
 
 ```bash
 /dev:ci
+/dev:ci --wait       # Block until CI completes
+/dev:ci --autofix    # Automatically fix failures and re-push (up to 2 attempts)
+/dev:ci --silent     # Suppress desktop notification
 ```
 
-Works with both **GitHub Actions** and **GitLab CI** — provider is auto-detected from the remote URL.
-
-Runs in the **background by default** so you can keep working. A desktop notification fires when checks complete or fail.
-
-**Flags:**
-- `--wait` — block until CI completes instead of running in background
-- `--autofix` — on failure, automatically fix the reported errors and re-push (up to 2 attempts)
-- `--silent` — suppress the desktop notification
+Works with both **GitHub Actions** and **GitLab CI** -- provider is auto-detected from the remote URL. Runs in the **background by default** so you can keep working. A desktop notification fires when checks complete or fail.
 
 ### Repository Comparison
 
@@ -115,7 +125,6 @@ The command will:
 - Track how your project has diverged from a template or upstream fork
 - Compare architectures between similar codebases
 - Analyze migration differences between versions
-- Review structural changes before merging branches across repos
 
 ### Fix PR Review Comments
 
@@ -123,15 +132,12 @@ Fetch open PR/MR review comments and propose fixes:
 
 ```bash
 /dev:pr-fix [pr-id]
+/dev:pr-fix [pr-id] --github    # Force GitHub provider
+/dev:pr-fix [pr-id] --gitlab    # Force GitLab provider
+/dev:pr-fix --silent             # Suppress desktop notification
 ```
 
-Works with GitHub and GitLab. For each PR/MR with unresolved review comments, creates `.codevoyant/pr-fix/{pr-id}.md` containing the review threads and a "Proposed Fixes" section written by a background agent.
-
-Proposals are written to the document only — **not applied to code** — so you review them before deciding what to apply.
-
-**Flags:**
-- `pr-id` (optional) — target a specific PR/MR number; omit to process all open PRs/MRs with pending comments
-- `--silent` — suppress the desktop notification when proposals are ready
+Works with GitHub and GitLab. For each PR/MR with unresolved review comments, creates `.codevoyant/pr-fix/{pr-id}.md` containing the review threads and a "Proposed Fixes" section written by a background agent. Proposals are written to the document only -- **not applied to code** -- so you review them before deciding what to apply.
 
 ### Safe Rebase
 
@@ -143,25 +149,48 @@ Safely rebase the current branch onto an updated base branch:
 /dev:rebase main --push
 ```
 
-Uses a pre-rebase intent snapshot to resolve conflicts correctly, preventing the silent change loss that happens with naive rebasing. Conflict marker sides during `git rebase` are counter-intuitive (`HEAD` = base branch, not your branch) — this skill handles that automatically.
+Uses a pre-rebase intent snapshot to resolve conflicts correctly, preventing the silent change loss that happens with naive rebasing.
 
 **How it works:**
+1. **Intent snapshot** -- captures your branch's full diff, file list, and commit log before touching git
+2. **Confirmation dialog** -- shows branch summary and rebase target before proceeding
+3. **Conflict resolution** -- handles the counter-intuitive `HEAD` = base branch behavior during rebase
+4. **Post-rebase verification** -- checks for silently dropped files, runs formatters and tests
+5. **Push safety** -- uses `--force-with-lease` (not `--force`) to avoid overwriting concurrent remote changes
 
-1. **Intent snapshot** — Before touching git, captures your branch's full diff from the divergence point, the list of every file the branch modifies, and the commit log. This becomes the source of truth for all conflict resolution.
+### Technical Exploration
 
-2. **Confirmation dialog** — Shows a branch summary ("Branch intent: N commits, M files changed: [file list]") and the rebase target, then asks for confirmation before proceeding. You can cancel without any changes being made.
+Research a technical problem before building:
 
-3. **Conflict resolution** — During the rebase, `<<<<<<< HEAD` is actually the *base branch* (not your branch) — the skill handles this correctly and resolves conflicts by applying your branch's intended change onto the base branch's current version. For ambiguous conflicts, it stops and shows you both sides clearly, asking what the resolved version should be.
+```bash
+/dev:explore "caching strategy"
+/dev:explore "auth approaches" --aspects
+```
 
-4. **Post-rebase verification** — After completing, checks that no files were silently dropped (warns if a branch-modified file is no longer changed), flags unexplained large diffs, runs formatters (auto-staged onto last commit), and runs lint + tests if available. Lint failures block the push.
+Runs parallel proposal generation via subagents. Output lives in `.codevoyant/explore/{name}/` so it can feed into `/spec:new` later.
 
-5. **Push safety** — Uses `--force-with-lease` (not `--force`) to avoid overwriting concurrent remote changes. Launches CI monitoring automatically after push.
+### Architecture Documentation
 
-**Rebasing main:** If you're on `main` itself, `/dev:rebase` fast-forwards main to `origin/main` via `git fetch` + `git rebase` instead of doing a full branch rebase.
+Generate or update architecture documentation from a codebase scan:
 
-**Flags:**
-- `base-branch` (optional) — rebase target; defaults to `origin/main` or `origin/master`
-- `--push` — push with `--force-with-lease` after a successful rebase
+```bash
+/dev:docs                  # Generate docs/architecture/ from codebase
+/dev:docs --bg             # Run in background, notify when done
+```
+
+Produces component maps, data flow diagrams, API inventories, and dependency graphs.
+
+### Architecture Planning
+
+Plan architecture for a project or feature:
+
+```bash
+/dev:plan "authentication system"
+/dev:plan --update-overview        # Update the system overview
+/dev:plan "auth" --bg              # Run in background
+```
+
+Writes to `docs/architecture/README.md` (system overview) and `docs/architecture/{feature}.md` (feature-specific).
 
 ### Pre-approve Agent Permissions
 
@@ -170,12 +199,7 @@ Uses a pre-rebase intent snapshot to resolve conflicts correctly, preventing the
 /dev:allow --global  # Write to ~/.claude/settings.json
 ```
 
-Adds the allow entries needed for `/dev:commit` and `/dev:ci` to run without permission prompts — git operations (including push), GitHub/GitLab CLI, desktop notifications, and the project's task runner. Auto-detects the running agent (Claude Code, OpenCode, VS Code Copilot).
-
-Each plugin has its own allow skill: `/spec:allow`, `/em:allow`, `/pm:allow`, `/ux:allow`.
-
-**Flags:**
-- `--global` — write to global config instead of project-level
+Adds the allow entries needed for `/dev:commit` and `/dev:ci` to run without permission prompts -- git operations (including push), GitHub/GitLab CLI, desktop notifications, and the project's task runner.
 
 ### List All Commands
 

@@ -6,9 +6,9 @@ import { withBase } from 'vitepress'
 
 # EM Plugin <Badge type="warning" text="Experimental" />
 
-Engineering management — roadmap planning, epic breakdowns, team sync, and architecture design.
+Engineering management -- project planning, task breakdowns, roadmap review, and Linear integration.
 
-The em plugin gives AI agents structured workflows for planning engineering work: single-epic or multi-epic roadmaps with ASCII architecture diagrams, detailed task breakdowns with estimates, bidirectional sync with Linear/Notion/GitHub, and doc generation from plan artifacts.
+The em plugin gives AI agents structured workflows for planning engineering work: milestone-grouped task plans with Linear as the primary tracker, capacity and dependency review, and conversational plan updates.
 
 ## Installation
 
@@ -22,62 +22,48 @@ The em plugin gives AI agents structured workflows for planning engineering work
 
 ## Typical Workflows
 
-### Plan a roadmap
+### Plan a project
 
 ```bash
-/em:plan "migrate auth to OAuth2"         # single epic
-/em:plan "Q3 infrastructure roadmap"      # multi-epic — auto-invokes em:breakdown per epic
+/em:plan "migrate auth to OAuth2"                     # Plan locally, push to Linear on confirmation
+/em:plan https://linear.app/team/project/PRJ-123      # Seed from existing Linear project
+/em:plan "Q3 infrastructure" --delegate                # Create stub issues for PM/UX/dev
 ```
 
-Produces `roadmap.md` in `.codevoyant/em/plans/{slug}/` with ASCII architecture diagrams, data flows, failure modes, and task breakdowns. `em:review` launches automatically in the background on completion.
+Produces a local milestone-grouped task plan, then pushes to Linear on user confirmation. The `--delegate` flag creates stub issues instead of a full breakdown, useful when different people will own different parts.
 
-### Break down an epic manually
+### Continue from existing Linear state
 
 ```bash
-/em:breakdown {slug} "epic name"          # standalone; writes to breakdowns/{epic}.md
+/em:plan --continue PRJ-123                            # Resume from existing Linear project
+/em:plan --push my-plan-slug                           # Re-push a saved local plan to Linear
 ```
 
 ### Review a roadmap
 
 ```bash
-/em:review {slug}                         # capacity, dependencies, risks, phasing
-/em:review {slug} --bg                    # background — notifies when done
+/em:review                          # Auto-selects most recent plan
+/em:review my-roadmap               # Review specific plan
+/em:review my-roadmap --silent      # Suppress output
 ```
 
-### Sync with your tracker
+Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after `em:plan` completes.
+
+### Update a plan
 
 ```bash
-/em:sync {slug} --push                    # push roadmap to Linear/Notion/GitHub
-/em:sync {slug} --pull                    # pull updates back into plan files
+/em:update my-plan "add error handling milestone"      # Conversational change
+/em:update my-plan --bg                                # Apply annotations in background
 ```
 
-Detects your team's work style (epic-based, project-based, milestone-based) and tracker on first run; caches to `.codevoyant/em/team-config.json`.
-
-### Generate planning docs
-
-```bash
-/em:docs {slug}                           # writes docs/planning/ from plan artifacts
-```
+Applies inline `>` and `>>` annotations or accepts conversational changes to plan files.
 
 ## Skills
 
 | Skill | Description |
 |---|---|
-| `em:plan` | Roadmap planning with architecture design and epic breakdowns |
-| `em:breakdown` | Detailed task breakdown for an epic (sub-tasks, estimates, acceptance criteria) |
+| `em:plan` | Plan a project locally with milestone-grouped tasks, then push to Linear |
 | `em:review` | Review a roadmap for capacity, dependencies, risks, and phasing |
-| `em:sync` | Bidirectional sync with Linear, Notion, or GitHub |
-| `em:docs` | Generate `docs/planning/` from plan artifacts |
+| `em:update` | Update an EM plan via annotations or conversational changes |
 | `em:allow` | Pre-approve em plugin permissions for uninterrupted agent execution |
 | `em:help` | List all em commands |
-
-## Plan Artifacts
-
-```
-.codevoyant/em/plans/{slug}/
-├── roadmap.md          # high-level roadmap with ASCII diagrams
-├── breakdowns/
-│   └── {epic}.md       # per-epic task breakdown
-├── review.md           # latest review report
-└── research/           # analysis agents' findings
-```

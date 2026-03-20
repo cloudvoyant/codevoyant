@@ -110,4 +110,80 @@ describe('mem command (integration)', () => {
       description: 'My guide',
     });
   });
+
+  it('learn → index → find round-trip', () => {
+    // Simulate mem:learn output: write fixture .md with frontmatter
+    writeMd(
+      tmpDir,
+      'styleguide/pnpm-over-npm.md',
+      'type: styleguide\ntags: [pnpm, packages]\ndescription: Always use pnpm not npm\nstatus: active',
+      '\nAlways use pnpm instead of npm for package management.\n',
+    );
+
+    // Index
+    const indexResult = spawnCLI(['mem', 'index', '--dir', tmpDir], tmpDir);
+    expect(indexResult.status).toBe(0);
+    expect(indexResult.stdout).toContain('Indexed 1 doc(s)');
+
+    // Find by tag
+    const findResult = spawnCLI(
+      ['mem', 'find', '--type', 'styleguide', '--tag', 'pnpm', '--json', '--dir', tmpDir],
+      tmpDir,
+    );
+    expect(findResult.status).toBe(0);
+    const entries = JSON.parse(findResult.stdout);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].path).toBe('styleguide/pnpm-over-npm.md');
+    expect(entries[0].description).toBe('Always use pnpm not npm');
+    expect(entries[0].tags).toContain('pnpm');
+    expect(entries[0].tags).toContain('packages');
+  });
+
+  it('mem remember formats terse table', () => {
+    writeMd(
+      tmpDir,
+      'styleguide/pnpm.md',
+      'type: styleguide\ntags: [pnpm, package-manager]\ndescription: Always use pnpm not npm',
+    );
+    writeMd(
+      tmpDir,
+      'recipes/deploy.md',
+      'type: recipe\ntags: [deployment, staging]\ndescription: How to deploy to staging',
+    );
+
+    spawnCLI(['mem', 'index', '--dir', tmpDir], tmpDir);
+
+    const result = spawnCLI(['mem', 'remember', '--dir', tmpDir], tmpDir);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('## Team Knowledge');
+    expect(result.stdout).toContain('styleguide/pnpm.md');
+    expect(result.stdout).toContain('[pnpm, package-manager]');
+    expect(result.stdout).toContain('Always use pnpm not npm');
+    expect(result.stdout).toContain('recipes/deploy.md');
+    expect(result.stdout).toContain('[deployment, staging]');
+    expect(result.stdout).toContain('How to deploy to staging');
+    // No raw JSON fields
+    expect(result.stdout).not.toContain('"path"');
+    expect(result.stdout).not.toContain('"type"');
+  });
+
+  it('mem remember auto-indexes when mem.json missing', () => {
+    writeMd(
+      tmpDir,
+      'recipes/deploy.md',
+      'type: recipe\ntags: [deployment]\ndescription: Deploy guide',
+    );
+
+    // Do NOT run mem index — remember should auto-index
+    const result = spawnCLI(['mem', 'remember', '--dir', tmpDir], tmpDir);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('## Team Knowledge');
+    expect(result.stdout).toContain('recipes/deploy.md');
+  });
+
+  it('mem remember shows empty-state message when no docs exist', () => {
+    const result = spawnCLI(['mem', 'remember', '--dir', tmpDir], tmpDir);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('No team knowledge indexed yet');
+  });
 });

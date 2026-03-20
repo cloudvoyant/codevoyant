@@ -117,6 +117,55 @@ See the [Pm plugin reference](/plugins/pm) for all skills.
 
 ---
 
+## Memory — team knowledge capture and recall
+
+The memory plugin (and the `mem` CLI commands) let you capture team conventions, decisions, and procedures as indexed markdown docs. Knowledge loads into AI context at session start so the agent always knows your team's rules.
+
+**First-time setup (once per project):**
+
+```bash
+/mem:init                   # Writes CLAUDE.md so knowledge loads every session
+```
+
+**Capture knowledge as you work:**
+
+```bash
+/mem:learn always use pnpm           # Writes styleguide/pnpm-over-npm.md with frontmatter
+/mem:learn how to deploy to staging  # Writes recipes/deploy-staging.md with frontmatter
+```
+
+**Load knowledge at session start:**
+
+```bash
+/mem:remember               # Prints terse table of all indexed docs into context
+```
+
+After running `mem:init`, this happens automatically.
+
+**Search for specific knowledge:**
+
+```bash
+/mem:find --tag deployment         # Find docs tagged "deployment"
+/mem:find --type recipe --json     # Full JSON output
+```
+
+**Frontmatter convention:** Knowledge docs are regular `.md` files with YAML frontmatter. The `type` field (`styleguide` or `recipe`) and `tags` array drive all lookup. Files can live anywhere in the project root -- the indexer scans automatically, excluding `node_modules/`, `.codevoyant/`, `docs/`, and `.git/`.
+
+```yaml
+---
+type: styleguide
+tags: [tooling, package-manager]
+description: Always use pnpm, never npm or yarn
+status: active
+---
+```
+
+**Works without the plugin:** All `mem` commands are available via `npx @codevoyant/agent-kit mem <command>` -- no plugin installation required.
+
+See the [Memory plugin reference](/plugins/memory) for all skills.
+
+---
+
 ## UX — prototyping and style research *(Experimental)*
 
 The ux plugin supports frontend design exploration: full SvelteKit prototypes with feature-slice architecture, lightweight single-file wireframes, and automated style extraction from live sites.
