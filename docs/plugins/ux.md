@@ -2,7 +2,9 @@
 import { withBase } from 'vitepress'
 </script>
 
-# UX Plugin *(Experimental)*
+<img :src="withBase('/icons/ux.svg')" width="64" height="64" style="margin-bottom: 1rem" />
+
+# UX Plugin <Badge type="warning" text="Experimental" />
 
 UX prototyping and style research — scaffold SvelteKit prototypes, create lightweight wireframe explorations, and synthesize visual styles from live sites.
 

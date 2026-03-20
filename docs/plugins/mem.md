@@ -4,7 +4,7 @@ import { withBase } from 'vitepress'
 
 <img :src="withBase('/icons/mem.svg')" width="64" height="64" style="margin-bottom: 1rem" />
 
-# Memory Plugin
+# Mem Plugin <Badge type="warning" text="Experimental" />
 
 Team knowledge capture and recall -- structured markdown docs with frontmatter, indexed for fast lookup.
 
