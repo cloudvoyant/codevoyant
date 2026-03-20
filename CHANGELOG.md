@@ -1,3 +1,34 @@
+## [1.25.0](https://github.com/cloudvoyant/codevoyant/compare/v1.24.2...v1.25.0) (2026-03-20)
+
+### Features
+
+* **agent-kit:** add git, task-runner, worktree overhaul; remove style plugin
+
+- Remove plugins/style/ entirely; clean up all cross-references
+- Simplify spec:new: remove Step 4.3 exploration, proposals/, spec:worktree
+- Add dev:explore skill for standalone technical research and proposals
+- Overhaul worktrees: global path ~/codevoyant/[repo]/worktrees/[plan],
+  add attach/detect subcommands, isInWorktree(), getRepoName() exports
+- Add task-runner detect/list/run commands with justfile→task→mise→make→
+  npm/pnpm/yarn priority; falls back to raw config if binary absent
+- Add git repo-name/branch/issue-id/info subcommands with edge case guards
+- Rewrite all 40 SKILL.md descriptions with intent-based ≤512-char pattern
+- Add 72 new unit tests (project, git, task-runner, fallback)
+- Update docs/reference/cli.md and agent-kit.md with new APIs
+
+
+### Bug Fixes
+
+* **test:** configure git user in beforeEach to fix CI branch detection
+
+- git commit --allow-empty fails silently in CI without user.email/name,
+  leaving the repo in unborn-branch state and causing all branch tests
+  to return HEAD
+- Remove stale plugins/style/.claude-plugin/plugin.json from release.yml
+  GitHub Release file list (style plugin was deleted)
+
+* **release:** remove style plugin from semantic-release prepareCmd and assets
+
 ## [1.24.2](https://github.com/cloudvoyant/codevoyant/compare/v1.24.1...v1.24.2) (2026-03-19)
 
 ### Bug Fixes

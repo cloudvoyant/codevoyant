@@ -1,6 +1,6 @@
 {
   "name": "adr",
-  "version": "1.24.2",
+  "version": "1.25.0",
   "description": "Architecture Decision Records (ADR) commands for Claude Code - create and capture architectural decisions",
   "author": {
     "name": "Cloudvoyant",
