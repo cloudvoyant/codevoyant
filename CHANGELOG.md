@@ -1,3 +1,15 @@
+## [1.27.0](https://github.com/cloudvoyant/codevoyant/compare/v1.26.0...v1.27.0) (2026-03-20)
+
+### Features
+
+* **ux:** add ux plugin with docs, icon, and marketplace entry
+
+- Add ux plugin skills: prototype, explore, style-synthesize, help
+- Add marketplace.json entry and docs/plugins/ux.md reference page
+- Add ux to docs homepage features grid, user-guide, and sidebar
+- Add docs/public/icons/ux.svg in project icon style
+- Update e2e EXPECTED_COMMANDS to include ux skills
+
 ## [1.26.0](https://github.com/cloudvoyant/codevoyant/compare/v1.25.0...v1.26.0) (2026-03-20)
 
 ### Features
