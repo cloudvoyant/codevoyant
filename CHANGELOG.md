@@ -28,7 +28,7 @@ feat: add per-plugin allow skills
 
 - add allow skill to spec, em, pm, ux plugins (one-liner each)
 - simplify dev:allow to delegate to agent-kit perms add
-- each plugin's allow skill calls perms add --plugins <name>
+- each plugin's allow skill calls perms add --plugins &lt;name&gt;
 
 feat(dev): rewrite dev:ci skill
 
