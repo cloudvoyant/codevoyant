@@ -1,6 +1,6 @@
 {
   "name": "ux",
-  "version": "1.29.0",
+  "version": "1.29.1",
   "description": "UX prototyping — scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites",
   "author": {
     "name": "Cloudvoyant",

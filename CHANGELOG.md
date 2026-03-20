@@ -1,3 +1,9 @@
+## [1.29.1](https://github.com/cloudvoyant/codevoyant/compare/v1.29.0...v1.29.1) (2026-03-20)
+
+### Bug Fixes
+
+* **docs:** escape angle brackets in changelog to fix VitePress build
+
 ## [1.29.0](https://github.com/cloudvoyant/codevoyant/compare/v1.28.0...v1.29.0) (2026-03-20)
 
 ### Features
