@@ -33,3 +33,6 @@ dev — Development workflow commands for Claude Code
   /dev:docs  [--bg] [--silent]
       Generate or update architecture documentation in docs/architecture/ from a codebase scan
 
+  /dev:plan  [feature-name] [--update-overview] [--bg] [--silent]
+      Plan architecture for a project or feature. Writes to docs/architecture/.
+
