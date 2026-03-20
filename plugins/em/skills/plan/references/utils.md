@@ -1,3 +1,5 @@
+Linear assumed as tracker -- no tracker detection needed.
+
 # Notification Pattern
 
 Cross-platform desktop notification for Claude Code background agents.

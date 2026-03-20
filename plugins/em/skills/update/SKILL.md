@@ -1,5 +1,5 @@
 ---
-description: "Use when modifying an existing em roadmap or breakdown. Triggers on: \"update em\", \"change roadmap\", \"modify epic\", \"add task\", \"remove epic\", \"rename phase\", \"apply annotations\", \"edit roadmap\". Applies inline > and >> annotations or accepts conversational changes to roadmap.md or breakdowns."
+description: "Use when modifying an existing em plan or task files. Triggers on: \"update em\", \"change plan\", \"modify epic\", \"add task\", \"remove task\", \"rename phase\", \"apply annotations\", \"edit plan\". Applies inline > and >> annotations or accepts conversational changes to plan.md or task milestone files."
 argument-hint: "[plan-slug] [change description] [--bg] [--silent]"
 disable-model-invocation: true
 context: fork
@@ -9,7 +9,7 @@ model: claude-sonnet-4-6
 
 > **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run steps sequentially.
 
-Update an EM roadmap or breakdown file. Two input modes:
+Update an EM plan or task milestone file. Two input modes:
 - **Annotations**: `>` and `>>` markers already written in plan files
 - **Conversational**: plain-language description of what to change
 
@@ -28,7 +28,7 @@ Update an EM roadmap or breakdown file. Two input modes:
 - Configure OAuth providers >> change to use env vars
 ```
 
-Both can appear in `roadmap.md` and any `breakdowns/*.md`.
+Both can appear in `plan.md` and any `tasks/*.md`.
 
 ## Step -1: Parse Flags
 
@@ -42,18 +42,18 @@ If `BG_MODE=true`: skip the confirmation in Step 1 and send a desktop notificati
 ## Step 0: Select Plan
 
 Check for plan slug argument. If not provided:
-1. List `.codevoyant/em/plans/*/roadmap.md` sorted by modification time (most recent first)
+1. List `.codevoyant/em/plans/*/plan.md` sorted by modification time (most recent first)
 2. If only one plan, auto-select it
 3. If multiple, use AskUserQuestion to present the list and ask the user to choose
 4. If none exist, inform user to run `/em:plan` first
 
-Verify `.codevoyant/em/plans/{slug}/roadmap.md` exists. Set `PLAN_DIR=".codevoyant/em/plans/{slug}"`.
+Verify `.codevoyant/em/plans/{slug}/plan.md` exists. Set `PLAN_DIR=".codevoyant/em/plans/{slug}"`.
 
 ## Step 0.5: Determine Input Mode
 
 Check the argument string and triggering message for a change description:
 - If a non-slug argument is present (e.g., `/em:update add observability to phase 3`), treat everything after the slug as `CHANGE_DESCRIPTION`
-- If neither: `CHANGE_DESCRIPTION` is empty → annotation mode
+- If neither: `CHANGE_DESCRIPTION` is empty -> annotation mode
 
 Set `INPUT_MODE`:
 - `conversational` — `CHANGE_DESCRIPTION` is non-empty
@@ -62,25 +62,27 @@ Set `INPUT_MODE`:
 
 ## Step 1: Process Conversational Change (if INPUT_MODE includes `conversational`)
 
-Read `roadmap.md` and any relevant `breakdowns/*.md` to understand current structure.
+Read `plan.md` and any relevant `tasks/*.md` to understand current structure.
 
 Translate `CHANGE_DESCRIPTION` into concrete edits:
 1. Identify exactly which files are affected
-2. Determine what needs to change — specific new text, removed lines, renamed sections
+2. Determine what needs to change -- specific new text, removed lines, renamed sections
 3. Show a concise preview before applying:
 
 ```
 Proposed changes for: "{CHANGE_DESCRIPTION}"
 
-  roadmap.md
+  plan.md
     + Phase 2: add observability milestone under deliverables
 
-  breakdowns/search-v2.md
+  tasks/develop.md
     + Task: "Set up distributed tracing with OpenTelemetry"
     + Failure mode: "Trace context lost across service boundaries"
 
 Apply these changes?
 ```
+
+If the change marks a task as done, after applying offer: "Push status update to Linear? (uses `mcp__claude_ai_Linear__save_issue` with completed state)"
 
 If `BG_MODE=true`, auto-apply without asking.
 
@@ -105,8 +107,8 @@ options:
 ## Step 2: Scan for Annotations
 
 ```bash
-grep -rn "^>" {PLAN_DIR}/roadmap.md {PLAN_DIR}/breakdowns/ 2>/dev/null
-grep -rn ">>" {PLAN_DIR}/roadmap.md {PLAN_DIR}/breakdowns/ 2>/dev/null
+grep -rn "^>" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
+grep -rn ">>" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
 ```
 
 For each annotation, parse: FILE, LINE_NUM, CONTENT (before `>>`), INSTRUCTION.
@@ -115,9 +117,9 @@ If `INPUT_MODE=annotations` and no annotations found:
 ```
 No annotations found in {slug}.
 
-To annotate, edit roadmap.md or breakdowns/*.md directly:
-  > rewrite this section for the new approach     ← applies to next block
-  - epic name >> mark done                        ← applies to this line
+To annotate, edit plan.md or tasks/*.md directly:
+  > rewrite this section for the new approach     -- applies to next block
+  - task name >> mark done                        -- applies to this line
 ```
 Exit.
 
@@ -139,8 +141,8 @@ Remove the annotation marker after applying. Log each change for the summary.
 ## Step 4: Consistency Pass
 
 After all changes:
-- Verify all referenced breakdown files still exist in `{PLAN_DIR}/breakdowns/`
-- Check phase numbering and naming is consistent throughout `roadmap.md`
+- Verify task milestone files still exist: `{PLAN_DIR}/tasks/design.md`, `tasks/develop.md`, `tasks/deploy.md`
+- Check milestone naming and task numbering is consistent throughout `plan.md`
 - Verify "NOT this period" section still accurately reflects deferrals
 
 ## Step 5: Validation Pass
@@ -149,22 +151,22 @@ Run 2 validation rounds autonomously — no user prompts.
 
 For each round, launch parallel agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
-**Plan-level agent** — checks `roadmap.md`: phases have theme/deliverables/risks, failure modes filled, assumptions listed.
+**Plan-level agent** -- checks `plan.md`: milestones have objectives/deliverables/risks, assumptions listed.
 
-**Per-breakdown agents** — one per file touched in this update: architecture diagram non-trivial, failure modes filled, tasks specific and actionable.
+**Per-task-file agents** -- one per `tasks/*.md` file touched in this update: each task has requirements, ACs, design/SA fields filled; tasks are specific and actionable.
 
 Collect results (`TaskOutput block: true`). Auto-fix any `NEEDS_IMPROVEMENT` issues. Run round 2 after fixes. Cap at 3 rounds.
 
 ## Step 6: Report
 
 ```
-✓ Updated: {slug}
+Updated: {slug}
 
   Changes applied:
-    roadmap.md:24        — added observability milestone to Phase 2
-    breakdowns/search-v2.md:8 — added OpenTelemetry task
+    plan.md:24           -- added observability milestone
+    tasks/develop.md:8   -- added OpenTelemetry task
 
-  Validation: {N} rounds — {PASS | X issues remain}
+  Validation: {N} rounds -- {PASS | X issues remain}
 ```
 
 If an annotation was ambiguous or could not be applied:

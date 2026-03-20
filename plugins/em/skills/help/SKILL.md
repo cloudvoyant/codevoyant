@@ -9,21 +9,15 @@ Print the following text exactly as written. Do not reformat, create tables, add
 
 em — Engineering management planning commands for Claude Code
 
-  /em:plan  [quarter|half|<horizon>] [--bg] [--silent]
-      Plan a single epic or a multi-epic roadmap
-
-  /em:breakdown  [ticket-url|epic-description] [--bg] [--silent]
-      Produce a detailed task breakdown for an epic — sub-tasks with estimates, acceptance criteria, and dependencies
+  /em:plan  [description|linear-url] [--delegate] [--continue <id>] [--push <slug>] [--bg] [--silent]
+      Plan a project or initiative locally then push to Linear on confirmation.
+      --delegate: create PM/UX/dev stub issues instead of full breakdown
+      --continue <id>: resume from existing Linear project state
+      --push <slug>: re-push a saved local plan to Linear
 
   /em:review  [roadmap-file] [--silent]
       Review an engineering roadmap or epic plan for capacity realism, dependency gaps, and phasing quality
 
   /em:update  [plan-slug] [change description] [--bg] [--silent]
-      Update an EM roadmap or breakdown by applying annotations or describing changes conversationally
-
-  /em:sync  [push|pull] [--tracker linear|notion|github] [--plan slug] [--bg] [--silent]
-      Import or export an em roadmap to/from Linear, Notion, or GitHub
-
-  /em:docs  [plan-slug] [--bg] [--silent]
-      Generate or update planning documentation in docs/planning/ from em plan artifacts
+      Update an EM plan by applying annotations or describing changes conversationally
 
