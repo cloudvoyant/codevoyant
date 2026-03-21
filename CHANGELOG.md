@@ -1,3 +1,9 @@
+## [1.29.3](https://github.com/cloudvoyant/codevoyant/compare/v1.29.2...v1.29.3) (2026-03-21)
+
+### Bug Fixes
+
+* **mem:** use colon-scoped name field (mem:find) for npx skills compat
+
 ## [1.29.2](https://github.com/cloudvoyant/codevoyant/compare/v1.29.1...v1.29.2) (2026-03-21)
 
 ### Bug Fixes
