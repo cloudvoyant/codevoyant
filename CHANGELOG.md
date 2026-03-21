@@ -1,3 +1,13 @@
+## [1.30.1](https://github.com/cloudvoyant/codevoyant/compare/v1.30.0...v1.30.1) (2026-03-21)
+
+### Bug Fixes
+
+* remove legacy plugin structure and update mem2 argument hint
+
+- delete .claude-plugin/marketplace.json and plugins/ plugin.json files
+- remove e2e/tests/marketplace.test.ts (tested deleted structure)
+- update mem2 argument-hint to list concrete subcommands
+
 ## [1.30.0](https://github.com/cloudvoyant/codevoyant/compare/v1.29.3...v1.30.0) (2026-03-21)
 
 ### Features
