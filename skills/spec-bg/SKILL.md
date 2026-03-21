@@ -1,11 +1,10 @@
 ---
-description: "Use when running a plan autonomously in the background. Triggers on: \"spec bg\", \"run in background\", \"hands-free\", \"run plan unattended\", \"execute autonomously\", \"let the agent handle it\", \"run without me\". Executes every task autonomously and updates progress in real-time while you keep working."
+description: 'Use when running a plan autonomously in the background. Triggers on: "spec bg", "run in background", "hands-free", "run plan unattended", "execute autonomously", "let the agent handle it", "run without me". Executes every task autonomously and updates progress in real-time while you keep working.'
 name: spec:bg
 license: MIT
-compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
-argument-hint: "[plan-name] [--yes|-y] [--commit|-c] [--silent]"
+compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
+argument-hint: '[plan-name] [--yes|-y] [--commit|-c] [--silent]'
 disable-model-invocation: true
-context: fork
 model: claude-opus-4-6
 ---
 
@@ -58,6 +57,7 @@ fi
 If plan name not provided in arguments:
 
 If not provided:
+
 1. Get all active plans with Last Updated timestamps:
    ```bash
    npx @codevoyant/agent-kit plans migrate
@@ -65,7 +65,7 @@ If not provided:
    ```
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
-4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
+4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n (1) feature-auth — 60% — updated 2h ago\n (2) refactor-api — 20% — updated 1d ago"
 5. Report to user: "Using plan: {plan-name} (last updated: {timestamp})"
 6. If no plans exist, inform user to create with `/new`
 
@@ -122,12 +122,14 @@ fi
 **Case 1: Worktree exists → Auto-execute there**
 
 If `WORKTREE_EXISTS=true`:
+
 ```
 ✓ Plan has worktree at: $PLAN_WORKTREE
 → Executing in worktree automatically...
 ```
 
 Then **continue to Step 3** with this context:
+
 - Set execution directory to `$PLAN_WORKTREE`
 - When launching agent (Step 6), pass worktree path as working directory
 - Agent will execute in worktree isolation
@@ -138,6 +140,7 @@ Then **continue to Step 3** with this context:
 If `WORKTREE_EXISTS=false`:
 
 **If AUTO_APPROVE is true:**
+
 - Automatically create worktree without asking
 - Report: `→ Auto-creating worktree with --yes flag`
 - Create worktree: `git worktree add -b "$PLAN_BRANCH" "$PLAN_WORKTREE" HEAD`
@@ -149,6 +152,7 @@ If `WORKTREE_EXISTS=false`:
 **If AUTO_APPROVE is false:**
 
 Use **AskUserQuestion** tool:
+
 ```
 question: "This plan needs worktree '$PLAN_WORKTREE' (branch: $PLAN_BRANCH) but it doesn't exist. Create it now?"
 header: "Worktree Setup"
@@ -181,11 +185,13 @@ options:
 **Case 3: No worktree for plan → Execute in current directory**
 
 If plan has no worktree (`PLAN_WORKTREE` is "(none)" or empty):
+
 - Check if branch matches (if `PLAN_BRANCH` specified)
 - If branch mismatch, offer to switch: `git checkout $PLAN_BRANCH`
 - Otherwise continue to Step 3 normally
 
 **Summary:**
+
 - Worktree exists → Execute there automatically ✅
 - Worktree missing → Offer to create ✅
 - No worktree → Execute here (with branch check) ✅
@@ -206,6 +212,7 @@ Before starting execution, verify all implementation files exist:
      - Check file size > 100 bytes (not empty)
 
 3. **If any files missing:**
+
    ```
    ❌ Cannot start execution - implementation files missing!
 
@@ -231,11 +238,13 @@ Before starting execution, verify all implementation files exist:
    ```
    ✓ Validated {N} implementation files (phase-1.md through phase-{N}.md)
    ```
+
    - Continue to Step 4
 
 ## Step 4: Confirm Background Execution
 
 **If AUTO_APPROVE is true:**
+
 - Skip confirmation
 - Report: `→ Starting background execution with --yes flag`
 - Proceed directly to Step 5
@@ -269,15 +278,18 @@ Plan: [plan objective]
 Status: RUNNING
 
 ## Progress
+
 - Current Phase: [phase name]
 - Completed Tasks: 0/[total]
 - Errors: 0
 
 ## Timeline
+
 [timestamp] - Execution started
 ```
 
 2. Update the registry:
+
    ```bash
    npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Executing
    ```
@@ -288,6 +300,7 @@ Status: RUNNING
 ## Insights
 
 ### Background Execution
+
 - Status: RUNNING
 - Started: [timestamp]
 - Check progress: /status {plan-name}
@@ -297,6 +310,7 @@ Status: RUNNING
 ## Step 6: Launch Background Agent
 
 **Determine execution directory:**
+
 ```bash
 # If worktree exists and should be used (from Step 2.5)
 if [ "$WORKTREE_EXISTS" = "true" ] && [ -d "$PLAN_WORKTREE" ]; then
@@ -309,6 +323,7 @@ fi
 ```
 
 **Important:** Before launching agent, change to execution directory:
+
 ```bash
 cd "$EXECUTION_DIR"
 ```
@@ -325,6 +340,7 @@ Agent:
 Read `references/agent-prompt.md` and substitute `{EXECUTION_DIR}`, `{PLAN_BRANCH}`, `{PLAN_WORKTREE}`, `{ALLOW_COMMITS}`, `{SILENT}`, and `{plan-name}` with their actual values before passing as the prompt.
 
 **Orchestration loop — for each phase:**
+
 1. Launch phase Task (spec-executor) with the substituted prompt
 2. Wait for completion: `TaskOutput` (block=true)
 3. Parse the agent's summary report

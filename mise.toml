@@ -115,6 +115,10 @@ if [ "$failed" -gt 0 ]; then exit 1; fi
 echo "All skills passed validation."
 """
 
+[tasks."skills:install"]
+description = "Install/update all skills from remote (cloudvoyant/codevoyant)"
+run = "npx skills add cloudvoyant/codevoyant -g --all -y"
+
 [tasks."skills:build"]
 description = "Convert plugins into flat skill bundles for OpenCode and Copilot"
 depends     = ["build:skill-converter"]
