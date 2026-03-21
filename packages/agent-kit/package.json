@@ -1,6 +1,6 @@
 {
   "name": "@codevoyant/agent-kit",
-  "version": "1.33.3",
+  "version": "1.33.4",
   "description": "CLI and shared library for codevoyant agents and tools",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,3 +1,12 @@
+## [1.33.4](https://github.com/cloudvoyant/codevoyant/compare/v1.33.3...v1.33.4) (2026-03-21)
+
+### Bug Fixes
+
+* **spec-bg:** remove context:fork so confirmation uses AskUserQuestion
+
+- AskUserQuestion unavailable in forked agents; inline fixes it
+- add skills:install mise task
+
 ## [1.33.3](https://github.com/cloudvoyant/codevoyant/compare/v1.33.2...v1.33.3) (2026-03-21)
 
 ### Bug Fixes
