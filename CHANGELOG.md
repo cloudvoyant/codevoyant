@@ -1,3 +1,25 @@
+## [1.33.1](https://github.com/cloudvoyant/codevoyant/compare/v1.33.0...v1.33.1) (2026-03-21)
+
+### Bug Fixes
+
+* **skills:** fix gaps in pm-plan and em-plan from critique
+
+pm-plan:
+- remove --silent flag (parsed but never actioned)
+- replace "ticket-fetch pattern" orphan with explicit Linear/GitHub/Notion MCP calls
+- fix Quality Checkpoint criterion 2 using BLOCK label for non-blocking case
+- defer OUTPUT_FILE derivation to after product scope is known (Step 1.5)
+- update filename format to include PRODUCT_SLUG segment
+- enforce zero-sum rule in Step 6 Expansion branch
+- add full PRD subagent prompt template in Step 8
+
+em-plan:
+- remove --silent flag (parsed but never actioned)
+- add explicit MCP dispatch for "Pull from Linear" branch in Step 2
+- gate Step 9 notification on BG_MODE
+- remove BLOCK label from Quality Checkpoint criterion 3 (warn only)
+- tighten trigger phrases to reduce false positives
+
 ## [1.33.0](https://github.com/cloudvoyant/codevoyant/compare/v1.32.0...v1.33.0) (2026-03-21)
 
 ### Features
