@@ -28,7 +28,7 @@
 
 * restructure to flat skills/ directory for npx skills compatibility
 
-- Move all 46 skills from plugins/*/skills/*/ to skills/<group>-<skill>/
+- Move all 46 skills from plugins/*/skills/*/ to skills/`<group>`-`<skill>`/
 - Add colon-scoped name fields (dev:commit, mem:find, etc.) for npx skills discovery
 - Add mem2 experiment: unified skill with commands/ subdir routing
 - Bundle agents into relevant skill dirs (spec-bg, spec-go, spec-new, spec-update, dev-explore)
