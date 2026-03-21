@@ -7,32 +7,90 @@
     {
       "name": "dev",
       "description": "Development workflow commands for documentation, review, and commits",
-      "source": "./plugins/dev"
+      "source": "./plugins/dev",
+      "skills": [
+        "./skills/allow",
+        "./skills/ci",
+        "./skills/commit",
+        "./skills/diff",
+        "./skills/docs",
+        "./skills/explore",
+        "./skills/help",
+        "./skills/plan",
+        "./skills/pr-fix",
+        "./skills/rebase"
+      ]
     },
     {
       "name": "spec",
       "description": "Specification-driven development commands for planning and adapting",
-      "source": "./plugins/spec"
+      "source": "./plugins/spec",
+      "skills": [
+        "./skills/allow",
+        "./skills/bg",
+        "./skills/delete",
+        "./skills/doctor",
+        "./skills/done",
+        "./skills/go",
+        "./skills/help",
+        "./skills/list",
+        "./skills/new",
+        "./skills/refresh",
+        "./skills/rename",
+        "./skills/review",
+        "./skills/stop",
+        "./skills/update"
+      ]
     },
     {
       "name": "em",
       "description": "Engineering management — roadmap planning, epic breakdowns, team sync, and architecture design",
-      "source": "./plugins/em"
+      "source": "./plugins/em",
+      "skills": [
+        "./skills/allow",
+        "./skills/help",
+        "./skills/plan",
+        "./skills/review",
+        "./skills/update"
+      ]
     },
     {
       "name": "pm",
       "description": "Product management — product roadmaps, feature PRDs, prioritization review, and product docs",
-      "source": "./plugins/pm"
+      "source": "./plugins/pm",
+      "skills": [
+        "./skills/allow",
+        "./skills/help",
+        "./skills/plan",
+        "./skills/prd",
+        "./skills/review",
+        "./skills/update"
+      ]
     },
     {
       "name": "ux",
       "description": "UX prototyping — scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites",
-      "source": "./plugins/ux"
+      "source": "./plugins/ux",
+      "skills": [
+        "./skills/allow",
+        "./skills/explore",
+        "./skills/help",
+        "./skills/prototype",
+        "./skills/style-synthesize"
+      ]
     },
     {
       "name": "mem",
       "description": "Team knowledge capture and recall via structured markdown docs",
-      "source": "./plugins/mem"
+      "source": "./plugins/mem",
+      "skills": [
+        "./skills/find",
+        "./skills/help",
+        "./skills/index",
+        "./skills/init",
+        "./skills/learn",
+        "./skills/remember"
+      ]
     }
   ]
 }
