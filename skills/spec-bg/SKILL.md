@@ -6,7 +6,6 @@ compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUs
 argument-hint: "[plan-name] [--yes|-y] [--commit|-c] [--silent]"
 disable-model-invocation: true
 context: fork
-agent: spec-executor
 model: claude-opus-4-6
 ---
 
@@ -243,35 +242,20 @@ Before starting execution, verify all implementation files exist:
 
 **If AUTO_APPROVE is false:**
 
-Use **AskUserQuestion** tool:
+IMMEDIATELY call the AskUserQuestion tool with exactly these parameters — do NOT print the options as text:
 
 ```
-question: "Start background execution for plan '{plan-name}' (X phases, Y tasks)?"
-header: "Background Execution"
+question: "Start background execution for '{plan-name}'? ({N} phases, {M} tasks)\n\nThe agent will:\n✓ Execute all tasks autonomously\n✓ Update plan.md checkboxes in real-time\n✓ Run tests at phase boundaries\n✓ Pause on errors\n[ALLOW_COMMITS=false] ⚠️ Will NOT commit (pass --commit to enable)\n[ALLOW_COMMITS=true] ✓ Will commit as tasks complete\n\nMonitor: /status {plan-name}  |  Stop: /stop {plan-name}"
+header: "Start execution?"
 multiSelect: false
 options:
   - label: "Start execution"
-    description: "Launch autonomous agent to execute all tasks"
+    description: "Launch autonomous agent — you can continue other work while it runs"
   - label: "Cancel"
-    description: "Don't start, return to prompt"
+    description: "Return to prompt without starting"
 ```
 
-Inform user about capabilities:
-```
-The agent will:
-✓ Execute all tasks autonomously
-✓ Update plan.md checkboxes in real-time
-✓ Run tests at phase boundaries
-✓ Pause on errors (preserving state)
-✓ Create execution log in .codevoyant/plans/{plan-name}/execution-log.md
-[if ALLOW_COMMITS=false] ⚠️  Will NOT commit changes (pass --commit to enable git commits)
-[if ALLOW_COMMITS=true]  ✓ Will commit changes as tasks complete
-
-You can:
-- Check progress anytime with /status {plan-name}
-- Stop execution with /stop {plan-name}
-- Continue other work while it runs
-```
+Wait for the user's response via the tool — do NOT output a numbered list, do NOT print "Please reply with your choice".
 
 ## Step 5: Initialize Execution Tracking
 
