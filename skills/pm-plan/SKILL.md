@@ -54,11 +54,28 @@ Product audit complete:
 
 ## Step 1: Parse arguments
 
-Extract time horizon: `quarter` = 13 weeks, `half` = 26 weeks. Extract `--bg` flag.
+Extract `--bg` flag. Extract time horizon from arguments: `quarter` = 13 weeks, `half` = 26 weeks.
+
+If no time horizon or scope was provided, ask:
+
+AskUserQuestion:
+  question: "What are we planning?"
+  header: "Planning scope"
+  multiSelect: false
+  options:
+    - label: "Single feature deep-dive (quarter)"
+      value: "single"
+      description: "One large feature end-to-end; PM owns the PRD"
+    - label: "Quarterly product roadmap (13 weeks)"
+      value: "quarter"
+      description: "Multiple features across a quarter, prioritized"
+    - label: "Half-year strategy (26 weeks)"
+      value: "half"
+      description: "High-level themes + key initiatives for the half"
 
 Derive:
 - `DATE_PREFIX = $(date +%y%m%d)` (YYMMDD format)
-- `TYPE` = derived from horizon arg: `quarterly` (from `quarter`), `half` (from `half`), or slugified horizon name
+- `TYPE` = derived from horizon: `single` → `single`, `quarter` → `quarterly`, `half` → `half`
 - `SCRATCH_DIR = .codevoyant/pm/plans/{TYPE}-{DATE_PREFIX}` (scratch space for research, not committed docs)
 
 `OUTPUT_FILE` is derived in Step 1.5 after the product scope is known. Do not set it here.
@@ -97,21 +114,18 @@ Derive `PRODUCT_SLUG`: slugify the selected product names into a short identifie
 ## Step 2: Gather planning context
 
 AskUserQuestion:
-> What are we roadmapping?
-
-Options:
-- **Single feature deep-dive** — One large feature end-to-end; PM owns the PRD
-- **Quarterly product roadmap** — Multiple features across a quarter, prioritized
-- **Half-year strategy** — High-level themes + key initiatives for the half
-
-Then AskUserQuestion (multiSelect):
-> Input source?
-
-Options:
-- Linear backlog or project URL
-- GitHub issues or milestone
-- Notion page
-- I'll describe the features verbally
+  question: "Where should I pull feature context from?"
+  header: "Input source"
+  multiSelect: true
+  options:
+    - label: "Linear backlog or project URL"
+      description: "Fetch issues from Linear using the selected product scope"
+    - label: "GitHub issues or milestone"
+      description: "Provide a GitHub issue URL or milestone link"
+    - label: "Notion page"
+      description: "Provide a Notion page URL or ID"
+    - label: "I'll describe the features verbally"
+      description: "No external fetch needed — use my description directly"
 
 ## Step 3: Fetch ticket context
 
