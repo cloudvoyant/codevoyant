@@ -4,7 +4,7 @@ layout: home
 hero:
   name: codevoyant
   text: A collection of skills for development with AI agents
-  tagline: Works with Claude Code, OpenCode, and Copilot.
+  tagline: Install with npx skills add cloudvoyant/codevoyant
   image:
     light: /codevoyant-logo-light.svg
     dark: /codevoyant-logo-dark.svg
