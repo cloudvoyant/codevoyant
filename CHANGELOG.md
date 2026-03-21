@@ -1,3 +1,9 @@
+## [1.31.1](https://github.com/cloudvoyant/codevoyant/compare/v1.31.0...v1.31.1) (2026-03-21)
+
+### Bug Fixes
+
+* **docs:** escape angle brackets in changelog to prevent VitePress parse error
+
 ## [1.31.0](https://github.com/cloudvoyant/codevoyant/compare/v1.30.1...v1.31.0) (2026-03-21)
 
 ### Features
