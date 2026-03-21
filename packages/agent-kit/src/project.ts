@@ -2,6 +2,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { readWorktrees } from './config.js';
 
 /**
  * Walk up from the given directory (default cwd) to find a .git directory or file.
@@ -82,7 +83,7 @@ export function getRepoName(cwd?: string): string {
 
 /**
  * Returns the plan name associated with the current worktree, if any.
- * Looks up the worktree path in .codevoyant/settings.json worktreeMap.
+ * Looks up the worktree path in .codevoyant/worktrees.json.
  */
 export function getCurrentPlan(cwd?: string): string | null {
   const effectiveCwd = path.resolve(cwd ?? process.cwd());
@@ -99,14 +100,12 @@ export function getCurrentPlan(cwd?: string): string | null {
     if (result.status === 0 && result.stdout?.trim()) {
       const commonDir = path.resolve(effectiveCwd, result.stdout.trim());
       const mainRoot = path.dirname(commonDir);
-      const settingsPath = path.join(mainRoot, '.codevoyant', 'settings.json');
+      const cvDir = path.join(mainRoot, '.codevoyant');
 
-      if (fs.existsSync(settingsPath)) {
-        const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-        const worktreeMap = settings.worktreeMap as Record<string, string> | undefined;
-        if (worktreeMap) {
-          return worktreeMap[effectiveCwd] ?? null;
-        }
+      const worktreesData = readWorktrees(cvDir);
+      const entry = worktreesData.entries.find((e) => e.path === effectiveCwd);
+      if (entry) {
+        return entry.planName ?? null;
       }
     }
   } catch {

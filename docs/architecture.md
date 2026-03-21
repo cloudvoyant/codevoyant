@@ -39,7 +39,7 @@ codevoyant/
 │   └── claude-skill-converter/  # Builds dist bundles
 ├── docs/                    # Public VitePress documentation site
 ├── e2e/                     # End-to-end tests
-└── .codevoyant/             # Project metadata (codevoyant.json, plans/)
+└── .codevoyant/             # Project metadata (plans.json, worktrees.json, plans/)
 ```
 
 Each skill follows the structure:
@@ -64,11 +64,13 @@ Skill names use colon-scoped format in SKILL.md frontmatter (`name: dev:commit`,
 
 ## Spec Plugin: Multi-Plan Architecture
 
-Plans are stored under `.codevoyant/plans/` with a registry at `.codevoyant/codevoyant.json`:
+Plans are stored under `.codevoyant/plans/` with a registry at `.codevoyant/plans.json`:
 
 ```
 .codevoyant/
-├── codevoyant.json                  # Plan registry, statuses, variables
+├── plans.json                       # Plan registry (active + archived)
+├── worktrees.json                   # Worktree registry
+├── settings.json                    # Project settings
 └── plans/
     ├── {plan-name}/
     │   ├── plan.md

@@ -14,7 +14,7 @@ describe('worktrees command', () => {
     initGitRepo(tmpDir);
     // Initialize codevoyant
     spawnCLI(['init', '--dir', tmpDir], tmpDir);
-    registryPath = path.join(tmpDir, '.codevoyant', 'codevoyant.json');
+    registryPath = path.join(tmpDir, '.codevoyant', 'worktrees.json');
     // Global worktree base: ~/codevoyant/[repo-name]/worktrees/
     // repo-name falls back to tmpDir basename since there's no remote
     const repoName = path.basename(tmpDir);
@@ -49,10 +49,10 @@ describe('worktrees command', () => {
       expect(result.status).toBe(0);
       expect(result.stdout).toContain('Registered worktree: feat/test');
 
-      const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
-      expect(config.worktrees).toHaveLength(1);
-      expect(config.worktrees[0].branch).toBe('feat/test');
-      expect(config.worktrees[0].planName).toBe('my-plan');
+      const worktreesData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      expect(worktreesData.entries).toHaveLength(1);
+      expect(worktreesData.entries[0].branch).toBe('feat/test');
+      expect(worktreesData.entries[0].planName).toBe('my-plan');
     });
   });
 
@@ -65,8 +65,8 @@ describe('worktrees command', () => {
       const result = spawnCLI(['worktrees', 'unregister', '--branch', 'feat/rm', '--registry', registryPath], tmpDir);
       expect(result.status).toBe(0);
 
-      const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
-      expect(config.worktrees).toHaveLength(0);
+      const worktreesData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      expect(worktreesData.entries).toHaveLength(0);
     });
 
     it('should error on nonexistent branch', () => {
@@ -85,10 +85,10 @@ describe('worktrees command', () => {
       const wtPath = path.join(globalWorktreeBase, 'feat-wt-test');
       expect(fs.existsSync(wtPath)).toBe(true);
 
-      const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
-      expect(config.worktrees).toHaveLength(1);
-      expect(config.worktrees[0].branch).toBe('feat-wt-test');
-      expect(config.worktrees[0].path).toBe(wtPath);
+      const worktreesData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      expect(worktreesData.entries).toHaveLength(1);
+      expect(worktreesData.entries[0].branch).toBe('feat-wt-test');
+      expect(worktreesData.entries[0].path).toBe(wtPath);
     });
 
     it('should reject invalid branch names', () => {
@@ -106,8 +106,8 @@ describe('worktrees command', () => {
       expect(result.status).toBe(0);
       expect(result.stdout).toContain('Removed worktree: feat-rm-test');
 
-      const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
-      expect(config.worktrees).toHaveLength(0);
+      const worktreesData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      expect(worktreesData.entries).toHaveLength(0);
     });
 
     it('should remove worktree and delete branch with --delete-branch', () => {
@@ -151,8 +151,8 @@ describe('worktrees command', () => {
       expect(result.status).toBe(0);
       expect(result.stdout).toContain('Pruned 1 stale worktree entries');
 
-      const config = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
-      expect(config.worktrees).toHaveLength(0);
+      const worktreesData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      expect(worktreesData.entries).toHaveLength(0);
     });
   });
 

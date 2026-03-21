@@ -90,7 +90,7 @@ Read values from `.codevoyant/settings.json` using dot-notation.
 
 ```bash
 npx @codevoyant/agent-kit settings get mem.docsDir
-npx @codevoyant/agent-kit settings get plugins.spec.docs
+npx @codevoyant/agent-kit settings get docs
 ```
 
 Returns the value, or exits with code 1 if the key doesn't exist (useful with `|| echo "default"`).
@@ -128,8 +128,8 @@ Used by spec skills to create and clean up isolated worktrees for background pla
 ## Programmatic usage
 
 ```ts
-import { readConfig, writeConfig, readSettings, findProjectRoot } from '@codevoyant/agent-kit';
-import type { CodevoyantConfig, CodevoyantSettings } from '@codevoyant/agent-kit';
+import { readPlans, writePlans, readWorktrees, writeWorktrees, readSettings, findProjectRoot } from '@codevoyant/agent-kit';
+import type { PlansFile, WorktreesFile, CodevoyantSettings } from '@codevoyant/agent-kit';
 ```
 
-Key exports: `readConfig`, `writeConfig`, `readSettings`, `findProjectRoot`, `isInWorktree`, `getRepoName`, `getWorktreePath`.
+Key exports: `readPlans`, `writePlans`, `readWorktrees`, `writeWorktrees`, `readSettings`, `findProjectRoot`, `isInWorktree`, `getRepoName`, `getWorktreePath`.

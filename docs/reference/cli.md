@@ -21,7 +21,7 @@ npx @codevoyant/agent-kit <command>
 
 ### `init`
 
-Initialize the `.codevoyant/` directory structure. Creates `codevoyant.json`, `settings.json`, and `plans/` directory. Auto-migrates legacy `spec.json` or `plans.json` if found. Worktrees are managed globally at `~/codevoyant/[repo-name]/worktrees/`.
+Initialize the `.codevoyant/` directory structure. Creates `plans.json`, `worktrees.json`, `settings.json`, and `plans/` directory. Auto-migrates legacy `codevoyant.json` if found. Worktrees are managed globally at `~/codevoyant/[repo-name]/worktrees/`.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -41,12 +41,12 @@ Register a new plan in the registry.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Plan name |
-| `--plugin <plugin>` | `string` | **(required)** | Plugin that owns this plan |
+| `--plugin <plugin>` | `string` | *(optional)* | Plugin that owns this plan |
 | `--description <desc>` | `string` | **(required)** | Plan description |
 | `--total <total>` | `string` | `"0"` | Total tasks |
 | `--branch <branch>` | `string` | `null` | Associated branch |
 | `--worktree <worktree>` | `string` | `null` | Associated worktree path |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans register \
@@ -65,7 +65,7 @@ Update the progress of an active plan.
 | `--name <name>` | `string` | **(required)** | Plan name |
 | `--completed <n>` | `string` | **(required)** | Completed tasks |
 | `--total <n>` | `string` | *(unchanged)* | Total tasks |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans update-progress --name my-feature --completed 3
@@ -81,7 +81,7 @@ Update the status of an active plan.
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Plan name |
 | `--status <status>` | `string` | **(required)** | New status (e.g. `Active`, `Executing`, `Paused`, `Complete`, `Abandoned`) |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans update-status --name my-feature --status Executing
@@ -97,7 +97,7 @@ Move an active plan to the archived list.
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Plan name |
 | `--status <status>` | `string` | `"Complete"` | Final status |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans archive --name my-feature
@@ -112,7 +112,7 @@ Delete a plan from both active and archived lists.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Plan name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans delete --name my-feature
@@ -128,7 +128,7 @@ Rename an active plan and update its path.
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Current plan name |
 | `--new-name <newName>` | `string` | **(required)** | New plan name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans rename --name old-name --new-name new-name
@@ -143,7 +143,7 @@ Get a single plan as JSON. Searches both active and archived plans.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--name <name>` | `string` | **(required)** | Plan name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans get --name my-feature
@@ -160,7 +160,7 @@ List plans as JSON.
 | `--status <status>` | `string` | *(all active)* | Filter by status. Special values: `archived` (archived only), `all` (active + archived) |
 | `--plugin <plugin>` | `string` | *(any)* | Filter by plugin |
 | `--archived` | `boolean` | `false` | Include archived plans |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--dir <dir>` | `string` | `.` | Project root directory |
 
 ```bash
 npx @codevoyant/agent-kit plans list
@@ -171,12 +171,12 @@ npx @codevoyant/agent-kit plans list --status Executing --plugin spec
 
 ### `plans migrate`
 
-Migrate legacy `plans.json` or `spec.json` to `codevoyant.json`. Adds a `plugin` field (defaulting to `"spec"`) to entries that lack one. Removes the old file after successful migration.
+Migrate legacy `codevoyant.json` to `plans.json` + `worktrees.json`. Splits the combined config into atomic files. The original `codevoyant.json` is preserved.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--dir <dir>` | `string` | `.` | Directory containing `.codevoyant/` |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to source codevoyant.json |
 
 ```bash
 npx @codevoyant/agent-kit plans migrate
@@ -210,7 +210,7 @@ Create a new git worktree at `~/codevoyant/[repo-name]/worktrees/[plan-name]` an
 | `--base <base>` | `string` | `"HEAD"` | Base branch or commit |
 | `--plan <plan>` | `string` | `null` | Associated plan name (used as directory name) |
 | `--base-path <path>` | `string` | `~/codevoyant/[repo]/worktrees/` | Custom base path for worktrees |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees create --branch feat/new-thing --plan my-feature
@@ -227,7 +227,7 @@ Remove a git worktree and unregister it from the config.
 | `--branch <branch>` | `string` | **(required)** | Branch name |
 | `--delete-branch` | `boolean` | `false` | Also delete the branch |
 | `--force` | `boolean` | `false` | Force removal (even with uncommitted changes) |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees remove --branch feat/new-thing --delete-branch
@@ -241,7 +241,7 @@ Prune stale worktrees from both git and the config registry.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees prune
@@ -257,7 +257,7 @@ List all git worktrees with enriched information (plan association, dirty status
 |--------|------|---------|-------------|
 | `--json` | `boolean` | `false` | Output as JSON |
 | `--filter <plan>` | `string` | *(none)* | Filter worktrees by plan name (case-insensitive substring match) |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees list
@@ -275,7 +275,7 @@ Export a plan from a worktree to the main repository. Copies the plan directory 
 |--------|------|---------|-------------|
 | `--plan <plan>` | `string` | *(auto-detected)* | Plan name to export |
 | `--force` | `boolean` | `false` | Overwrite existing plan in main repo |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees export --plan my-feature
@@ -292,7 +292,7 @@ Register a worktree in the config registry without performing any git operations
 | `--branch <branch>` | `string` | **(required)** | Branch name |
 | `--path <path>` | `string` | **(required)** | Worktree path |
 | `--plan <plan>` | `string` | `null` | Associated plan name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees register \
@@ -308,7 +308,7 @@ Remove a worktree from the config registry without performing any git operations
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--branch <branch>` | `string` | **(required)** | Branch name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees unregister --branch feat/existing
@@ -324,7 +324,7 @@ Register a manually-created worktree in the config registry. Validates that the 
 |--------|------|---------|-------------|
 | `--path <path>` | `string` | **(required)** | Path to existing worktree |
 | `--plan <plan>` | `string` | **(required)** | Associated plan name |
-| `--registry <path>` | `string` | `.codevoyant/codevoyant.json` | Path to codevoyant.json |
+| `--registry <path>` | `string` | `.codevoyant/worktrees.json` | Path to worktrees.json |
 
 ```bash
 npx @codevoyant/agent-kit worktrees attach --path ~/codevoyant/myrepo/worktrees/my-plan --plan my-plan

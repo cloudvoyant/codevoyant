@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { readConfig, writeConfig, getConfigPath } from '../config.js';
+import { readWorktrees, writeWorktrees, readPlans, writePlans } from '../config.js';
 import { findProjectRoot, isInWorktree, getRepoName, getCurrentPlan, getWorktreeBasePath } from '../project.js';
 export function worktreesCommand() {
     const wt = new Command('worktrees').description('Manage git worktrees');
@@ -12,7 +12,7 @@ export function worktreesCommand() {
         .option('--base <base>', 'Base branch/commit', 'HEAD')
         .option('--plan <plan>', 'Associated plan name')
         .option('--base-path <basePath>', 'Custom base path for worktrees')
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
         const projectRoot = requireProjectRoot();
         if (!/^[\w/.-]+$/.test(opts.branch)) {
@@ -43,16 +43,16 @@ export function worktreesCommand() {
         else {
             gitExec(['worktree', 'add', '-b', opts.branch, wtPath, opts.base], projectRoot);
         }
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
+        const wtDir = opts.registry ? path.dirname(opts.registry) : path.join(projectRoot, '.codevoyant');
+        const worktreesData = readWorktrees(wtDir);
         const entry = {
             branch: opts.branch,
             path: wtPath,
             planName: opts.plan ?? null,
             createdAt: new Date().toISOString(),
         };
-        config.worktrees.push(entry);
-        writeConfig(configPath, config);
+        worktreesData.entries.push(entry);
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Worktree created: ${wtPath}`);
     });
     wt.command('remove')
@@ -60,7 +60,7 @@ export function worktreesCommand() {
         .requiredOption('--branch <branch>', 'Branch name')
         .option('--delete-branch', 'Also delete the branch', false)
         .option('--force', 'Force removal', false)
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
         const projectRoot = requireProjectRoot();
         const worktrees = parseWorktreeList(projectRoot);
@@ -82,39 +82,40 @@ export function worktreesCommand() {
             const deleteFlag = opts.force ? '-D' : '-d';
             gitExec(['branch', deleteFlag, opts.branch], projectRoot);
         }
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
-        config.worktrees = config.worktrees.filter((w) => w.branch !== opts.branch);
-        writeConfig(configPath, config);
+        const wtDir = opts.registry ? path.dirname(opts.registry) : path.join(projectRoot, '.codevoyant');
+        const worktreesData = readWorktrees(wtDir);
+        worktreesData.entries = worktreesData.entries.filter((w) => w.branch !== opts.branch);
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Removed worktree: ${opts.branch}`);
     });
     wt.command('prune')
         .description('Prune stale worktrees')
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
         const projectRoot = findProjectRoot() ?? '.';
         gitExec(['worktree', 'prune', '--verbose'], projectRoot);
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
-        const before = config.worktrees.length;
-        config.worktrees = config.worktrees.filter((w) => fs.existsSync(w.path));
-        const pruned = before - config.worktrees.length;
-        writeConfig(configPath, config);
+        const wtDir = opts.registry ? path.dirname(opts.registry) : path.join(projectRoot, '.codevoyant');
+        const worktreesData = readWorktrees(wtDir);
+        const before = worktreesData.entries.length;
+        worktreesData.entries = worktreesData.entries.filter((w) => fs.existsSync(w.path));
+        const pruned = before - worktreesData.entries.length;
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Pruned ${pruned} stale worktree entries`);
     });
     wt.command('list')
         .description('List worktrees')
         .option('--json', 'Output as JSON', false)
         .option('--filter <plan>', 'Filter by plan name')
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
         const projectRoot = findProjectRoot() ?? '.';
         const worktrees = parseWorktreeList(projectRoot);
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
+        const wtDir = opts.registry ? path.dirname(opts.registry) : path.join(projectRoot, '.codevoyant');
+        const worktreesData = readWorktrees(wtDir);
+        const plansData = readPlans(wtDir);
         let enriched = worktrees.map((wte) => {
-            const registered = config.worktrees.find((w) => w.branch === wte.branch);
-            const plan = config.activePlans.find((p) => p.worktree === wte.worktree || p.branch === wte.branch);
+            const registered = worktreesData.entries.find((w) => w.branch === wte.branch);
+            const plan = plansData.active.find((p) => p.worktree === wte.worktree || p.branch === wte.branch);
             let dirty = false;
             try {
                 const status = spawnSync('git', ['-C', wte.worktree, 'status', '--porcelain'], { encoding: 'utf-8' });
@@ -148,13 +149,13 @@ export function worktreesCommand() {
         .description('Export plan from worktree to main repo')
         .option('--plan <plan>', 'Plan name to export')
         .option('--force', 'Overwrite existing plan in main repo', false)
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
+        const wtDir = opts.registry ? path.dirname(opts.registry) : '.codevoyant';
+        const plansData = readPlans(wtDir);
         let planName = opts.plan;
         if (!planName) {
-            const sorted = [...config.activePlans].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+            const sorted = [...plansData.active].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
             if (sorted.length === 0) {
                 console.error('No active plans found');
                 process.exit(1);
@@ -181,19 +182,19 @@ export function worktreesCommand() {
             process.exit(1);
         }
         fs.cpSync(planDir, destDir, { recursive: true, force: true });
-        const mainConfigPath = path.join(mainRoot, '.codevoyant', 'codevoyant.json');
-        const mainConfig = readConfig(mainConfigPath);
-        const existingPlan = mainConfig.activePlans.find((p) => p.name === planName);
-        const sourcePlan = config.activePlans.find((p) => p.name === planName);
+        const mainCvDir = path.join(mainRoot, '.codevoyant');
+        const mainPlans = readPlans(mainCvDir);
+        const existingPlan = mainPlans.active.find((p) => p.name === planName);
+        const sourcePlan = plansData.active.find((p) => p.name === planName);
         if (existingPlan && sourcePlan) {
             existingPlan.progress = sourcePlan.progress;
             existingPlan.status = sourcePlan.status;
             existingPlan.lastUpdated = new Date().toISOString();
         }
         else if (sourcePlan) {
-            mainConfig.activePlans.push({ ...sourcePlan, lastUpdated: new Date().toISOString() });
+            mainPlans.active.push({ ...sourcePlan, lastUpdated: new Date().toISOString() });
         }
-        writeConfig(mainConfigPath, mainConfig);
+        writePlans(mainPlans, mainCvDir);
         console.log(`Exported ${planName} to ${destDir}`);
     });
     wt.command('register')
@@ -201,41 +202,41 @@ export function worktreesCommand() {
         .requiredOption('--branch <branch>', 'Branch name')
         .requiredOption('--path <path>', 'Worktree path')
         .option('--plan <plan>', 'Associated plan name')
-        .option('--registry <registryPath>', 'Path to codevoyant.json')
+        .option('--registry <registryPath>', 'Path to worktrees.json')
         .action((opts) => {
-        const configPath = getConfigPath(opts.registryPath);
-        const config = readConfig(configPath);
+        const wtDir = opts.registryPath ? path.dirname(opts.registryPath) : '.codevoyant';
+        const worktreesData = readWorktrees(wtDir);
         const entry = {
             branch: opts.branch,
             path: opts.path,
             planName: opts.plan ?? null,
             createdAt: new Date().toISOString(),
         };
-        config.worktrees.push(entry);
-        writeConfig(configPath, config);
+        worktreesData.entries.push(entry);
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Registered worktree: ${opts.branch}`);
     });
     wt.command('unregister')
         .description('Unregister a worktree from the registry (no git operations)')
         .requiredOption('--branch <branch>', 'Branch name')
-        .option('--registry <path>', 'Path to codevoyant.json')
+        .option('--registry <path>', 'Path to worktrees.json')
         .action((opts) => {
-        const configPath = getConfigPath(opts.registry);
-        const config = readConfig(configPath);
-        const before = config.worktrees.length;
-        config.worktrees = config.worktrees.filter((w) => w.branch !== opts.branch);
-        if (config.worktrees.length === before) {
+        const wtDir = opts.registry ? path.dirname(opts.registry) : '.codevoyant';
+        const worktreesData = readWorktrees(wtDir);
+        const before = worktreesData.entries.length;
+        worktreesData.entries = worktreesData.entries.filter((w) => w.branch !== opts.branch);
+        if (worktreesData.entries.length === before) {
             console.error(`Worktree for branch "${opts.branch}" not found in registry`);
             process.exit(1);
         }
-        writeConfig(configPath, config);
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Unregistered worktree: ${opts.branch}`);
     });
     wt.command('attach')
         .description('Register a manually-created worktree')
         .requiredOption('--path <path>', 'Path to existing worktree')
         .requiredOption('--plan <plan>', 'Associated plan name')
-        .option('--registry <registryPath>', 'Path to codevoyant.json')
+        .option('--registry <registryPath>', 'Path to worktrees.json')
         .action((opts) => {
         const wtPath = path.resolve(opts.path);
         if (!fs.existsSync(wtPath)) {
@@ -256,9 +257,9 @@ export function worktreesCommand() {
             process.exit(1);
             return;
         }
-        const configPath = getConfigPath(opts.registryPath);
-        const config = readConfig(configPath);
-        if (config.worktrees.some((w) => w.path === wtPath)) {
+        const wtDir = opts.registryPath ? path.dirname(opts.registryPath) : '.codevoyant';
+        const worktreesData = readWorktrees(wtDir);
+        if (worktreesData.entries.some((w) => w.path === wtPath)) {
             console.error(`Worktree already registered: ${wtPath}`);
             process.exit(1);
         }
@@ -268,8 +269,8 @@ export function worktreesCommand() {
             planName: opts.plan,
             createdAt: new Date().toISOString(),
         };
-        config.worktrees.push(entry);
-        writeConfig(configPath, config);
+        worktreesData.entries.push(entry);
+        writeWorktrees(worktreesData, wtDir);
         console.log(`Attached worktree: ${wtPath} (branch: ${branch}, plan: ${opts.plan})`);
     });
     wt.command('detect')

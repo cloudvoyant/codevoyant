@@ -1,10 +1,22 @@
-export { readConfig, writeConfig, getConfigPath, readSettings, writeSettings } from './config.js';
+export {
+  readConfig,
+  writeConfig,
+  getConfigPath,
+  readSettings,
+  writeSettings,
+  readPlans,
+  writePlans,
+  readWorktrees,
+  writeWorktrees,
+} from './config.js';
 export type {
   AgentType,
   CodevoyantConfig,
   CodevoyantSettings,
   PlanEntry,
+  PlansFile,
   WorktreeEntry,
+  WorktreesFile,
   TaskRunnerInfo,
 } from './types.js';
 export {

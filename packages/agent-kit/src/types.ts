@@ -1,6 +1,6 @@
 export interface PlanEntry {
   name: string;
-  plugin: 'spec' | 'em' | 'pm' | string;
+  plugin?: string;
   description: string;
   status: 'Active' | 'Executing' | 'Paused' | 'Complete' | 'Abandoned';
   progress: { completed: number; total: number };
@@ -18,6 +18,21 @@ export interface WorktreeEntry {
   createdAt: string;
 }
 
+export interface PlansFile {
+  version: string;
+  active: PlanEntry[];
+  archived: PlanEntry[];
+}
+
+export interface WorktreesFile {
+  version: string;
+  entries: WorktreeEntry[];
+}
+
+/**
+ * @deprecated Use PlansFile and WorktreesFile instead.
+ * Kept for migration purposes only.
+ */
 export interface CodevoyantConfig {
   version: string;
   activePlans: PlanEntry[];
@@ -37,21 +52,11 @@ export interface MemSettings {
   docsDir?: string;      // default: "docs" — base dir for styleguide/ and recipes/ subdirs
 }
 
-export interface PluginDocsConfig {
-  types?: string[];
-  tags?: string[];
-}
-
-export interface PluginConfig {
-  docs?: PluginDocsConfig;
-}
-
 export interface CodevoyantSettings {
   notifications?: boolean;
-  defaultPlugin?: string;
   taskRunner?: TaskRunnerInfo;
   mem?: MemSettings;
-  plugins?: Record<string, PluginConfig>;
+  docs?: { types?: string[]; tags?: string[] };
   [key: string]: unknown;
 }
 

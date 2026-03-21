@@ -1,28 +1,44 @@
 import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
-import { writeConfig, readConfig } from '../config.js';
+import { readSettings, writePlans, writeWorktrees } from '../config.js';
 export function initCommand() {
     return new Command('init')
         .description('Initialize .codevoyant/ directory structure')
         .option('--dir <dir>', 'target directory', '.')
         .action((opts) => {
         const base = path.join(opts.dir, '.codevoyant');
-        const configPath = path.join(base, 'codevoyant.json');
-        const settingsPath = path.join(base, 'settings.json');
-        // Create dirs
+        const plansPath = path.join(base, 'plans.json');
+        const worktreesPath = path.join(base, 'worktrees.json');
+        const legacyConfigPath = path.join(base, 'codevoyant.json');
+        // Create plans dir
         fs.mkdirSync(path.join(base, 'plans'), { recursive: true });
-        fs.mkdirSync(path.join(base, 'worktrees'), { recursive: true });
-        // Initialize codevoyant.json if absent
-        if (!fs.existsSync(configPath)) {
-            writeConfig(configPath, readConfig(configPath)); // writes default
-            console.log('Created .codevoyant/codevoyant.json');
+        // Auto-migrate from codevoyant.json if plans.json doesn't exist yet
+        if (fs.existsSync(legacyConfigPath) && !fs.existsSync(plansPath)) {
+            console.log('Migrating codevoyant.json to plans.json + worktrees.json');
+            const raw = JSON.parse(fs.readFileSync(legacyConfigPath, 'utf-8'));
+            writePlans({
+                version: raw.version ?? '1.0',
+                active: raw.activePlans ?? [],
+                archived: raw.archivedPlans ?? [],
+            }, base);
+            writeWorktrees({
+                version: raw.version ?? '1.0',
+                entries: raw.worktrees ?? [],
+            }, base);
+            console.log('Migrated to plans.json and worktrees.json (codevoyant.json preserved)');
         }
-        // Initialize settings.json if absent
-        if (!fs.existsSync(settingsPath)) {
-            fs.writeFileSync(settingsPath, '{}\n');
-            console.log('Created .codevoyant/settings.json');
+        // Initialize plans.json if absent
+        if (!fs.existsSync(plansPath)) {
+            writePlans({ version: '1.0', active: [], archived: [] }, base);
+            console.log('Created .codevoyant/plans.json');
         }
+        // Initialize worktrees.json if absent
+        if (!fs.existsSync(worktreesPath)) {
+            writeWorktrees({ version: '1.0', entries: [] }, base);
+            console.log('Created .codevoyant/worktrees.json');
+        }
+        readSettings(base);
         // Ensure .gitignore entries
         const gitignorePath = path.join(opts.dir, '.gitignore');
         const entries = ['.codevoyant/worktrees/'];
@@ -37,15 +53,6 @@ export function initCommand() {
         else {
             fs.writeFileSync(gitignorePath, '# codevoyant\n' + entries.join('\n') + '\n');
             console.log('Created .gitignore with codevoyant entries');
-        }
-        // Auto-migrate from legacy spec.json or plans.json
-        const legacy = [path.join(base, 'plans.json'), path.join(base, 'spec.json')];
-        for (const src of legacy) {
-            if (fs.existsSync(src) && !fs.existsSync(configPath)) {
-                console.log(`Migrating ${path.basename(src)} to codevoyant.json`);
-                // migration logic reused from plans migrate subcommand
-                break;
-            }
         }
         console.log('.codevoyant/ ready');
     });

@@ -22,7 +22,7 @@ export declare function isInWorktree(startDir?: string): boolean;
 export declare function getRepoName(cwd?: string): string;
 /**
  * Returns the plan name associated with the current worktree, if any.
- * Looks up the worktree path in .codevoyant/settings.json worktreeMap.
+ * Looks up the worktree path in .codevoyant/worktrees.json.
  */
 export declare function getCurrentPlan(cwd?: string): string | null;
 /**

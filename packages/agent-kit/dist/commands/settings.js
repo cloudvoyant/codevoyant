@@ -15,7 +15,7 @@ export function settingsCommand() {
     const settings = new Command('settings').description('Read project settings from .codevoyant/settings.json');
     settings
         .command('get <dotpath>')
-        .description('Get a value from settings.json using dot-notation (e.g., plugins.spec.docs)')
+        .description('Get a value from settings.json using dot-notation (e.g., docs)')
         .option('--dir <dir>', 'Project root directory', '.')
         .action((dotpath, opts) => {
         const settingsDir = `${opts.dir}/.codevoyant`;

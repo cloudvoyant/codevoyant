@@ -22,11 +22,12 @@ npx skills add cloudvoyant/codevoyant
 
 ## How It Works
 
-Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry and variables are tracked in `.codevoyant/codevoyant.json`:
+Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry is tracked in `.codevoyant/plans.json`:
 
 ```
 .codevoyant/
-├── codevoyant.json                  # Plan registry, statuses, and variables
+├── plans.json                       # Plan registry (active + archived)
+├── worktrees.json                   # Worktree registry
 └── plans/
     ├── my-feature/
     │   ├── plan.md                  # High-level objectives + checklist
