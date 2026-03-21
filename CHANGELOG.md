@@ -1,3 +1,42 @@
+## [1.32.0](https://github.com/cloudvoyant/codevoyant/compare/v1.31.1...v1.32.0) (2026-03-21)
+
+### Features
+
+* **mem:** rename mem remember to mem list
+
+* **mem:** rename mem remember to mem list
+
+Renames the CLI subcommand `mem remember` to `mem list`, renames the
+skills/mem-remember/ folder to skills/mem-list/, and updates all
+references across source, tests, docs, skills, hooks, and CLAUDE.md.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+* **config:** split codevoyant.json into plans.json + worktrees.json, remove plugins from settings
+
+* **config:** split codevoyant.json into plans.json + worktrees.json, remove plugins from settings
+
+- Add PlansFile and WorktreesFile types; make PlanEntry.plugin optional; deprecate CodevoyantConfig
+- Add readPlans/writePlans and readWorktrees/writeWorktrees with atomic write pattern
+- readSettings now auto-creates settings.json when missing
+- plans commands use --dir instead of --registry; migrate command targets codevoyant.json→plans.json+worktrees.json
+- worktrees commands derive dir from --registry path.dirname for backward compat
+- init creates plans.json + worktrees.json; auto-migrates from codevoyant.json when present
+- getCurrentPlan reads worktrees.json instead of settings.worktreeMap
+- Export new types and functions from index.ts
+- Update all tests and docs to reflect new file layout
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+
+### Documentation
+
+* **agent-kit:** reframe as operations toolkit, document all CLI commands
+
+* **home:** replace platform tagline with npx skills install command
+
+* **install:** simplify installation page, add compatibility notes
+
 ## [1.31.1](https://github.com/cloudvoyant/codevoyant/compare/v1.31.0...v1.31.1) (2026-03-21)
 
 ### Bug Fixes
