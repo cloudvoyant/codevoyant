@@ -1,3 +1,24 @@
+## [1.29.2](https://github.com/cloudvoyant/codevoyant/compare/v1.29.1...v1.29.2) (2026-03-21)
+
+### Bug Fixes
+
+* add explicit skills arrays to marketplace.json for npx skills
+
+
+### Documentation
+
+* **mem:** add mem plugin docs page, icon, and homepage card
+
+- Add CPU processor SVG icon (mem.svg) in project palette
+- Add mem feature card to homepage with Experimental label
+- Add sidebar entry "Mem · Experimental"
+- Update mem plugin doc page with icon and SVG reference
+
+* align ux and mem plugin page headers with em/pm style
+
+- Add icon img and Badge to ux.md
+- Rename heading and add Badge to mem.md
+
 ## [1.29.1](https://github.com/cloudvoyant/codevoyant/compare/v1.29.0...v1.29.1) (2026-03-20)
 
 ### Bug Fixes
