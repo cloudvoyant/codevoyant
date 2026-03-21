@@ -1,3 +1,17 @@
+## [1.31.0](https://github.com/cloudvoyant/codevoyant/compare/v1.30.1...v1.31.0) (2026-03-21)
+
+### Features
+
+* **docs:** drop plugin terminology, add skill:create and skill:review
+
+- Rename docs/plugins/ → docs/skills/ and update all /plugins/ links
+- Move architecture.md into docs/
+- Replace "Plugin" heading suffixes and body copy with skills terminology
+- Simplify installation.md — remove deleted curl install scripts
+- Remove mem2 experiment (skills/mem2/)
+- Move skill-create and skill-review from .claude/skills/ to skills/
+- Update name fields to colon-scoped: skill:create, skill:review
+
 ## [1.30.1](https://github.com/cloudvoyant/codevoyant/compare/v1.30.0...v1.30.1) (2026-03-21)
 
 ### Bug Fixes
