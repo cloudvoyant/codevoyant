@@ -1,3 +1,19 @@
+## [1.35.0](https://github.com/cloudvoyant/codevoyant/compare/v1.34.0...v1.35.0) (2026-03-22)
+
+### Features
+
+* **docs:** add skill.svg icon for skill plugin
+
+
+### Documentation
+
+* add skill plugin to user guide, home page, and sidebar
+
+- user-guide: add Skill section after UX, move Mem to bottom; update EM
+  and PM sections for draft-first workflow; fix plugin title casing
+- index.md: add Skill card before Mem
+- config.mjs: add Skill to sidebar after UX, before Mem
+
 ## [1.34.0](https://github.com/cloudvoyant/codevoyant/compare/v1.33.4...v1.34.0) (2026-03-22)
 
 ### Features
