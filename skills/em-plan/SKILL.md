@@ -6,8 +6,7 @@ description: "Use when planning a project (epic) or initiative with Linear as tr
 name: em:plan
 license: MIT
 compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
-argument-hint: "[project-description|linear-url] [--delegate] [--continue <id>] [--push <slug>] [--bg]"
-disable-model-invocation: true
+argument-hint: '[project-description|linear-url] [--bg] [--silent]'
 context: fork
 agent: general-purpose
 model: claude-opus-4-6
@@ -19,9 +18,12 @@ model: claude-opus-4-6
 
 ## Critical Principles
 
-- "Outcomes, not deliverables." — The objective must state what changes for users or the business, not what gets built. "Ship the auth refactor" is a deliverable. "Reduce auth-related support tickets by 30%" is an outcome. If you cannot state the outcome, flag it before planning tasks.
-- "Capacity is already allocated." — A plan at 100% capacity is a plan that cannot absorb a single interrupt, bug, or scope discovery. Leave 20–30% unplanned. If the user insists on full allocation, flag it explicitly rather than silently accepting it.
-- "Every dependency is a schedule bet." — Any task blocked on another team, external API, or unresolved design decision is a risk multiplier, not just a sequencing note. Name the dependency, name who owns it, and name what happens if it slips.
+- **Value first, descope ruthlessly.** — Ship the most value in the shortest time, even at the cost of product requirements. Every descoped item must be surfaced and confirmed, never silently dropped. The ideal plan balances short-term delivery speed with long-term investment in stability and continued engineering velocity.
+- **Balance product needs and engineering constraints.** — Product requirements define desired outcomes; engineering constraints define what is achievable. When they conflict, negotiate scope explicitly rather than hiding technical debt. Flag any product requirement that carries hidden engineering cost.
+- **Outcomes, not deliverables.** — The objective must state what changes for users or the business, not what gets built. "Ship the auth refactor" is a deliverable. "Reduce auth-related support tickets by 30%" is an outcome. If you cannot state the outcome, flag it before planning tasks.
+- **Capacity is already allocated.** — A plan at 100% capacity is a plan that cannot absorb a single interrupt, bug, or scope discovery. Leave 20–30% unplanned. If the user insists on full allocation, flag it explicitly rather than silently accepting it.
+- **Every dependency is a schedule bet.** — Any task blocked on another team, external API, or unresolved design decision is a risk multiplier, not just a sequencing note. Name the dependency, name who owns it, and name what happens if it slips.
+- **Mermaid for all visual structure.** — Use Mermaid diagrams for timelines, milestone maps, and dependency graphs. Never use ASCII art for structured diagrams.
 
 ## Anti-Patterns
 
@@ -33,58 +35,20 @@ model: claude-opus-4-6
 
 ---
 
-Plan a project or initiative with Linear as tracker. Local-first: all artifacts land in `.codevoyant/em/plans/{slug}/`, then push to Linear on confirmation.
+Plan a project or initiative with Linear as tracker. Local-first: all artifacts land in `.codevoyant/plans/{slug}/`, then push to Linear on confirmation.
 
 ## Step 0: Parse Args
 
 Extract flags:
 ```
-DELEGATE    = true if --delegate present
-CONTINUE_ID = value after --continue (Linear project ID or URL)
-PUSH_SLUG   = value after --push (existing local plan slug to re-push)
-BG_MODE     = true if --bg present
+BG_MODE  = true if --bg present
+SILENT   = true if --silent present
 ```
 
-- If `PUSH_SLUG` set: read `.codevoyant/em/plans/{PUSH_SLUG}/` local files and jump directly to **Step 8 (Push to Linear)**.
-- If `CONTINUE_ID` set: jump to **Step 0.5 (Continue Mode)**.
 - Detect Linear URL or issue ID in remaining args -> `SOURCE_ID`.
-- Derive `SLUG` from description or SOURCE_ID; check `.codevoyant/em/plans/{slug}/` for collision (append `-2`, `-3`, etc.).
+- Derive `SLUG` from description or SOURCE_ID; check `.codevoyant/plans/{slug}/` for collision (append `-2`, `-3`, etc.).
 
-Set `PLAN_DIR=".codevoyant/em/plans/{SLUG}"`.
-
-## Step 0.5: Continue Mode (only if --continue)
-
-Extract project ID from `CONTINUE_ID` (strip URL prefix if a Linear URL was provided).
-
-### Fetch Linear state (in sequence):
-
-1. `mcp__linear-server__get_project(id=CONTINUE_ID)` -- get project name, description, status. Derive `SLUG` from project name.
-2. `mcp__linear-server__list_milestones` filtered by `projectId=CONTINUE_ID` -- get milestone names and sort orders.
-3. `mcp__linear-server__list_issues` filtered by `projectId=CONTINUE_ID`, `includeArchived=false` -- get all active/completed/cancelled issues with their milestone assignments.
-
-Set `PLAN_DIR=".codevoyant/em/plans/{SLUG}"`.
-
-### Map Linear state to local plan:
-
-**If local plan files do NOT exist yet** (first `--continue` run):
-- Create `PLAN_DIR` directory structure (`tasks/`, `research/`)
-- Write `plan.md` from project description using `references/plan-template.md`
-- Create milestone files (`tasks/design.md`, `tasks/develop.md`, `tasks/deploy.md`) from Linear milestones, populating tasks using `references/task-template.md`
-- Record Linear IDs in `linear-ids.json`
-
-**If local plan files already exist** (reconciliation):
-- **Local is source of truth for:** requirements, ACs, design/SA notes (do not overwrite from Linear)
-- **Linear is source of truth for:** issue status, new issues added by team members
-- Completed issues in Linear -> mark as `[x]` in the relevant milestone file
-- Cancelled issues in Linear -> note as `~~dropped~~` with cancellation reason if available
-- New issues in Linear (not in local files) -> append to the relevant milestone file using `references/task-template.md`
-- Update `plan.md` milestone status table with current completion counts
-
-### Resume planning:
-
-After reconciliation, proceed to **Step 7 (Scope Confirmation Loop)** for the user to review the updated state.
-
-On confirmation: push only changed items back to Linear via `mcp__linear-server__save_issue` for any locally modified issues (updated requirements, ACs, or design notes). Do not re-push items whose only change came from Linear.
+Set `PLAN_DIR=".codevoyant/plans/{SLUG}"`.
 
 ## Step 1: System Audit
 
@@ -92,7 +56,7 @@ Run the following bash commands and store all findings as `AUDIT_CONTEXT`:
 
 ```bash
 git log --oneline -10
-ls .codevoyant/em/plans/*/plan.md 2>/dev/null || echo "(no existing plans)"
+ls .codevoyant/plans/*/plan.md 2>/dev/null || echo "(no existing plans)"
 ls docs/architecture/ 2>/dev/null && echo "arch docs present" || echo "no arch docs"
 ```
 
@@ -136,11 +100,44 @@ Fetch teams: `mcp__linear-server__list_teams`. Present as options. Store as `TEA
 - `mcp__linear-server__get_issue` or `mcp__linear-server__get_project`
 - Store title, description, labels -> `SOURCE_CONTEXT`
 
+## Step 2.6: Timeline, Scope, and Resources
+
+Before gathering requirements, understand the constraints that will shape what can realistically be planned.
+
+AskUserQuestion:
+```
+question: "What constraints does this project have?"
+header: "Capacity"
+questions:
+  - question: "What is the target timeline for this project?"
+    header: "Timeline"
+    options:
+      - label: "~1 week (small epic)"
+      - label: "2–4 weeks (standard epic)"
+      - label: "1–2 months (large initiative)"
+      - label: "3+ months (major initiative)"
+  - question: "How many engineers are available for this work?"
+    header: "Team size"
+    options:
+      - label: "1 engineer"
+      - label: "2–3 engineers"
+      - label: "4+ engineers"
+      - label: "Not yet determined"
+  - question: "Are there hard deadlines or sequencing constraints?"
+    header: "Constraints"
+    options:
+      - label: "No hard deadlines"
+      - label: "Yes — I'll describe below"
+      - label: "Soft target (not a blocker if missed)"
+```
+
+Store as `TIMELINE`, `TEAM_SIZE`, `CONSTRAINTS`. These will be used in Step 7 to descope items that exceed capacity.
+
+Apply the 70% rule: never plan to more than 70% of calculated capacity. For a 1-engineer/2-week project, that is roughly 7 engineer-days of planned work, leaving 3 days for discovered work and interrupts.
+
 ## Step 3: Define Requirements
 
-If `DELEGATE=true`: skip detailed requirements -- ask only for a 1-paragraph summary per project; proceed to Step 6 (Delegate).
-
-Otherwise, gather:
+Gather:
 - Functional requirements (what the system must do)
 - Non-functional requirements (performance, security, scale)
 - Acceptance criteria (how we know it's done)
@@ -159,13 +156,70 @@ options:
     description: "Straightforward task, no architecture decision"
 ```
 
+## Step 3.5: Research backfill (if no prior exploration found)
+
+Check for existing research:
+- Look in `.codevoyant/explore/` for a dev:explore run relevant to this project
+- Look in `.codevoyant/research/` for a pm:explore run relevant to this project
+
+**If relevant research found:** load it as `PRIOR_RESEARCH` and skip this step.
+
+**If no research found:** tell the user "No prior exploration found — I'll run lightweight research to ground the architecture before planning."
+
+Ask one round of architecture clarifying questions:
+
+AskUserQuestion:
+```
+question: "A few quick questions before I start planning."
+header: "Architecture"
+questions:
+  - question: "Is there an existing architectural pattern in this codebase to follow?"
+    header: "Architecture"
+    options:
+      - label: "Yes — I'll describe it"
+      - label: "No — it's greenfield in this area"
+      - label: "Unsure — check the codebase"
+  - question: "Are there known libraries or tools you want to use or avoid?"
+    header: "Tech constraints"
+    options:
+      - label: "Yes — I'll describe them"
+      - label: "No constraints"
+```
+
+Launch 2 Sonnet agents in parallel (`run_in_background: false`, `model: claude-sonnet-4-6`):
+
+**Agent A — Codebase architecture scan:**
+Scan the repository for patterns, conventions, and existing implementations relevant to "{project description}".
+- Glob and grep for related files, patterns, and abstractions
+- Read the most relevant source files
+- Identify what already exists and what must be built from scratch
+- Write findings to `.codevoyant/plans/{slug}/research/codebase-backfill.md`
+
+**Agent B — External architecture patterns:**
+Research how this type of project is typically structured.
+- Run WebSearch("{project type} architecture patterns")
+- Run WebSearch("{project type} implementation best practices {stack}")
+- Fetch 2 relevant URLs (engineering blogs, reference implementations)
+- Write 4–6 findings with citations to `.codevoyant/plans/{slug}/research/external-backfill.md`
+
+Wait for both to complete. Read outputs as `PRIOR_RESEARCH`.
+
+**Executive decision protocol:**
+After research, make decisive architectural calls rather than deferring every decision to the user. The guiding question: *what is the simplest architecture that solves the problem and fits the existing codebase conventions?* Principles:
+- Prefer the architectural pattern already present in the codebase
+- Prefer a well-maintained library over a custom implementation
+- Prefer a smaller surface area — fewer new abstractions is better
+- Flag any decision that is genuinely risky or controversial as `[ARCH DECISION — please confirm]`
+
+Proceed to Step 4 with PRIOR_RESEARCH set.
+
 ## Step 4: Parallel Research
 
 Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
-**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Save to `.codevoyant/em/plans/{slug}/research/codebase.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Save to `.codevoyant/plans/{slug}/research/codebase.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
 
-**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Save to `.codevoyant/em/plans/{slug}/research/linear-context.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Save to `.codevoyant/plans/{slug}/research/linear-context.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
 
 Wait for both. Synthesize: flag anything that already exists or overlaps with active projects.
 
@@ -221,15 +275,13 @@ After running the checkpoint, write the Quality Brief (3–5 bullets) and use it
 
 ## Step 5: Build Milestone Task Plan
 
-If `DELEGATE=true`: skip this step entirely -- proceed to **Step 6 (Delegate Mode)**.
-
 Create plan directory:
 ```bash
-mkdir -p .codevoyant/em/plans/{slug}/tasks
-mkdir -p .codevoyant/em/plans/{slug}/research
+mkdir -p .codevoyant/plans/{slug}/tasks
+mkdir -p .codevoyant/plans/{slug}/research
 ```
 
-Write `.codevoyant/em/plans/{slug}/plan.md` using the plan template at `references/plan-template.md`.
+Write `.codevoyant/plans/{slug}/plan.md` using the plan template at `references/plan-template.md`.
 
 After writing plan.md, scan the Objective bullets. If any bullet's primary verb is a delivery verb (ship / build / implement / deliver / release / complete):
   Insert an inline comment: `<!-- RIGOR: reframe as outcome — what changes for users/team? -->`
@@ -242,80 +294,58 @@ Generate the three milestone files inline:
 
 Each task file uses the template at `references/task-template.md`. Requirements and ACs must be spelled out per task. Design/SA must be specified or explicitly marked deferred.
 
-## Step 6: Delegate Mode (only if DELEGATE=true)
+If the plan has inter-milestone dependencies, a timeline, or a system architecture relevant to the project, include a Mermaid diagram in plan.md. For example:
+- Gantt chart for timeline-heavy plans
+- Sequence diagram for plans involving multiple system interactions
+- Flowchart for plans with branching decision logic
 
-Create plan directory and write lightweight stubs instead of full milestone breakdown:
+Register the plan with agent-kit:
 
 ```bash
-mkdir -p .codevoyant/em/plans/{slug}/tasks
-mkdir -p .codevoyant/em/plans/{slug}/research
+npx @codevoyant/agent-kit plans register \
+  --name "{SLUG}" \
+  --plugin em \
+  --description "{OBJECTIVE first line}" \
+  --total "{total task count from all milestone files}"
 ```
 
-Write `.codevoyant/em/plans/{slug}/plan.md` using `references/plan-template.md` (mark milestones as "delegated").
+Report: `✓ Plan registered: {SLUG}`
 
-Write `tasks/stubs.md`:
-```markdown
-# Delegation Stubs — {project name}
+## Step 6: Scope Confirmation Loop
 
-These issues will be created in Linear for the relevant teams to detail.
+Show plan summary.
 
-## PM Stub
-**Title:** PM: {project} — define requirements and acceptance criteria
-**Description:** Scope: {1-paragraph summary}. Owner: PM team.
+**Capacity check:**
 
-## UX Stub
-**Title:** UX: {project} — design exploration and wireframes
-**Description:** Scope: {1-paragraph summary}. Owner: UX team. Starts after PM stub resolved.
+Calculate total task count across all milestone files. Compare against available capacity (from Step 2.6):
+- Available capacity = `TEAM_SIZE × TIMELINE_DAYS × 0.7` (70% rule)
+- If total tasks exceed available capacity: surface which tasks to descope, with rationale
 
-## DEV Stub
-**Title:** DEV: {project} — architecture spike
-**Description:** Scope: {1-paragraph summary}. Owner: Engineering. Starts after PM + UX stubs.
+Present to user:
 ```
-
-Proceed to Step 7 (confirmation) with delegate context flagged.
-
-## Step 7: Scope Confirmation Loop
-
-Show plan summary. If `DELEGATE=true`: show stub titles from `tasks/stubs.md` (not full task list). If `CONTINUE_ID` was set: show reconciliation diff (new issues, status changes).
+📊 Capacity: {N} tasks planned, ~{X} engineer-days available (70% of {Y})
+{if over capacity:}
+⚠️ Over capacity by ~{Z} tasks. Suggested descopes:
+  - {task} → reason: lowest priority / deferred by {rationale}
+```
 
 AskUserQuestion:
 ```
 question: "Does this plan cover everything?"
 header: "Plan Review"
 options:
-  - label: "Confirm -- push to Linear"
-    description: "Create project, milestones, and issues in Linear"
+  - label: "Looks good — done"
+    description: "Save the plan to .codevoyant/plans/{slug}/ and register with agent-kit"
   - label: "Adjust scope"
-    description: "Change what's in the plan before pushing"
-  - label: "Save locally only"
-    description: "Keep as local draft, don't push to Linear yet"
+    description: "Change what's in the plan before saving"
 ```
 
-Loop on adjustments until "Confirm" or "Save locally only".
+Loop on adjustments until "Looks good — done".
 
-## Step 8: Push to Linear
-
-Only runs if user selected "Confirm -- push to Linear" (or `--push` flag).
-
-Follow the MCP call sequence in `references/linear-push-guide.md`:
-
-1. If initiative-level: `mcp__linear-server__save_initiative` -> store `INITIATIVE_ID`
-2. `mcp__linear-server__save_project` with `teamId`, `name`, description (from plan.md objective), `initiativeId` if set -> store `PROJECT_ID`
-3. For each milestone (design / develop / deploy):
-   `mcp__linear-server__save_milestone` with `projectId=PROJECT_ID`, name, sortOrder -> store `MILESTONE_IDs`
-4. For each task in each milestone file:
-   `mcp__linear-server__save_issue` with `teamId`, `projectId`, `projectMilestoneId`, title, description (requirements + ACs)
-
-If `DELEGATE=true`: skip milestone creation (steps 2-3 above). Create only the project and the 3 stub issues from Step 6 (PM, UX, DEV). No milestones are created.
-
-Record all created IDs in `.codevoyant/em/plans/{slug}/linear-ids.json`.
-
-Report: `Pushed to Linear: {project-url}. {N} milestones, {M} issues created.`
-
-## Step 9: Notification
+## Step 7: Notification
 
 If `BG_MODE`:
 
 ```bash
-npx @codevoyant/agent-kit notify --title "em:plan complete" --message "Plan '{slug}' confirmed and pushed to Linear: {M} issues across 3 milestones."
+npx @codevoyant/agent-kit notify --title "em:plan complete" --message "Plan '{slug}' saved to .codevoyant/plans/{slug}/. Run /em:approve to promote."
 ```

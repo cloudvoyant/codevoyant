@@ -24,18 +24,27 @@ npx skills add cloudvoyant/codevoyant
 ### Plan a project
 
 ```bash
-/em:plan "migrate auth to OAuth2"                     # Plan locally, push to Linear on confirmation
+/em:plan "migrate auth to OAuth2"                     # Draft plan locally
 /em:plan https://linear.app/team/project/PRJ-123      # Seed from existing Linear project
-/em:plan "Q3 infrastructure" --delegate                # Create stub issues for PM/UX/dev
 ```
 
-Produces a local milestone-grouped task plan, then pushes to Linear on user confirmation. The `--delegate` flag creates stub issues instead of a full breakdown, useful when different people will own different parts.
+Produces a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`. Use `/em:approve` to promote to `docs/engineering/plans/` and optionally push to Linear.
+
+### Approve and push to Linear
+
+```bash
+/em:approve                                           # Approve most recent em:plan draft
+/em:approve my-plan                                   # Approve specific plan by slug
+/em:approve my-plan --push                            # Approve and create new Linear project
+/em:approve my-plan --push https://linear.app/...    # Approve and push to existing project
+```
+
+Sets start/end dates on the Linear project from the plan's timeline. Creates issues directly under the project (no milestones). Links the git repo to each issue.
 
 ### Continue from existing Linear state
 
 ```bash
-/em:plan --continue PRJ-123                            # Resume from existing Linear project
-/em:plan --push my-plan-slug                           # Re-push a saved local plan to Linear
+/em:plan --continue PRJ-123                           # Resume from existing Linear project
 ```
 
 ### Review a roadmap
@@ -61,7 +70,8 @@ Applies inline `>` and `>>` annotations or accepts conversational changes to pla
 
 | Skill | Description |
 |---|---|
-| `em:plan` | Plan a project locally with milestone-grouped tasks, then push to Linear |
+| `em:plan` | Draft an engineering project plan locally with milestone-grouped tasks |
+| `em:approve` | Promote a draft plan to `docs/engineering/plans/` and optionally push to Linear |
 | `em:review` | Review a roadmap for capacity, dependencies, risks, and phasing |
 | `em:update` | Update an EM plan via annotations or conversational changes |
 | `em:allow` | Pre-approve em permissions for uninterrupted agent execution |
