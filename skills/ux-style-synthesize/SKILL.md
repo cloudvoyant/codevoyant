@@ -5,7 +5,6 @@ license: MIT
 compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, context: fork runs inline using the current model. Core functionality preserved on all platforms."
 argument-hint: "<url> [--name name] [--bg] [--silent]"
 disable-model-invocation: true
-context: fork
 agent: general-purpose
 model: claude-opus-4-6
 ---

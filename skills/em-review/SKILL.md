@@ -1,10 +1,9 @@
 ---
-description: "Use when reviewing an engineering roadmap for quality and realism. Triggers on: \"em review\", \"review roadmap\", \"sanity check roadmap\", \"em check\", \"review this plan\". Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after em:plan."
+description: 'Use when reviewing an engineering roadmap for quality and realism. Triggers on: "em review", "review roadmap", "sanity check roadmap", "em check", "review this plan". Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after em:plan.'
 name: em:review
 license: MIT
-compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
-argument-hint: "[roadmap-file] [--silent]"
-disable-model-invocation: true
+compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
+argument-hint: '[roadmap-file] [--silent]'
 context: fork
 model: claude-sonnet-4-6
 ---
@@ -41,7 +40,7 @@ Does the total scope fit the stated team size and time horizon? Flag over-alloca
 Build an **Error & Rescue Registry** check: for each epic, identify the top 3 failure scenarios, state what the rescue action is, and verify whether it is documented in the breakdowns. Output a table:
 
 | Epic | Failure scenario | Rescue action | Documented? |
-|---|---|---|---|
+| ---- | ---------------- | ------------- | ----------- |
 
 Flag any epic where failure scenarios are undocumented or rescue actions are "TBD".
 
@@ -50,6 +49,7 @@ Flag any epic where failure scenarios are undocumented or rescue actions are "TB
 Are all inter-epic and external dependencies called out? Are any dependencies ordering-violated (epic A needs B but B is later)? Are external dependencies (other teams, services) flagged with owners?
 
 Classify each major inter-epic architectural decision as:
+
 - `ONE-WAY (!)` — hard to reverse; flag if rationale is missing or weak
 - `TWO-WAY` — can change later; note for completeness
 
@@ -60,6 +60,7 @@ Output a decisions table alongside the standard dependency findings.
 Are risks specific and actionable (not just "this is risky")? Missing risk callouts for: new tech, unclear requirements, single points of failure, external dependencies.
 
 For each risk found, score **Completeness: X/10** — is the mitigation complete and concrete (10) or hand-wavy and vague (1)? Flag any risk with Completeness < 6 as needing revision.
+
 - Each risk mitigation must cite what evidence informs it (file, system name, prior incident). Mitigations with no evidence anchor score a maximum of 6/10 regardless of prose quality.
 - Vague quantifiers ("many tasks", "several risks") in risk descriptions: flag INFORMATIONAL and suggest a specific count.
 
@@ -68,6 +69,7 @@ For each risk found, score **Completeness: X/10** — is the mitigation complete
 Does each phase have a clear theme? Are deliverables concrete (can you tell if a phase is done)? Is the NOT-this-period list present and justified?
 
 Run a **"What already exists"** check: scan the codebase context and breakdowns for any epic that appears to be rebuilding something the codebase already has. Flag with `[BORING-BY-DEFAULT FLAG]` if found.
+
 - Objective in plan.md: does it describe user/business impact (outcome) or feature delivery (output)? Flag any bullet containing "ship", "build", "implement", "deliver", "complete" as the primary verb with suggestion: "Reframe as the outcome this delivers, e.g. 'engineers can deploy without manual steps' not 'build deployment automation'."
 
 Wait for all four agents (`TaskOutput block: true`). Synthesize findings.
@@ -85,6 +87,7 @@ Before presenting anything to the user, categorize all findings:
 ### ASK (surface to user via AskUserQuestion before acting)
 
 Triggers:
+
 - Capacity over-allocation (>80% utilization)
 - One-way door decisions without documented rationale
 - Major scope overlaps between epics
@@ -97,6 +100,7 @@ For each ASK item, use the following **AskUserQuestion format** (mandatory):
 4. **Lettered options** with human effort estimate and CC (Claude Code) effort estimate per option
 
 Example format:
+
 ```
 AskUserQuestion:
   question: "Plan: {SLUG} ({horizon}) — {one-sentence context}.
@@ -116,32 +120,37 @@ Generate a structured review report:
 ## Review — {date}
 
 ### Summary
+
 {1-3 sentence verdict: is this roadmap ready to commit to?}
 
 ### Blocking Issues
+
 {items that must be addressed before committing}
 
 ### Concerns
+
 {items worth discussing but not blockers}
 
 ### Looks Good
+
 {specific things done well — anchor to actual content}
 
 ### Suggested Next Steps
+
 {ordered list of what to do with this feedback}
 ```
 
 Append a **Review Readiness Dashboard** at the end of the report:
 
 ```markdown
-| Section            | Status | Verdict                                      |
-|--------------------|--------|----------------------------------------------|
-| Capacity           | ?/?/?  | {1-line summary}                             |
-| Dependencies       | ?/?/?  | {1-line summary}                             |
-| Error & Rescue     | ?/?/?  | {N epics documented / M missing}             |
-| One-way door flags | ?/?/?  | {N flagged, M with missing rationale}        |
-| Phasing quality    | ?/?/?  | {1-line summary}                             |
-| Overall            |        | Ready / Needs fixes / Blocked                |
+| Section            | Status | Verdict                               |
+| ------------------ | ------ | ------------------------------------- |
+| Capacity           | ?/?/?  | {1-line summary}                      |
+| Dependencies       | ?/?/?  | {1-line summary}                      |
+| Error & Rescue     | ?/?/?  | {N epics documented / M missing}      |
+| One-way door flags | ?/?/?  | {N flagged, M with missing rationale} |
+| Phasing quality    | ?/?/?  | {1-line summary}                      |
+| Overall            |        | Ready / Needs fixes / Blocked         |
 ```
 
 Status legend: PASS = no issues, WARN = concerns worth noting, FAIL = blocking issue.

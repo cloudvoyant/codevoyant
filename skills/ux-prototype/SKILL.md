@@ -5,7 +5,6 @@ license: MIT
 compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
 argument-hint: "[prototype-name] [--bg] [--silent]"
 disable-model-invocation: true
-context: fork
 agent: general-purpose
 model: claude-opus-4-6
 ---
