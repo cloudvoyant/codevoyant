@@ -25,18 +25,22 @@ codevoyant is a collection of skills for AI coding agents (Claude Code, OpenCode
 
 ```
 codevoyant/
-├── .claude-plugin/          # Marketplace metadata
-│   └── marketplace.json     # Lists all skill groups
 ├── skills/                  # Flat skill collection
 │   ├── dev-commit/          # Each skill in its own dir
 │   ├── dev-ci/
 │   ├── spec-new/
 │   ├── mem-find/
-│   ├── mem2/                # Experimental unified mem skill
-│   └── ...                  # 47 skills total
+│   ├── skill-explore/       # Meta-skills: build and review skills
+│   ├── skill-new/
+│   ├── skill-update/
+│   └── ...                  # 49 skills total
+├── .claude/
+│   └── skills/              # Private skills (not distributed via npx skills)
+│       ├── skill-create/    # Internal skill scaffolding helper
+│       └── skill-review/    # Internal skill review and audit
 ├── packages/
 │   ├── agent-kit/           # CLI toolkit (plans, settings, mem)
-│   └── claude-skill-converter/  # Builds dist bundles
+│   └── claude-skill-converter/  # Skill format conversion utilities
 ├── docs/                    # Public VitePress documentation site
 ├── e2e/                     # End-to-end tests
 └── .codevoyant/             # Project metadata (plans.json, worktrees.json, plans/)

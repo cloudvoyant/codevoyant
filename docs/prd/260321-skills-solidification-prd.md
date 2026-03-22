@@ -82,8 +82,8 @@ The pm:plan validation pass (Step 8.5) must auto-fix all NEEDS_IMPROVEMENT issue
 **F8** [P1] spec:new validation runs minimum 2 rounds autonomously
 The spec:new validation loop must run a minimum of 2 rounds autonomously and may not ask the user questions during validation rounds — any question raised during a validation round is a skill defect. Defined in the skill but observed to be bypassed.
 
-**F9** [P1] skill:critique as validation gate for SKILL.md changes
-The skill-critique skill must be used as a validation gate for any SKILL.md change introduced in this initiative — every modified SKILL.md must pass skill:critique at "Pass" verdict before merge. Ensures improvements introduced by this initiative are themselves high quality.
+**F9** [P1] skill:review as validation gate for SKILL.md changes
+The skill:review skill (with `--effectiveness` flag) must be used as a validation gate for any SKILL.md change introduced in this initiative — every modified SKILL.md must pass skill:review at "Pass" verdict before merge. Ensures improvements introduced by this initiative are themselves high quality.
 
 **F10** [P2] Fix broken research-standards.md references in em:plan
 The shared research-standards.md must be referenced from em:plan agent prompts with verified path resolution — broken references to research-standards.md must be detected and fixed.
@@ -113,7 +113,7 @@ Target: Each SKILL.md change must have at least one corresponding structural tes
 - [ ] Run spec:new on a multi-phase plan; confirm that the plan is not registered (no entry in .codevoyant/plans/) if any phase-N.md file is empty or missing.
 - [ ] Run spec:new and observe the validation loop; confirm it runs exactly 2 rounds minimum without prompting the user and exits with PASS or reports residual issues explicitly — no silent false PASS.
 - [ ] Run pm:plan's validation pass (Step 8.5) with a PRD that has a vague goal ("improve reliability"); confirm the auto-fix rewrites the goal to include a baseline and target before the round exits, and the final round reports PASS with the fixed content present in the file.
-- [ ] Run skill:critique on each of the five modified SKILL.md files after changes are applied; all five must return a "Pass" verdict.
+- [ ] Run `/skill:review --effectiveness` on each of the five modified SKILL.md files after changes are applied; all five must return a "Pass" verdict.
 - [ ] Run the full e2e test suite (pnpm test in e2e/); all tests in pm.test.ts, em.test.ts, and mem.test.ts pass with 0 failures.
 - [ ] When a skill step fails (simulate by removing a required reference file), the error output includes: the name of the failed step, the expected artifact path, and a recovery instruction — not a generic failure message.
 
@@ -137,7 +137,7 @@ Owner: Platform team | Due: 2026-03-28
 
 ## Dependencies
 
-- **skill:critique** (skills/skill-critique/SKILL.md) — used as a validation gate for all SKILL.md changes in this initiative; must be available and functioning before any modified skill is considered done.
+- **skill:review** (`.claude/skills/skill-review/SKILL.md`) — used as a validation gate for all SKILL.md changes in this initiative; run with `--effectiveness` flag for full audit. Must be available and functioning before any modified skill is considered done.
 - **agent-kit plans register / plans list** — spec:new relies on these commands; any agent-kit version constraints must be confirmed before spec:new changes are made.
 - **e2e test suite** (e2e/tests/) — all changes must be verified against the existing pm.test.ts, em.test.ts, and mem.test.ts tests; the suite must be runnable in CI before this initiative can be declared complete.
 - **mcp__linear-server** — em:plan and pm:plan use this for Linear push and document creation; MCP server availability is a runtime dependency, not a build dependency, but must be confirmed working in the test environment used for acceptance criteria verification.
