@@ -1,3 +1,64 @@
+## [1.34.0](https://github.com/cloudvoyant/codevoyant/compare/v1.33.4...v1.34.0) (2026-03-22)
+
+### Features
+
+* **pm:** add pm-approve --push, pm-explore; overhaul pm skills
+
+- pm-approve: new skill with --push [initiative-url] flag; copies roadmap
+  to Linear initiative description, research artifacts become documents
+- pm-explore: new research skill depositing to .codevoyant/research/
+- pm-help: updated to reflect pm-approve and pm-explore
+- pm-plan/prd/review/update: research quality improvements, new templates
+  and agents, capability tier guide reference
+
+* **skill:** add skill-explore, skill-new, skill-update; remove skill-critique
+
+- skill-explore, skill-new, skill-update: new skill workflow tools
+- skill-critique: removed (merged into skill-review --effectiveness)
+
+* **dev:** draft-first dev-plan with --mode flag, add dev-approve skill
+
+- dev-plan: output to .codevoyant/plans/ instead of docs/architecture/
+- dev-plan: add --mode arch|feat; arch mode adds task breakdown with LOE,
+  blocking relationships, architecture ref, and verifiable ACs per task
+- dev-plan: register plan with agent-kit on completion
+- dev-approve: new skill — promotes to docs/architecture/, optional --push
+  [linear-url] creates tasks seeded for autonomous spec:new/spec:bg
+
+* **em:** draft-first em-plan, add em-approve with --push flag
+
+- em-plan: strip inline Linear push (Step 6 option + Step 7)
+- em-plan: new Critical Principles — value-first, product/engineering balance
+- em-plan: remove --push re-push shortcut; add --silent flag
+- em-approve: rename --linear to --push, parse optional project URL
+- em-approve: rewrite linear-push-agent — no milestones, start/end dates, git repo linked
+
+* **spec:** simplify spec-new, remove unused agents and references
+
+- spec-new: restructured and simplified; remove spec-explorer agent,
+  migration.md, proposal-template.md, check-worktree.sh
+- spec-new: spec-planner agent updated
+- spec-go/bg/list/refresh/review/update: quality improvements
+
+
+### Documentation
+
+* update public site for em, dev, pm, skill plugins
+
+- em.md, dev.md, pm.md: reflect draft-first workflow, document approve
+  skills and --push flag, add pm-explore workflow
+- skill.md: new page for skill workflow tools
+- config.mjs: sidebar/nav updates
+- architecture.md, prd updates
+
+
+### Code Refactoring
+
+* **dev:** improve dev-explore, dev-commit, dev-diff, dev-docs quality
+
+- dev-explore: new researcher and proposal-writer agents
+- dev-commit/diff/docs: quality and instruction improvements
+
 ## [1.33.4](https://github.com/cloudvoyant/codevoyant/compare/v1.33.3...v1.33.4) (2026-03-21)
 
 ### Bug Fixes
