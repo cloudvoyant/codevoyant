@@ -1,10 +1,9 @@
 ---
-description: "Use when comparing two repositories for structural differences. Triggers on: \"compare repos\", \"how does this compare to\", \"what changed since we forked\", \"dev diff\", \"diff against\", \"repo comparison\". Identifies divergence from a template or upstream, useful for migration planning and architectural study."
+description: 'Use when comparing two repositories for structural differences. Triggers on: "compare repos", "how does this compare to", "what changed since we forked", "dev diff", "diff against", "repo comparison". Identifies divergence from a template or upstream, useful for migration planning and architectural study.'
 name: dev:diff
 license: MIT
-compatibility: "Designed for Claude Code. Requires hooks or ${CLAUDE_SKILL_DIR} — non-functional on other platforms without modification."
-argument-hint: "<repository-url>"
-disable-model-invocation: true
+compatibility: 'Designed for Claude Code. Requires hooks or ${CLAUDE_SKILL_DIR} — non-functional on other platforms without modification.'
+argument-hint: '<repository-url>'
 context: fork
 agent: general-purpose
 hooks:
@@ -44,7 +43,6 @@ Target repository: $ARGUMENTS
 ### Step 1: Gather Context
 
 1. Ask the user for the diff objective using AskUserQuestion:
-
    - "What is the purpose of this comparison?"
    - Provide options:
      - "Track changes from template/fork" - Identify modifications made after forking
@@ -78,13 +76,11 @@ Target repository: $ARGUMENTS
 ### Step 3: Analyze Repository Structure
 
 1. **Map directory structures** for both repositories:
-
    - Use `find` or directory traversal to build tree structures
    - Identify top-level directories and organization patterns
    - Note framework/language indicators (package.json, Cargo.toml, go.mod, etc.)
 
 2. **Calculate structural similarity**:
-
    - Compare directory hierarchies
    - Identify common file patterns
    - Determine if repositories share a template/forking relationship
@@ -98,7 +94,6 @@ Target repository: $ARGUMENTS
 #### For Similar Structures (Template/Fork Relationship)
 
 1. **File-level comparison**:
-
    - Generate list of all files in both repos
    - Categorize files:
      - Modified files (exist in both, different content)
@@ -107,14 +102,12 @@ Target repository: $ARGUMENTS
      - Identical files (same content)
 
 2. **Conduct file-by-file diff**:
-
    - Use `git diff --no-index` for meaningful files
    - Focus on source code, configuration, and documentation
    - Skip binary files, dependencies (node_modules, vendor, etc.)
    - Capture line-level changes for key files
 
 3. **Group changes meaningfully**:
-
    - By feature/functionality (auth changes, UI updates, etc.)
    - By file type (configuration, source code, tests, docs)
    - By impact level (breaking, enhancement, refactor, fix)
@@ -128,14 +121,12 @@ Target repository: $ARGUMENTS
 #### For Different Structures (Architectural Comparison)
 
 1. **Architectural analysis**:
-
    - Identify framework and language differences
    - Compare project organization patterns
    - Note build system differences
    - Identify dependency management approaches
 
 2. **Design pattern comparison**:
-
    - Frontend architecture (if applicable)
    - Backend architecture (if applicable)
    - State management approaches
@@ -160,6 +151,7 @@ Write the report using `references/report-template.md` as the structure. Keep ea
 ### Step 6: Cleanup
 
 1. Remove the temporary directory:
+
    ```bash
    rm -rf <temp-dir>
    ```
@@ -171,24 +163,20 @@ Write the report using `references/report-template.md` as the structure. Keep ea
 ## Error Handling
 
 1. **Clone failures**:
-
    - Display clear error message
    - Suggest authentication setup if needed
    - Verify repository URL format
 
 2. **Permission issues**:
-
    - Check write access to temp directory
    - Verify .claude/ directory exists and is writable
 
 3. **Large repositories**:
-
    - Warn if repository is very large (>1GB)
    - Ask user to confirm before proceeding
    - Consider shallow clone: `git clone --depth=1`
 
 4. **Binary file handling**:
-
    - Skip binary files in detailed diff
    - List binary files separately in report
 
@@ -196,4 +184,3 @@ Write the report using `references/report-template.md` as the structure. Keep ea
    - Use streaming for large diffs
    - Limit diff context for very large files
    - Sample files if repository has thousands of files
-

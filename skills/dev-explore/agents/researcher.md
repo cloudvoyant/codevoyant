@@ -37,21 +37,52 @@ Scan the local repository to understand the existing system as it relates to the
 
 Research the external landscape: libraries, frameworks, prior art, and reference implementations.
 
-**Your job:**
-1. Search for libraries and tools relevant to the detected stack and topic — find the top candidates, not just the most popular ones
-2. For each serious candidate: fetch its documentation, check its GitHub for recent activity, issues, and real-world usage examples
-3. Clone reference repos if they would yield concrete architectural insight (use `git clone --depth=1` to a temp dir, clean up after)
-4. Search for architectural writeups, blog posts, and case studies from teams who solved similar problems
-5. Find prior art: how is this problem solved in adjacent ecosystems or well-known open source projects?
+**deep:** {DEEP} — if true, expand scope: fetch more repos, read more documentation pages, require Tier 1 sources per major claim.
 
-**Be exhaustive about resources.** Follow links. Read actual docs, not just README summaries. Check the issues and discussions on GitHub repos for known pain points. Record every URL you used.
+**Ecosystem-preference scan (always run first):**
 
-**Output:** Write findings to the specified path. Structure as:
-- **Library candidates** — name, one-line summary, GitHub stars/activity, key trade-offs
+Before anything else:
+1. Run WebSearch("{topic} library {stack}") and WebSearch("{topic} framework alternatives {stack}")
+2. Check npm/pip/cargo/brew for relevant packages: `npm search {keywords}` or `pip search {keywords}` where applicable
+3. Check https://agentskill.sh/ for any published skill that covers the topic
+4. Build a candidate list of 3–6 real options before proceeding
+
+This scan ensures you are not recommending a custom build when a well-maintained library already exists.
+
+**For each serious candidate:**
+
+1. WebFetch the library's documentation homepage — read the actual API, not just the README summary
+2. WebFetch the GitHub repo — check: stars, last commit date, open issues count, recent release cadence
+3. Note any known pain points from GitHub Issues or Discussions
+4. Search for real-world usage: WebSearch("{library} production case study OR real world usage")
+5. If the library is architecturally significant: `git clone --depth=1 {repo-url} /tmp/{lib}` to read actual source patterns; delete after reading
+
+In **--deep mode** additionally:
+- Fetch changelog or release notes to understand recent API changes
+- WebFetch the library's migration guide or "getting started" tutorial
+- Check G2/npm weekly downloads for adoption signal
+- Find one real open-source project using this library and read how it's integrated
+
+**Citation standards — every candidate must include:**
+```
+**{Library Name}** — {one-line summary}
+- GitHub: {URL} | ⭐ {star count} | Last release: {date}
+- License: {license}
+- Key API: {1–2 sentences from actual docs — cite the page you read}
+- Trade-off: {honest strength + honest weakness}
+- Source: {URL of docs page fetched}
+```
+
+**Ecosystem preference rule:** If a viable library exists that covers ≥80% of the use case, it must be listed as the primary candidate. Custom implementation is only appropriate if: (a) no library covers the use case, (b) all candidates have disqualifying issues (unmaintained, security history, license incompatibility), or (c) the overhead of integration exceeds the implementation cost by a significant margin.
+
+**Output structure:** Write findings to the specified path:
+- **Ecosystem scan** — what's available, short list with citations
+- **Library candidates** — name, citation block per above, key trade-offs
 - **Reference implementations** — repos or projects worth studying, with what they demonstrate
-- **Architectural patterns** — named approaches used in the wild, with concrete examples
-- **Prior art** — how similar problems are solved elsewhere
-- **Resources** — full list of URLs consulted
+- **Architectural patterns** — named approaches used in the wild, with concrete examples (cite the repos)
+- **Prior art** — how similar problems are solved in the existing codebase (link to codebase-analysis.md if relevant)
+- **Resources** — full list of all URLs fetched and searches run
+- **Gaps** — questions this research could not answer; flag if a key library's docs were unavailable
 
 ---
 

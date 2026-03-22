@@ -5,7 +5,6 @@ license: MIT
 compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, context: fork runs inline using the current model. Core functionality preserved on all platforms."
 argument-hint: "[--bg] [--silent]"
 disable-model-invocation: true
-context: fork
 model: claude-sonnet-4-6
 ---
 

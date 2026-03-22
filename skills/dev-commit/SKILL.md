@@ -2,7 +2,7 @@
 description: 'Use when creating a git commit with a conventional commit message. Triggers on: "commit", "commit my changes", "dev commit", "make a commit", "stage and commit". Handles formatting, linting, push, and CI monitoring in one workflow. Supports --yes to skip confirmation, --atomic for multiple logical commits, and --autofix for CI failures.'
 name: dev:commit
 license: MIT
-compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
+compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
 argument-hint: '[--yes|-y] [--no-push] [--autofix] [--atomic] [--single]'
 disable-model-invocation: true
 ---
