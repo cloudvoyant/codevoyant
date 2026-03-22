@@ -12,44 +12,18 @@ model: claude-opus-4-6
 
 Execute the plan in the background using an autonomous agent.
 
-## Flags
-
-- `--yes` or `-y`: Skip all confirmations (auto-create worktree, auto-start execution)
-- `--commit` or `-c`: Allow the agent to make git commits during execution (default: commits disabled)
-- `--silent`: Suppress desktop notification on completion or failure
-
 ## Overview
 
 This command launches a long-running agent that executes your plan autonomously while you continue working. The agent updates progress in real-time and pauses on errors.
 
 ## Step 0: Parse Arguments and Flags
 
-Parse command arguments: `/bg [plan-name] [--yes|-y] [--commit|-c] [--silent]`
-
 ```bash
-# Extract plan name (if provided)
-PLAN_NAME="[first non-flag argument]"
-
-# Check for --yes flag
-if [[ "$*" =~ --yes|-y ]]; then
-  AUTO_APPROVE=true
-else
-  AUTO_APPROVE=false
-fi
-
-# Check for --commit flag (default: NO commits)
-if [[ "$*" =~ --commit|-c ]]; then
-  ALLOW_COMMITS=true
-else
-  ALLOW_COMMITS=false
-fi
-
-# Check for --silent flag
-if [[ "$*" =~ --silent ]]; then
-  SILENT=true
-else
-  SILENT=false
-fi
+PLAN_NAME="[first non-flag argument, or empty]"
+AUTO_APPROVE=false; ALLOW_COMMITS=false; SILENT=false
+[[ "$*" =~ --yes|-y ]]    && AUTO_APPROVE=true
+[[ "$*" =~ --commit|-c ]] && ALLOW_COMMITS=true
+[[ "$*" =~ --silent ]]    && SILENT=true
 ```
 
 ## Step 0.5: Select Plan
@@ -205,8 +179,10 @@ Before starting execution, verify all implementation files exist:
    - Parse `.codevoyant/plans/{plan-name}/plan.md`
    - Count lines matching: `^### Phase (\d+)`
    - Store total phase count
+   - Note whether `### Phase 0` exists (prerequisites gate) — store as `HAS_PHASE_0`
 
 2. **Check each implementation file** exists:
+   - Phase 0 is a manual prerequisites gate — it has **no implementation file**. Skip it.
    - For phase 1 to total phases:
      - Check `.codevoyant/plans/{plan-name}/implementation/phase-{N}.md` exists
      - Check file size > 100 bytes (not empty)
@@ -235,6 +211,7 @@ Before starting execution, verify all implementation files exist:
 
 4. **If all files exist:**
    - Report validation success:
+
    ```
    ✓ Validated {N} implementation files (phase-1.md through phase-{N}.md)
    ```
@@ -339,7 +316,30 @@ Agent:
 
 Read `references/agent-prompt.md` and substitute `{EXECUTION_DIR}`, `{PLAN_BRANCH}`, `{PLAN_WORKTREE}`, `{ALLOW_COMMITS}`, `{SILENT}`, and `{plan-name}` with their actual values before passing as the prompt.
 
-**Orchestration loop — for each phase:**
+**Phase 0 gate — check before entering the loop:**
+
+If `HAS_PHASE_0=true`, read the Phase 0 task list from plan.md. If any Phase 0 tasks are unchecked (`[ ]`):
+
+- Stop. Do not launch any executor agents.
+- Present the unchecked tasks to the user:
+
+  ```
+  ⛔ Phase 0 — Prerequisites must be completed before execution can begin.
+
+  The following actions require your attention:
+
+    [ ] {task 1}
+    [ ] {task 2}
+    ...
+
+  Complete these steps, then run /spec:bg again to continue.
+  ```
+
+- Exit. Do not proceed to Phase 1.
+
+If all Phase 0 tasks are checked (`[x]`), continue to the orchestration loop starting at Phase 1.
+
+**Orchestration loop — for each phase starting at Phase 1:**
 
 1. Launch phase Task (spec-executor) with the substituted prompt
 2. Wait for completion: `TaskOutput` (block=true)

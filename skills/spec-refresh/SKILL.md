@@ -1,10 +1,9 @@
 ---
-description: "Use when updating task checkboxes in a plan to match what has actually been done. Triggers on: \"refresh plan\", \"update checklist\", \"spec refresh\", \"sync plan progress\", \"mark tasks done\", \"update plan status\". Walks implementation files and marks completed tasks. Supports --bg for non-blocking execution with desktop notification."
+description: 'Use when updating task checkboxes in a plan to match what has actually been done. Triggers on: "refresh plan", "update checklist", "spec refresh", "sync plan progress", "mark tasks done", "update plan status". Walks implementation files and marks completed tasks. Supports --bg for non-blocking execution with desktop notification.'
 name: spec:refresh
 license: MIT
-compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
-argument-hint: "[plan-name] [--bg] [--silent]"
-disable-model-invocation: true
+compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
+argument-hint: '[plan-name] [--bg] [--silent]'
 model: claude-haiku-4-5-20251001
 ---
 
@@ -32,7 +31,7 @@ If not provided:
    ```
 2. Sort plans by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
-4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n  (1) feature-auth — 60% — updated 2h ago\n  (2) refactor-api — 20% — updated 1d ago"
+4. If multiple plans exist, use `AskUserQuestion` to present the list (name, progress %, last-updated) and ask the user to choose. Example prompt: "Which plan would you like to work on?\n (1) feature-auth — 60% — updated 2h ago\n (2) refactor-api — 20% — updated 1d ago"
 5. Report to user: "Refreshing plan: {plan-name} (last updated: {timestamp})"
 6. If no plans exist, inform user to create with `/new`
 

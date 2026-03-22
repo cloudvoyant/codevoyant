@@ -1,10 +1,9 @@
 ---
-description: "Use when reviewing a spec plan before execution. Triggers on: \"spec review\", \"review plan\", \"check plan\", \"plan review\", \"audit plan\", \"is this plan ready\". Checks for ambiguous tasks, missing validation, unrealistic ordering, dependency gaps, and plan-vs-implementation mismatches."
+description: 'Use when reviewing a spec plan before execution. Triggers on: "spec review", "review plan", "check plan", "plan review", "audit plan", "is this plan ready". Checks for ambiguous tasks, missing validation, unrealistic ordering, dependency gaps, and plan-vs-implementation mismatches.'
 name: spec:review
 license: MIT
-compatibility: "Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms."
-argument-hint: "[plan-name] [--bg] [--silent]"
-disable-model-invocation: true
+compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
+argument-hint: '[plan-name] [--bg] [--silent]'
 context: fork
 model: claude-sonnet-4-6
 ---
@@ -22,16 +21,18 @@ This skill reads a plan's files and checks for: ambiguous tasks, unrealistic pha
 Extract plan name from the argument (e.g., `/spec:review my-plan`).
 
 If no plan name provided, auto-select the most recently updated active plan:
+
 1. Get active plans from registry:
    ```bash
    npx @codevoyant/agent-kit plans migrate
    npx @codevoyant/agent-kit plans list --status Active
    ```
 2. Sort by last updated (most recent first)
-4. Auto-select the first one
-5. Report: "Reviewing plan: {plan-name}"
+3. Auto-select the first one
+4. Report: "Reviewing plan: {plan-name}"
 
 Extract flags:
+
 ```
 BG_MODE  = true if --bg present
 SILENT   = true if --silent present
@@ -48,11 +49,13 @@ PLAN_DIR=".codevoyant/plans/{plan-name}"
 3. Read each implementation file — store full contents for review agents.
 
 **If no implementation files found**, warn and stop:
+
 ```
 No implementation files found — run /spec:new to generate them before reviewing.
 ```
 
 **Additional checks:**
+
 - If `plan.md` references a `TODOS.md` file, read `{PLAN_DIR}/TODOS.md` and note any deferred work that is NOT covered by a phase file. Flag each as a CRITICAL issue.
 - If any implementation file mentions modifying a file that lives under `docs/`, check whether the corresponding `docs/` entry was updated in that same phase file. If not, flag as INFORMATIONAL (docs staleness).
 
@@ -65,11 +68,13 @@ Provide each agent with the full contents of `plan.md` and all `implementation/p
 ### Agent A — Plan-level scope challenge (CRITICAL pass)
 
 First, apply a scope challenge before any other review:
+
 - Does this plan introduce more complexity than needed? Could a simpler existing mechanism achieve the same outcome? (Boring by Default)
 - Are the changes reversible? For each phase, classify tasks as one-way doors (hard to undo: schema migrations, published APIs, deleted files) or two-way doors (safe to reverse). Flag any one-way door that is not called out explicitly in plan.md. (Reversibility Preference)
 - Does the plan reach for new technology, new abstractions, or a new "hero" system when an existing utility would do? Flag if yes.
 
 Then review `plan.md` for CRITICAL structural issues:
+
 - Objective is clear and bounded (not "improve everything")
 - Phases have logical ordering and phase dependencies are explicitly called out
 - Each phase header is descriptive (not just "Phase N")
@@ -81,6 +86,7 @@ Include a "What Already Exists" callout: list any codebase mechanisms, utilities
 ### Agent B — Implementation completeness (CRITICAL pass)
 
 For each `phase-N.md`, flag as CRITICAL if:
+
 - A task in plan.md has no corresponding section in the implementation file
 - A task has no concrete validation/verification step
 - A task says "implement X" without specifying files, APIs, or acceptance criteria
@@ -88,12 +94,14 @@ For each `phase-N.md`, flag as CRITICAL if:
 - A task modifies a file that is documented in `docs/` but the phase does not update that doc entry
 
 For each CRITICAL finding, also tag it as either:
+
 - `AUTO-FIX` — the fix is mechanical (e.g., add a missing validation step, fill a blank section, add a `just test` line). State the exact fix.
 - `ASK` — the fix requires a judgment call (e.g., which API to use, whether a task is in scope). Do NOT attempt to answer yet; just tag it.
 
 ### Agent C — Ordering and dependencies (CRITICAL pass)
 
 Across all phases, flag as CRITICAL if:
+
 - Phase N uses artifacts that are only produced in Phase N+1 or later
 - Tasks that share state or write to the same files are marked as parallelizable
 - The final phase does not include `just test` or an equivalent end-to-end validation
@@ -143,43 +151,52 @@ Write a structured review report to `{PLAN_DIR}/review.md`:
 ## Plan Review: N issues (X critical, Y informational) — {plan-name} — {date}
 
 ### Verdict
+
 {Ready to execute | Needs minor fixes | Significant gaps — address before /spec:go}
 
 ### Scope Challenge
+
 {Summary of scope challenge findings from Agent A — or "No concerns" if clean.}
 
 ### One-Way Doors
+
 {List of irreversible tasks identified across all phases, with phase reference.}
 
 ### What Already Exists
+
 {Callout from Agent A: codebase mechanisms this plan should leverage.}
 
 ### AUTO-FIXED
+
 - [Phase N, Task M]: {description of what was corrected}
 
 ### Blocking (fix before running /spec:go)
+
 - [Phase N, Task M]: {issue} — {why it matters for autonomous execution}
 
 ### Informational (quality / clarity)
+
 - [Phase N]: {issue} — {suggested fix}
 
 ### Looks Good
+
 - {Specific positive callouts anchored to plan content}
 
 ### Review Readiness Dashboard
 
-| Section | Status | Verdict |
-|---|---|---|
-| Objective clarity | {status} | {one-line verdict} |
-| Phase ordering | {status} | {one-line verdict} |
+| Section                     | Status   | Verdict            |
+| --------------------------- | -------- | ------------------ |
+| Objective clarity           | {status} | {one-line verdict} |
+| Phase ordering              | {status} | {one-line verdict} |
 | Implementation completeness | {status} | {one-line verdict} |
-| Validation steps | {status} | {one-line verdict} |
-| Codebase alignment | {status} | {one-line verdict} |
-| Scope / reversibility | {status} | {one-line verdict} |
-| Deferred work (TODOS) | {status} | {one-line verdict} |
-| Docs staleness | {status} | {one-line verdict} |
+| Validation steps            | {status} | {one-line verdict} |
+| Codebase alignment          | {status} | {one-line verdict} |
+| Scope / reversibility       | {status} | {one-line verdict} |
+| Deferred work (TODOS)       | {status} | {one-line verdict} |
+| Docs staleness              | {status} | {one-line verdict} |
 
 ### Checklist
+
 - [ ] All blocking issues resolved
 - [ ] ASK items answered and applied
 - [ ] Concerns acknowledged or addressed

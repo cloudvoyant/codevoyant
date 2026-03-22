@@ -1,10 +1,9 @@
 ---
-description: "Use when checking active plans and their progress. Triggers on: \"show plans\", \"what plans do I have\", \"spec list\", \"plan status\", \"list specs\", \"what am I working on\", \"check progress\", \"what's running\". Shows status, completion percentage, and current phase for each plan. Pass a plan name for detailed single-plan view."
+description: 'Use when checking active plans and their progress. Triggers on: "show plans", "what plans do I have", "spec list", "plan status", "list specs", "what am I working on", "check progress", "what''s running". Shows status, completion percentage, and current phase for each plan. Pass a plan name for detailed single-plan view.'
 name: spec:list
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-argument-hint: "[plan-name]"
-disable-model-invocation: true
+argument-hint: '[plan-name]'
 model: claude-haiku-4-5-20251001
 ---
 
@@ -13,6 +12,7 @@ List all plans with status and progress, or show detailed status for a specific 
 ## Step 0: Determine Mode
 
 Check for plan name argument:
+
 - If provided → **Single Plan Mode** (detailed status for that plan)
 - If not provided → **Overview Mode** (all plans)
 
@@ -21,6 +21,7 @@ Check for plan name argument:
 ### Step 1: Check for Plans Directory
 
 Check if `.codevoyant/plans/` exists:
+
 - If not found, report: "No plans found. Create one with /new"
 - If found, continue
 
@@ -35,6 +36,7 @@ npx @codevoyant/agent-kit plans list --status Active
 ```
 
 If no plans found in registry:
+
 - Scan `.codevoyant/plans/` for plan directories (exclude `archive/`)
 - For each directory found, register it:
   ```bash
@@ -49,12 +51,14 @@ If no plans found in registry:
 ### Step 3: Parse and Display Plans
 
 For each plan, extract branch and worktree from plan.md:
+
 ```bash
 PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
 PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 ```
 
 Display:
+
 ```
 📋 Plans Overview
 ================
@@ -94,6 +98,7 @@ Display:
 ```
 
 **Display Rules:**
+
 - Show 🌿 after plan name if branch is set and != "(none)"
 - Show worktree on same line as branch if set
 - Don't show branch/worktree for archived plans
@@ -126,6 +131,7 @@ Check `.codevoyant/plans/{plan-name}/plan.md` exists. If not, report error and s
    ```
 
 Extract branch context:
+
 ```bash
 PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
 PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
@@ -137,6 +143,7 @@ Convert ISO 8601 timestamps to human-friendly format (e.g., "5 minutes ago", "2 
 ### Step 3: Display Detailed Status
 
 #### If Execution is Running:
+
 ```
 Background Execution: RUNNING ⚙️
 
@@ -162,6 +169,7 @@ Commands:
 ```
 
 #### If Execution is Paused/Errored:
+
 ```
 Background Execution: PAUSED ⚠️
 
@@ -183,6 +191,7 @@ Next Steps:
 ```
 
 #### If Execution is Complete:
+
 ```
 Background Execution: COMPLETED ✅
 
@@ -198,6 +207,7 @@ Next Steps:
 ```
 
 #### If No Background Execution:
+
 ```
 Plan: {plan-name} — {status from README}
 
