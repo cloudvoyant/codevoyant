@@ -118,16 +118,7 @@ Label every such decision `[DESIGN DECISION]` in the roadmap. Do not leave "Why 
 
 ## Step 2: Confirm scope
 
-Present a one-paragraph summary (horizon, goal, research sources). Ask:
-
-```
-AskUserQuestion:
-  question: "Does this capture the roadmap scope?"
-  header: "Scope check"
-  options:
-    - label: "Yes — draft the roadmap"
-    - label: "Adjust scope (describe below)"
-```
+Present a one-paragraph summary (horizon, goal, research sources), then immediately proceed to Step 3. Do not ask a confirmation question here — the user will review and adjust the draft in Step 4.
 
 ## Step 3: Draft roadmap
 
