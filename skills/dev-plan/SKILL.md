@@ -1,10 +1,9 @@
 ---
-description: 'Use when planning architecture for a project or feature. Triggers on: "dev plan", "architecture plan", "plan architecture", "design architecture", "technical design", "system design for". Produces docs/architecture/README.md (system overview) and docs/architecture/{feature}.md (feature-specific).'
+description: 'Use when planning architecture for a project or feature. Triggers on: "dev plan", "architecture plan", "plan architecture", "design architecture", "technical design", "system design for". Produces draft plan artifacts in .codevoyant/plans/{slug}/. Use /dev:approve to promote to docs/architecture/.'
 name: dev:plan
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list; context: fork runs inline. Core functionality preserved on all platforms.'
-argument-hint: '[feature-name|description] [--update-overview] [--bg] [--silent]'
-disable-model-invocation: true
+argument-hint: '[feature-name|description] [--mode arch|feat] [--bg] [--silent]'
 context: fork
 agent: general-purpose
 model: claude-opus-4-6
@@ -12,40 +11,50 @@ model: claude-opus-4-6
 
 > **Compatibility**: If `AskUserQuestion` is unavailable, present options as a numbered list and wait for the user's reply. If `Task` is unavailable, run parallel steps sequentially. The `context: fork` and `agent:` frontmatter fields are Claude Code-specific — on OpenCode and VS Code Copilot they are ignored and the skill runs inline using the current model.
 
-Plan software architecture for a project or feature. Writes to `docs/architecture/`.
+Plan software architecture for a project or feature. Writes drafts to `.codevoyant/plans/`.
 
 ## Step 0: Parse Args
 
 Extract:
-
 - `FEATURE_NAME` = first non-flag argument (slugify for filename)
-- `UPDATE_OVERVIEW = true` if `--update-overview` present (always updates README.md)
+- `PLAN_MODE` = value after `--mode` (`arch` or `feat`); if absent, leave unset — Step 1 will ask
 - `BG_MODE`, `SILENT` as standard
 
 If no `FEATURE_NAME`: ask "What are we designing architecture for?" (free text).
 
 Derive:
-
 - `FEATURE_SLUG` = lowercase, hyphens (e.g. "auth refresh flow" → "auth-refresh-flow")
-- `FEATURE_FILE = docs/architecture/{FEATURE_SLUG}.md`
-- `OVERVIEW_FILE = docs/architecture/README.md`
+- `PLAN_DIR = .codevoyant/plans/{FEATURE_SLUG}`
 
-Create output dir:
-
+Create output directory:
 ```bash
-mkdir -p docs/architecture/
+mkdir -p "$PLAN_DIR/research"
 ```
 
 ## Step 0.5: System Audit
 
 ```bash
 git log --oneline -10
-ls docs/architecture/ 2>/dev/null || echo "(no architecture docs yet)"
+ls .codevoyant/plans/ 2>/dev/null || echo "(no existing plans)"
+ls docs/architecture/ 2>/dev/null || echo "(no existing arch docs)"
 ```
 
-If `OVERVIEW_FILE` exists, read it — use as context so the feature doc doesn't duplicate the overview.
+If `docs/architecture/README.md` exists, read it — use as context so this plan doesn't duplicate existing decisions.
 
 ## Step 1: Gather Design Context
+
+If `PLAN_MODE` is unset, ask:
+
+AskUserQuestion:
+  question: "What kind of plan is this?"
+  header: "Plan mode"
+  options:
+    - label: "Architecture (--mode arch)"
+      description: "System or component design — produces task breakdown with LOE and blocking relationships"
+    - label: "Feature implementation (--mode feat)"
+      description: "A specific feature within a known architecture — produces a design doc only"
+
+Set `PLAN_MODE` from the answer before continuing.
 
 Ask:
 
@@ -128,43 +137,65 @@ options:
 
 Loop on revisions until "Looks good" or "Mark as exploratory".
 
-## Step 5: Write Feature Doc
+## Step 5: Write Plan Files
 
-Write `{FEATURE_FILE}` using the template at `references/feature-architecture-template.md`.
+Write `{PLAN_DIR}/plan.md` with all architecture doc sections:
+- Context
+- Design Decision
+- Data Model
+- System Boundaries (Mermaid diagram preferred over ASCII)
+- API Surface
+- Key Decisions table
+- Failure Modes table
+- Open Questions
+- Out of Scope
 
-If "Mark as exploratory": prepend `> **Status: Proposal** — not yet decided` to the doc.
+If "Mark as exploratory": prepend `> **Status: Proposal** — not yet decided`.
 
-## Step 6: Update Overview
+### Task Breakdown (if PLAN_MODE is arch)
 
-If `docs/architecture/README.md` does not exist OR `--update-overview` was passed:
+If `PLAN_MODE` is `arch` (or scope chosen was "Refactor existing system" or "Greenfield project"), append a `## Task Breakdown` section to `plan.md`:
 
-- Read existing overview (if any)
-- Add or update the entry for this feature in the component list
-- Write updated `docs/architecture/README.md` using `references/architecture-overview-template.md`
+For each implementation task identified during design, write a self-contained entry rich enough for an autonomous agent to run `/spec:new` and `/spec:bg` without further human input:
 
-If README.md exists and `--update-overview` was NOT passed, ask:
+### {task name}
+- **LOE**: {N} hours (rough estimate)
+- **Blocks**: {list of task names this task must complete before, or "none"}
+- **Blocked by**: {list of task names that must complete first, or "none"}
+- **Architecture reference**: `{PLAN_DIR}/plan.md` → `## {Section name}` (e.g. `## Design Decision`, `## API Surface`)
+- **Scope**: {one paragraph — what specifically must be built or changed to implement this task}
+- **Key constraints**: {relevant ONE-WAY door decisions from the Key Decisions table that apply to this task}
+- **Acceptance criteria**:
+  - {specific, verifiable condition checkable in under 5 minutes}
+  - {another AC — e.g. unit test passes, endpoint returns expected shape, migration is idempotent}
 
-```
-AskUserQuestion:
-  question: "Update the architecture overview (README.md)?"
-  header: "Overview"
-  options:
-    - label: "Yes — add this feature to the overview"
-    - label: "No — feature doc only"
+Include a Mermaid dependency graph if there are blocking relationships:
+```mermaid
+graph TD
+  A[Task A] --> B[Task B]
+  A --> C[Task C]
+  C --> D[Task D]
 ```
 
 ## Step 7: Report + Notify
 
-Report:
+Register the plan:
 
+```bash
+npx @codevoyant/agent-kit plans register \
+  --name "{FEATURE_SLUG}" \
+  --plugin dev \
+  --description "{first line of Context section}" \
+  --total "{task count from Task Breakdown, or 0}"
 ```
-Architecture docs written:
-  {FEATURE_FILE}
-  {OVERVIEW_FILE (if updated)}
+
+Report:
+```
+Plan written to .codevoyant/plans/{FEATURE_SLUG}/plan.md
+Run /dev:approve to promote to docs/architecture/.
 ```
 
 If `BG_MODE=true` and `SILENT=false`:
-
 ```bash
-npx @codevoyant/agent-kit notify --title "dev:plan complete" --message "Architecture doc written: {FEATURE_FILE}"
+npx @codevoyant/agent-kit notify --title "dev:plan complete" --message "Architecture plan saved: .codevoyant/plans/{FEATURE_SLUG}/"
 ```

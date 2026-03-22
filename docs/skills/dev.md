@@ -52,8 +52,11 @@ If your project was bootstrapped from a template, use `/dev:diff` periodically t
 ### Architecture Documentation
 
 ```bash
-/dev:docs                          # Generate docs/architecture/ from codebase scan
-/dev:plan "authentication system"  # Plan architecture for a specific feature
+/dev:docs                                   # Generate docs/architecture/ from codebase scan
+/dev:plan "authentication system"           # Draft architecture plan to .codevoyant/plans/
+/dev:plan "auth" --mode arch                # Architecture plan with task breakdown + LOE
+/dev:approve                                # Promote draft plan to docs/architecture/
+/dev:approve my-plan --push                 # Promote and create Linear tasks
 ```
 
 ### Technical Research
@@ -184,12 +187,33 @@ Produces component maps, data flow diagrams, API inventories, and dependency gra
 Plan architecture for a project or feature:
 
 ```bash
-/dev:plan "authentication system"
-/dev:plan --update-overview        # Update the system overview
-/dev:plan "auth" --bg              # Run in background
+/dev:plan "authentication system"          # Feature design doc (--mode feat)
+/dev:plan "auth" --mode arch               # Architecture plan with task breakdown + LOE
+/dev:plan "auth" --mode arch --bg          # Run in background
 ```
 
-Writes to `docs/architecture/README.md` (system overview) and `docs/architecture/{feature}.md` (feature-specific).
+Writes a draft plan to `.codevoyant/plans/{slug}/plan.md`. For architecture-level plans (`--mode arch`), the plan includes a **Task Breakdown** — each task has a LOE estimate, blocking relationships, and acceptance criteria rich enough for autonomous implementation via `/spec:new` and `/spec:bg`.
+
+Use `/dev:approve` to promote the plan to `docs/architecture/`.
+
+**Flags:**
+- `--mode arch` — architecture-level plan: produces task breakdown with LOE and dependency graph
+- `--mode feat` — feature design doc only (no task breakdown)
+- If `--mode` is omitted, the skill asks interactively
+
+### Architecture Approve
+
+Promote a draft architecture plan to `docs/architecture/` and optionally create Linear tasks:
+
+```bash
+/dev:approve                                    # Approve most recent dev:plan draft
+/dev:approve my-plan                            # Approve specific plan by slug
+/dev:approve my-plan --push                     # Approve and create new Linear project + tasks
+/dev:approve my-plan --push https://linear.app/...  # Approve and push to existing Linear project
+/dev:approve my-plan --silent                   # Suppress notification
+```
+
+Each Linear task created includes: the relevant architecture doc section, scope, key constraints, and verifiable acceptance criteria — enough context for `/spec:new` + `/spec:bg` to execute autonomously.
 
 ### Pre-approve Agent Permissions
 
