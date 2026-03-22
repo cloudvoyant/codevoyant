@@ -54,8 +54,8 @@ export default defineConfig({
           { text: "EM · Experimental", link: "/skills/em" },
           { text: "PM · Experimental", link: "/skills/pm" },
           { text: "UX · Experimental", link: "/skills/ux" },
+          { text: "Skill · Experimental", link: "/skills/skill" },
           { text: "Mem · Experimental", link: "/skills/mem" },
-          { text: "Skill", link: "/skills/skill" },
         ],
       },
       {

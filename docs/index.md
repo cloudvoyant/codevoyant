@@ -44,6 +44,11 @@ features:
     details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
     link: /skills/ux
   - icon:
+      src: /icons/skill.svg
+    title: Skill · Experimental
+    details: Build and maintain Claude Code / Agent Skills — explore existing skills, scaffold from template, iterate, and run quality reviews before shipping.
+    link: /skills/skill
+  - icon:
       src: /icons/mem.svg
     title: Mem · Experimental
     details: Team knowledge capture and recall — structured markdown docs with frontmatter, indexed for fast lookup and AI context loading.
