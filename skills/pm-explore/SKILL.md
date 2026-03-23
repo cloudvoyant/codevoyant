@@ -24,6 +24,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - One research artifact per topic slug — reuse existing slug directories when extending
 - Research artifacts feed pm:plan and pm:prd — deposit them faithfully at the specified paths
 - No markdown tables in output — use bullets and definition lists
+- Prefer Mermaid diagrams for any visual structure — timelines, competitive maps, process flows. Never use ASCII art for structured diagrams.
 - See `references/web-research-standards.md` for source tiers, citation format, and agent output format
 
 ## Agent Index
@@ -67,8 +68,8 @@ AskUserQuestion:
 ```
 
 If TOPIC is empty, ask for it. Derive SLUG (lowercase, hyphenated). Set:
-- `OUTPUT_PATH = .codevoyant/research/{SLUG}.md`
-- `SUB_DIR = .codevoyant/research/{SLUG}/`
+- `OUTPUT_PATH = .codevoyant/explore/{SLUG}/summary.md`
+- `SUB_DIR = .codevoyant/explore/{SLUG}/research/`
 
 Ask mode-specific scoping questions (all in one AskUserQuestion call):
 
@@ -82,7 +83,7 @@ Present a one-paragraph scope summary and confirm before launching agents.
 ## Step 2: Launch parallel research agents
 
 ```bash
-mkdir -p ".codevoyant/research/{SLUG}"
+mkdir -p ".codevoyant/explore/{SLUG}/research"
 ```
 
 Tell the user: "Starting parallel research on '{TOPIC}' (modes: {MODES}) — this will take a few minutes."
@@ -118,7 +119,7 @@ Wait for all agents to complete before continuing.
 
 ## Step 3: Synthesize and write artifact
 
-Read all sub-artifacts in `.codevoyant/research/{SLUG}/`. Write a unified research summary to `OUTPUT_PATH`:
+Read all sub-artifacts in `.codevoyant/explore/{SLUG}/research/`. Write a unified research summary to `OUTPUT_PATH`:
 
 ```markdown
 # Research: {TOPIC}
@@ -164,4 +165,4 @@ if [ "$SILENT" != "true" ]; then
 fi
 ```
 
-Report: "Research artifact written to `{OUTPUT_PATH}`. Sub-artifacts in `.codevoyant/research/{SLUG}/`. Use `/pm:prd {SLUG}` or `/pm:plan` to continue."
+Report: "Research summary written to `{OUTPUT_PATH}`. Sub-artifacts in `.codevoyant/explore/{SLUG}/research/`. Use `/pm:prd {SLUG}` or `/pm:plan` to continue."
