@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** true
-**Purpose:** Researches unmet needs, market gaps, and JTBD signals for the topic via mandatory web search. Saves findings to `.codevoyant/research/{SLUG}/ideation.md`.
+**Purpose:** Researches unmet needs, market gaps, and JTBD signals for the topic via mandatory web search. Saves findings to `.codevoyant/explore/{SLUG}/research/ideation.md`.
 
 ## Prompt
 
@@ -36,7 +36,7 @@ Research questions to answer:
 - Which user segments experience the problem most acutely?
 - What would a "perfect solution" look like in users' own words?
 
-**Write findings to: `.codevoyant/research/{SLUG}/ideation.md`**
+**Write findings to: `.codevoyant/explore/{SLUG}/research/ideation.md`**
 
 Follow this structure exactly:
 
@@ -73,4 +73,4 @@ Never state a user behavior or market gap claim without a source URL. If informa
 
 ## Output
 
-Saves to: `.codevoyant/research/{SLUG}/ideation.md`
+Saves to: `.codevoyant/explore/{SLUG}/research/ideation.md`

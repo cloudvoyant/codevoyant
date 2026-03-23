@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** true
-**Purpose:** Scans the project's existing research, plans, and PRDs for prior art relevant to the topic. Saves findings to `.codevoyant/research/{SLUG}/internal.md`.
+**Purpose:** Scans the project's existing research, plans, and PRDs for prior art relevant to the topic. Saves findings to `.codevoyant/explore/{SLUG}/research/internal.md`.
 
 ## Prompt
 
@@ -28,7 +28,7 @@ Your job is to find all existing internal context relevant to this topic — pre
    - List skills in `skills/` that are related to this topic
    - Note the current version from `version.txt` or `package.json`
 
-**Write findings to: `.codevoyant/research/{SLUG}/internal.md`**
+**Write findings to: `.codevoyant/explore/{SLUG}/research/internal.md`**
 
 Follow this structure exactly:
 
@@ -62,4 +62,4 @@ Do not invent findings. If a directory doesn't exist, note it as absent. If no r
 
 ## Output
 
-Saves to: `.codevoyant/research/{SLUG}/internal.md`
+Saves to: `.codevoyant/explore/{SLUG}/research/internal.md`
