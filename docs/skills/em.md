@@ -39,7 +39,7 @@ Produces a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`. Use
 /em:approve my-plan --push https://linear.app/...    # Approve and push to existing project
 ```
 
-Sets start/end dates on the Linear project from the plan's timeline. Creates issues directly under the project (no milestones). Links the git repo to each issue.
+Sets start/end dates on the Linear project from the plan's timeline. Creates milestones from the plan's milestone headings (M1, M2, etc.). Copies research artifacts to `docs/engineering/plans/{slug}/research/`. Issue creation is handled separately by `dev:plan`.
 
 ### Continue from existing Linear state
 
