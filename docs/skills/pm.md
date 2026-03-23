@@ -28,7 +28,7 @@ npx skills add cloudvoyant/codevoyant
 /pm:explore "pricing strategy" --bg               # Run in background
 ```
 
-Deposits a research artifact to `.codevoyant/research/{slug}.md` for use by `pm:plan` and `pm:prd`.
+Deposits a research artifact to `.codevoyant/explore/{slug}/summary.md` for use by `pm:plan` and `pm:prd`.
 
 ### Plan a product roadmap
 
