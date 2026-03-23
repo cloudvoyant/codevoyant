@@ -159,8 +159,7 @@ options:
 ## Step 3.5: Research backfill (if no prior exploration found)
 
 Check for existing research:
-- Look in `.codevoyant/explore/` for a dev:explore run relevant to this project
-- Look in `.codevoyant/research/` for a pm:explore run relevant to this project
+- Look in `.codevoyant/explore/` for a dev:explore or pm:explore run relevant to this project (pm:explore artifacts live at `.codevoyant/explore/{slug}/summary.md`)
 
 **If relevant research found:** load it as `PRIOR_RESEARCH` and skip this step.
 

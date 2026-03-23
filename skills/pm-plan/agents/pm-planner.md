@@ -28,6 +28,8 @@ Research context:
 
 Write the roadmap to {DRAFT_PATH} in this format (no markdown tables — use bullets and definition lists):
 
+If the roadmap has a timeline or capability dependency structure, include a Mermaid diagram immediately after the Strategic Goal section. Use Gantt for half/annual horizon plans, flowchart for capability dependency maps. Never use ASCII art for structured diagrams.
+
 # {HORIZON} Product Roadmap — {DATE}
 
 ## Strategic Goal

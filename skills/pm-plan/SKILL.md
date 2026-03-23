@@ -25,7 +25,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - Capability tiers group features by strategic value, not by team or sprint
 - Research context from pm:explore should be consumed if available
 - Every capability's "Why now" must cite a source — research artifact, competitive signal, or user data. If none is available, mark it explicitly as `[ASSUMPTION — unvalidated]`
-- Do not generate a roadmap from strategic intent alone — always check `.codevoyant/research/` for available research context before drafting
+- Do not generate a roadmap from strategic intent alone — always check `.codevoyant/explore/` for available research context before drafting
 - Capabilities without any research backing must be placed in Tier 3 (Future) and flagged
 
 ## Step 0: Parse arguments
@@ -38,6 +38,14 @@ BG_FLAG=false; SILENT=false
 ```
 
 ## Step 1: Gather context
+
+Before asking, scan for available research:
+
+```bash
+ls .codevoyant/explore/ 2>/dev/null | head -20
+```
+
+Store discovered directory names as EXPLORE_DIRS. If none found, set EXPLORE_DIRS="(none)".
 
 Ask:
 
@@ -53,7 +61,7 @@ AskUserQuestion:
     - question: "Is there research context to pull in?"
       header: "Research"
       options:
-        - label: "Yes — use .codevoyant/research/"
+        - label: "Yes — use .codevoyant/explore/ (found: {EXPLORE_DIRS})"
         - label: "No — start from scratch"
     - question: "What is the primary strategic goal for this period?"
       header: "Goal"
@@ -62,11 +70,11 @@ AskUserQuestion:
         - label: "Pull from existing product docs"
 ```
 
-If using research: list files in `.codevoyant/research/` and ask which to include. Read selected files as RESEARCH_CONTEXT.
+If using research: list dirs in `.codevoyant/explore/` and ask which to include. Read `summary.md` and all files under `research/` in selected dirs as RESEARCH_CONTEXT.
 
 ## Step 1.5: Research backfill (if no research artifacts)
 
-After the user selects "Yes — use .codevoyant/research/", check if that directory actually has content.
+After the user selects "Yes — use .codevoyant/explore/", check if that directory actually has content.
 
 **If research artifacts exist:** load selected ones as RESEARCH_CONTEXT and skip this step.
 
@@ -97,13 +105,13 @@ AskUserQuestion:
 Launch 3 Sonnet agents in parallel (run_in_background: false, model: claude-sonnet-4-6):
 
 **Agent A — Market signals:**
-Prompt: Search for market trends and user needs in "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} market trends {year}"), WebSearch("{PRODUCT_CATEGORY} user needs"), WebSearch("{PRODUCT_CATEGORY} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/research/roadmap-backfill/market.md` with citations and Tier labels.
+Prompt: Search for market trends and user needs in "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} market trends {year}"), WebSearch("{PRODUCT_CATEGORY} user needs"), WebSearch("{PRODUCT_CATEGORY} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/roadmap-backfill/research/market.md` with citations and Tier labels.
 
 **Agent B — Competitive landscape:**
-Prompt: Research competitors for "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} competitors"), WebSearch("{COMPETITOR_LIST} product updates {year}"), WebSearch("{PRODUCT_CATEGORY} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/research/roadmap-backfill/competitive.md`. Include each competitor's recent moves and strategic direction.
+Prompt: Research competitors for "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} competitors"), WebSearch("{COMPETITOR_LIST} product updates {year}"), WebSearch("{PRODUCT_CATEGORY} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/explore/roadmap-backfill/research/competitive.md`. Include each competitor's recent moves and strategic direction.
 
 **Agent C — Internal prior art:**
-Prompt: Scan this repository for product context: read all files in docs/product/ and docs/prd/, read any .codevoyant/roadmaps/ files, note existing strategic goals, past PRDs, known user problems. Write a summary to `.codevoyant/research/roadmap-backfill/internal.md`.
+Prompt: Scan this repository for product context: read all files in docs/product/ and docs/prd/, read any .codevoyant/roadmaps/ files, note existing strategic goals, past PRDs, known user problems. Write a summary to `.codevoyant/explore/roadmap-backfill/research/internal.md`.
 
 Wait for all three to complete. Read outputs as RESEARCH_CONTEXT.
 
@@ -154,7 +162,19 @@ Loop until accepted or discarded. If adjustments needed, apply them to DRAFT_PAT
 
 After acceptance, run `/pm:review` on the draft to catch quality issues automatically.
 
-## Step 6: Notify
+## Step 6: Register + Notify
+
+Register the roadmap draft:
+
+```bash
+npx @codevoyant/agent-kit plans register \
+  --name "{DATE}-{TYPE}" \
+  --plugin pm \
+  --description "{strategic goal first line}" \
+  --total "0"
+```
+
+(`--total 0` — pm roadmaps have no implementation tasks; those are created by em:plan)
 
 ```bash
 if [ "$SILENT" != "true" ]; then
@@ -164,4 +184,4 @@ if [ "$SILENT" != "true" ]; then
 fi
 ```
 
-Report: "Draft written to `{DRAFT_PATH}`. Run `/pm:approve` when ready to commit to `docs/product/roadmaps/`."
+Report: "Draft written to `{DRAFT_PATH}`. Run `/pm:approve` when ready to commit to `docs/product/`."
