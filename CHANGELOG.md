@@ -1,3 +1,55 @@
+## [1.35.3](https://github.com/cloudvoyant/codevoyant/compare/v1.35.2...v1.35.3) (2026-03-23)
+
+### Bug Fixes
+
+* **pm-approve:** dated folder, research copy, browser-first Linear sync, PRD routing
+
+- Promote to docs/product/{date}-{timescale}/ (was docs/product/roadmaps/)
+- Copy research artifacts from .codevoyant/explore/{slug}/ alongside roadmap
+- Add plans update-status --status Approved
+- Replace linear-sync-agent with inline browser+MCP loop for initiative docs
+  - browser creates blank doc linked to initiative, extract slug from tab URL,
+    immediately MCP update_document before navigation
+  - strip local markdown links from content before upload
+- Add artifact type detection in Step 0 (roadmap vs PRD)
+- Add PRD promote flow: .codevoyant/prds/{slug}/{slug}.md -> docs/prd/{slug}/
+- initiatives only; never create Linear projects
+
+* **pm-prd:** draft-first flow, fix explore paths, plans register, Mermaid rule
+
+- Draft writes to .codevoyant/prds/{SLUG}/{SLUG}.md (was docs/product/prds/)
+- Fix all .codevoyant/research/ paths to .codevoyant/explore/{SLUG}/
+- Add plans register --plugin pm call in Step 5
+- Update notify/report messages to direct user to run /pm:approve
+- Add Mermaid Critical Rule (no ASCII art)
+- prd-template: path header updated; Requirements aligned to P0/P1/P2 format
+
+* **em-review:** fix stale plan path, show review inline
+
+- Replace .codevoyant/em/plans/ with .codevoyant/plans/ throughout
+- Step 4: output review inline instead of writing {PLAN_DIR}/review.md
+- Update Step 5 notify message (no review.md reference)
+
+* **pm-explore:** output to .codevoyant/explore/{slug}/, add Mermaid rule
+
+- Change OUTPUT_PATH from .codevoyant/research/{SLUG}.md to
+  .codevoyant/explore/{SLUG}/summary.md
+- Change SUB_DIR to .codevoyant/explore/{SLUG}/research/
+- Update mkdir, synthesis read, and notify/report paths
+- Add Critical Rule: prefer Mermaid, never ASCII art
+
+* **pm-plan:** pre-scan explore dir, fix backfill paths, add plans register
+
+- Pre-scan .codevoyant/explore/ before research question; inject dirs into option label
+- Backfill agent outputs moved to .codevoyant/explore/roadmap-backfill/research/
+- Add Step 6 plans register call (--plugin pm --total 0)
+- em-plan Step 3.5: scan .codevoyant/explore/ instead of .codevoyant/research/
+- pm-planner: add Mermaid guidance (Gantt for timeline, flowchart for deps, no ASCII)
+
+* **dev-plan:** replace ASCII System Boundaries diagram with Mermaid flowchart
+
+* **pm-review:** show findings inline, remove review.md file write
+
 ## [1.35.2](https://github.com/cloudvoyant/codevoyant/compare/v1.35.1...v1.35.2) (2026-03-22)
 
 ### Bug Fixes
