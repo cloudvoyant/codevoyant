@@ -19,7 +19,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 ## Critical Rules
 
 - One PRD per invocation — never generate multiple PRDs in one run
-- Consume research from `.codevoyant/research/{slug}.md` if available
+- Consume research from `.codevoyant/explore/{slug}/summary.md` if available
 - No markdown tables — use bullets, definition lists, and plain prose
 - Problem statements describe user pain, not solutions
 - Success metrics must be measurable (baseline + target)
@@ -27,6 +27,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - Requirements must use P0/P1/P2 prioritization — never a flat unordered list
 - Acceptance criteria required for every user story
 - Problem statements must cite at least one evidence source (research artifact, user quote, support ticket, or analytics datum)
+- Prefer Mermaid diagrams for any visual structure in the PRD. Never use ASCII art.
 
 ## Step 0: Parse arguments
 
@@ -52,7 +53,7 @@ AskUserQuestion:
     - label: "Link a Linear issue (paste URL)"
 ```
 
-Derive SLUG from FEATURE. Check for research artifact at `.codevoyant/research/{SLUG}.md`. If found, read it as RESEARCH_CONTEXT and inform the user it will be used.
+Derive SLUG from FEATURE. Check for research artifact at `.codevoyant/explore/{SLUG}/summary.md`. If found, read it as RESEARCH_CONTEXT (also read any files in `.codevoyant/explore/{SLUG}/research/`) and inform the user it will be used.
 
 Ask:
 
@@ -73,7 +74,7 @@ AskUserQuestion:
 
 ## Step 1.5: Research backfill (if no research artifact)
 
-Check for a research artifact at `.codevoyant/research/{SLUG}.md` or `.codevoyant/research/{SLUG}/`.
+Check for research artifacts at `.codevoyant/explore/{SLUG}/summary.md` or `.codevoyant/explore/{SLUG}/research/`.
 
 **If research exists:** load it as RESEARCH_CONTEXT and skip this step.
 
@@ -103,7 +104,7 @@ Prompt:
 Search for evidence about the user problem for "{FEATURE}".
 Run WebSearch("{FEATURE} user problems {year}"), WebSearch("{FEATURE} why users need"), and WebSearch("{TARGET_USER} pain points {FEATURE}").
 Fetch 2+ relevant URLs.
-Write 4–6 key findings to `.codevoyant/research/{SLUG}/prd-backfill-market.md` with source citations. Flag every unverifiable claim as [UNVERIFIED].
+Write 4–6 key findings to `.codevoyant/explore/{SLUG}/research/prd-backfill-market.md` with source citations. Flag every unverifiable claim as [UNVERIFIED].
 
 **Agent B — Competitive landscape:**
 
@@ -111,7 +112,7 @@ Prompt:
 Search for existing solutions and competitors for "{FEATURE}".
 Run WebSearch("{FEATURE} alternatives"), WebSearch("{FEATURE} competitors"), and WebSearch("best {FEATURE} tools").
 Fetch 2+ relevant URLs (competitor homepages or review pages).
-Write 4–6 key findings to `.codevoyant/research/{SLUG}/prd-backfill-competitive.md`.
+Write 4–6 key findings to `.codevoyant/explore/{SLUG}/research/prd-backfill-competitive.md`.
 Include for each competitor: target customer, core claim, one key strength, one gap. Cite sources.
 
 Wait for both to complete. Read their outputs as RESEARCH_CONTEXT.
@@ -142,8 +143,11 @@ AskUserQuestion:
 
 Set:
 
-- DATE = current date YYMMDD
-- OUTPUT_PATH = `docs/product/prds/{DATE}-{SLUG}-prd.md`
+- OUTPUT_PATH = `.codevoyant/prds/{SLUG}/{SLUG}.md`
+
+```bash
+mkdir -p ".codevoyant/prds/{SLUG}"
+```
 
 Write the PRD to OUTPUT_PATH using this structure (no markdown tables):
 
@@ -237,14 +241,22 @@ Auto-fix what can be fixed without human judgment (add missing section skeletons
 
 Report what was auto-fixed and any remaining issues requiring user attention.
 
-## Step 5: Notify
+## Step 5: Register + Notify
+
+```bash
+npx @codevoyant/agent-kit plans register \
+  --name "{SLUG}-prd" \
+  --plugin pm \
+  --description "PRD: {FEATURE}" \
+  --total "0"
+```
 
 ```bash
 if [ "$SILENT" != "true" ]; then
   npx @codevoyant/agent-kit notify \
     --title "pm:prd complete" \
-    --message "PRD for '{FEATURE}' written to {OUTPUT_PATH}"
+    --message "PRD draft for '{FEATURE}' written to {OUTPUT_PATH}. Run /pm:approve to commit."
 fi
 ```
 
-Report: "PRD written to `{OUTPUT_PATH}`."
+Report: "PRD draft written to `{OUTPUT_PATH}`. Run `/pm:approve` to commit to `docs/prd/{SLUG}/`."

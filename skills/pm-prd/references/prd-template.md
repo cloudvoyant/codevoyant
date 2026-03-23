@@ -1,6 +1,6 @@
 # PRD Template — pm:prd
 
-Use for `docs/product/prds/YYMMDD-{slug}-prd.md`.
+Draft: `.codevoyant/prds/{slug}/prd.md` | Committed: `docs/prd/{slug}/{slug}.md`
 
 ---
 
@@ -39,19 +39,21 @@ Use for `docs/product/prds/YYMMDD-{slug}-prd.md`.
 ### Key Decisions
 - {decision}: {rationale}
 
-## Requirements — Functional
+## Requirements
 
-- {F1} {what the system must do} — Priority: P0/P1/P2
-- {F2} {what the system must do} — Priority: P0/P1/P2
+### P0 — Must-have (launch blocker)
 
-## Requirements — Non-Functional
+- {requirement} — {rationale: why blocking}
 
-- {NF1} {performance/security/reliability constraint}: {measurable target}
+### P1 — Nice-to-have (high value, ship when ready)
 
-## Acceptance Criteria
+- {requirement} — {rationale: what it unlocks}
 
-- [ ] {verifiable condition}
-- [ ] {verifiable condition}
+### P2 — Future (validate direction, don't build yet)
+
+- {requirement} — {rationale: why deferred}
+
+> If everything is P0, nothing is P0. Be ruthless about what truly blocks launch.
 
 ## Dependencies
 
