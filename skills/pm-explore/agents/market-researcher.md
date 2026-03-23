@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** true
-**Purpose:** Researches market size, growth signals, and existing solution landscape for the topic via mandatory web search. Saves findings to `.codevoyant/research/{SLUG}/market.md`.
+**Purpose:** Researches market size, growth signals, and existing solution landscape for the topic via mandatory web search. Saves findings to `.codevoyant/explore/{SLUG}/research/market.md`.
 
 ## Prompt
 
@@ -38,7 +38,7 @@ Research questions to answer:
 - What investment signals exist in this space?
 - What would validate this as a real opportunity vs. a niche problem?
 
-**Write findings to: `.codevoyant/research/{SLUG}/market.md`**
+**Write findings to: `.codevoyant/explore/{SLUG}/research/market.md`**
 
 Follow this structure exactly:
 
@@ -77,4 +77,4 @@ Never state a market size or growth rate without a source URL. If data can't be 
 
 ## Output
 
-Saves to: `.codevoyant/research/{SLUG}/market.md`
+Saves to: `.codevoyant/explore/{SLUG}/research/market.md`

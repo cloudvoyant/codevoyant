@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** true
-**Purpose:** Researches jobs-to-be-done, user pains, and behavioral evidence for the topic via mandatory web search. Saves findings to `.codevoyant/research/{SLUG}/user-problems.md`.
+**Purpose:** Researches jobs-to-be-done, user pains, and behavioral evidence for the topic via mandatory web search. Saves findings to `.codevoyant/explore/{SLUG}/research/user-problems.md`.
 
 ## Prompt
 
@@ -39,7 +39,7 @@ Research questions to answer:
 - What workarounds reveal the true severity of the problem?
 - How do different user segments experience the job differently?
 
-**Write findings to: `.codevoyant/research/{SLUG}/user-problems.md`**
+**Write findings to: `.codevoyant/explore/{SLUG}/research/user-problems.md`**
 
 Follow this structure exactly:
 
@@ -89,4 +89,4 @@ Prioritize behavioral evidence (what users do, build, or pay for) over stated pr
 
 ## Output
 
-Saves to: `.codevoyant/research/{SLUG}/user-problems.md`
+Saves to: `.codevoyant/explore/{SLUG}/research/user-problems.md`

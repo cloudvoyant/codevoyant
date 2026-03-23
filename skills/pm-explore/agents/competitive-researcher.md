@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** true
-**Purpose:** Researches the competitive landscape for the topic via mandatory web search and site fetching. Saves findings to `.codevoyant/research/{SLUG}/competitive.md`.
+**Purpose:** Researches the competitive landscape for the topic via mandatory web search and site fetching. Saves findings to `.codevoyant/explore/{SLUG}/research/competitive.md`.
 
 ## Prompt
 
@@ -37,7 +37,7 @@ Research questions to answer per competitor:
 - What is their pricing model?
 - What do their users say in reviews?
 
-**Write findings to: `.codevoyant/research/{SLUG}/competitive.md`**
+**Write findings to: `.codevoyant/explore/{SLUG}/research/competitive.md`**
 
 Follow this structure exactly:
 
@@ -82,4 +82,4 @@ Never state a competitive claim without fetching the competitor's actual page. I
 
 ## Output
 
-Saves to: `.codevoyant/research/{SLUG}/competitive.md`
+Saves to: `.codevoyant/explore/{SLUG}/research/competitive.md`
