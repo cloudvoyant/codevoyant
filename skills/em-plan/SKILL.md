@@ -109,13 +109,10 @@ AskUserQuestion:
 question: "What constraints does this project have?"
 header: "Capacity"
 questions:
-  - question: "What is the target timeline for this project?"
-    header: "Timeline"
-    options:
-      - label: "~1 week (small epic)"
-      - label: "2–4 weeks (standard epic)"
-      - label: "1–2 months (large initiative)"
-      - label: "3+ months (major initiative)"
+  - question: "When does work start, and what is the target completion date?"
+    header: "Dates"
+    freeform: true
+    placeholder: "e.g. Start 2026-03-24, target 2026-05-01 — or 'no hard deadline'"
   - question: "How many engineers are available for this work?"
     header: "Team size"
     options:
@@ -123,17 +120,22 @@ questions:
       - label: "2–3 engineers"
       - label: "4+ engineers"
       - label: "Not yet determined"
-  - question: "Are there hard deadlines or sequencing constraints?"
+  - question: "Are there hard deadlines, external dependencies, or technical restrictions?"
     header: "Constraints"
-    options:
-      - label: "No hard deadlines"
-      - label: "Yes — I'll describe below"
-      - label: "Soft target (not a blocker if missed)"
+    freeform: true
+    placeholder: "e.g. Must ship before Q2 board review; blocked on X team releasing Y; must use existing auth stack"
 ```
 
-Store as `TIMELINE`, `TEAM_SIZE`, `CONSTRAINTS`. These will be used in Step 7 to descope items that exceed capacity.
+Parse the dates answer into `START_DATE` (ISO) and `END_DATE` (ISO). If the user gave a range, compute `CALENDAR_DAYS`. Store all as `TIMELINE`, `TEAM_SIZE`, `CONSTRAINTS`.
 
-Apply the 70% rule: never plan to more than 70% of calculated capacity. For a 1-engineer/2-week project, that is roughly 7 engineer-days of planned work, leaving 3 days for discovered work and interrupts.
+Derive `AVAILABLE_ENGINEER_DAYS = TEAM_SIZE × CALENDAR_DAYS × 0.7` (70% rule — 30% reserved for interrupts, bug fixes, and scope discovery). Surface this immediately:
+
+```
+📅 Timeline: {START_DATE} → {END_DATE} ({CALENDAR_DAYS} calendar days)
+👷 Capacity: {TEAM_SIZE} engineer(s) × {CALENDAR_DAYS} days × 70% = ~{AVAILABLE_ENGINEER_DAYS} engineer-days available
+```
+
+If no dates given, note: "No dates set — timeline will be derived from estimates in Step 5.5."
 
 ## Step 3: Define Requirements
 
@@ -155,6 +157,42 @@ options:
   - label: "Simple -- no design needed"
     description: "Straightforward task, no architecture decision"
 ```
+
+## Step 3.6: Scope Coverage Reconciliation (if source is a roadmap or initiative)
+
+**Run this step only when the plan derives from a product roadmap, Linear initiative, or any multi-item source.**
+
+Enumerate every item in the source (roadmap features, initiative projects, epic list). For each item, classify it as:
+
+| Status | Meaning |
+|--------|---------|
+| `IN` | Addressed by this plan |
+| `PARTIAL` | Partially addressed — note what's left out |
+| `OUT` | Not addressed — must state why |
+
+For every `OUT` or `PARTIAL` item, record a reason from this taxonomy:
+
+- **Capacity** — would exceed available engineer-days given timeline
+- **Dependency** — blocked on another team, project, or unresolved design decision (name the blocker)
+- **Technical constraint** — requires infrastructure, tooling, or a prerequisite that doesn't exist yet
+- **Timeline** — out of scope for this half/quarter; planned for a later period (name when)
+- **Explicitly deferred** — agreed with stakeholders to defer; not a blocker for current goals
+- **Out of initiative** — belongs to a different team or project; not this plan's responsibility
+
+Write a `## Scope Decisions` section in `plan.md` with this table:
+
+```markdown
+## Scope Decisions
+
+| Item | Status | Reason |
+|------|--------|--------|
+| Feature A | IN | — |
+| Feature B | OUT | Capacity — exceeds available engineer-days; deferred to next half |
+| Feature C | OUT | Dependency — blocked on Platform team releasing X |
+| Feature D | PARTIAL | Timeline milestone 1 only; full rollout in H2 |
+```
+
+**This section is mandatory when a source document exists.** An em-plan with a product roadmap as input that does not document scope decisions is incomplete.
 
 ## Step 3.5: Research backfill (if no prior exploration found)
 
@@ -192,14 +230,14 @@ Scan the repository for patterns, conventions, and existing implementations rele
 - Glob and grep for related files, patterns, and abstractions
 - Read the most relevant source files
 - Identify what already exists and what must be built from scratch
-- Write findings to `.codevoyant/plans/{slug}/research/codebase-backfill.md`
+- Write findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Scan` section
 
 **Agent B — External architecture patterns:**
 Research how this type of project is typically structured.
 - Run WebSearch("{project type} architecture patterns")
 - Run WebSearch("{project type} implementation best practices {stack}")
 - Fetch 2 relevant URLs (engineering blogs, reference implementations)
-- Write 4–6 findings with citations to `.codevoyant/plans/{slug}/research/external-backfill.md`
+- Append 4–6 findings with citations to `.codevoyant/explore/{slug}/architecture-research.md` under an `## External Patterns` section
 
 Wait for both to complete. Read outputs as `PRIOR_RESEARCH`.
 
@@ -216,9 +254,9 @@ Proceed to Step 4 with PRIOR_RESEARCH set.
 
 Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
-**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Save to `.codevoyant/plans/{slug}/research/codebase.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/shared/references/research-standards.md`.
 
-**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Save to `.codevoyant/plans/{slug}/research/linear-context.md`. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Linear Context` section. Each finding must follow the format in `skills/shared/references/research-standards.md`.
 
 Wait for both. Synthesize: flag anything that already exists or overlaps with active projects.
 
@@ -277,7 +315,7 @@ After running the checkpoint, write the Quality Brief (3–5 bullets) and use it
 Create plan directory:
 ```bash
 mkdir -p .codevoyant/plans/{slug}/tasks
-mkdir -p .codevoyant/plans/{slug}/research
+mkdir -p .codevoyant/explore/{slug}
 ```
 
 Write `.codevoyant/plans/{slug}/plan.md` using the plan template at `references/plan-template.md`.
@@ -293,7 +331,51 @@ Generate the three milestone files inline:
 
 Each task file uses the template at `references/task-template.md`. Requirements and ACs must be spelled out per task. Design/SA must be specified or explicitly marked deferred.
 
-If the plan has inter-milestone dependencies, a timeline, or a system architecture relevant to the project, include a Mermaid diagram in plan.md. For example:
+After generating the task files, proceed to Step 5.5 before writing the Gantt or project-breakdown-proposal.
+
+## Step 5.5: Parallel Milestone Estimation
+
+Launch one estimation agent per milestone in parallel (`model: claude-haiku-4-5-20251001`, `run_in_background: true`).
+
+Each agent receives its milestone's task file and answers:
+
+```
+For milestone "{milestone name}", given these tasks:
+{task list}
+
+Produce a structured estimate:
+- Optimistic: X engineer-days (everything goes well)
+- Realistic:  Y engineer-days (expected with normal friction)
+- Pessimistic: Z engineer-days (if complexity materialises or blockers hit)
+- Key risks: up to 3 risks that most threaten this estimate
+- Dependencies: tasks that must complete before this milestone can start (from other milestones or external)
+```
+
+Collect all estimates. Compute totals:
+- `TOTAL_REALISTIC` = sum of realistic estimates across all milestones
+- `UTILISATION` = `TOTAL_REALISTIC / AVAILABLE_ENGINEER_DAYS × 100%`
+
+**If `UTILISATION > 80%`:** surface over-capacity warning before writing dates. Present to user:
+```
+⚠️  Estimates total ~{TOTAL_REALISTIC} engineer-days against ~{AVAILABLE_ENGINEER_DAYS} available ({UTILISATION}% utilisation).
+Suggested descopes to reach 70%:
+  - {milestone or task} — saves ~N days — reason: {lowest risk/priority}
+```
+Ask: "Accept estimates as-is, or descope before locking the plan?"
+
+**If `UTILISATION ≤ 80%`:** proceed without prompting.
+
+Use the realistic estimates to assign actual start and end dates to each milestone in the Gantt chart — do not assign arbitrary dates. If `START_DATE` is set, schedule milestones sequentially from that date (accounting for parallelism where tasks are independent). If no `START_DATE`, use today as the anchor.
+
+Now write `.codevoyant/explore/{slug}/project-breakdown-proposal.md` containing:
+- **Objective** (one paragraph)
+- **Milestones** — name, start date, end date, realistic estimate, task count, key deliverables
+- **Estimation summary** — optimistic / realistic / pessimistic totals, utilisation %
+- **Risks** — top risks from estimation agents that could blow the timeline
+- **Out of scope** — anything from the Scope Decisions table with `OUT` status
+- **Open questions** — unresolved design/architecture decisions
+
+If the plan has inter-milestone dependencies or a timeline, include a **Mermaid Gantt** in plan.md using the estimated dates (not arbitrary ones). For system architecture plans, also add a flowchart or sequence diagram. For example:
 - Gantt chart for timeline-heavy plans
 - Sequence diagram for plans involving multiple system interactions
 - Flowchart for plans with branching decision logic
