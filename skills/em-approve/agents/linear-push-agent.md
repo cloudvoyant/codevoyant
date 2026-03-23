@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** false
-**Purpose:** Syncs an approved em-plan to a Linear project — creating one if needed — setting start/end dates, and creating issues (no milestones) directly under the project.
+**Purpose:** Syncs an approved em-plan to Linear — creating projects and milestones. Does NOT create issues (that is dev-plan's responsibility).
 
 ## Inputs
 
@@ -14,6 +14,20 @@
 ## Prompt
 
 You are syncing an approved engineering plan to Linear.
+
+### Step 0: Detect plan type
+
+Read `{COMMIT_DIR}/plan.md`. Determine whether this is a **single-project plan** or an **initiative plan**:
+
+- **Initiative plan**: plan.md contains multiple `### Project N:` or `### Project N —` headings, OR the metadata contains `Linear Initiative:` field, OR task files are named per project (e.g. `tasks/norm.md`, `tasks/skill-issues.md`)
+- **Single-project plan**: everything else
+
+Set `PLAN_TYPE = initiative | single`.
+
+**If `PLAN_TYPE = initiative`**: skip Steps 1–5 and follow the **Initiative Flow** at the end of this document.
+**If `PLAN_TYPE = single`**: continue with Step 1.
+
+---
 
 ### Step 1: Read the plan
 
@@ -39,30 +53,34 @@ Call `list_teams`. If TEAM_ID is set in plan.md metadata, use it. Otherwise pres
 - Call `save_project` with:
   - `name`: plan name
   - `description`: objective text
-  - `teamId`: TEAM_ID
+  - `addTeams`: [TEAM_NAME]
   - `startDate`: START_DATE (if found)
   - `targetDate`: END_DATE (if found)
 - Note: "Created new project: {name} — {Linear URL}"
 
 Store PROJECT_ID.
 
-### Step 4: Create issues from task files
+### Step 4: Create milestones
 
-Read all task files in `{COMMIT_DIR}/tasks/*.md` (or `{PLAN_DIR}/tasks/*.md` if not in COMMIT_DIR).
+Parse milestone sections from `{COMMIT_DIR}/plan.md`. Look for headings matching any of these patterns:
+- `### M1 — Name`, `### M2 — Name` (numbered milestone pattern)
+- `## Milestone 1: Name`, `## Milestone 2: Name`
+- `### Phase 1 — Name`, `### Phase 2 — Name`
 
-For each task found:
-1. Parse title, description, and acceptance criteria
-2. Call `save_issue` with:
-   - `teamId`: TEAM_ID
-   - `projectId`: PROJECT_ID
-   - `title`: task title
-   - `description`: task description + ACs formatted as markdown
-   - **Do NOT set `projectMilestoneId`** — no milestones
+For each milestone found, extract:
+- **Name**: the milestone heading text (e.g. "M1 — Extract and package")
+- **Description**: the paragraph or bullet list immediately following the heading (summarise to 2-3 sentences max)
+- **Target date**: look for a `**Target:**` or `**Due:**` field under the heading, or estimate from any Gantt chart / timebox metadata in the plan. Use ISO format (YYYY-MM-DD). If no date can be determined, omit.
 
-**Link git repos:** Run `git remote -v` to find the repo URL. If found, attempt to create an attachment on each issue linking to the repo using `create_attachment`:
-  - `url`: repo URL
-  - `title`: "Git Repository"
-  - `issueId`: issue ID
+For each milestone, call `save_milestone` with:
+- `project`: PROJECT_ID
+- `name`: milestone name
+- `description`: milestone description
+- `targetDate`: target date (if available)
+
+Store a mapping: `MILESTONE_MAP[milestone_name] = milestone_id` (returned by `save_milestone`).
+
+If no milestone headings are found in plan.md, skip this step (no milestones created).
 
 ## Linear Sync Report
 
@@ -70,11 +88,9 @@ For each task found:
 {Created / Updated}: [{name}]({url})
 Start: {START_DATE or "not set"} | Target: {END_DATE or "not set"}
 
-### Issues created
-{count} issues under project (no milestones)
-
-### Git repo linked
-{repo URL or "not found"}
+### Milestones created
+{count} milestones: {list of milestone names}
+(or "None found in plan.md")
 
 ### Errors
 {any failures or "None"}
@@ -82,3 +98,55 @@ Start: {START_DATE or "not set"} | Target: {END_DATE or "not set"}
 ## Output
 
 Reports results inline (no file output).
+
+---
+
+## Initiative Flow
+
+Used when `PLAN_TYPE = initiative`. Syncs multiple projects and their issues to a Linear initiative.
+
+### I-1: Read initiative metadata
+
+From plan.md extract:
+- Initiative name (H1)
+- Objective
+- `Linear Initiative:` URL if present → `INITIATIVE_URL`
+- List of all projects: parse `### Project N:` sections, extracting project name, Linear project name, timebox/dates
+
+### I-2: Resolve Linear initiative
+
+If `{LINEAR_URL}` contains `/initiative/`: use it as INITIATIVE_URL.
+If INITIATIVE_URL found in plan metadata: use it.
+Otherwise: note "No initiative URL — projects will be created standalone."
+
+### I-3: For each project — create/update project + milestones
+
+For each project section in plan.md, in parallel:
+
+1. **Resolve project**: call `save_project` (create or update via name match):
+   - `name`: project name from plan
+   - `description`: project objective/description from plan
+   - `addTeams`: [TEAM_NAME]
+   - `addInitiatives`: [INITIATIVE_URL] (if available)
+   - `startDate`, `targetDate`: from timebox metadata
+
+2. **Create milestones**: parse `#### Milestones` subsection under this project. For each milestone (`M1 —`, `M2 —`, etc.) call `save_milestone` with project ID, name, description, targetDate.
+
+Issues are created by dev-plan, not here.
+
+### I-4: Report
+
+```
+## Initiative Sync Report
+
+Initiative: {name} ({url or "standalone"})
+
+Projects synced: {N}
+| Project          | Created/Updated | Milestones |
+|------------------|-----------------|------------|
+| norm             | Created         | 1          |
+| skill-issues     | Created         | 5          |
+| ...              | ...             | ...        |
+
+Errors: {any failures or "None"}
+```

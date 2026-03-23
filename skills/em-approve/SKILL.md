@@ -19,6 +19,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 ## Critical Rules
 
 - Draft plans in `.codevoyant/plans/` remain after promotion — they are the working source of truth
+- Research artifacts from `.codevoyant/explore/{slug}/` and `.codevoyant/plans/{slug}/research/` are both copied flat into `docs/engineering/plans/{slug}/research/`
 - Linear sync is always optional and always last
 - Never force-overwrite an existing committed plan directory without user confirmation
 - Verify plan completeness before promoting — plan.md and at least one tasks/*.md must exist
@@ -103,7 +104,17 @@ Create the target directory and copy:
 mkdir -p "docs/engineering/plans/{SLUG}/tasks"
 cp "$PLAN_DIR/plan.md" "docs/engineering/plans/{SLUG}/plan.md"
 cp "$PLAN_DIR/tasks/"*.md "docs/engineering/plans/{SLUG}/tasks/" 2>/dev/null
-# Do NOT copy research/ — that's working context, not a committed artifact
+
+# Copy all research artifacts flat into docs/engineering/plans/{SLUG}/research/
+# Sources: .codevoyant/explore/{SLUG}/ and .codevoyant/plans/{SLUG}/research/ (if present)
+EXPLORE_DIR=".codevoyant/explore/{SLUG}"
+RESEARCH_DIR="$PLAN_DIR/research"
+if { [ -d "$EXPLORE_DIR" ] && [ "$(ls -A $EXPLORE_DIR 2>/dev/null)" ]; } || \
+   { [ -d "$RESEARCH_DIR" ] && [ "$(ls -A $RESEARCH_DIR 2>/dev/null)" ]; }; then
+  mkdir -p "docs/engineering/plans/{SLUG}/research"
+  [ -d "$EXPLORE_DIR"  ] && cp "$EXPLORE_DIR/"*.md  "docs/engineering/plans/{SLUG}/research/" 2>/dev/null
+  [ -d "$RESEARCH_DIR" ] && cp "$RESEARCH_DIR/"*.md "docs/engineering/plans/{SLUG}/research/" 2>/dev/null
+fi
 ```
 
 Update agent-kit status:
@@ -111,7 +122,7 @@ Update agent-kit status:
 npx @codevoyant/agent-kit plans update-status --name "{SLUG}" --status Approved
 ```
 
-Report: "Plan promoted to `{COMMIT_DIR}`."
+Report: "Plan promoted to `{COMMIT_DIR}`." Include research artifact count if any were copied.
 
 ## Step 5: Linear sync (optional)
 
