@@ -43,7 +43,7 @@ P5                                                                              
 - What it enables: Agents can execute the full product development lifecycle -- plan, spec, implement, test -- without human intervention for well-scoped features. This is the load-bearing foundation; everything else depends on it.
 - Why now:
   - User evidence: 66% of developers spend more time fixing AI output than they save -- [Stack Overflow 2025](https://stackoverflow.blog/2025/12/29/developers-remain-willing-but-reluctant-to-use-ai-the-2025-developer-survey-results-are-here/). The "almost right" problem is the #1 barrier to autonomous workflows.
-  - Research source: [User Problems research](.codevoyant/research/coding-agent-ecosystem-staged-dev/user-problems.md) -- constraint drift and inconsistent standards are a 1.5x frustration multiplier.
+  - Research source: [User Problems research](user-problems.md) -- constraint drift and inconsistent standards are a 1.5x frustration multiplier.
   - Competitive signal: OpenCode (120K stars) and Aider (39K stars) both lack structured workflow pipelines; Codevoyant's pm/em/spec/dev skill chain is structurally differentiated.
 - Key bets:
   - Skills solidification (pm, em, dev, ux, spec) reaches "reliable enough for unattended execution" by Week 4
@@ -55,7 +55,7 @@ P5                                                                              
 
 - What it enables: Remote execution of multi-step development workflows. A developer assigns work, the claw harness executes plan-implement-test-deploy cycles continuously, and the developer reviews results. This is the "walk away and come back to working code" capability.
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem-staged-dev.md) -- "the claw harness is not a test runner, it's the runtime that enables always-on, human-absent development loops"
+  - Research source: [Staged Development Strategy](summary.md) -- "the claw harness is not a test runner, it's the runtime that enables always-on, human-absent development loops"
   - Competitive signal: OpenClaw requires 32GB RAM and complex setup; ComposioHQ is an orchestration layer without its own agent; neither provides an opinionated software development runtime -- [KDnuggets](https://www.kdnuggets.com/openclaw-explained-the-free-ai-agent-tool-going-viral-already-in-2026)
   - User evidence: Developers describe agents as "many incompetent team members whose random work output requires extensive review" -- the claw harness addresses this with structured workflow primitives and quality gates
 - Key bets:
@@ -70,7 +70,7 @@ P5                                                                              
 - Why now:
   - Research source: Persistent memory achieves 26% higher response accuracy vs stateless approaches -- [Mem0 Research](https://arxiv.org/pdf/2504.19413)
   - User evidence: Session memory loss is "universally lamented" and "a fundamental architecture problem" -- [Oracle Developers Blog](https://blogs.oracle.com/developers/agent-memory-why-your-ai-has-amnesia-and-how-to-fix-it)
-  - Competitive signal: Augment Code's Context Engine (semantic indexing of 1M+ files, cross-session persistence) is their primary moat. Their Context Engine MCP validates the market -- but it's fully closed-source. An open equivalent is the single most strategically powerful thing Codevoyant can build. -- [Competitive research](.codevoyant/research/coding-agent-ecosystem-staged-dev/competitive.md)
+  - Competitive signal: Augment Code's Context Engine (semantic indexing of 1M+ files, cross-session persistence) is their primary moat. Their Context Engine MCP validates the market -- but it's fully closed-source. An open equivalent is the single most strategically powerful thing Codevoyant can build. -- [Competitive research](competitive.md)
   - Competitive signal: Mastra Code markets "observational memory that never compacts" as a differentiator, confirming market demand -- [Mastra Blog](https://mastra.ai/blog/announcing-mastra-code)
 - Key bets:
   - Extends the existing mem:* system (learn, find, list, index) rather than building from scratch
@@ -83,7 +83,7 @@ P5                                                                              
 
 - What it enables: An orchestrator that is itself a Codevoyant agent — with a TUI as its primary interface — dispatches and monitors 3-5 coding agents in parallel. Because the orchestrator is an agent, it can be tested with the same skill harness as any other agent, integrated into workflow pipelines natively, and extended with skills. The TUI is the surface, not the product; the agent is the product. A single developer operates like a team lead managing multiple engineers, in the terminal, over SSH, without a GUI.
 - Why now:
-  - Research source: [Ideation research](.codevoyant/research/coding-agent-ecosystem-staged-dev/ideation.md) -- "parallel agent execution is the acknowledged single biggest productivity unlock but tooling is fragmented"
+  - Research source: [Ideation research](ideation.md) -- "parallel agent execution is the acknowledged single biggest productivity unlock but tooling is fragmented"
   - User evidence: Developers are building DIY solutions (tmuxcc, Conduit, agent-deck) to monitor parallel agents -- [GitHub tmuxcc](https://github.com/nyanko3141592/tmuxcc), [Conduit](https://getconduit.sh/). The workaround ecosystem proves the demand. All of them are passive dashboards -- none is itself an agent that can intervene, re-plan, or spawn new work.
   - Competitive signal: ComposioHQ agent-orchestrator offers pluggable parallel orchestration but is an orchestration layer only, not integrated with a coding agent. Augment's Intent provides multi-agent orchestration but is macOS Apple Silicon only and GUI-only -- no terminal interface, no testable agent primitive.
   - Architectural advantage: framing the orchestrator as an agent means workflow orchestration can be tested and validated in the skill harness before a web dashboard is ever needed. It also defers the decision of whether to build a web UI -- the TUI is fully functional and the upgrade path exists when the time is right.
@@ -100,7 +100,7 @@ P5                                                                              
 
 - What it enables: Define multi-step development workflows as declarative YAML (PRD -> spec -> implement -> test -> deploy) that the claw harness executes. Moves from "agents run skills" to "agents execute entire development processes."
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem-staged-dev.md) -- Stage 3 "Enhanced Agent Intelligence" identifies the workflow engine as the bridge from fast agents to smart agents
+  - Research source: [Staged Development Strategy](summary.md) -- Stage 3 "Enhanced Agent Intelligence" identifies the workflow engine as the bridge from fast agents to smart agents
   - Competitive signal: No open-source competitor offers declarative development pipelines. OpenClaw has workflow primitives but they are generic (not software-development-specific). This is genuine white space.
   - [DESIGN DECISION] Prioritize the workflow engine over agent specialization framework. Workflows create immediate leverage for dogfooding; role specialization is valuable but can be approximated with system prompts in v1
 - Key bets:
@@ -113,7 +113,7 @@ P5                                                                              
 
 - What it enables: Define agent "roles" (architect, implementer, reviewer, tester) with distinct system prompts, tool access, and quality criteria. The multi-agent team pattern that OpenClaw supports but without the infrastructure overhead.
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem.md) -- "Agent specialization framework: define agent roles with distinct system prompts, tool access, and quality criteria"
+  - Research source: [Staged Development Strategy](summary.md) -- "Agent specialization framework: define agent roles with distinct system prompts, tool access, and quality criteria"
   - User evidence: Context pain increases with experience -- 52% of seniors vs 41% of juniors report AI missing contextual relevance. Specialized agents with narrower scope produce more contextually appropriate output.
   - Competitive signal: Augment's Intent uses a Coordinator -> parallel Implementors -> Verifier pattern. This three-tier model is architecturally sound. Build the open-source equivalent.
 - Key bets:
@@ -126,7 +126,7 @@ P5                                                                              
 
 - What it enables: Agents can scaffold entire product repositories (SvelteKit + database + auth + CI/CD + deployment) in one command, then immediately begin building features. Reduces "new product" setup from days to minutes.
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem-staged-dev.md) -- Stage 2 "Product Scaffolding Skills" enables the "say 'build me a publishing platform' and agents handle it" workflow
+  - Research source: [Staged Development Strategy](summary.md) -- Stage 2 "Product Scaffolding Skills" enables the "say 'build me a publishing platform' and agents handle it" workflow
   - [DESIGN DECISION] Scope scaffolding skills to the stacks we actually use (SvelteKit, Firebase/PostgreSQL, mise) rather than trying to be framework-agnostic from day one. Dogfooding validates the patterns before generalizing
 - Key bets:
   - Project bootstrap skill: scaffold from template with SvelteKit, database, auth, CI/CD, deploy config
@@ -138,7 +138,7 @@ P5                                                                              
 
 - What it enables: Use the autonomous coding pipeline, claw harness, memory, orchestration, and workflow engine to build the first Codevoyant product at high velocity. This simultaneously proves the tooling and generates revenue potential.
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem.md) -- "each stage creates leverage for the next. Skills make agents useful. Orchestration makes agents powerful. Products prove the value."
+  - Research source: [Staged Development Strategy](summary.md) -- "each stage creates leverage for the next. Skills make agents useful. Orchestration makes agents powerful. Products prove the value."
   - Research source: Teams using open-source tools report 73% faster development cycles -- [Index.dev](https://www.index.dev/blog/open-source-tools-for-developers). Dogfooding validates this claim with our own data.
   - [DESIGN DECISION] Which product to build first is an open question, but Readership (publishing platform) has the lowest technical risk per the staged development research. Defer this decision to Week 16 when the tooling is more mature and a targeted pm:explore can inform the choice.
 - Key bets:
@@ -178,7 +178,7 @@ P5                                                                              
 
 - What it enables: Agents pass context, findings, and artifacts to each other directly. The architect agent's output feeds into the implementer; the implementer's changes feed into the reviewer. Currently this handoff is mediated through files; a protocol makes it structured and reliable.
 - Why now:
-  - Research source: [Staged Development Strategy](.codevoyant/research/coding-agent-ecosystem-staged-dev.md) -- identified as part of Stage 3 "Enhanced Agent Intelligence"
+  - Research source: [Staged Development Strategy](summary.md) -- identified as part of Stage 3 "Enhanced Agent Intelligence"
   - [ASSUMPTION -- unvalidated]: The value of structured inter-agent communication vs. the current file-mediated approach is unproven. Real usage during dogfooding will reveal whether this is essential or nice-to-have.
 - Key bets:
   - Design the protocol during dogfooding; do not build until pain is validated
