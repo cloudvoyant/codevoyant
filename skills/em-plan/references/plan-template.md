@@ -38,3 +38,19 @@ Use this template for `.codevoyant/em/plans/{slug}/plan.md`.
 
 ## Not In Scope
 - {explicit deferrals with one-line rationale}
+
+## Risks
+- {risk — mitigation}
+
+## Scope Decisions
+
+Items reviewed from the source roadmap/initiative and whether they are addressed in this plan.
+
+| Item | Status | Reason |
+|------|--------|--------|
+| Example feature | IN | Core to objective |
+| Example stretch goal | OUT — capacity | Exceeds available engineer-days; tracked in backlog |
+| Example dependency | PARTIAL | MVP only; full implementation deferred |
+
+**Status values:** IN · PARTIAL · OUT
+**Reason taxonomy:** capacity · dependency · technical constraint · timeline · explicitly deferred · out of initiative
