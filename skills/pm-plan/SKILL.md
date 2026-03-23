@@ -105,13 +105,13 @@ AskUserQuestion:
 Launch 3 Sonnet agents in parallel (run_in_background: false, model: claude-sonnet-4-6):
 
 **Agent A — Market signals:**
-Prompt: Search for market trends and user needs in "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} market trends {year}"), WebSearch("{PRODUCT_CATEGORY} user needs"), WebSearch("{PRODUCT_CATEGORY} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/roadmap-backfill/research/market.md` with citations and Tier labels.
+Prompt: Search for market trends and user needs in "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} market trends {year}"), WebSearch("{PRODUCT_CATEGORY} user needs"), WebSearch("{PRODUCT_CATEGORY} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/{SLUG}/research/market.md` with citations and Tier labels.
 
 **Agent B — Competitive landscape:**
-Prompt: Research competitors for "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} competitors"), WebSearch("{COMPETITOR_LIST} product updates {year}"), WebSearch("{PRODUCT_CATEGORY} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/explore/roadmap-backfill/research/competitive.md`. Include each competitor's recent moves and strategic direction.
+Prompt: Research competitors for "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} competitors"), WebSearch("{COMPETITOR_LIST} product updates {year}"), WebSearch("{PRODUCT_CATEGORY} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/explore/{SLUG}/research/competitive.md`. Include each competitor's recent moves and strategic direction.
 
 **Agent C — Internal prior art:**
-Prompt: Scan this repository for product context: read all files in docs/product/ and docs/prd/, read any .codevoyant/roadmaps/ files, note existing strategic goals, past PRDs, known user problems. Write a summary to `.codevoyant/explore/roadmap-backfill/research/internal.md`.
+Prompt: Scan this repository for product context: read all files in docs/product/ and docs/prd/, read any .codevoyant/roadmaps/ files, note existing strategic goals, past PRDs, known user problems. Write a summary to `.codevoyant/explore/{SLUG}/research/internal.md`.
 
 Wait for all three to complete. Read outputs as RESEARCH_CONTEXT.
 
