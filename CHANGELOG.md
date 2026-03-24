@@ -1,3 +1,17 @@
+## [1.38.0](https://github.com/cloudvoyant/codevoyant/compare/v1.37.0...v1.38.0) (2026-03-24)
+
+### Features
+
+* **spec:** add unified spec skill dispatcher
+
+- consolidates 14 spec-* skills into a single skills/spec/ package
+- top-level SKILL.md parses subcommand verb and dispatches to workflows/{verb}.md
+- workflow files contain execution logic only — no frontmatter or arg parsing
+- agents (spec-executor, spec-updater, spec-planner) each include a printed
+  workflow checklist tracked in real-time during execution
+- all reference templates consolidated under references/
+- all CLI ops use npx @codevoyant/agent-kit — no scripts/ dependencies
+
 ## [1.37.0](https://github.com/cloudvoyant/codevoyant/compare/v1.36.0...v1.37.0) (2026-03-23)
 
 ### Features
