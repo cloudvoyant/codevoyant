@@ -1,3 +1,19 @@
+## [1.39.0](https://github.com/cloudvoyant/codevoyant/compare/v1.38.0...v1.39.0) (2026-03-24)
+
+### Features
+
+* **skill:** add unified skill dispatcher package
+
+- consolidate skill-explore, skill-new, skill-update, skill-critique
+  into a single skills/skill/ dispatcher
+- dispatcher parses verb, normalises aliases (create->new,
+  improve->update, review->critique), falls back to help on unknown verb
+- heavy planning work delegated to Opus subagents (skill-planner,
+  skill-updater); coordination steps run on lighter model
+- skill-researcher (Sonnet) shared across new and update workflows
+- context: fork on explore replaced by dispatcher's
+  disable-model-invocation: true isolation
+
 ## [1.38.0](https://github.com/cloudvoyant/codevoyant/compare/v1.37.0...v1.38.0) (2026-03-24)
 
 ### Features
