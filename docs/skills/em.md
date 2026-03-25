@@ -24,19 +24,19 @@ npx skills add cloudvoyant/codevoyant
 ### Plan a project
 
 ```bash
-/em:plan "migrate auth to OAuth2"                     # Draft plan locally
-/em:plan https://linear.app/team/project/PRJ-123      # Seed from existing Linear project
+/em plan "migrate auth to OAuth2"                     # Draft plan locally
+/em plan https://linear.app/team/project/PRJ-123      # Seed from existing Linear project
 ```
 
-Produces a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`. Use `/em:approve` to promote to `docs/engineering/plans/` and optionally push to Linear.
+Produces a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`. Use `/em approve` to promote to `docs/engineering/plans/` and optionally push to Linear.
 
 ### Approve and push to Linear
 
 ```bash
-/em:approve                                           # Approve most recent em:plan draft
-/em:approve my-plan                                   # Approve specific plan by slug
-/em:approve my-plan --push                            # Approve and create new Linear project
-/em:approve my-plan --push https://linear.app/...    # Approve and push to existing project
+/em approve                                           # Approve most recent /em plan draft
+/em approve my-plan                                   # Approve specific plan by slug
+/em approve my-plan --push                            # Approve and create new Linear project
+/em approve my-plan --push https://linear.app/...    # Approve and push to existing project
 ```
 
 Sets start/end dates on the Linear project from the plan's timeline. Creates milestones from the plan's milestone headings (M1, M2, etc.). Copies research artifacts to `docs/engineering/plans/{slug}/research/`. Issue creation is handled separately by `dev:plan`.
@@ -44,24 +44,24 @@ Sets start/end dates on the Linear project from the plan's timeline. Creates mil
 ### Continue from existing Linear state
 
 ```bash
-/em:plan --continue PRJ-123                           # Resume from existing Linear project
+/em plan --continue PRJ-123                           # Resume from existing Linear project
 ```
 
 ### Review a roadmap
 
 ```bash
-/em:review                          # Auto-selects most recent plan
-/em:review my-roadmap               # Review specific plan
-/em:review my-roadmap --silent      # Suppress output
+/em review                          # Auto-selects most recent plan
+/em review my-roadmap               # Review specific plan
+/em review my-roadmap --silent      # Suppress output
 ```
 
-Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after `em:plan` completes.
+Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after `/em plan` completes.
 
 ### Update a plan
 
 ```bash
-/em:update my-plan "add error handling milestone"      # Conversational change
-/em:update my-plan --bg                                # Apply annotations in background
+/em update my-plan "add error handling milestone"      # Conversational change
+/em update my-plan --bg                                # Apply annotations in background
 ```
 
 Applies inline `>` and `>>` annotations or accepts conversational changes to plan files.
@@ -70,9 +70,9 @@ Applies inline `>` and `>>` annotations or accepts conversational changes to pla
 
 | Skill | Description |
 |---|---|
-| `em:plan` | Draft an engineering project plan locally with milestone-grouped tasks |
+| `/em plan` | Draft an engineering project plan locally with milestone-grouped tasks |
 | `em:approve` | Promote a draft plan to `docs/engineering/plans/` and optionally push to Linear |
-| `em:review` | Review a roadmap for capacity, dependencies, risks, and phasing |
+| `/em review` | Review a roadmap for capacity, dependencies, risks, and phasing |
 | `em:update` | Update an EM plan via annotations or conversational changes |
 | `em:allow` | Pre-approve em permissions for uninterrupted agent execution |
 | `em:help` | List all em commands |
