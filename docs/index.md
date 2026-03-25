@@ -26,8 +26,13 @@ features:
   - icon:
       src: /icons/dev.svg
     title: Dev
-    details: Conventional commits, CI monitoring, MR fixes, easy rebasing, and more.
+    details: Architecture planning, technical exploration, repo comparison, docs generation, and PR review.
     link: /skills/dev
+  - icon:
+      src: /icons/utils.svg
+    title: Git
+    details: Conventional commits, CI monitoring, and safe interactive rebase.
+    link: /skills/git
   - icon:
       src: /icons/em.svg
     title: EM · Experimental
@@ -48,9 +53,4 @@ features:
     title: Skill · Experimental
     details: Build and maintain Claude Code / Agent Skills — explore existing skills, scaffold from template, iterate, and run quality reviews before shipping.
     link: /skills/skill
-  - icon:
-      src: /icons/mem.svg
-    title: Mem · Experimental
-    details: Team knowledge capture and recall — structured markdown docs with frontmatter, indexed for fast lookup and AI context loading.
-    link: /skills/mem
 ---

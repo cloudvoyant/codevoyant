@@ -64,7 +64,20 @@ describe('plans command', () => {
   describe('update-progress', () => {
     it('should update progress', () => {
       spawnCLI(
-        ['plans', 'register', '--name', 'prog', '--plugin', 'spec', '--description', 'Test', '--total', '10', '--dir', tmpDir],
+        [
+          'plans',
+          'register',
+          '--name',
+          'prog',
+          '--plugin',
+          'spec',
+          '--description',
+          'Test',
+          '--total',
+          '10',
+          '--dir',
+          tmpDir,
+        ],
         tmpDir,
       );
       const result = spawnCLI(
@@ -77,7 +90,20 @@ describe('plans command', () => {
 
     it('should update total when provided', () => {
       spawnCLI(
-        ['plans', 'register', '--name', 'prog2', '--plugin', 'spec', '--description', 'Test', '--total', '5', '--dir', tmpDir],
+        [
+          'plans',
+          'register',
+          '--name',
+          'prog2',
+          '--plugin',
+          'spec',
+          '--description',
+          'Test',
+          '--total',
+          '5',
+          '--dir',
+          tmpDir,
+        ],
         tmpDir,
       );
       spawnCLI(
@@ -184,10 +210,7 @@ describe('plans command', () => {
         ['plans', 'register', '--name', 'p1', '--plugin', 'spec', '--description', 'A', '--dir', tmpDir],
         tmpDir,
       );
-      spawnCLI(
-        ['plans', 'register', '--name', 'p2', '--plugin', 'pm', '--description', 'B', '--dir', tmpDir],
-        tmpDir,
-      );
+      spawnCLI(['plans', 'register', '--name', 'p2', '--plugin', 'pm', '--description', 'B', '--dir', tmpDir], tmpDir);
       const result = spawnCLI(['plans', 'list', '--dir', tmpDir], tmpDir);
       expect(result.status).toBe(0);
 
@@ -224,10 +247,7 @@ describe('plans command', () => {
         ['plans', 'register', '--name', 'p1', '--plugin', 'spec', '--description', 'A', '--dir', tmpDir],
         tmpDir,
       );
-      spawnCLI(
-        ['plans', 'register', '--name', 'p2', '--plugin', 'pm', '--description', 'B', '--dir', tmpDir],
-        tmpDir,
-      );
+      spawnCLI(['plans', 'register', '--name', 'p2', '--plugin', 'pm', '--description', 'B', '--dir', tmpDir], tmpDir);
       const result = spawnCLI(['plans', 'list', '--plugin', 'pm', '--dir', tmpDir], tmpDir);
       const plans = JSON.parse(result.stdout);
       expect(plans).toHaveLength(1);
@@ -261,7 +281,9 @@ describe('plans command', () => {
           },
         ],
         archivedPlans: [],
-        worktrees: [{ branch: 'feat/test', path: '/tmp/test-wt', planName: 'legacy-plan', createdAt: '2024-01-01T00:00:00Z' }],
+        worktrees: [
+          { branch: 'feat/test', path: '/tmp/test-wt', planName: 'legacy-plan', createdAt: '2024-01-01T00:00:00Z' },
+        ],
       };
       fs.writeFileSync(path.join(tmpDir, '.codevoyant', 'codevoyant.json'), JSON.stringify(legacyData));
 

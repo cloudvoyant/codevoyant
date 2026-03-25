@@ -22,7 +22,7 @@ npx skills add cloudvoyant/codevoyant
 ### Prototype a new product feature
 
 ```bash
-/ux:prototype "admin dashboard"
+/ux prototype "admin dashboard"
 ```
 
 Scaffolds a full SvelteKit + Tailwind + shadcn-svelte prototype with feature-slice architecture, fake data, and a responsive layout. Works in-repo (single package or pnpm workspace) or out-of-repo in `.codevoyant/[project]/prototypes/[name]/`.
@@ -30,8 +30,8 @@ Scaffolds a full SvelteKit + Tailwind + shadcn-svelte prototype with feature-sli
 ### Explore layout ideas before committing
 
 ```bash
-/ux:explore "onboarding flow"                # single HTML wireframe
-/ux:explore "sidebar vs top nav" --slideshow # compare approaches side-by-side
+/ux explore "onboarding flow"                # single HTML wireframe
+/ux explore "sidebar vs top nav" --slideshow # compare approaches side-by-side
 ```
 
 Outputs a self-contained `.html` file — no build step, opens directly in a browser.
@@ -39,7 +39,7 @@ Outputs a self-contained `.html` file — no build step, opens directly in a bro
 ### Extract a site's visual style
 
 ```bash
-/ux:style-synthesize https://linear.app --name linear
+/ux style-synthesize https://linear.app --name linear
 ```
 
 Screenshots the site at three breakpoints, analyzes typography, color, and layout patterns, and writes a Markdown report + CSS custom-property theme file to `docs/ux/style-research/linear/`.
@@ -49,7 +49,7 @@ Screenshots the site at three breakpoints, analyzes typography, color, and layou
 ### Scaffold Prototype
 
 ```bash
-/ux:prototype "<description>"
+/ux prototype "<description>"
 ```
 
 **What happens:**
@@ -74,7 +74,7 @@ Screenshots the site at three breakpoints, analyzes typography, color, and layou
 ### Wireframe Explorer
 
 ```bash
-/ux:explore "<description>" [--slideshow] [--output path]
+/ux explore "<description>" [--slideshow] [--output path]
 ```
 
 Creates a single `.html` file using Tailwind CDN — no build step required. Open directly in a browser for fast iteration.
@@ -90,7 +90,7 @@ Creates a single `.html` file using Tailwind CDN — no build step required. Ope
 ### Style Synthesize
 
 ```bash
-/ux:style-synthesize <url> [--name name]
+/ux style-synthesize <url> [--name name]
 ```
 
 Uses browser automation (`mcp__claude-in-chrome__*`) to visit a URL, screenshot across breakpoints, and synthesize the visual design into reusable artifacts.
@@ -109,14 +109,14 @@ Uses browser automation (`mcp__claude-in-chrome__*`) to visit a URL, screenshot 
 ### Pre-approve Permissions
 
 ```bash
-/ux:allow           # Write ux permissions to project .claude/settings.json
-/ux:allow --global  # Write to ~/.claude/settings.json
+/ux allow           # Write ux permissions to project .claude/settings.json
+/ux allow --global  # Write to ~/.claude/settings.json
 ```
 
-Adds the allow entries needed for `/ux:style-synthesize` to run without permission prompts (WebFetch for browser automation). Auto-detects the running agent.
+Adds the allow entries needed for `/ux style-synthesize` to run without permission prompts (WebFetch for browser automation). Auto-detects the running agent.
 
 ### List All Commands
 
 ```bash
-/ux:help
+/ux help
 ```

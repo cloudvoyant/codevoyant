@@ -25,7 +25,7 @@ npx @codevoyant/agent-kit mem list               # dump index as LLM-ready table
 
 `mem find` supports `--tag` (repeatable, AND logic), `--type`, and `--json`. Without `--json`, returns one path per line.
 
-`mem list` is called at session start (via `CLAUDE.md` or `/mem:list`) to load team knowledge into context.
+`mem list` is called at session start (via `CLAUDE.md` or `/mem list`) to load team knowledge into context.
 
 The docs directory is configurable: `mem.docsDir` in `.codevoyant/settings.json` (default: `docs`).
 
@@ -67,7 +67,7 @@ CI/CD provider detection.
 npx @codevoyant/agent-kit ci detect              # outputs JSON: { provider, remote }
 ```
 
-Returns `github`, `gitlab`, or `unknown`. Used by `/dev:ci` to pick between `gh` and `glab`.
+Returns `github`, `gitlab`, or `unknown`. Used by `/dev ci` to pick between `gh` and `glab`.
 
 ---
 
@@ -107,7 +107,7 @@ npx @codevoyant/agent-kit perms add --plugins spec,dev
 npx @codevoyant/agent-kit perms add --plugins em --global
 ```
 
-Used by `/spec:allow`, `/dev:allow`, etc. to pre-approve bash commands for uninterrupted execution.
+Used by `/spec allow`, `/dev allow`, etc. to pre-approve bash commands for uninterrupted execution.
 
 ---
 

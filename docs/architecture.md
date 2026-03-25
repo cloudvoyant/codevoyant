@@ -14,26 +14,31 @@ codevoyant is a collection of skills for AI coding agents (Claude Code, OpenCode
 
 ## Skill Groups
 
-- **dev** — Development workflow (commits, CI, review, docs, explore)
+- **dev** — Developer workflows (architecture planning, technical exploration, repo comparison, docs generation, PR review)
+- **git** — Git version control (conventional commits, CI monitoring, interactive rebase)
 - **spec** — Specification-driven development (planning, execution, review)
 - **em** — Engineering management (roadmap planning, epic breakdowns)
 - **pm** — Product management (PRDs, roadmaps, prioritization)
 - **ux** — UX design workflows (prototyping, wireframes, style synthesis)
-- **mem** — Team knowledge capture and recall
 
 ## Repository Structure
 
 ```
 codevoyant/
-├── skills/                  # Flat skill collection
-│   ├── dev-commit/          # Each skill in its own dir
-│   ├── dev-ci/
-│   ├── spec-new/
-│   ├── mem-find/
-│   ├── skill-explore/       # Meta-skills: build and review skills
-│   ├── skill-new/
-│   ├── skill-update/
-│   └── ...                  # 49 skills total
+├── skills/                  # Unified skill packages
+│   ├── dev/                 # Developer workflows dispatcher
+│   │   ├── SKILL.md         # Dispatcher (parses verb → routes to workflow)
+│   │   ├── workflows/       # One file per subcommand
+│   │   ├── agents/          # Agent definitions
+│   │   └── references/      # Supporting templates and docs
+│   ├── git/                 # Git workflows dispatcher
+│   ├── em/                  # Engineering management dispatcher
+│   ├── pm/                  # Product management dispatcher
+│   ├── ux/                  # UX design dispatcher
+│   ├── spec-new/            # Spec skills (individual, not yet unified)
+│   ├── spec-go/
+│   ├── spec-done/
+│   └── ...
 ├── .claude/
 │   └── skills/              # Private skills (not distributed via npx skills)
 │       ├── skill-create/    # Internal skill scaffolding helper
@@ -46,17 +51,19 @@ codevoyant/
 └── .codevoyant/             # Project metadata (plans.json, worktrees.json, plans/)
 ```
 
-Each skill follows the structure:
+Each unified skill package follows the dispatcher pattern:
 
 ```
-skills/{group}-{name}/
-├── SKILL.md              # Skill definition (frontmatter + instructions)
-├── references/           # Supporting docs for the skill
+skills/{group}/
+├── SKILL.md              # Dispatcher: parses verb, routes to workflows/{verb}.md
+├── workflows/            # One .md file per subcommand
+│   ├── help.md
+│   └── {verb}.md
 ├── agents/               # Agent definitions (if needed)
-└── commands/             # Subcommand files (for unified skills like mem2)
+└── references/           # Supporting templates and docs
 ```
 
-Skill names use colon-scoped format in SKILL.md frontmatter (`name: dev:commit`, `name: mem:find`) while directories use hyphens (`dev-commit/`, `mem-find/`).
+Skill names use space-separated format (`/dev plan`, `/git commit`) while directories use plain names (`skills/dev/`, `skills/git/`).
 
 ## Design Principles
 

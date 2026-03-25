@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
-import { readPlans, writePlans, readWorktrees, writeWorktrees } from '../config.js';
+import { readPlans, writePlans, writeWorktrees } from '../config.js';
 import type { PlanEntry } from '../types.js';
 
 export function plansCommand(): Command {

@@ -24,17 +24,17 @@ skill:explore → skill:new → skill:update → skill:review
 ### Build a New Skill from Scratch
 
 ```bash
-/skill:explore "linear integration"   # Research existing skills first
-/skill:new linear-push                # Scaffold from template
-/skill:update linear-push             # Refine any dimensions
-/skill:review linear-push             # Audit spec compliance + conventions
+/skill explore "linear integration"   # Research existing skills first
+/skill new linear-push                # Scaffold from template
+/skill update linear-push             # Refine any dimensions
+/skill review linear-push             # Audit spec compliance + conventions
 ```
 
 ### Improve an Existing Skill
 
 ```bash
-/skill:update dev-commit              # Choose dimensions to improve
-/skill:review dev-commit --effectiveness  # Full effectiveness audit
+/skill update dev-commit              # Choose dimensions to improve
+/skill review dev-commit --effectiveness  # Full effectiveness audit
 ```
 
 ## Skills
@@ -44,9 +44,9 @@ skill:explore → skill:new → skill:update → skill:review
 Research available skills before building something new:
 
 ```bash
-/skill:explore                            # Interactive topic prompt
-/skill:explore "linear integration"       # Explore a specific topic
-/skill:explore "ci monitoring" --thorough # Deeper scan with more sources
+/skill explore                            # Interactive topic prompt
+/skill explore "linear integration"       # Explore a specific topic
+/skill explore "ci monitoring" --thorough # Deeper scan with more sources
 ```
 
 Runs parallel research agents against `npx skills find`, agentskill.sh, and published skill repos. For each result, shows:
@@ -55,7 +55,7 @@ Runs parallel research agents against `npx skills find`, agentskill.sh, and publ
 - SKILL.md excerpt (frontmatter + first 50 lines)
 - Absorb assessment — whether you can extend rather than build from scratch
 
-Output lands in `.codevoyant/explore/{slug}/` and can be passed directly to `/skill:new` via `--research`.
+Output lands in `.codevoyant/explore/{slug}/` and can be passed directly to `/skill new` via `--research`.
 
 **Flags:**
 
@@ -66,9 +66,9 @@ Output lands in `.codevoyant/explore/{slug}/` and can be passed directly to `/sk
 Scaffold a new skill from the canonical template:
 
 ```bash
-/skill:new                                 # Interactive naming
-/skill:new linear-push                     # Named skill
-/skill:new linear-push --research .codevoyant/explore/linear/explore.md
+/skill new                                 # Interactive naming
+/skill new linear-push                     # Named skill
+/skill new linear-push --research .codevoyant/explore/linear/explore.md
 ```
 
 Guides you through:
@@ -91,10 +91,10 @@ Output is committed to `skills/{skill-name}/` (public) or `.claude/skills/{skill
 Improve an in-progress skill plan or an existing committed skill:
 
 ```bash
-/skill:update                         # Auto-detect active skill plan
-/skill:update dev-commit              # Target specific skill or plan
-/skill:update dev-commit > add --dry-run flag   # Minor annotation
-/skill:update dev-commit >> restructure agent steps  # Major annotation
+/skill update                         # Auto-detect active skill plan
+/skill update dev-commit              # Target specific skill or plan
+/skill update dev-commit > add --dry-run flag   # Minor annotation
+/skill update dev-commit >> restructure agent steps  # Major annotation
 ```
 
 Two modes:
@@ -114,11 +114,11 @@ Changes are always planned and confirmed before being written. Runs `mise run sk
 Audit a skill for spec compliance, claudevoyant conventions, and effectiveness:
 
 ```bash
-/skill:review                             # Review most recently updated skill
-/skill:review dev-commit                  # Review specific skill by name
-/skill:review path/to/SKILL.md            # Review by path
-/skill:review skills/                     # Review all skills in a directory
-/skill:review dev-commit --effectiveness  # Include effectiveness dimensions
+/skill review                             # Review most recently updated skill
+/skill review dev-commit                  # Review specific skill by name
+/skill review path/to/SKILL.md            # Review by path
+/skill review skills/                     # Review all skills in a directory
+/skill review dev-commit --effectiveness  # Include effectiveness dimensions
 ```
 
 Checks:
@@ -148,5 +148,5 @@ Produces a review report at `.codevoyant/review/{skill-name}.md`. Auto-fixes mec
 ### List All Commands
 
 ```bash
-/skill:help                 # Not yet implemented — see this page
+/skill help                 # Not yet implemented — see this page
 ```
