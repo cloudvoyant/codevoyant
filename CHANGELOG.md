@@ -1,3 +1,25 @@
+## [1.40.0](https://github.com/cloudvoyant/codevoyant/compare/v1.39.0...v1.40.0) (2026-03-25)
+
+### Features
+
+* **dev:** add mr workflow and update docs for unified skill syntax
+
+- add /dev mr workflow (create PR/MR on GitHub or GitLab)
+- update all docs to space-separated command syntax (/em plan vs /em:plan)
+- add git skill page, remove mem from sidebar, update architecture.md
+
+
+### Bug Fixes
+
+* **agent-kit:** remove unused readWorktrees import
+
+
+### Code Refactoring
+
+* **skills:** consolidate per-skill dirs into unified category packages
+
+* **dev:** rename mr workflow to pr
+
 ## [1.39.0](https://github.com/cloudvoyant/codevoyant/compare/v1.38.0...v1.39.0) (2026-03-24)
 
 ### Features
