@@ -2,7 +2,15 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { readConfig, writeConfig, readSettings, readPlans, writePlans, readWorktrees, writeWorktrees } from '../../src/config.js';
+import {
+  readConfig,
+  writeConfig,
+  readSettings,
+  readPlans,
+  writePlans,
+  readWorktrees,
+  writeWorktrees,
+} from '../../src/config.js';
 
 describe('config', () => {
   let tmpDir: string;
@@ -98,7 +106,12 @@ describe('config', () => {
     });
 
     it('should read existing settings.json', () => {
-      fs.writeFileSync(path.join(tmpDir, 'settings.json'), JSON.stringify({ taskRunner: { runner: 'pnpm', command: 'pnpm run', configFile: 'package.json', detectedAt: '2024-01-01' } }));
+      fs.writeFileSync(
+        path.join(tmpDir, 'settings.json'),
+        JSON.stringify({
+          taskRunner: { runner: 'pnpm', command: 'pnpm run', configFile: 'package.json', detectedAt: '2024-01-01' },
+        }),
+      );
       const result = readSettings(tmpDir);
       expect(result.taskRunner?.runner).toBe('pnpm');
     });

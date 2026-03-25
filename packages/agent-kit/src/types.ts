@@ -49,7 +49,7 @@ export interface TaskRunnerInfo {
 
 export interface MemSettings {
   manifestPath?: string; // default: "mem.json", resolved relative to .codevoyant/
-  docsDir?: string;      // default: "docs" — base dir for styleguide/ and recipes/ subdirs
+  docsDir?: string; // default: "docs" — base dir for styleguide/ and recipes/ subdirs
 }
 
 export interface CodevoyantSettings {
