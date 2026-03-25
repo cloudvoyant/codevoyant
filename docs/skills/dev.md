@@ -26,8 +26,8 @@ npx skills add cloudvoyant/codevoyant
 ### Open a PR or MR
 
 ```bash
-/dev mr                     # creates PR/MR into main, auto-detects GitHub vs GitLab
-/dev mr staging             # target a different base branch
+/dev pr                     # creates PR/MR into main, auto-detects GitHub vs GitLab
+/dev pr staging             # target a different base branch
 /dev pr-fix                 # fix open review comments on an existing PR/MR
 ```
 
@@ -83,12 +83,12 @@ The command will:
 Create a pull request (GitHub) or merge request (GitLab) from the current branch:
 
 ```bash
-/dev mr                         # into main, auto-detects provider
-/dev mr staging                 # target a different base branch
-/dev mr --draft                 # create as draft
-/dev mr --yes                   # skip confirmation prompt
-/dev mr --github                # force GitHub
-/dev mr --gitlab                # force GitLab
+/dev pr                         # into main, auto-detects provider
+/dev pr staging                 # target a different base branch
+/dev pr --draft                 # create as draft
+/dev pr --yes                   # skip confirmation prompt
+/dev pr --github                # force GitHub
+/dev pr --gitlab                # force GitLab
 ```
 
 What happens:

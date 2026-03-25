@@ -1,4 +1,4 @@
-# mr
+# pr
 
 Create a pull request (GitHub) or merge request (GitLab) from the current branch.
 

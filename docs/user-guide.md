@@ -67,9 +67,9 @@ Dev handles the higher-level parts of the development loop.
 **Open a PR or MR:**
 
 ```bash
-/dev mr                 # creates PR/MR into main, auto-detects GitHub vs GitLab
-/dev mr staging         # target a different base branch
-/dev mr --draft         # create as draft
+/dev pr                 # creates PR/MR into main, auto-detects GitHub vs GitLab
+/dev pr staging         # target a different base branch
+/dev pr --draft         # create as draft
 ```
 
 **Fix review comments on an existing PR/MR:**

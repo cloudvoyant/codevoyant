@@ -19,7 +19,7 @@ dev — Development workflow commands for Claude Code
   /dev approve  [plan-slug] [--push [linear-project-url]] [--silent]
       Promote a draft architecture plan and optionally push tasks to Linear
 
-  /dev mr  [base-branch] [--github|--gitlab] [--draft] [--yes|-y]
+  /dev pr  [base-branch] [--github|--gitlab] [--draft] [--yes|-y]
       Create a pull request (GitHub) or merge request (GitLab) into base-branch (default: main)
 
   /dev pr-fix  [pr-id] [--github|--gitlab] [--silent]
