@@ -15,14 +15,8 @@ spec — Specification-driven development commands for Claude Code
   /spec new  [plan-name|url] [--branch branch-name] [--blank] [--bg] [--silent]
       Create a new spec plan by exploring requirements and building a structured implementation plan
 
-  /spec bg  [plan-name] [--yes|-y] [--commit|-c] [--silent]
-      Launch a plan hands-free — the agent executes every task autonomously and updates progress in real-time
-
-  /spec go  [plan-name] [--bg] [--silent] [--commit|-c]
-      Execute or continue a spec plan interactively with configurable breakpoints
-
-  /spec list  [plan-name]
-      List all spec plans with status and progress, or show detailed status for one plan
+  /spec go  [plan-name] [--yes|-y] [--commit|-c] [--silent]
+      Execute a plan hands-free — the agent runs every task autonomously and updates progress in real-time
 
   /spec review  [plan-name] [--bg] [--silent]
       Review a spec plan before execution — checks for ambiguous tasks, missing validation, and dependency gaps
@@ -33,20 +27,8 @@ spec — Specification-driven development commands for Claude Code
   /spec refresh  [plan-name] [--bg] [--silent]
       Sync checklist status and phase markers with actual task completion
 
-  /spec done  [plan-name]
-      Mark a spec plan as complete, optionally commit changes, and archive it
-
-  /spec stop  [plan-name]
-      Stop a running background agent or pause a plan and capture session insights
-
-  /spec delete  [plan-name]
-      Permanently delete a spec plan and all its files
-
-  /spec rename  [old-name] [new-name]
-      Rename a spec plan and update all references
-
-  /spec doctor
-      Diagnose and fix spec setup issues — detects old path layouts and migrates them
+  /spec clean  [plan-name]
+      Session wrap-up: stop running agents, archive completed plans to docs, triage active plans (done or cancel)
 
   /spec allow  [--global]
       Pre-approve spec plugin permissions for uninterrupted background agent execution

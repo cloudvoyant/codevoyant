@@ -1,13 +1,13 @@
 # go
 
-Execute or continue the existing plan interactively, with configurable breakpoints for user review. Pass `--bg` for fully autonomous background execution equivalent to `/spec bg`.
+Execute the plan in the background using an autonomous agent. The agent works through every phase without interruption while you continue working.
 
 ## Variables
 
 - `PLAN_NAME` — plan to execute (may be empty; will prompt if multiple plans exist)
-- `BG_MODE` — true if `--bg` present
-- `SILENT` — true if `--silent` present
+- `AUTO_APPROVE` — true if `--yes` or `-y` present
 - `ALLOW_COMMITS` — true if `--commit` or `-c` present
+- `SILENT` — true if `--silent` present
 
 ## Step 1: Select Plan
 
@@ -17,110 +17,88 @@ If `PLAN_NAME` not provided:
    npx @codevoyant/agent-kit plans migrate
    npx @codevoyant/agent-kit plans list --status Active
    ```
-2. Sort by Last Updated (most recent first); auto-select if only one
-3. Use `AskUserQuestion` if multiple plans exist
-4. If no plans exist, inform user to create with `/spec new`
+2. Sort by Last Updated (most recent first)
+3. If only one plan exists, auto-select it
+4. If multiple plans exist, use `AskUserQuestion` to present list
+5. If no plans exist, inform user to create with `/spec new`
 
-## Step 1.5: Review Advisory
+## Step 2: Analyze Plan Scope
 
-If `BG_MODE=false` and no `--yes`/`-y` flag:
-
-Check if `.codevoyant/plans/{plan-name}/review.md` exists. If it does NOT exist:
-
-```bash
-echo "⚠️  This plan hasn't been reviewed yet. Consider running /spec review {plan-name} first."
-echo "    Continuing anyway — press Ctrl+C to cancel."
-sleep 3
-```
-
-## Step 2: Read and Analyze Plan
-
-Read `.codevoyant/plans/{plan-name}/plan.md` to understand objective, all phases/tasks, current progress, and any insights from previous sessions.
-
-**Validate plan structure:** phase headers match `### Phase \d+ - .+`, task format matches `\d+\. \[(x| )\] .+`, phase numbers are sequential. If validation fails, warn and suggest `/spec refresh`.
+Read `.codevoyant/plans/{plan-name}/plan.md` and report total phases, total tasks, starting point, and estimated complexity.
 
 ## Step 2.5: Validate and Setup Worktree Context
 
-Same worktree logic as `bg.md` Step 2.5 — auto-switch to worktree if it exists, offer to create if missing, warn on branch mismatch if no worktree.
+Parse plan metadata:
 
-## Step 3: Determine Starting Point
+```bash
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+```
 
-Find the first unchecked task in the earliest incomplete phase. Report where execution will begin.
+- **Worktree exists** → set `EXECUTION_DIR=$PLAN_WORKTREE`, report and continue
+- **Worktree specified but missing** → if `AUTO_APPROVE`, create it automatically; otherwise use AskUserQuestion (create / execute here anyway / cancel)
+- **No worktree** → execute in current directory; if branch mismatch, offer to switch
 
-## Step 3.5: Validate Implementation Files
+## Step 3: Validate Implementation Files
 
-Same validation as `bg.md` Step 3 — check all phase-N.md files exist and are > 100 bytes.
+Count phases in plan.md (lines matching `^### Phase (\d+)`). Store `HAS_PHASE_0`.
 
-## Step 4: Set Breakpoints
+For phases 1 through N, check `.codevoyant/plans/{plan-name}/implementation/phase-{N}.md` exists and is > 100 bytes. Phase 0 has no implementation file — skip it.
 
-If `BG_MODE=true`: skip this step entirely. Proceed with no breakpoints (fully autonomous).
+If any files missing, report them and exit without launching.
+
+## Step 4: Confirm Background Execution
+
+If `AUTO_APPROVE=true`, skip confirmation and proceed.
 
 Otherwise use **AskUserQuestion**:
 
 ```
-question: "Should Claude take breaks during execution for your review?"
-header: "Breakpoints"
+question: "Start background execution for '{plan-name}'? ({N} phases, {M} tasks)\n\nThe agent will:\n✓ Execute all tasks autonomously\n✓ Update plan.md checkboxes in real-time\n✓ Run tests at phase boundaries\n✓ Pause on errors\n{ALLOW_COMMITS=false: ⚠️ Will NOT commit | ALLOW_COMMITS=true: ✓ Will commit}"
+header: "Start execution?"
 options:
-  - label: "None (Fully autonomous)"
-  - label: "After every phase"
-  - label: "After specific phase"
+  - label: "Start execution"
+  - label: "Cancel"
 ```
 
-If "After specific phase", follow up asking which phase number.
+## Step 5: Initialize Execution Tracking
 
-## Step 5: Execute Spec-Driven Development Flow
-
-For each task in the plan:
-
-### 5.1: Before Starting a Task
-
-1. Scan for `> instruction` and `content >> instruction` annotations in plan.md and the current phase-N.md. Apply each and remove the marker. Report what changed.
-2. Identify the current phase number from the task's phase header
-3. Validate and read `implementation/phase-{N}.md` — stop and report error if missing
-
-### 5.2: Implement the Task
-
-1. Follow the detailed specs in the implementation file precisely
-2. Make necessary changes as specified
-3. Immediately mark task `[x]` in plan.md
-4. Update the registry:
-   ```bash
-   npx @codevoyant/agent-kit plans update-progress \
-     --name "$PLAN_NAME" \
-     --completed $COMPLETED \
-     --total $TOTAL
-   ```
-
-### 5.3: Phase Boundary Actions
-
-When a phase is complete:
-
-1. Run tests using the project's task runner commands from plan metadata
-2. If tests fail, fix before proceeding (or document why temporarily broken)
-3. Mark phase header `✅` in plan.md
-4. Update registry progress
-5. If a breakpoint is configured for this phase, pause and report to user
-
-## Step 6: Completion
-
-When all phases are complete:
+Create or clear `.codevoyant/plans/{plan-name}/execution-log.md` with initial state (Status: RUNNING, timestamp, plan objective).
 
 ```bash
-npx @codevoyant/agent-kit plans update-progress \
-  --name "$PLAN_NAME" \
-  --completed $TOTAL \
-  --total $TOTAL
-npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Complete
+npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Executing
 ```
 
-Suggest running `/spec done {plan-name}` to archive the completed plan.
+## Step 6: Launch Background Agent
 
-## Step 6.5: Desktop Notification (--bg only)
+Determine `EXECUTION_DIR` (worktree path or current directory).
 
-If `BG_MODE=true` and `SILENT=false`:
+**Phase 0 gate:** If `HAS_PHASE_0=true` and any Phase 0 tasks are unchecked, stop and list them. Do not launch any executor agents.
+
+**Orchestration loop** — for each phase starting at Phase 1:
+
+1. Spawn `spec-executor` agent (see `agents/spec-executor.md`) with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, and `PLAN_NAME` substituted into the prompt
+2. Wait for completion (`TaskOutput` block=true)
+3. Write phase summary to execution-log.md
+4. If phase failed: stop loop, send failure notification, report to user
+5. If phase succeeded: continue to Phase N+1
+
+After loop completes, send desktop notification unless `SILENT=true`:
 
 ```bash
 npx @codevoyant/agent-kit notify \
   --title "Claude Code — Spec" \
   --message "{Plan '{plan-name}' complete | Plan '{plan-name}' stopped at Phase {N}}"
+```
+
+## Step 7: Confirm Launch
+
+```
+✓ Background execution started for plan "{plan-name}"!
+
+Monitor progress:
+- /spec clean {plan-name} — check status, stop, or wrap up
+
+You will receive a desktop notification when execution completes or fails.
 ```

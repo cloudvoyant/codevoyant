@@ -8,7 +8,7 @@ import { withBase } from 'vitepress'
 
 Specification-driven development -- plan, execute, and track complex work with structured plans.
 
-The Spec skills introduce a structured planning layer to your AI coding agent. Write detailed plans, then execute them interactively or hand them off to a background agent while you work on other things.
+The Spec skill introduces a structured planning layer to your AI coding agent. Write detailed plans, then hand them off to a background agent while you work on other things.
 
 ## Installation
 
@@ -40,54 +40,26 @@ Plans live in `.codevoyant/plans/{plan-name}/`. Plan registry is tracked in `.co
     └── archive/                     # Completed plans
 ```
 
-## Typical Workflows
-
-### Interactive Workflow
+## Typical Workflow
 
 ```bash
-/spec new my-feature        # Create plan interactively
-/spec review my-feature     # Review plan quality before execution
-/spec go my-feature         # Execute step-by-step with review
-/spec done my-feature       # Archive and optionally commit
-```
-
-> `spec:go` will warn if `spec:review` hasn't been run on a plan yet. Run `/spec review` first to catch issues early.
-
-### Background Workflow
-
-```bash
-/spec new my-feature --bg   # Create plan and immediately start background execution
-/spec new my-feature        # Or: create plan, then hand off separately:
-/spec go my-feature --bg    # Start background agent (equivalent to /spec bg)
+/spec new my-feature        # Create plan
+/spec review my-feature     # Review for quality issues before executing
+/spec go my-feature         # Hand off to background agent
 # ... work on other things ...
-/spec list                  # Check progress across all plans
 # Agent completes and sends a desktop notification
-/spec done my-feature       # Archive and commit
+/spec clean                 # Wrap up: archive to docs, mark done or cancel
 ```
 
-### Multi-Plan Workflow
-
-```bash
-/spec new feature-auth      # Plan 1
-/spec new refactor-api      # Plan 2
-
-/spec go feature-auth       # Work on Plan 1 interactively
-/spec bg refactor-api       # Run Plan 2 in background simultaneously
-
-/spec list                  # See all plans at once
-/spec done feature-auth
-/spec done refactor-api
-```
+> `spec go` will warn if `spec review` hasn't been run yet. Run `/spec review` first to catch issues early.
 
 ## Best Practices
 
 - **Use `/spec new`** for real work -- the planning session catches ambiguities early. Pass a Linear/GitHub/Notion URL to seed requirements automatically. Use `--blank` only when you want to write the plan yourself.
-- **Plan selection**: For all skills except `/spec new`, if you don't specify a plan name and multiple plans exist, you'll be shown the list and asked to choose.
+- **Plan selection**: For all commands except `/spec new`, if you don't specify a plan name and multiple plans exist, you'll be shown a list and asked to choose.
 - **Put detail in implementation files** -- `plan.md` stays high-level; detailed specs go in `implementation/phase-N.md`
-- **Prefer `--bg`** for long or routine tasks (`/spec go --bg` or `/spec bg`); use interactive mode for complex or high-risk changes
 - **Annotate plans directly** -- add `> note` or `line >> instruction` markers while reading, then run `/spec update` to apply them in bulk
-- **Check `/spec list`** before ending a session to see where all plans stand
-- **Use `/spec stop`** to capture session insights before taking a break
+- **Run `/spec clean`** at the end of a session to stop agents, archive completed plans to docs, and triage anything left open
 
 ## Skills
 
@@ -123,37 +95,13 @@ Explores your requirements and creates:
 
 ```bash
 /spec go                         # Auto-selects most recently updated plan
-/spec go plan-name               # Execute specific plan interactively
-/spec go plan-name --bg          # Execute in background (non-blocking)
-/spec go plan-name --bg --silent # Background, no desktop notification
+/spec go plan-name               # Execute specific plan
+/spec go plan-name --yes         # Skip all confirmations (also: -y)
 /spec go plan-name --commit      # Allow git commits during execution
+/spec go plan-name --silent      # Suppress desktop notification on completion
 ```
 
-**Interactive mode** -- choose your execution style:
-
-- **Fully Autonomous** -- execute entire plan without stops (except errors)
-- **Phase Review** -- pause after each phase for your review
-- **Targeted Review** -- stop at a specific phase
-
-**Background mode (`--bg`)** -- spawns an autonomous agent and returns immediately so you can keep working. A desktop notification fires when execution completes or fails. Equivalent to `/spec bg`.
-
-**Flags:**
-
-- `--bg` -- non-blocking background execution
-- `--silent` -- suppress the desktop notification (use with `--bg`)
-- `--commit` / `-c` -- allow the agent to make git commits as tasks complete
-
-### Background Execution
-
-```bash
-/spec bg                    # Auto-selects most recently updated plan
-/spec bg plan-name          # Execute specific plan in background
-/spec bg plan-name --yes    # Skip confirmations (also: -y)
-/spec bg plan-name --commit # Allow git commits during execution (default: off)
-/spec bg plan-name --silent # Suppress desktop notification on completion
-```
-
-Spawns an autonomous agent that:
+Spawns an autonomous background agent that:
 
 1. Reads your implementation files for detailed specs
 2. Updates `plan.md` checkboxes in real-time
@@ -162,22 +110,11 @@ Spawns an autonomous agent that:
 5. Writes an execution log at `.codevoyant/plans/{name}/execution-log.md`
 6. Sends a **desktop notification** when execution completes or fails
 
-Flags:
+**Flags:**
 
 - `--yes` / `-y` -- skip all confirmations (worktree creation, execution start)
 - `--commit` / `-c` -- allow the agent to make git commits as tasks complete (disabled by default)
 - `--silent` -- suppress the desktop notification
-
-Monitor with `/spec list`, stop with `/spec stop`.
-
-### List All Plans
-
-```bash
-/spec list                  # Overview of all plans
-/spec list plan-name        # Detailed status for one plan
-```
-
-Shows all active and archived plans with status, progress percentage, task counts, branch/worktree context, and last updated timestamps.
 
 ### Review a Plan
 
@@ -221,50 +158,19 @@ Examples:
 
 Reviews what's been done and updates checkboxes and phase markers in `plan.md` to reflect current state.
 
-### Complete a Plan
+### Clean Up / Session Wrap-up
 
 ```bash
-/spec done                  # Shows completion dialog
-/spec done plan-name        # Complete specific plan
+/spec clean                 # Full session wrap-up across all plans
+/spec clean plan-name       # Clean up a specific plan only
 ```
 
-Marks the plan complete and archives it to `.codevoyant/plans/archive/{name}-{YYYYMMDD}/`. Offers to create a git commit and pull request before archiving. If the plan had a worktree, offers to clean it up.
+Combines stop, done, and delete into a single end-of-session flow:
 
-### Stop or Pause
-
-```bash
-/spec stop                  # If only one plan is active
-/spec stop plan-name        # Stop specific plan
-```
-
-Works in two modes depending on state:
-
-- **Background agent running** -- halts the agent gracefully, saves all progress. Resume later with `/spec bg` or `/spec go`.
-- **No agent running** -- captures session insights (decisions made, discoveries, next steps) into an `## Insights` section in `plan.md`, then marks the plan as Paused.
-
-### Permanently Delete
-
-```bash
-/spec delete plan-name     # Requires typing plan name to confirm
-```
-
-Permanently deletes a plan and all its files. Cannot be undone.
-
-### Rename a Plan
-
-```bash
-/spec rename old-name new-name
-```
-
-Renames a plan directory and updates the registry. Git worktrees and branches are not renamed.
-
-### Diagnose Setup Issues
-
-```bash
-/spec doctor
-```
-
-Detects old path layouts (`.spec/plans/`, `.worktrees/`) and migrates them to the current `.codevoyant/` structure. Updates `.gitignore` entries and flags stale references in `CLAUDE.md`.
+1. **Stops** any running background agents
+2. **Completes** plans that a background agent just finished (quick CLI update)
+3. **Archives** completed plans to `docs/plan/` (copies `plan.md` + `user-guide.md` only)
+4. **Triages** remaining active plans one by one — mark done, cancel, or skip
 
 ### Pre-approve Permissions
 
@@ -273,11 +179,10 @@ Detects old path layouts (`.spec/plans/`, `.worktrees/`) and migrates them to th
 /spec allow --global  # Write to ~/.claude/settings.json
 ```
 
-Adds the allow entries needed for `/spec bg` and `/spec go` to run without permission prompts -- git operations, WebSearch/WebFetch, and the project's task runner.
+Adds the allow entries needed for `/spec go` to run without permission prompts -- git operations, WebSearch/WebFetch, and the project's task runner.
 
 ### List All Commands
 
 ```bash
-/spec help                  # List all spec commands with descriptions
-/spec help go               # Show full details for a specific command
+/spec help            # List all spec commands with descriptions
 ```
