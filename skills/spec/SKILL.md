@@ -1,9 +1,9 @@
 ---
-description: 'Specification-driven development. Triggers on: "spec new", "spec go", "spec review", "spec refresh", "spec update", "spec clean", "spec allow", "spec help", and all legacy /spec:* trigger phrases. Unified dispatcher — pass a subcommand as the first argument.'
+description: 'Specification-driven development. Triggers on: "spec new", "spec go", "spec guide", "spec review", "spec refresh", "spec update", "spec clean", "spec allow", "spec help", and all legacy /spec:* trigger phrases. Unified dispatcher — pass a subcommand as the first argument.'
 name: spec
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
-argument-hint: '<new|go|update|review|refresh|clean|help> [plan-name] [--flags]'
+argument-hint: '<new|go|guide|update|review|refresh|clean|help> [plan-name] [--flags]'
 disable-model-invocation: true
 ---
 
@@ -55,6 +55,7 @@ If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and no
 
 - **new** (`workflows/new.md`) — create a structured implementation plan
 - **go** (`workflows/go.md`) — execute plan autonomously in background
+- **guide** (`workflows/guide.md`) — guided walkthrough: step-by-step tutorial with next/skip/improvise/chat
 - **review** (`workflows/review.md`) — review plan quality before execution
 - **refresh** (`workflows/refresh.md`) — sync checklist status with actual progress
 - **update** (`workflows/update.md`) — apply annotations or conversational changes

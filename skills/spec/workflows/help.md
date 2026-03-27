@@ -18,6 +18,9 @@ spec — Specification-driven development commands for Claude Code
   /spec go  [plan-name] [--yes|-y] [--commit|-c] [--silent]
       Execute a plan hands-free — the agent runs every task autonomously and updates progress in real-time
 
+  /spec guide  [plan-name] [--phase N] [--task N]
+      Guided walkthrough — step-by-step tutorial with options to proceed, skip, chat, or improvise
+
   /spec review  [plan-name] [--bg] [--silent]
       Review a spec plan before execution — checks for ambiguous tasks, missing validation, and dependency gaps
 

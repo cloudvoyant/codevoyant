@@ -2,13 +2,21 @@
 
 Create a structured multi-phase implementation plan. The goal is a tight, well-scoped plan that an autonomous execution agent can follow without further guidance.
 
-## Critical Rules
+## ⛔ HARD STOPS — read before every action
 
-- **Never write code, modify files, or run build/test commands** — this workflow plans only; execution is for `go`
-- **Never create source files** — only plan files (`plan.md`, `phase-N.md`, `user-guide.md`) and research artifacts
-- **Never run the task runner commands you discover** — record them for the execution agent, do not invoke them
-- **Never apply "quick fixes" while planning** — if you spot a bug, note it as a task; do not touch it
-- **Stop at the plan** — when the user says "looks good", your job is done; do not start implementing
+This workflow's **only output** is plan files. If you are about to do anything else, stop.
+
+| You are about to… | Correct action |
+|---|---|
+| Edit a source file | Stop. Add a task to the plan instead. |
+| Write application code | Stop. Describe it in `implementation/phase-N.md`. |
+| Run build / test / lint | Stop. Record the command in plan metadata. |
+| Fix a bug you noticed | Stop. Add it as a task in the appropriate phase. |
+| Keep going after "looks good" | Stop. Your job is done. Tell the user to run `/spec go`. |
+
+**Permitted file writes:** `.codevoyant/plans/{name}/plan.md`, `.codevoyant/plans/{name}/user-guide.md`, `.codevoyant/plans/{name}/implementation/phase-N.md`, `.codevoyant/plans/{name}/research/*`, `.claude/settings.json` (permissions only).
+
+Everything else is off-limits until `/spec go` is run.
 
 ## Variables
 
@@ -345,5 +353,13 @@ options:
   - label: "Minor adjustments needed"
 ```
 
-- **Looks good**: if `BG_MODE=true`, launch `spec bg {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion with next steps (`/spec go` or `/spec bg`).
+- **Looks good**: ⛔ **STOP HERE. Do not implement anything.** Your job is complete. If `BG_MODE=true`, launch `/spec go {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion:
+  ```
+  ✅ Plan "{plan-name}" is ready.
+
+  To execute:  /spec go {plan-name}
+  To review:   /spec review {plan-name}
+  To guide:    /spec guide {plan-name}
+  ```
+  Then stop. Do not write any more files. Do not start implementing tasks.
 - **Minor adjustments**: accept free-text, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.
