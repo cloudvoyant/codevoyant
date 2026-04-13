@@ -180,7 +180,7 @@ Skill gives you a structured workflow for building your own Claude Code / Agent 
 /skill review linear-push             # audit spec compliance + effectiveness
 ```
 
-See the [Skill skills reference](/skills/skill) for all skills.
+See the [Installation guide](/installation) for how to add skills.
 
 ---
 
