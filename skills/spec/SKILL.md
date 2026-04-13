@@ -23,7 +23,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Workflow files are authoritative** — do not duplicate workflow logic in this file
 - **Coding agents always receive a workflow checklist** — see `references/workflow-checklist.md`
-- See `workflows/` for per-verb behaviour; see `references/` for all templates
+- See `references/workflows/` for per-verb behaviour; see `references/` for all templates
 
 ## Step 0: Parse Arguments
 
@@ -47,21 +47,21 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **new** (`workflows/new.md`) — create a structured implementation plan
-- **go** (`workflows/go.md`) — execute plan autonomously in background
-- **guide** (`workflows/guide.md`) — guided walkthrough: step-by-step tutorial with next/skip/improvise/chat
-- **review** (`workflows/review.md`) — review plan quality before execution
-- **refresh** (`workflows/refresh.md`) — sync checklist status with actual progress
-- **update** (`workflows/update.md`) — apply annotations or conversational changes
-- **clean** (`workflows/clean.md`) — session wrap-up: stop agents, archive to docs, triage active plans (done or cancel)
-- **allow** (`workflows/allow.md`) — pre-approve permissions for background agents
-- **help** (`workflows/help.md`) — print command reference
+- **new** (`references/workflows/new.md`) — create a structured implementation plan
+- **go** (`references/workflows/go.md`) — execute plan autonomously in background
+- **guide** (`references/workflows/guide.md`) — guided walkthrough: step-by-step tutorial with next/skip/improvise/chat
+- **review** (`references/workflows/review.md`) — review plan quality before execution
+- **refresh** (`references/workflows/refresh.md`) — sync checklist status with actual progress
+- **update** (`references/workflows/update.md`) — apply annotations or conversational changes
+- **clean** (`references/workflows/clean.md`) — session wrap-up: stop agents, archive to docs, triage active plans (done or cancel)
+- **allow** (`references/workflows/allow.md`) — pre-approve permissions for background agents
+- **help** (`references/workflows/help.md`) — print command reference
 
 ## Agent Index
 

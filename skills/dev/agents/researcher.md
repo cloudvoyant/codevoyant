@@ -44,8 +44,7 @@ Research the external landscape: libraries, frameworks, prior art, and reference
 Before anything else:
 1. Run WebSearch("{topic} library {stack}") and WebSearch("{topic} framework alternatives {stack}")
 2. Check npm/pip/cargo/brew for relevant packages: `npm search {keywords}` or `pip search {keywords}` where applicable
-3. Check https://agentskill.sh/ for any published skill that covers the topic
-4. Build a candidate list of 3–6 real options before proceeding
+3. Build a candidate list of 3–6 real options before proceeding
 
 This scan ensures you are not recommending a custom build when a well-maintained library already exists.
 

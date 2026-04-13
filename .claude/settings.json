@@ -68,5 +68,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "memsearch@memsearch-plugins": true
   }
 }

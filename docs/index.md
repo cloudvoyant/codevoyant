@@ -4,7 +4,7 @@ layout: home
 hero:
   name: codevoyant
   text: A collection of skills for development with AI agents
-  tagline: Install with npx skills add cloudvoyant/codevoyant
+  tagline: Skills for development with coding agents
   image:
     light: /codevoyant-logo-light.svg
     dark: /codevoyant-logo-dark.svg
@@ -29,11 +29,6 @@ features:
     details: Architecture planning, technical exploration, repo comparison, docs generation, and PR review.
     link: /skills/dev
   - icon:
-      src: /icons/utils.svg
-    title: Git
-    details: Conventional commits, CI monitoring, and safe interactive rebase.
-    link: /skills/git
-  - icon:
       src: /icons/em.svg
     title: EM · Experimental
     details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.
@@ -49,8 +44,8 @@ features:
     details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
     link: /skills/ux
   - icon:
-      src: /icons/skill.svg
-    title: Skill · Experimental
-    details: Build and maintain Claude Code / Agent Skills — explore existing skills, scaffold from template, iterate, and run quality reviews before shipping.
-    link: /skills/skill
+      src: /icons/utils.svg
+    title: Git
+    details: Conventional commits, CI monitoring, and safe interactive rebase.
+    link: /skills/git
 ---

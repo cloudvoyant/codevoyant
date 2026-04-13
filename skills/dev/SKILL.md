@@ -34,21 +34,21 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **allow** (`workflows/allow.md`) — pre-approve permissions for background agents
-- **approve** (`workflows/approve.md`) — push tasks to Linear
-- **diff** (`workflows/diff.md`) — compare two repos for structural differences
-- **docs** (`workflows/docs.md`) — generate or update documentation
-- **explore** (`workflows/explore.md`) — research technical approaches, generate proposals
-- **help** (`workflows/help.md`) — print command reference
-- **pr** (`workflows/pr.md`) — create a pull request or merge request
-- **plan** (`workflows/plan.md`) — plan feature or system architecture
-- **pr-fix** (`workflows/pr-fix.md`) — review and fix PR issues
+- **allow** (`references/workflows/allow.md`) — pre-approve permissions for background agents
+- **approve** (`references/workflows/approve.md`) — push tasks to Linear
+- **diff** (`references/workflows/diff.md`) — compare two repos for structural differences
+- **docs** (`references/workflows/docs.md`) — generate or update documentation
+- **explore** (`references/workflows/explore.md`) — research technical approaches, generate proposals
+- **help** (`references/workflows/help.md`) — print command reference
+- **pr** (`references/workflows/pr.md`) — create a pull request or merge request
+- **plan** (`references/workflows/plan.md`) — plan feature or system architecture
+- **pr-fix** (`references/workflows/pr-fix.md`) — review and fix PR issues
 
 ## Agent Index
 

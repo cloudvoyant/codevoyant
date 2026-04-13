@@ -95,3 +95,11 @@ test-results/
 
 # codevoyant
 .codevoyant/worktrees/
+
+# Claude Code agent state
+.claude/worktrees/
+.memsearch/
+
+# Generated / untracked assets
+docs/public/codevoyant-logo-dark-512.png
+docs/public/codevoyant-logo-light-512.png

@@ -22,7 +22,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - **Unknown verb → run `help.md`** — never error silently
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Workflow files are authoritative** — do not duplicate workflow logic in this file
-- See `workflows/` for per-verb behaviour; see `references/` for all templates
+- See `references/workflows/` for per-verb behaviour; see `references/` for all templates
 
 ## Step 0: Parse Arguments
 
@@ -41,14 +41,14 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **explore** (`workflows/explore.md`) — research existing skills on agentskill.sh before building
-- **new** (`workflows/new.md`) — create a new Claude Code compatible skill
-- **update** (`workflows/update.md`) — update or improve an existing skill
-- **critique** (`workflows/critique.md`) — evaluate skill quality across 5 dimensions
-- **help** (`workflows/help.md`) — print command reference
+- **explore** (`references/workflows/explore.md`) — research existing skills on agentskill.sh before building
+- **new** (`references/workflows/new.md`) — create a new Claude Code compatible skill
+- **update** (`references/workflows/update.md`) — update or improve an existing skill
+- **critique** (`references/workflows/critique.md`) — evaluate skill quality across 5 dimensions
+- **help** (`references/workflows/help.md`) — print command reference

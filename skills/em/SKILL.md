@@ -30,18 +30,18 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **allow** (`workflows/allow.md`) — pre-approve permissions for background agents
-- **approve** (`workflows/approve.md`) — promote plan to docs/ and push milestones to Linear
-- **help** (`workflows/help.md`) — print command reference
-- **plan** (`workflows/plan.md`) — plan an engineering epic with Linear tasks
-- **review** (`workflows/review.md`) — review roadmap quality and realism
-- **update** (`workflows/update.md`) — apply feedback or annotations to an existing plan
+- **allow** (`references/workflows/allow.md`) — pre-approve permissions for background agents
+- **approve** (`references/workflows/approve.md`) — promote plan to docs/ and push milestones to Linear
+- **help** (`references/workflows/help.md`) — print command reference
+- **plan** (`references/workflows/plan.md`) — plan an engineering epic with Linear tasks
+- **review** (`references/workflows/review.md`) — review roadmap quality and realism
+- **update** (`references/workflows/update.md`) — apply feedback or annotations to an existing plan
 
 ## Agent Index
 

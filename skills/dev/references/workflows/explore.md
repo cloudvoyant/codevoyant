@@ -11,7 +11,6 @@ These principles govern every dev explore run. Research agents and proposal writ
 - **Sufficient implementation detail** — proposals must show how a solution actually comes together: what files get added or modified, what the integration boundary looks like, what key interfaces are involved. A reader should be able to understand the shape of the implementation without having to re-research everything.
 - **Prior art is mandatory** — research must include how similar problems are solved in the existing codebase and in analogous open-source projects. Reinventing what already exists locally or in the ecosystem is a failure mode.
 - **Fetch, don't summarize from memory** — researchers must fetch GitHub repos, README files, and documentation pages. A researcher that cites a library without fetching its docs is producing unreliable output.
-- **Skills lookup is part of research** — check https://skills.sh/ and local `.claude/skills/` before proposing any tooling or workflow. An existing skill may already solve part of the problem.
 - **Mermaid for all diagrams** — any system diagram, architecture diagram, data flow, timeline, or process flow in proposals or research must be written as a Mermaid diagram (` ``` `mermaid block). Never use ASCII art for structured diagrams.
 
 ## Step 1: Understand the Topic
@@ -33,6 +32,22 @@ If `EXPLORATION_NAME` is not set, derive it from the topic:
 
 Set `EXPLORE_DIR=".codevoyant/explore/$EXPLORATION_NAME"`.
 
+## Step 1.5: Ask About Proposals
+
+Before launching research, ask:
+
+```
+question: "Should I generate proposals after research completes?"
+header: "Proposals"
+options:
+  - label: "Yes — generate all proposals"
+    description: "After research, identify 2–4 directions and write a proposal for each"
+  - label: "Research only"
+    description: "Just run research, I'll decide on proposals separately"
+```
+
+Store as `GENERATE_PROPOSALS`. Continue immediately — do not wait further.
+
 ## Step 2: Run Research Agents in Parallel
 
 Create the exploration directory structure:
@@ -41,7 +56,9 @@ Create the exploration directory structure:
 mkdir -p "$EXPLORE_DIR/research" "$EXPLORE_DIR/proposals"
 ```
 
-Launch all three simultaneously, wait for all to complete, then synthesize:
+Launch the codebase scan and all external research agents simultaneously. Do not wait for each to finish before launching the next.
+
+**R1 — Codebase scan** (always run):
 
 ```yaml
 Agent:
@@ -54,45 +71,40 @@ Agent:
     output: {EXPLORE_DIR}/research/codebase-analysis.md
 ```
 
+**R2–RN — External research** (break into parallel topic-specific agents):
+
+Based on the topic, identify the distinct research angles that would take the most time if done sequentially (e.g., main library landscape, integration patterns, performance/trade-offs, alternatives, reference implementations). Launch one agent per angle:
+
 ```yaml
 Agent:
   subagent_type: dev:researcher
   run_in_background: true
-  description: 'explore/R2: external research'
+  description: 'explore/R2: {angle-name}'
   prompt: |
     mode: external
-    topic: {topic}
+    topic: {topic} — focus: {angle description}
     stack: {detected stack}
     deep: {DEEP}
-    output: {EXPLORE_DIR}/research/library-research.md
+    output: {EXPLORE_DIR}/research/{angle-slug}.md
 ```
 
-```yaml
-Agent:
-  subagent_type: general-purpose
-  model: claude-haiku-4-5-20251001
-  run_in_background: true
-  description: 'explore/R3: skills lookup'
-  prompt: |
-    Find skills relevant to: {topic} (stack: {detected stack})
-    deep: {DEEP}
-    - Check https://skills.sh/ for published skills
-    - Check local .claude/skills/ for installed skills that apply
-    - Search npm/pip/brew/cargo for relevant packages in the detected stack
-    Save a brief list to {EXPLORE_DIR}/research/available-skills.md
-```
+Typical split for most topics (adjust to the actual topic):
+- **library-landscape.md** — what libraries/frameworks exist, stars, maintenance, licenses
+- **integration-patterns.md** — how solutions are integrated in real codebases, config patterns
+- **trade-offs.md** — performance, complexity, operational costs, known failure modes
+- **reference-implementations.md** — open-source projects that have solved this, what they demonstrate
 
-## Step 3: Identify Directions
+Use more agents if the topic spans multiple genuinely independent domains. Use fewer if the topic is narrow.
 
-Based on research, identify 2-4 genuinely distinct approaches. Each should represent a meaningfully different architectural or technical direction -- not minor variations.
+Wait for all research agents to complete before proceeding.
 
-Present the directions as inline text with a brief description of each. Then ask open-ended: "Which of these directions do you want me to explore in detail? You can pick all of them, a subset, or describe a different direction."
+## Step 3: Identify Directions and Generate Proposals
 
-Wait for user response before proceeding.
+Based on all research artifacts, identify 2–4 genuinely distinct approaches. Each should represent a meaningfully different architectural or technical direction — not minor variations.
 
-## Step 4: Generate Proposals in Parallel
+If `GENERATE_PROPOSALS=false`: present the directions as a concise list with a one-line description each and stop. Report the research directory location. Skip Steps 4–5.
 
-For each selected direction, launch a `proposal-writer` Agent simultaneously:
+If `GENERATE_PROPOSALS=true`: for each direction, launch a `proposal-writer` agent simultaneously — do not ask the user which ones to generate:
 
 ```yaml
 Agent:
@@ -103,14 +115,50 @@ Agent:
     topic: {topic}
     approach: {direction-name}
     deep: {DEEP}
-    research:
-      - {EXPLORE_DIR}/research/codebase-analysis.md
-      - {EXPLORE_DIR}/research/library-research.md
+    research: (list all files written to {EXPLORE_DIR}/research/)
     template: references/proposal-template.md
     output: {EXPLORE_DIR}/proposals/{approach-slug}.md
 ```
 
 Wait for all proposal agents to complete.
+
+## Step 4: Write Comparison Summary
+
+Read each generated proposal. Write `$EXPLORE_DIR/summary.md` comparing all proposals:
+
+```markdown
+# Exploration: {EXPLORATION_NAME}
+
+## Topic
+{topic}
+
+## Proposals
+
+### {Approach A}
+- **One-line verdict**: {verdict}
+- **Best for**: {use case}
+- **Key trade-off**: {strength vs. weakness}
+
+### {Approach B}
+…
+
+## Recommendation
+**{Recommended approach}** — {2–3 sentence rationale comparing it to the others, citing specific trade-offs from the proposals}
+
+## Next step
+Run `/spec new` to create a plan from these findings.
+```
+
+Report to the user:
+
+```
+Exploration complete: {EXPLORATION_NAME}
+  Research: {count} files in {EXPLORE_DIR}/research/
+  Proposals: {count} generated in {EXPLORE_DIR}/proposals/
+  Summary: {EXPLORE_DIR}/summary.md
+
+Next: run /spec new to create a plan from these findings.
+```
 
 ### Multi-aspect support
 
@@ -119,50 +167,4 @@ If `ASPECTS_MODE=true`:
 - After Step 1, ask the user to list the independent aspects/decisions to explore
 - Create a subdirectory per aspect: `$EXPLORE_DIR/proposals/{aspect-slug}/`
 - Run Steps 3-4 independently for each aspect
-- Each aspect gets its own set of 2-4 proposals
-
-## Step 5: Present and Choose
-
-Read each generated proposal file. For each, present:
-
-- The approach name
-- The one-sentence verdict
-- Key trade-offs
-
-Use **AskUserQuestion**:
-
-```
-question: "Which direction do you want to go with?"
-header: "Exploration Results"
-multiSelect: false
-options:
-  - label: "{Approach A name}"
-    description: "{verdict}"
-  - label: "{Approach B name}"
-    description: "{verdict}"
-  - label: "Synthesize"
-    description: "Combine the best elements from multiple proposals"
-  - label: "Keep exploring"
-    description: "Refine or add more proposals"
-```
-
-Based on response:
-
-- **Specific approach**: Mark as chosen, proceed to Step 6
-- **Synthesize**: Launch a spec-explorer Task to create `$EXPLORE_DIR/proposals/synthesis.md` that combines the best elements. Then proceed to Step 6 with synthesis as the chosen direction.
-- **Keep exploring**: Ask what to refine or add, then return to Step 3 or Step 4 as appropriate
-
-## Step 6: Save Summary
-
-Write `$EXPLORE_DIR/summary.md` using `references/summary-template.md` (in this skill's directory). Add synthesis link if one was generated.
-
-Report to the user:
-
-```
-Exploration complete: {EXPLORATION_NAME}
-  Direction: {chosen or "undecided"}
-  Proposals: {count} generated
-  Summary: $EXPLORE_DIR/summary.md
-
-Next: run /spec new to create a plan from these findings.
-```
+- Each aspect gets its own set of proposals and a summary

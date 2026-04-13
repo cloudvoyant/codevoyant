@@ -94,31 +94,32 @@ Store the reported worktree path as `PLAN_WORKTREE` (or `""` if `SHOULD_CREATE_W
 
 ## Step 3: Understand Scope
 
-**3a. Check for existing research**
+**3a. Check for existing research and build objective options**
 
-Check `.codevoyant/explore/` for recent explore artifacts (files written by `dev:explore` or `skill:explore`).
+Check `.codevoyant/explore/` for exploration directories (each sub-directory is a past `dev explore` run).
 
-If recent artifacts exist, use **AskUserQuestion**:
+If explorations exist, read the `summary.md` (or derive a one-line description from the directory name) for each, then use **AskUserQuestion** presenting them as options alongside a "Describe something new" option:
 
 ```
-question: "I found recent exploration in .codevoyant/explore/. Should I base this spec on that research?"
-header: "Research Context"
+question: "What would you like to plan?"
+header: "Objective"
 options:
-  - label: "Yes — use the research"
-    description: "Load explore artifacts as context for this plan"
-  - label: "No — start from description"
-    description: "Ignore existing research, I'll describe what I want"
+  - label: "{exploration-name}"
+    description: "{one-line summary from summary.md, or derived from directory name}"
+  - … (one entry per exploration, up to 3 most recent)
+  - label: "Describe something new"
+    description: "Type your objective in the Other field"
 ```
 
-If "Yes": read all files in `.codevoyant/explore/` and store as `RESEARCH_CONTEXT`. If "No" or no artifacts found: `RESEARCH_CONTEXT=""`.
+If user selects an exploration: read all files in that exploration directory and store as `RESEARCH_CONTEXT`. Use the exploration topic as the candidate `OBJECTIVE`.
 
-**3b. Get the objective**
+If user selects "Describe something new" or no explorations exist: use their typed response as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`.
+
+**3b. Confirm objective**
 
 If `EXTERNAL_CONTEXT` is set, present it to the user and confirm it captures the intent. Ask only if something is unclear.
 
-Otherwise ask: "What are you planning to build, implement, or accomplish?"
-
-Wait for the user's response. Store as `OBJECTIVE`.
+Store final value as `OBJECTIVE`.
 
 ## Step 3.5: Detect Task Runners
 

@@ -32,14 +32,14 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **allow** (`workflows/allow.md`) — pre-approve permissions for background agents
-- **explore** (`workflows/explore.md`) — quick wireframe or approach comparison (single HTML file)
-- **help** (`workflows/help.md`) — print command reference
-- **prototype** (`workflows/prototype.md`) — full SvelteKit prototype with components
-- **style-synthesize** (`workflows/style-synthesize.md`) — extract and synthesize CSS design tokens from a URL
+- **allow** (`references/workflows/allow.md`) — pre-approve permissions for background agents
+- **explore** (`references/workflows/explore.md`) — quick wireframe or approach comparison (single HTML file)
+- **help** (`references/workflows/help.md`) — print command reference
+- **prototype** (`references/workflows/prototype.md`) — full SvelteKit prototype with components
+- **style-synthesize** (`references/workflows/style-synthesize.md`) — extract and synthesize CSS design tokens from a URL

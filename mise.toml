@@ -144,10 +144,6 @@ description = "Publish @codevoyant/agent-kit to npm"
 depends     = ["build:agent-kit"]
 run         = "pnpm --filter @codevoyant/agent-kit publish --access public --no-git-checks"
 
-[tasks."test:e2e"]
-description = "Run e2e installation and structure tests"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/e2e run test"
 
 [tasks."publish-rc:agent-kit"]
 description = "Publish RC @codevoyant/agent-kit to npm with 'next' tag"

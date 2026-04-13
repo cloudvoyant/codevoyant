@@ -30,13 +30,13 @@ esac
 
 ## Step 1: Dispatch to Workflow
 
-Read and execute `workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
+Read and execute `references/workflows/{VERB}.md`, passing `$REMAINING_ARGS` as the argument string.
 
-If `workflows/{VERB}.md` does not exist, fall back to `workflows/help.md` and note the unknown verb.
+If `references/workflows/{VERB}.md` does not exist, fall back to `references/workflows/help.md` and note the unknown verb.
 
 ## Workflow Index
 
-- **ci** (`workflows/ci.md`) — check CI/CD pipeline status after a push
-- **commit** (`workflows/commit.md`) — create a conventional commit with optional CI monitoring
-- **help** (`workflows/help.md`) — print command reference
-- **rebase** (`workflows/rebase.md`) — interactive rebase helper
+- **ci** (`references/workflows/ci.md`) — check CI/CD pipeline status after a push
+- **commit** (`references/workflows/commit.md`) — create a conventional commit with optional CI monitoring
+- **help** (`references/workflows/help.md`) — print command reference
+- **rebase** (`references/workflows/rebase.md`) — interactive rebase helper
