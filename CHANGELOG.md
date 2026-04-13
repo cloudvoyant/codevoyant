@@ -1,3 +1,21 @@
+## [1.42.1](https://github.com/cloudvoyant/codevoyant/compare/v1.42.0...v1.42.1) (2026-04-13)
+
+### Bug Fixes
+
+* **docs:** remove dead link to deleted skill plugin page
+
+
+### Code Refactoring
+
+* move workflows into references/, overhaul dev explore, clean up docs and e2e
+
+- Move workflows/ → references/workflows/ for all 7 skills; update all SKILL.md dispatchers
+- Rewrite dev:explore: parallel topic-specific research agents, proposal gate before research, auto-generate all proposals, comparison summary doc
+- Simplify spec:new Step 3: present past explorations as options instead of yes/no + free-text
+- Remove skill lookup (agentskill.sh) from dev:explore and researcher.md
+- Remove skill plugin from docs home page and sidebar; update tagline; git skill last
+- Delete stale e2e test suite and remove from workspace, mise.toml, package.json
+
 ## [1.42.0](https://github.com/cloudvoyant/codevoyant/compare/v1.41.0...v1.42.0) (2026-03-27)
 
 ### Features
