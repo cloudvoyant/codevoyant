@@ -86,9 +86,9 @@ if { [ -d "$EXPLORE_DIR" ] && [ "$(ls -A $EXPLORE_DIR 2>/dev/null)" ]; } || \
 fi
 ```
 
-Update agent-kit status:
+Update plan status in `.codevoyant/README.md`:
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "{SLUG}" --status Approved
+sed -i '' "s/| {SLUG} | [A-Za-z]* |/| {SLUG} | Approved |/" .codevoyant/README.md
 ```
 
 Report: "Plan promoted to `{COMMIT_DIR}`." Include research artifact count if any were copied.
@@ -126,12 +126,6 @@ Wait for completion. Report sync results.
 
 ## Step 6: Notify
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "em:approve complete" \
-    --message "Plan '{SLUG}' committed to {COMMIT_DIR}"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating plan `{SLUG}` was committed to `{COMMIT_DIR}`.
 
 Report: "Done. Plan is now at `{COMMIT_DIR}`."

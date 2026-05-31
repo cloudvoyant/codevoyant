@@ -13,8 +13,7 @@ Walk through a plan phase by phase, task by task, providing tutorial-style guida
 If `PLAN_NAME` not provided:
 
 ```bash
-npx @codevoyant/agent-kit plans migrate
-npx @codevoyant/agent-kit plans list --status Active
+grep "| Active |" .codevoyant/README.md 2>/dev/null || echo "No active plans"
 ```
 
 Sort by Last Updated (most recent first). Auto-select if only one active plan exists; use **AskUserQuestion** if multiple exist. If none, inform user to run `/spec new`.
@@ -93,14 +92,7 @@ options:
 ### If "Done — next step":
 
 1. Mark task `[x]` in plan.md
-2. Update registry:
-   ```bash
-   npx @codevoyant/agent-kit plans update-progress \
-     --name "$PLAN_NAME" \
-     --completed $COMPLETED \
-     --total $TOTAL
-   ```
-3. Continue to next task (Step 3.1 for next task)
+2. Continue to next task (Step 3.1 for next task)
 
 ---
 
@@ -233,7 +225,7 @@ Then continue to Phase {N+1}, Task 1 (Step 3.1).
 When all phases are done or skipped:
 
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Complete
+sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Complete |/" .codevoyant/README.md
 ```
 
 ```

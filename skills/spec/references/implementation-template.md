@@ -15,11 +15,11 @@ Use this structure for each `implementation/phase-N.md` file created in Step 5.5
 **Build system preservation:** Do NOT modify the build system, CI config, or dependencies unless this phase is explicitly about them. If the project built before you started, it must build after every task. If a change would require an unplanned build system modification, stop and flag it.
 
 ### Task Runner Commands
-{List the relevant task runner commands for this phase. ALWAYS use these — never invent equivalent shell commands.}
-- Build: `{e.g. just build | make build | task build}`
-- Test: `{e.g. just test | make test | task test}`
-- Lint: `{e.g. just lint | make lint}`
-- Format: `{e.g. just fmt | make format | task fmt}`
+{List the relevant task runner commands for this phase. ALWAYS use these — never invent equivalent shell commands. Discover them by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` scripts directly.}
+- Build: `{e.g. just build | make build | task build | mise run build}`
+- Test: `{e.g. just test | make test | task test | mise run test}`
+- Lint: `{e.g. just lint | make lint | mise run lint}`
+- Format: `{e.g. just fmt | make format | task fmt | mise run fmt}`
 
 If no task runner covers a needed operation, note: "Gap: no recipe for X — suggest adding one."
 

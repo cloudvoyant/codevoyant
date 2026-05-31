@@ -23,38 +23,26 @@
 
 `--deep` escalates research: more searches, more URLs fetched, stricter source tier requirements.
 
-## Step 1: Mode and topic
+## Step 1: Topic and mode (single question max)
 
-Ask the user to select exploration mode(s):
+**Topic resolution:**
+- If `REMAINING_ARGS` (from the dispatcher) is non-empty, set `TOPIC = REMAINING_ARGS` and skip the opening question. Proceed directly to slug derivation below.
+- If `REMAINING_ARGS` is empty, ask **one** open question: "What do you want to explore?" (free-text via Other field). Use the response as `TOPIC`.
 
-```
-AskUserQuestion:
-  question: "What kind of exploration do you want to do?"
-  header: "Explore mode"
-  multiSelect: true
-  options:
-    - label: "Open-ended ideation"
-      description: "Problem-seeking and idea generation — discover what's worth building"
-    - label: "Feature/idea validation"
-      description: "Validate a specific hypothesis with market research and competitive analysis"
-    - label: "Competitor deep-dive"
-      description: "Focused analysis of specific named competitors"
-    - label: "User problem discovery"
-      description: "JTBD-style research — surface jobs, pains, and gains from real sources"
-```
-
-If TOPIC is empty, ask for it. Derive SLUG (lowercase, hyphenated). Set:
+Derive `SLUG` (lowercase, hyphenated). Set:
 - `OUTPUT_PATH = .codevoyant/explore/{SLUG}/summary.md`
 - `SUB_DIR = .codevoyant/explore/{SLUG}/research/`
 
-Ask mode-specific scoping questions (all in one AskUserQuestion call):
+**Mode selection (no question):**
 
-- **Open-ended ideation**: "What space or user segment are you curious about? Any early hunches to stress-test?"
-- **Feature/idea validation**: "What is the hypothesis? Who is the target user? What would make this validation successful?"
-- **Competitor deep-dive**: "Name the competitors to analyze. Dimensions that matter most: pricing, features, positioning, or all?"
-- **User problem discovery**: "What job are users trying to get done? Which segments should be prioritized?"
+Infer `MODES` from the topic phrasing. Default to a sensible blend rather than asking:
 
-Present a one-paragraph scope summary and confirm before launching agents.
+- Topic mentions specific competitor names or "competitor analysis" → `MODES = ["Competitor deep-dive"]`
+- Topic mentions "hypothesis", "validate", "should we" → `MODES = ["Feature/idea validation"]`
+- Topic mentions "user job", "pain", "user research" → `MODES = ["User problem discovery"]`
+- Topic is open-ended ("pricing strategy", "growth ideas", "X space") → `MODES = ["Open-ended ideation", "Feature/idea validation"]`
+
+Do **not** ask the user to confirm mode selection. State the inferred modes briefly in the launch message ("Starting research on '{TOPIC}' — covering {MODES}.") and proceed. Any mode-specific scoping variables (`{HYPOTHESIS}`, `{TARGET_USER}`, `{NAMED_COMPETITORS}`, etc.) are derived from the topic text; if a variable is genuinely unknown, agents must research it rather than block on a clarifying question.
 
 ## Step 2: Launch parallel research agents
 
@@ -131,14 +119,8 @@ Read all sub-artifacts in `.codevoyant/explore/{SLUG}/research/`. Write a unifie
 - Use this research with `/pm prd {SLUG}` to draft a PRD
 ```
 
-## Step 4: Notify
+## Step 4: Completion Report
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm explore complete" \
-    --message "Research for '{TOPIC}' written to {OUTPUT_PATH}"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating research for `{TOPIC}` was written to `{OUTPUT_PATH}`.
 
 Report: "Research summary written to `{OUTPUT_PATH}`. Sub-artifacts in `.codevoyant/explore/{SLUG}/research/`. Use `/pm prd {SLUG}` or `/pm plan` to continue."

@@ -13,8 +13,7 @@ Review a spec plan for quality issues before running `/spec go`. Checks for ambi
 If `PLAN_NAME` not provided:
 
 ```bash
-npx @codevoyant/agent-kit plans migrate
-npx @codevoyant/agent-kit plans list --status Active
+grep "| Active |" .codevoyant/README.md 2>/dev/null || echo "No active plans"
 ```
 
 Sort by last updated; auto-select the most recently updated active plan. Report: "Reviewing plan: {plan-name}"

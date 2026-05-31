@@ -22,19 +22,22 @@ Create a single self-contained HTML wireframe or approach comparison. No build s
 
 Extract from arguments:
 
-- `EXPLORATION_NAME` = first non-flag argument. If absent, ask: "What are we exploring?"
+- `EXPLORATION_NAME` = the full `REMAINING_ARGS` string from the dispatcher (everything after the verb, minus flags). If `REMAINING_ARGS` is non-empty, use it directly — do not ask "what are we exploring?".
 - `EXPLORATION_SLUG` = slugified name (see `references/utils.md` for slug derivation)
 - `SLIDESHOW_MODE = true` if `--slideshow` is present
 - `BG_MODE = true` if `--bg` is present
 - `SILENT = true` if `--silent` is present
 
+If `REMAINING_ARGS` is empty, ask once: "What are we exploring?" and use the response as `EXPLORATION_NAME`.
+
 Output file: `{EXPLORATION_SLUG}.html` in current directory (or user-specified path).
 
 ## Step 1: Understand the Exploration
 
-Ask the user to scope the exploration. Adapt the question to the mode.
+**Scope inference (no question when args provided):**
 
-**Default mode:**
+- If `REMAINING_ARGS` from Step 0 is non-empty, infer scope from the text: phrasing like "compare", "vs", "alternatives" implies slideshow mode; phrasing like "flow", "checkout", "onboarding" with multiple screens implies multi-step; single concept like "dashboard" or "form" implies single screen. Set `SLIDESHOW_MODE`/multi-step mode accordingly and proceed.
+- If `REMAINING_ARGS` was empty (Step 0 had to ask) AND no `--slideshow` flag is set, ask one AskUserQuestion:
 
 ```
 AskUserQuestion:
@@ -117,8 +120,4 @@ Exploration written: {EXPLORATION_SLUG}.html
   Open: open {EXPLORATION_SLUG}.html
 ```
 
-If `BG_MODE=true` and `SILENT=false`, send a desktop notification (see `references/utils.md`):
-
-```bash
-npx @codevoyant/agent-kit notify --title "ux explore complete" --message "Exploration '{EXPLORATION_SLUG}' written"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating exploration `{EXPLORATION_SLUG}` was written.

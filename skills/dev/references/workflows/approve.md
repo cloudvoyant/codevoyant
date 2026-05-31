@@ -68,9 +68,9 @@ mkdir -p docs/architecture/
 cp "$PLAN_DIR/plan.md" "{COMMIT_PATH}"
 ```
 
-Update agent-kit status:
+Update plan status in `.codevoyant/README.md`:
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "{SLUG}" --status Approved
+sed -i '' "s/| {SLUG} | [A-Za-z]* |/| {SLUG} | Approved |/" .codevoyant/README.md
 ```
 
 Report: "Architecture doc promoted to `{COMMIT_PATH}`."
@@ -108,12 +108,6 @@ Wait for completion. Report sync results.
 
 ## Step 6: Notify
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "dev approve complete" \
-    --message "Architecture doc promoted to {COMMIT_PATH}"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the architecture doc was promoted to `{COMMIT_PATH}`.
 
 Report: "Done. Architecture doc is now at `{COMMIT_PATH}`."

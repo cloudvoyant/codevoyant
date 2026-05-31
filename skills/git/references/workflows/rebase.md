@@ -310,16 +310,9 @@ For each file this branch modified, compare the pre-rebase branch version agains
 
 **Check 3 — Format and lint:**
 
-Run formatters first (they auto-fix, so any changes get committed if the user later commits):
-```bash
-npx @codevoyant/agent-kit task-runner run format 2>/dev/null || true
-```
+Detect the project's task runner by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` scripts. Run formatters first (they auto-fix, so any changes get committed if the user later commits) using the discovered format recipe (e.g. `mise run format`, `just fmt`, `make format`, `pnpm run format`). Skip silently if no formatter recipe exists.
 
-Then run linters — **block push if they fail**:
-```bash
-npx @codevoyant/agent-kit task-runner run lint 2>/dev/null || \
-npx @codevoyant/agent-kit task-runner run check 2>/dev/null || true
-```
+Then run linters — **block push if they fail**. Run the discovered lint recipe (e.g. `mise run lint`, `just lint`, `pnpm run lint`, or `pnpm run check`). Skip silently if no lint recipe exists.
 
 If the formatter modified files: stage and amend them onto the last rebased commit:
 ```bash
@@ -330,9 +323,8 @@ fi
 ```
 
 **Check 4 — Run tests if available:**
-```bash
-npx @codevoyant/agent-kit task-runner run test 2>/dev/null || true
-```
+
+Run the discovered test recipe (e.g. `mise run test`, `just test`, `pnpm test`). Skip silently if no test recipe exists.
 
 If tests or linting fail: report errors and stop. Do not proceed to push.
 

@@ -14,9 +14,12 @@ If `docs/architecture/README.md` exists, read it — use as context so this plan
 
 ## Step 1: Gather Design Context
 
-If `PLAN_MODE` is unset, ask:
+**Objective resolution:**
 
-AskUserQuestion:
+- If `REMAINING_ARGS` (from the dispatcher) is non-empty, treat it as the design objective/scope. Skip the opening "what kind of plan is this?" and "what scope" questions.
+- If `REMAINING_ARGS` is empty AND `PLAN_MODE` is unset, ask one AskUserQuestion:
+
+  ```
   question: "What kind of plan is this?"
   header: "Plan mode"
   options:
@@ -24,14 +27,13 @@ AskUserQuestion:
       description: "System or component design — produces task breakdown with LOE and blocking relationships"
     - label: "Feature implementation (--mode feat)"
       description: "A specific feature within a known architecture — produces a design doc only"
+  ```
 
-Set `PLAN_MODE` from the answer before continuing.
+  Set `PLAN_MODE` from the answer before continuing, then ask for scope in free text.
 
-Ask:
+When args provided default `PLAN_MODE = arch` unless `--mode feat` is present, and infer scope (new feature, refactor, cross-cutting, greenfield) from the args text.
 
-1. "What scope are we designing?" — options: New feature | Refactor existing system | Cross-cutting concern (auth, logging, etc.) | Greenfield project
-2. "What do you know about the design already?" — free text; may be empty ("I need you to research and propose")
-3. "Confidence level?" — Already decided (document it) | Exploring options | Spike needed (too many unknowns)
+Only ask follow-up clarifications ("what do you know already", "confidence level") if the args are genuinely ambiguous; otherwise let Step 2 research agents discover the answers from the codebase.
 
 ## Step 2: Parallel Research
 
@@ -135,6 +137,8 @@ For each implementation task identified during design, write a self-contained en
   - {specific, verifiable condition checkable in under 5 minutes}
   - {another AC — e.g. unit test passes, endpoint returns expected shape, migration is idempotent}
 
+**Implementation guidance:** When a task body mentions build, test, lint, or format steps, instruct the implementer to first call `/tasks detect` and `/tasks list` to find the project's task runner recipes — then reference those recipe names rather than raw shell commands.
+
 Include a Mermaid dependency graph if there are blocking relationships:
 ```mermaid
 graph TD
@@ -148,11 +152,12 @@ graph TD
 Register the plan:
 
 ```bash
-npx @codevoyant/agent-kit plans register \
-  --name "{FEATURE_SLUG}" \
-  --plugin dev \
-  --description "{first line of Context section}" \
-  --total "{task count from Task Breakdown, or 0}"
+PLAN_DESCRIPTION="{first line of Context section}"
+grep -q "| {FEATURE_SLUG} |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | dev | %s | %s | %s |\n" \
+    "{FEATURE_SLUG}" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
+    >> .codevoyant/README.md
+echo "✓ Registered plan: {FEATURE_SLUG}"
 ```
 
 Report:
@@ -161,7 +166,4 @@ Plan written to .codevoyant/plans/{FEATURE_SLUG}/plan.md
 Run /dev approve to promote to docs/architecture/.
 ```
 
-If `BG_MODE=true` and `SILENT=false`:
-```bash
-npx @codevoyant/agent-kit notify --title "dev plan complete" --message "Architecture plan saved: .codevoyant/plans/{FEATURE_SLUG}/"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating the architecture plan was saved to `.codevoyant/plans/{FEATURE_SLUG}/`.

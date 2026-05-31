@@ -9,7 +9,6 @@ Write this structure to `.codevoyant/plans/{plan-name}/plan.md` when creating a 
 - **Branch**: {METADATA_BRANCH}
 - **Base Branch**: {METADATA_BASE_BRANCH}
 - **Worktree**: {METADATA_WORKTREE}
-- **Task Runners**: {METADATA_TASK_RUNNERS}
 - **Created**: {CREATED_TIMESTAMP}
 
 ## Introduction

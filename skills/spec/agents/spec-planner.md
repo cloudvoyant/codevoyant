@@ -18,13 +18,13 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 1. Search codebase for existing patterns relevant to the objective
 - [ ] 2. Load research context (explore artifacts or EXTERNAL_CONTEXT if provided)
 - [ ] 3. Confirm/clarify objective with user if needed
-- [ ] 4. Determine plan name; resolve collisions via npx @codevoyant/agent-kit plans resolve-name
+- [ ] 4. Determine plan name; resolve collisions via inline grep on .codevoyant/README.md
 - [ ] 5. Create plan directory structure (.codevoyant/plans/{name}/implementation/, /research/)
 - [ ] 6. Write plan.md — phases and one-liner tasks only; no detailed specs
 - [ ] 7. Write user-guide.md — required, blocks completion if missing
 - [ ] 8. Write implementation/phase-N.md for each phase (N ≥ 1); never create phase-0.md
 - [ ] 9. Verify all files exist and are non-empty (bash test -s checks)
-- [ ] 10. Register plan: npx @codevoyant/agent-kit plans register
+- [ ] 10. Register plan by appending row to .codevoyant/README.md
 - [ ] 11. Run validation loop (references/validation-loop.md, min 2 rounds, auto-fix)
 - [ ] 12. Present plan.md to user for review
 ```
@@ -51,8 +51,8 @@ You are thorough and opinionated. You write plans that are detailed enough to be
 - Step-by-step instructions per task
 - Exact file paths, not "relevant files"
 - Code examples for non-trivial logic
-- Task runner commands for validation after every task (format → lint → typecheck → test) using only `METADATA_TASK_RUNNERS` recipes — never invent shell commands
-- Every build/test/lint command MUST come from `METADATA_TASK_RUNNERS`
+- Task runner commands for validation after every task (format → lint → typecheck → test) discovered by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` — never invent shell commands
+- Every build/test/lint command MUST come from the project's task runner
 
 **User guide** — usage-focused:
 - What was built and how to use it
@@ -78,4 +78,4 @@ Produce:
 - `.codevoyant/plans/{plan-name}/plan.md`
 - `.codevoyant/plans/{plan-name}/user-guide.md`
 - `.codevoyant/plans/{plan-name}/implementation/phase-N.md` for each phase (1 through N)
-- Registry entry via `npx @codevoyant/agent-kit plans register`
+- Registry entry appended to `.codevoyant/README.md`

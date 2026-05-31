@@ -138,8 +138,4 @@ Style synthesis complete: {OUTPUT_DIR}
 To apply: copy theme.css into your project's app.css and adjust shadcn-svelte variables.
 ```
 
-If `BG_MODE=true` and `SILENT=false`, send a desktop notification (see `references/utils.md`):
-
-```bash
-npx @codevoyant/agent-kit notify --title "ux style-synthesize complete" --message "Style for {SOURCE_SLUG} synthesized to {OUTPUT_DIR}"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating the style for `{SOURCE_SLUG}` was synthesized to `{OUTPUT_DIR}`.

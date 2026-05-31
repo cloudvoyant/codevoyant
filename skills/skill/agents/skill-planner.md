@@ -22,8 +22,8 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 5. Write {PLAN_DIR}/files/proposed-skill.md — full SKILL.md draft
 - [ ] 6. Write {PLAN_DIR}/files/agents/{name}.md for each agent in the design
 - [ ] 7. Update {PLAN_DIR}/plan.md with links to all created files
-- [ ] 8. Register plan via npx @codevoyant/agent-kit plans register
-- [ ] 9. Notify via npx @codevoyant/agent-kit notify
+- [ ] 8. Register plan by appending row to .codevoyant/README.md
+- [ ] 9. Report completion to the user with a brief summary of what was done
 ```
 
 ## Substitution Variables
@@ -94,14 +94,15 @@ Append a "Plan Files" section to `{PLAN_DIR}/plan.md` listing every file created
 ### Step 8 — Register plan
 
 ```bash
-npx @codevoyant/agent-kit plans register --name "{SKILL_NAME}" --dir "{PLAN_DIR}" --plugin skill
+grep -q "| {SKILL_NAME} |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | skill | %s | %s | %s |\n" \
+    "{SKILL_NAME}" "Skill: {SKILL_NAME}" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
+    >> .codevoyant/README.md
 ```
 
-### Step 9 — Notify
+### Step 9 — Report completion
 
-```bash
-npx @codevoyant/agent-kit notify --title "Skill plan ready" --message "{SKILL_NAME} plan is ready for review at {PLAN_DIR}"
-```
+Report completion to the user with a brief summary of what was done — that the skill plan for `{SKILL_NAME}` is ready for review at `{PLAN_DIR}`.
 
 ## Critical Rules
 

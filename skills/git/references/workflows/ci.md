@@ -9,17 +9,30 @@ Monitor CI/CD workflows after a push. Always runs in the background — you'll b
 
 ## Step 1: Detect CI Provider
 
+Detect the CI provider by inspecting the git remote and project files:
+
 ```bash
-npx @codevoyant/agent-kit ci detect
+REMOTE_URL=$(git config --get remote.origin.url 2>/dev/null)
+if [ -d ".github/workflows" ] || echo "$REMOTE_URL" | grep -q "github.com"; then
+  PROVIDER="github"
+elif [ -f ".gitlab-ci.yml" ] || echo "$REMOTE_URL" | grep -q "gitlab.com"; then
+  PROVIDER="gitlab"
+else
+  PROVIDER="unknown"
+fi
 ```
 
-Store `provider` (github | gitlab | unknown) and `remote` from the JSON output.
+Store `PROVIDER` (github | gitlab | unknown) and `REMOTE_URL`.
 
-If `provider` is `unknown`: inform the user "No CI provider could be detected. Only Github Actions and Gitlab CI are supported at this time." Exit.
+If `PROVIDER` is `unknown`: inform the user "No CI provider could be detected. Only Github Actions and Gitlab CI are supported at this time." Exit.
 
 ## Step 2: Get Recent Runs
 
-Get the current branch: `npx @codevoyant/agent-kit git branch`
+Get the current branch:
+
+```bash
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+```
 
 **GitHub Actions:**
 
@@ -51,11 +64,7 @@ Agent:
     On failure: fetch logs (gh run view <id> --log-failed / glab ci trace <job>).
     If AUTOFIX={AUTOFIX}: fix errors, commit, push --force-with-lease, re-monitor (max 2 attempts).
 
-    When done:
-    npx @codevoyant/agent-kit notify \
-      --title "Claude Code — CI" \
-      --message "{branch}: all checks passed | CI failed: {job}" \
-      {if SILENT: --silent}
+    When done, report completion to the user with a brief summary: branch checks status (all passed or which job failed). Skip the report if SILENT=true.
 ```
 
 Report immediately:
@@ -78,6 +87,6 @@ Report immediately:
 
 ## Error Handling
 
-- **CLI not installed:** should not happen, `npx @codevoyant/agent-kit ci detect` returning unknown for `provider` in its response
+- **CLI not installed:** detection in Step 1 returned `unknown` for `PROVIDER`
 - **Not authenticated:** prompt to run `gh auth login` / `glab auth login`
 - **Autofix loop guard:** stop after 2 attempts and report remaining errors

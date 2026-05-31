@@ -50,97 +50,52 @@ Found existing plans: {list}
 -> This will create a NEW plan ({SLUG}). If you meant to update an existing one, say "update {slug}" instead.
 ```
 
-## Step 2: Gather Planning Context
+## Step 2: Gather Planning Context (minimize questions)
 
-AskUserQuestion:
-```
-question: "What are we planning?"
-header: "Scope"
-options:
-  - label: "Single project (epic, 1-2 weeks)"
-    description: "One bounded deliverable -- becomes a Linear Project"
-  - label: "Initiative (multiple projects, possibly multiple teams)"
-    description: "Larger goal spanning several epics -- becomes a Linear Initiative"
-  - label: "Pull from Linear"
-    description: "Fetch an existing Linear project or initiative to plan from"
-```
+**Scope inference (no question by default):**
 
-If "Pull from Linear": ask for the URL or ID, then fetch using the appropriate MCP call based on the input:
-- Issue URL or ID (e.g. `ENG-42`, contains `/issue/`): `mcp__linear-server__get_issue`
-- Project URL (contains `/project/`): `mcp__linear-server__get_project`
-- Initiative URL (contains `/initiative/`): `mcp__linear-server__get_initiative`
+- If args contain a Linear URL or issue ID, set `SOURCE_ID` and fetch using the appropriate MCP call:
+  - Issue URL or ID (e.g. `ENG-42`, contains `/issue/`): `mcp__linear-server__get_issue`
+  - Project URL (contains `/project/`): `mcp__linear-server__get_project`
+  - Initiative URL (contains `/initiative/`): `mcp__linear-server__get_initiative`
+  - Store fetched title, description, and status as `SOURCE_CONTEXT`.
+- If args contain a free-text scope description, use it directly as the planning objective.
+- Only if args are empty AND no source is set, ask **one** AskUserQuestion: "What are we planning?" with options "Single project" / "Initiative" / "Pull from Linear (provide URL)".
 
-Store the fetched title, description, and status as `SOURCE_CONTEXT`.
+**Team selection (auto-select when possible):**
 
-Second question -- team context:
-```
-question: "Which team owns this?"
-header: "Team"
-```
-Fetch teams: `mcp__linear-server__list_teams`. Present as options. Store as `TEAM_ID`, `TEAM_NAME`.
+Fetch teams via `mcp__linear-server__list_teams`.
+- If exactly one team exists, auto-select it. Report: `✓ Team auto-selected: {TEAM_NAME}` and proceed.
+- If multiple teams, ask one AskUserQuestion: "Which team owns this?" presenting teams as options.
+
+Store as `TEAM_ID`, `TEAM_NAME`.
 
 ## Step 2.5: Fetch Requirements Context (if URL/ID provided)
 
 - `mcp__linear-server__get_issue` or `mcp__linear-server__get_project`
 - Store title, description, labels -> `SOURCE_CONTEXT`
 
-## Step 2.6: Timeline, Scope, and Resources
+## Step 2.6: Default Constraints (no question)
 
-Before gathering requirements, understand the constraints that will shape what can realistically be planned.
+Do **not** ask for timeline, team size, or constraints up-front. Use these defaults:
 
-AskUserQuestion:
-```
-question: "What constraints does this project have?"
-header: "Capacity"
-questions:
-  - question: "When does work start, and what is the target completion date?"
-    header: "Dates"
-    freeform: true
-    placeholder: "e.g. Start 2026-03-24, target 2026-05-01 — or 'no hard deadline'"
-  - question: "How many engineers are available for this work?"
-    header: "Team size"
-    options:
-      - label: "1 engineer"
-      - label: "2–3 engineers"
-      - label: "4+ engineers"
-      - label: "Not yet determined"
-  - question: "Are there hard deadlines, external dependencies, or technical restrictions?"
-    header: "Constraints"
-    freeform: true
-    placeholder: "e.g. Must ship before Q2 board review; blocked on X team releasing Y; must use existing auth stack"
-```
+- `START_DATE = today`
+- `END_DATE = unset` (derived from estimates in Step 5.5)
+- `TEAM_SIZE = 1` (sensible default; can be raised by user later via `/spec update` if explicit team capacity is provided in args)
+- `CONSTRAINTS = "(none captured — surface via scope confirmation in Step 6)"`
 
-Parse the dates answer into `START_DATE` (ISO) and `END_DATE` (ISO). If the user gave a range, compute `CALENDAR_DAYS`. Store all as `TIMELINE`, `TEAM_SIZE`, `CONSTRAINTS`.
+Set `AVAILABLE_ENGINEER_DAYS = "(derived from estimates)"`. Capacity-versus-utilization warnings still fire in Step 5.5 once estimates exist; the 70% rule is applied there.
 
-Derive `AVAILABLE_ENGINEER_DAYS = TEAM_SIZE × CALENDAR_DAYS × 0.7` (70% rule — 30% reserved for interrupts, bug fixes, and scope discovery). Surface this immediately:
+If the user wants to add hard dates, capacity, or constraints later, they will do so during the Step 6 scope confirmation loop.
 
-```
-📅 Timeline: {START_DATE} → {END_DATE} ({CALENDAR_DAYS} calendar days)
-👷 Capacity: {TEAM_SIZE} engineer(s) × {CALENDAR_DAYS} days × 70% = ~{AVAILABLE_ENGINEER_DAYS} engineer-days available
-```
-
-If no dates given, note: "No dates set — timeline will be derived from estimates in Step 5.5."
-
-## Step 3: Define Requirements
+## Step 3: Define Requirements (no design status question)
 
 Gather:
 - Functional requirements (what the system must do)
 - Non-functional requirements (performance, security, scale)
 - Acceptance criteria (how we know it's done)
-- Design/SA status: already decided (describe it) | deferred (note what needs deciding)
 
-AskUserQuestion after user describes the project:
-```
-question: "Is design/architecture already decided?"
-header: "Design status"
-options:
-  - label: "Yes -- I'll describe the high-level design"
-    description: "No code yet, but architecture is known"
-  - label: "Deferred -- needs a design milestone"
-    description: "Design work is part of this plan"
-  - label: "Simple -- no design needed"
-    description: "Straightforward task, no architecture decision"
-```
+Do **not** ask "is design/architecture already decided?". Default to **design TBD** — discover it during planning via Step 3.5 research and the codebase scan (Step 4 Agent R1). If research and codebase signals indicate a clear existing pattern, the planner adopts it; otherwise a design milestone is added automatically.
 
 ## Step 3.6: Scope Coverage Reconciliation (if source is a roadmap or initiative)
 
@@ -185,27 +140,7 @@ Check for existing research:
 
 **If relevant research found:** load it as `PRIOR_RESEARCH` and skip this step.
 
-**If no research found:** tell the user "No prior exploration found — I'll run lightweight research to ground the architecture before planning."
-
-Ask one round of architecture clarifying questions:
-
-AskUserQuestion:
-```
-question: "A few quick questions before I start planning."
-header: "Architecture"
-questions:
-  - question: "Is there an existing architectural pattern in this codebase to follow?"
-    header: "Architecture"
-    options:
-      - label: "Yes — I'll describe it"
-      - label: "No — it's greenfield in this area"
-      - label: "Unsure — check the codebase"
-  - question: "Are there known libraries or tools you want to use or avoid?"
-    header: "Tech constraints"
-    options:
-      - label: "Yes — I'll describe them"
-      - label: "No constraints"
-```
+**If no research found:** tell the user "No prior exploration found — running lightweight architecture research." Do not ask architecture or tech-constraint questions — the agent decides based on codebase context.
 
 Launch 2 Sonnet agents in parallel (`run_in_background: false`, `model: claude-sonnet-4-6`):
 
@@ -238,9 +173,9 @@ Proceed to Step 4 with PRIOR_RESEARCH set.
 
 Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
-**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/em/references/research-standards.md`.
 
-**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Linear Context` section. Each finding must follow the format in `skills/shared/references/research-standards.md`.
+**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Linear Context` section. Each finding must follow the format in `skills/em/references/research-standards.md`.
 
 Wait for both. Synthesize: flag anything that already exists or overlaps with active projects.
 
@@ -315,6 +250,8 @@ Generate the three milestone files inline:
 
 Each task file uses the template at `references/task-template.md`. Requirements and ACs must be spelled out per task. Design/SA must be specified or explicitly marked deferred.
 
+**Implementation guidance for `develop.md` tasks:** When a task includes build, test, lint, or format commands, the executing agent MUST call `/tasks detect` to identify the project's task runner and `/tasks list` to discover available recipes — and reference those recipe names in the task body. Never write raw `tsc`, `vitest`, `eslint`, etc. when a task wraps them.
+
 After generating the task files, proceed to Step 5.5 before writing the Gantt or project-breakdown-proposal.
 
 ## Step 5.5: Parallel Milestone Estimation
@@ -364,14 +301,14 @@ If the plan has inter-milestone dependencies or a timeline, include a **Mermaid 
 - Sequence diagram for plans involving multiple system interactions
 - Flowchart for plans with branching decision logic
 
-Register the plan with agent-kit:
+Register the plan in `.codevoyant/README.md`:
 
 ```bash
-npx @codevoyant/agent-kit plans register \
-  --name "{SLUG}" \
-  --plugin em \
-  --description "{OBJECTIVE first line}" \
-  --total "{total task count from all milestone files}"
+PLAN_DESCRIPTION="{OBJECTIVE first line}"
+grep -q "| {SLUG} |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | em | %s | %s | %s |\n" \
+    "{SLUG}" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
+    >> .codevoyant/README.md
 ```
 
 Report: `✓ Plan registered: {SLUG}`
@@ -400,7 +337,7 @@ question: "Does this plan cover everything?"
 header: "Plan Review"
 options:
   - label: "Looks good — done"
-    description: "Save the plan to .codevoyant/plans/{slug}/ and register with agent-kit"
+    description: "Save the plan to .codevoyant/plans/{slug}/ and register in .codevoyant/README.md"
   - label: "Adjust scope"
     description: "Change what's in the plan before saving"
 ```
@@ -409,8 +346,4 @@ Loop on adjustments until "Looks good — done".
 
 ## Step 7: Notification
 
-If `BG_MODE`:
-
-```bash
-npx @codevoyant/agent-kit notify --title "em:plan complete" --message "Plan '{slug}' saved to .codevoyant/plans/{slug}/. Run /em approve to promote."
-```
+If `BG_MODE`, report completion to the user with a brief summary stating that plan `{slug}` was saved to `.codevoyant/plans/{slug}/` and instructing them to run `/em approve` to promote it.

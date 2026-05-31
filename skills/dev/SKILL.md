@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 Developer skill dispatcher.
 
+## Inline Usage
+
+Pass your intent directly on the invocation line — `explore` and `plan` proceed immediately with no opening question when a description is provided.
+
+```
+/dev explore how the auth middleware works
+/dev plan auth system --mode arch
+/dev pr staging
+```
+
 ## Critical Rules
 
 - **Never execute workflow logic here** — this file only parses args and dispatches

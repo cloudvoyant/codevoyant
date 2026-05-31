@@ -3,7 +3,6 @@ name: git
 description: 'Git version control workflows: create conventional commits with CI monitoring, check CI/CD pipeline status, or run interactive rebase. Triggers on: "git commit", "git ci", "git rebase", "git help", "create a commit", "conventional commit", "commit my changes", "check CI", "monitor CI", "did CI pass", "watch pipeline", "CI status", "interactive rebase", "squash commits".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-disable-model-invocation: true
 ---
 
 # git

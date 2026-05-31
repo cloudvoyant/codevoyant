@@ -14,38 +14,73 @@ hero:
       text: Get Started
       link: /installation
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/cloudvoyant/codevoyant
+      text: User Guide
+      link: /user-guide
 
 features:
   - icon:
       src: /icons/spec.svg
-    title: Spec
+    title: spec
     details: Adaptive, deterministic, and controllable spec-driven development.
     link: /skills/spec
   - icon:
       src: /icons/dev.svg
-    title: Dev
+    title: dev
     details: Architecture planning, technical exploration, repo comparison, docs generation, and PR review.
     link: /skills/dev
   - icon:
       src: /icons/em.svg
-    title: EM · Experimental
+    title: em · experimental
     details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.
     link: /skills/em
   - icon:
       src: /icons/pm.svg
-    title: PM · Experimental
+    title: pm · experimental
     details: Product roadmaps, per-feature PRDs, prioritization review, and product documentation generation.
     link: /skills/pm
   - icon:
       src: /icons/ux.svg
-    title: UX · Experimental
+    title: ux · experimental
     details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
     link: /skills/ux
   - icon:
-      src: /icons/utils.svg
-    title: Git
+      src: /icons/git.svg
+    title: git
     details: Conventional commits, CI monitoring, and safe interactive rebase.
     link: /skills/git
+  - icon:
+      src: /icons/tasks.svg
+    title: tasks
+    details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
+    link: /skills/tasks
+  - icon:
+      src: /icons/docker.svg
+    title: docker
+    details: Multi-stage builds, Docker Compose, cross-platform networking, and GCP registry integration.
+    link: /skills/docker
+  - icon:
+      src: /icons/gcp.svg
+    title: gcp
+    details: Artifact Registry, Cloud Run deploy, gcloud auth, and service account patterns.
+    link: /skills/gcp
+  - icon:
+      src: /icons/mise.svg
+    title: mise
+    details: mise.toml authoring, task naming conventions, and language-specific setup recipes.
+    link: /skills/mise
+  - icon:
+      src: /icons/terraform.svg
+    title: terraform
+    details: Directory structure, backend config, workspace-per-environment, and variable management for GCP and AWS.
+    link: /skills/terraform
+  - icon:
+      src: /icons/sveltekit.svg
+    title: sveltekit
+    details: Feature-slice architecture, composable components, shadcn-svelte, a11y, and form patterns.
+    link: /skills/sveltekit
+  - icon:
+      src: /icons/typescript.svg
+    title: typescript
+    details: Type-safe patterns — unknown catch, library types, and Zod generic bounds.
+    link: /skills/typescript
 ---

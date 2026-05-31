@@ -1,5 +1,5 @@
 ---
-description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill update", "skill critique", "skill help", "skill create", "skill improve", "skill review", "explore skills", "create a skill", "make a skill for", "update skill", "improve skill", "critique skill", "review skill quality". Pass a subcommand as the first argument.'
+description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "explore skills", "create a skill", "make a skill for", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue". Pass a subcommand as the first argument.'
 name: skill
 disable-model-invocation: true
 license: MIT
@@ -13,6 +13,16 @@ argument-hint: '[verb] [args...]'
 
 ```bash
 command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
+```
+
+## Inline Usage
+
+Pass your intent directly on the invocation line — `new` and `explore` proceed immediately with no opening question when a description is provided.
+
+```
+/skill new add a /summarize command that condenses long files
+/skill explore linear integration
+/skill update linear-push
 ```
 
 ## Critical Rules
@@ -51,4 +61,5 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **new** (`references/workflows/new.md`) — create a new Claude Code compatible skill
 - **update** (`references/workflows/update.md`) — update or improve an existing skill
 - **critique** (`references/workflows/critique.md`) — evaluate skill quality across 5 dimensions
+- **feedback** (`references/workflows/feedback.md`) — open a GitHub or GitLab issue to report a skill problem
 - **help** (`references/workflows/help.md`) — print command reference

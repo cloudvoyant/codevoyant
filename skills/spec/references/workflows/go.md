@@ -14,8 +14,7 @@ Execute the plan in the background using an autonomous agent. The agent works th
 If `PLAN_NAME` not provided:
 
 1. ```bash
-   npx @codevoyant/agent-kit plans migrate
-   npx @codevoyant/agent-kit plans list --status Active
+   grep "| Active |" .codevoyant/README.md 2>/dev/null || echo "No active plans"
    ```
 2. Sort by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
@@ -67,7 +66,7 @@ options:
 Create or clear `.codevoyant/plans/{plan-name}/execution-log.md` with initial state (Status: RUNNING, timestamp, plan objective).
 
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Executing
+sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Executing |/" .codevoyant/README.md
 ```
 
 ## Step 6: Launch Background Agent
@@ -84,13 +83,7 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 4. If phase failed: stop loop, send failure notification, report to user
 5. If phase succeeded: continue to Phase N+1
 
-After loop completes, send desktop notification unless `SILENT=true`:
-
-```bash
-npx @codevoyant/agent-kit notify \
-  --title "Claude Code — Spec" \
-  --message "{Plan '{plan-name}' complete | Plan '{plan-name}' stopped at Phase {N}}"
-```
+After loop completes, unless `SILENT=true`, report completion to the user with a brief summary stating either that plan `{plan-name}` is complete, or that plan `{plan-name}` stopped at Phase `{N}`.
 
 ## Step 7: Confirm Launch
 

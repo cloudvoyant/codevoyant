@@ -39,12 +39,10 @@ The checklist provides:
 - [x] 2. Validate implementation/phase-2.md exists and is non-empty
 - [x] 3. Read full phase-2.md implementation spec
 - [ ] 4. Execute each task in order — implement, then mark [x] in plan.md immediately
-- [ ] 5. After each task: update registry progress via npx @codevoyant/agent-kit
-- [ ] 6. Run hygiene after every task: format → lint → typecheck → tests
-- [ ] 7. Run full test suite at phase boundary
-- [ ] 8. Mark phase header ✅ in plan.md
-- [ ] 9. Update registry status
-- [ ] 10. Write phase summary to execution-log.md
+- [ ] 5. Run hygiene after every task: format → lint → typecheck → tests
+- [ ] 6. Run full test suite at phase boundary
+- [ ] 7. Mark phase header ✅ in plan.md
+- [ ] 8. Write phase summary to execution-log.md
 ```
 
 ## Checklist Lengths by Agent

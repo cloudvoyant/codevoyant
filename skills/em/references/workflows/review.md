@@ -160,10 +160,6 @@ AskUserQuestion:
     - label: "Re-run em plan with adjustments"
 ```
 
-## Step 5: Notification
+## Step 5: Completion Report
 
-If `--silent` is not set, send a desktop notification:
-
-```bash
-npx @codevoyant/agent-kit notify --title "em:review complete" --message "Review complete for '{SLUG}': {N} blocking, {N} concerns"
-```
+If `--silent` is not set, report completion to the user with a brief summary stating the review for `{SLUG}` is complete and the counts of blocking issues and concerns found.

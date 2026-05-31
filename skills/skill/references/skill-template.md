@@ -117,9 +117,8 @@ Or for templated content:
 
 ```markdown
 \`\`\`bash
-npx @codevoyant/agent-kit scaffold write \
- --template {template-name} \
- --output {destination-path}
+# Generate templated content inline — read template file and substitute placeholders, then write to destination
+cat {template-path} | sed "s/{{PLACEHOLDER}}/{value}/g" > {destination-path}
 \`\`\`
 ```
 
@@ -129,7 +128,8 @@ npx @codevoyant/agent-kit scaffold write \
 ## Step N: {Action title}
 
 \`\`\`bash
-npx @codevoyant/agent-kit {subcommand} --flag value
+# Use the smallest direct command that achieves the task — prefer git, gh, glab, jq, grep, sed
+{direct-command-here}
 \`\`\`
 
 {One sentence describing what to do with the output.}

@@ -99,12 +99,6 @@ AskUserQuestion:
     - label: "Done for now"
 ```
 
-## Step 6: Notify
+## Step 6: Completion Report
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm review complete" \
-    --message "Review complete for {filename}: {N} critical, {N} informational"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the review for `{filename}` is complete and the counts of critical and informational issues found.

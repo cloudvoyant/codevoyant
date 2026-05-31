@@ -11,7 +11,7 @@ Received from dispatcher:
 
 - Never write skill files until user accepts the plan
 - Step 0 is always bash argument parsing
-- Steps prefer `npx @codevoyant/agent-kit` operations over ad-hoc shell
+- Steps prefer direct, narrow shell commands (git, gh, glab, jq, grep, sed) — no wrapper CLIs
 - No markdown tables in skill output — use definition lists, bullets, or Mermaid
 - Skills that are technology-specific must include a reference doc index in `references/`
 - Every skill ships with `LICENSE.md` (MIT)
@@ -23,92 +23,29 @@ If `--research` path provided, read that file as RESEARCH_CONTEXT.
 
 Otherwise check `.codevoyant/explore/` for recent explore artifacts relevant to SKILL_NAME. If found, offer to use them. Store as RESEARCH_CONTEXT (may be empty).
 
-## Step 2: High-level confirmation
+## Step 2: Skill spec (single question max)
 
-Present a one-paragraph summary of the skill being proposed, derived from SKILL_NAME + RESEARCH_CONTEXT.
+Skip the "does this match what you want to build?" design-check question — proceed directly to spec-gather.
 
-```
-AskUserQuestion:
-  question: "Does this match what you want to build? Any deviations before we plan?"
-  header: "Skill overview"
-  options:
-    - label: "Looks right — proceed to planning"
-    - label: "I have corrections (describe them)"
-```
+**Spec resolution:**
 
-If corrections, apply and re-confirm once.
+- If `REMAINING_ARGS` contains a description of the skill (≥5 words explaining the command and behavior), use it directly as `SKILL_DESCRIPTION`. Do not ask.
+- Otherwise, ask **one** open question: "Describe the skill — what command does it add and what does it do?" (free-text via Other field).
 
-## Step 3: Gather skill spec
+Derive `SKILL_SPEC` programmatically from `SKILL_DESCRIPTION` + `SKILL_NAME` + `RESEARCH_CONTEXT`:
 
-Ask the following if not already known from context:
+- **Agents:** infer from description verbs (research/analyze → agents likely; format/lint → no agents).
+- **Tech scope:** infer from named technologies in the description; if a framework/tool is named, tech-specific.
+- **Knowledge work:** infer — if the output is docs/research/plans, mark knowledge; if code/config edits, not knowledge.
+- **Destination:** default to `skills/` (public, top-level). Override only if the user's args explicitly say `--private` or specify a path.
 
-```
-AskUserQuestion:
-  questions:
-    - question: "What agents should this skill create?"
-      header: "Agents"
-      options:
-        - label: "No agents — runs inline"
-        - label: "Single agent"
-        - label: "Multiple parallel agents"
-    - question: "Is this skill technology-specific?"
-      header: "Tech scope"
-      options:
-        - label: "Yes — needs reference doc index (e.g. SvelteKit, Terraform, Firebase)"
-        - label: "No — general purpose"
-    - question: "Is this knowledge work?"
-      header: "Knowledge"
-      options:
-        - label: "Yes — produces docs, research, or planning artifacts"
-        - label: "No — produces code, config, or file changes"
-    - question: "Where should the skill live?"
-      header: "Destination"
-      options:
-        - label: "skills/ (public, top-level)"
-        - label: ".claude/skills/ (private, this repo only)"
-        - label: "Other (specify below)"
-```
+Store all derived values as `SKILL_SPEC`.
 
-Store all answers as SKILL_SPEC.
+## Step 3: Resource list (no design-check)
 
-## Step 3.5: Confirm design direction
+Do not ask "does this match your intended design?". Proceed.
 
-Based on SKILL_SPEC and RESEARCH_CONTEXT, synthesise a short design summary covering:
-
-- What the skill does and its primary output
-- How many steps and roughly what each does
-- Which agents are involved, what each one does, and what artifacts they produce
-- How skill, templates, and agents hand off to each other
-
-If the user provided enough detail to be confident, present this as your understanding and ask for confirmation:
-
-```
-AskUserQuestion:
-  question: "Does this match your intended design?"
-  header: "Design check"
-  options:
-    - label: "Yes — looks right"
-    - label: "No — I want something different (describe below)"
-```
-
-If the user provided minimal detail, present it as a best-guess proposal instead ("Here's what I'm thinking — does this sound right?") and ask the same question.
-
-If user wants changes, apply them and re-confirm once before continuing.
-
----
-
-If SKILL_SPEC indicates tech-specific or knowledge work, also ask:
-
-```
-AskUserQuestion:
-  question: "Are there specific resources, docs, or URLs you want the skill to consult?"
-  header: "Resources"
-  options:
-    - label: "Yes — I'll list them below"
-    - label: "No — use whatever is relevant"
-```
-
-If yes, wait for the user to provide the list. Store as RESOURCE_LIST.
+If `SKILL_SPEC` indicates tech-specific or knowledge work and the description references specific docs/URLs, extract them into `RESOURCE_LIST`. Do not ask the user — if no resources are evident in the description, set `RESOURCE_LIST = []` and let agents pick relevant sources during planning.
 
 ## Step 4: Plan the skill
 
@@ -134,7 +71,7 @@ Read all artifacts in `.codevoyant/plans/{skill-slug}/research/` and use them as
 
 Substitute into `agents/skill-planner.md`:
 - `{SKILL_NAME}` — the skill slug
-- `{SKILL_SPEC}` — summary of answers from Steps 3 and 3.5
+- `{SKILL_SPEC}` — summary of derived spec from Step 2 (description) + Step 3 (resource list)
 - `{RESEARCH_CONTEXT}` — RESEARCH_CONTEXT (may be empty)
 - `{RESOURCE_ARTIFACTS_DIR}` — `.codevoyant/plans/{skill-slug}/research/` (may be empty)
 - `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}/`
@@ -171,7 +108,7 @@ Only after plan accepted:
 - Skill Requirements section (bash checks for deps)
 - Critical Rules (terse, ≤8 bullets; reference `references/` for detail)
 - Step 0: bash argument parsing (always first)
-- Steps: terse recipe steps; prefer `npx @codevoyant/agent-kit`
+- Steps: terse recipe steps; prefer direct narrow commands (git/gh/glab/jq/grep/sed)
 - If technology-specific: Agent Index section listing reference docs
 
 **b. Create `references/{necessary templates}.md`** if tech-specific

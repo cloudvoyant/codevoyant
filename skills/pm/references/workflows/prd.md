@@ -221,19 +221,12 @@ Report what was auto-fixed and any remaining issues requiring user attention.
 ## Step 5: Register + Notify
 
 ```bash
-npx @codevoyant/agent-kit plans register \
-  --name "{SLUG}-prd" \
-  --plugin pm \
-  --description "PRD: {FEATURE}" \
-  --total "0"
+grep -q "| {SLUG}-prd |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | pm | %s | %s | %s |\n" \
+    "{SLUG}-prd" "PRD: {FEATURE}" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
+    >> .codevoyant/README.md
 ```
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm prd complete" \
-    --message "PRD draft for '{FEATURE}' written to {OUTPUT_PATH}. Run /pm approve to commit."
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the PRD draft for `{FEATURE}` was written to `{OUTPUT_PATH}` and instructing them to run `/pm approve` to commit.
 
 Report: "PRD draft written to `{OUTPUT_PATH}`. Run `/pm approve` to commit to `docs/prd/{SLUG}/`."

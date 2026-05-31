@@ -17,7 +17,7 @@ Received from dispatcher:
 Check if a skill plan is currently active:
 
 ```bash
-npx @codevoyant/agent-kit plans list --status Active --plugin skill 2>/dev/null
+grep "| Active |" .codevoyant/README.md 2>/dev/null | grep "| skill |" || echo "No active skill plans"
 ```
 
 If one active plan found → offer to update it.

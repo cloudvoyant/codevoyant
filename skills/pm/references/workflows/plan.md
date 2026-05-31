@@ -12,78 +12,41 @@
 - Do not generate a roadmap from strategic intent alone — always check `.codevoyant/explore/` for available research context before drafting
 - Capabilities without any research backing must be placed in Tier 3 (Future) and flagged
 
-## Step 1: Gather context
+## Step 1: Gather context (minimize questions)
 
-Before asking, scan for available research:
+Scan for available research:
 
 ```bash
 ls .codevoyant/explore/ 2>/dev/null | head -20
 ```
 
-Store discovered directory names as EXPLORE_DIRS. If none found, set EXPLORE_DIRS="(none)".
+Store discovered directory names as `EXPLORE_DIRS`. If none found, set `EXPLORE_DIRS="(none)"`.
 
-Ask:
+**Strategic goal resolution:**
+- If args (from dispatcher `REMAINING_ARGS`) contain a strategic goal description (≥5 words), use it directly as `STRATEGIC_GOAL`. Do not ask.
+- Otherwise ask **one** open question: "What is the strategic goal for this roadmap?" (free-text via Other).
 
-```
-AskUserQuestion:
-  questions:
-    - question: "What time horizon is this roadmap for?"
-      header: "Horizon"
-      options:
-        - label: "Quarter (3 months)"
-        - label: "Half-year (6 months)"
-        - label: "Annual (12 months)"
-    - question: "Is there research context to pull in?"
-      header: "Research"
-      options:
-        - label: "Yes — use .codevoyant/explore/ (found: {EXPLORE_DIRS})"
-        - label: "No — start from scratch"
-    - question: "What is the primary strategic goal for this period?"
-      header: "Goal"
-      options:
-        - label: "I'll describe below"
-        - label: "Pull from existing product docs"
-```
+**Horizon inference (no question):**
+Infer from `STRATEGIC_GOAL` text — phrases like "this quarter" → quarter; "this half" → half-year; "this year" → annual. Default to **half-year** if not specified.
 
-If using research: list dirs in `.codevoyant/explore/` and ask which to include. Read `summary.md` and all files under `research/` in selected dirs as RESEARCH_CONTEXT.
+**Research context (no question):**
+If `EXPLORE_DIRS` is non-empty, automatically load `summary.md` and all `research/` files from every exploration directory as `RESEARCH_CONTEXT`. If `EXPLORE_DIRS="(none)"`, set `RESEARCH_CONTEXT=""`. Do not ask the user which to include.
 
 ## Step 1.5: Research backfill (if no research artifacts)
 
-After the user selects "Yes — use .codevoyant/explore/", check if that directory actually has content.
+**If `RESEARCH_CONTEXT` is non-empty:** skip this step.
 
-**If research artifacts exist:** load selected ones as RESEARCH_CONTEXT and skip this step.
+**If no research exists:**
 
-**If no research exists (or user selected "No — start from scratch"):**
-
-Tell the user: "No research context found — I'll run a quick web search to ground the roadmap."
-
-Ask one round of clarifying questions:
-
-```
-AskUserQuestion:
-  questions:
-    - question: "What product category or market is this roadmap for?"
-      header: "Market"
-      options:
-        - label: "I'll describe below"
-    - question: "Who are your top 2–3 known competitors (or 'unknown')?"
-      header: "Competitors"
-      options:
-        - label: "I'll list below"
-        - label: "Unknown — research it"
-    - question: "What is the biggest user problem you're solving this period?"
-      header: "Core problem"
-      options:
-        - label: "I'll describe below"
-```
+Tell the user: "No research context found — running lightweight web search to ground the roadmap." Do not ask for market/competitors/core-problem clarifications — the agents infer from `STRATEGIC_GOAL` and codebase context.
 
 Launch 3 Sonnet agents in parallel (run_in_background: false, model: claude-sonnet-4-6):
 
 **Agent A — Market signals:**
-Prompt: Search for market trends and user needs in "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} market trends {year}"), WebSearch("{PRODUCT_CATEGORY} user needs"), WebSearch("{PRODUCT_CATEGORY} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/{SLUG}/research/market.md` with citations and Tier labels.
+Prompt: Derive a product category from "{STRATEGIC_GOAL}" (one-to-three-word category like "B2B SaaS analytics" or "consumer fintech"). Search for market trends and user needs in that category. Run WebSearch("{category} market trends {year}"), WebSearch("{category} user needs"), WebSearch("{category} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/{SLUG}/research/market.md` with citations and Tier labels.
 
 **Agent B — Competitive landscape:**
-Prompt: Research competitors for "{PRODUCT_CATEGORY}". Run WebSearch("{PRODUCT_CATEGORY} competitors"), WebSearch("{COMPETITOR_LIST} product updates {year}"), WebSearch("{PRODUCT_CATEGORY} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/explore/{SLUG}/research/competitive.md`. Include each competitor's recent moves and strategic direction.
+Prompt: Derive product category and likely competitors from "{STRATEGIC_GOAL}" — research competitors yourself rather than expecting a list. Run WebSearch("{category} competitors"), WebSearch("{category} top players {year}"), WebSearch("{category} product launches"). Fetch 2 relevant URLs. Write findings to `.codevoyant/explore/{SLUG}/research/competitive.md`. Include each competitor's recent moves and strategic direction.
 
 **Agent C — Internal prior art:**
 Prompt: Scan this repository for product context: read all files in docs/product/ and docs/prd/, read any .codevoyant/roadmaps/ files, note existing strategic goals, past PRDs, known user problems. Write a summary to `.codevoyant/explore/{SLUG}/research/internal.md`.
@@ -142,21 +105,15 @@ After acceptance, run `/pm review` on the draft to catch quality issues automati
 Register the roadmap draft:
 
 ```bash
-npx @codevoyant/agent-kit plans register \
-  --name "{DATE}-{TYPE}" \
-  --plugin pm \
-  --description "{strategic goal first line}" \
-  --total "0"
+PLAN_DESCRIPTION="{strategic goal first line}"
+grep -q "| {DATE}-{TYPE} |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | pm | %s | %s | %s |\n" \
+    "{DATE}-{TYPE}" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
+    >> .codevoyant/README.md
 ```
 
-(`--total 0` — pm roadmaps have no implementation tasks; those are created by em plan)
+(pm roadmaps have no implementation tasks; those are created by em plan)
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm plan complete" \
-    --message "Draft roadmap written to {DRAFT_PATH}. Use /pm approve to commit."
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the draft roadmap was written to `{DRAFT_PATH}` and instructing them to use `/pm approve` to commit.
 
 Report: "Draft written to `{DRAFT_PATH}`. Run `/pm approve` when ready to commit to `docs/product/`."

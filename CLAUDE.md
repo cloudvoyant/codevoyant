@@ -1,11 +1,3 @@
-## Team Knowledge
-
-At the start of every session, load project knowledge into context:
-
-```bash
-npx @codevoyant/agent-kit mem list
-```
-
 ## Project Overview
 
 Codevoyant is a CLI toolkit that ships AI-powered skills (slash commands) for engineering and product workflows, built on top of Claude Code.

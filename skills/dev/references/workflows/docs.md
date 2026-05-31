@@ -121,10 +121,6 @@ Dependency documentation:
 
 Write all five documentation files using the `Write` tool.
 
-If `BG` is true and `SILENT` is not true, send a completion notification:
-
-```bash
-npx @codevoyant/agent-kit notify --title "dev docs complete" --message "Architecture docs written to docs/architecture/"
-```
+If `BG` is true and `SILENT` is not true, report completion to the user with a brief summary stating that architecture docs were written to `docs/architecture/`.
 
 Report the files written and their sizes.

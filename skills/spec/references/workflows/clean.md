@@ -11,11 +11,10 @@ Wrap up a session: stop running background agents, archive completed plans to do
 Auto-migrate if needed, then load all plans:
 
 ```bash
-npx @codevoyant/agent-kit plans migrate
-npx @codevoyant/agent-kit plans list
+cat .codevoyant/README.md 2>/dev/null || echo "No plans registry"
 ```
 
-Parse the JSON into three groups:
+Parse the registry rows into three groups:
 - **RUNNING_PLANS** — Active status AND `execution-log.md` contains `Status: RUNNING`
 - **SESSION_COMPLETE_PLANS** — Active status AND `execution-log.md` contains `Status: COMPLETE` (background agent finished during this session)
 - **ACTIVE_PLANS** — Active or Paused status, not in the above groups
@@ -36,7 +35,7 @@ options:
 If "Yes, stop it":
 1. Append `[timestamp] - STOP requested by user` and `Status: STOPPED` to execution-log.md
 2. ```bash
-   npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Active
+   sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Active |/" .codevoyant/README.md
    ```
 3. Move plan to ACTIVE_PLANS for triage
 
@@ -55,14 +54,14 @@ The following plans were completed by a background agent this session:
 Use **AskUserQuestion**:
 
 ```
-question: "Mark these plans complete via agent-kit?"
+question: "Mark these plans complete in the registry?"
 options:
   - label: "Yes, mark all complete"
   - label: "Review each individually"
   - label: "Skip for now"
 ```
 
-- "Yes, mark all complete": for each plan, run `npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Complete` then `npx @codevoyant/agent-kit plans archive --name "$PLAN_NAME" --status Complete`; add each to the archive pool for doc archiving in Step 4
+- "Yes, mark all complete": for each plan, run `sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Complete |/" .codevoyant/README.md`; add each to the archive pool for doc archiving in Step 4
 - "Review each individually": move each to ACTIVE_PLANS for triage in Step 5
 - "Skip for now": leave unchanged
 
@@ -71,7 +70,7 @@ options:
 Get all plans with status Complete or Archived:
 
 ```bash
-npx @codevoyant/agent-kit plans list --status Complete
+grep "| Complete |" .codevoyant/README.md 2>/dev/null || echo "No complete plans"
 ```
 
 Also include any plans just archived in Step 3.
@@ -125,7 +124,7 @@ options:
 
 **Cancel** → confirm via **AskUserQuestion** ("Yes, cancel" / "No, keep it"), then:
 ```bash
-npx @codevoyant/agent-kit plans archive --name "$PLAN_NAME" --status Cancelled
+sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Cancelled |/" .codevoyant/README.md
 ```
 Move the plan directory to `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
 

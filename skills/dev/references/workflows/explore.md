@@ -15,14 +15,12 @@ These principles govern every dev explore run. Research agents and proposal writ
 
 ## Step 1: Understand the Topic
 
-Ask: "What technical problem or decision do you want to explore?"
+**Topic resolution:**
 
-Clarify:
+- If `REMAINING_ARGS` (from the dispatcher) is non-empty, set `topic = REMAINING_ARGS` and skip the opening question. Proceed directly to slug derivation below.
+- If `REMAINING_ARGS` is empty, ask: "What technical problem or decision do you want to explore?" Use the response as `topic`.
 
-- Scope and constraints
-- Existing stack and conventions
-- What success looks like
-- Any approaches already considered or ruled out
+Only ask clarifying follow-ups (scope/constraints/stack/success/ruled-out approaches) if the topic is genuinely ambiguous after the args check — otherwise let the research agents infer from the topic text and codebase context.
 
 If `EXPLORATION_NAME` is not set, derive it from the topic:
 

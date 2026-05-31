@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 Engineering management skill dispatcher.
 
+## Inline Usage
+
+Pass your intent directly on the invocation line — `plan` proceeds immediately with no opening question when a description is provided.
+
+```
+/em plan add webhook support to the notifications API
+/em plan migrate auth to OAuth2
+/em plan https://linear.app/team/project/PRJ-123
+```
+
 ## Critical Rules
 
 - **Never execute workflow logic here** — this file only parses args and dispatches

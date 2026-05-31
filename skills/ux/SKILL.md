@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 UX design skill dispatcher.
 
+## Inline Usage
+
+Pass your intent directly on the invocation line — `explore` and `prototype` proceed immediately with no opening question when a description is provided.
+
+```
+/ux explore checkout flow
+/ux explore nav layouts --slideshow
+/ux prototype admin dashboard
+```
+
 ## Critical Rules
 
 - **Never execute workflow logic here** — this file only parses args and dispatches

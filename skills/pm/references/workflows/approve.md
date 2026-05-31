@@ -151,10 +151,10 @@ if { [ -d "$EXPLORE_DIR" ] && [ "$(ls -A $EXPLORE_DIR 2>/dev/null)" ]; } || \
 fi
 ```
 
-Update agent-kit status:
+Update plan status in `.codevoyant/README.md`:
 
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "{DATE}-{TIMESCALE}" --status Approved
+sed -i '' "s/| {DATE}-{TIMESCALE} | [A-Za-z]* |/| {DATE}-{TIMESCALE} | Approved |/" .codevoyant/README.md
 ```
 
 Report: "Roadmap promoted to `{COMMIT_DIR}/roadmap.md`."
@@ -224,13 +224,7 @@ Report each uploaded document title or failure.
 
 ## Step 6: Notify
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm approve complete" \
-    --message "Roadmap committed to {COMMIT_DIR}"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the roadmap was committed to `{COMMIT_DIR}`.
 
 Report: "Done. Roadmap is at `{COMMIT_DIR}/roadmap.md`. Research at `{COMMIT_DIR}/research/`."
 
@@ -300,10 +294,10 @@ if [ -d ".codevoyant/explore/${SLUG}" ]; then
 fi
 ```
 
-Update agent-kit status:
+Update plan status in `.codevoyant/README.md`:
 
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "${SLUG}-prd" --status Approved
+sed -i '' "s/| ${SLUG}-prd | [A-Za-z]* |/| ${SLUG}-prd | Approved |/" .codevoyant/README.md
 ```
 
 Report: "PRD promoted to `docs/prd/{SLUG}/{SLUG}.md`."
@@ -355,12 +349,6 @@ Report uploaded document title or failure.
 
 ## Step 6P: Notify
 
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify \
-    --title "pm approve complete" \
-    --message "PRD committed to docs/prd/${SLUG}/${SLUG}.md"
-fi
-```
+If `SILENT` is not true, report completion to the user with a brief summary stating the PRD was committed to `docs/prd/${SLUG}/${SLUG}.md`.
 
 Report: "Done. PRD is at `docs/prd/{SLUG}/{SLUG}.md`. Research at `docs/prd/{SLUG}/research/`."

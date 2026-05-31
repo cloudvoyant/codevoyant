@@ -63,7 +63,7 @@ If a specific plan name was provided, check if `.codevoyant/plans/{plan-name}/pl
 If no plan name provided, check for active plans:
 
 ```bash
-npx @codevoyant/agent-kit plans list --status Active
+grep "| Active |" .codevoyant/README.md 2>/dev/null || echo "No active plans"
 ```
 
 When a matching plan is found:
@@ -76,7 +76,10 @@ WAIT FOR USER decision before proceeding.
 ## Step 2: Initialize .codevoyant Structure
 
 ```bash
-npx @codevoyant/agent-kit init
+mkdir -p .codevoyant/plans .codevoyant/explore
+if [ ! -f .codevoyant/README.md ]; then
+  printf "# Active Plans\n\n| Name | Status | Plugin | Description | Created | Branch |\n|------|--------|--------|-------------|---------|--------|\n" > .codevoyant/README.md
+fi
 ```
 
 ## Step 2.5: Create Worktree (if requested)
@@ -84,69 +87,53 @@ npx @codevoyant/agent-kit init
 If `--branch` flag was given:
 
 ```bash
-npx @codevoyant/agent-kit worktrees create \
-  --branch "$TARGET_BRANCH" \
-  --base "$BASE_BRANCH" \
-  --plan "$PLAN_NAME"
+git worktree add -b "$TARGET_BRANCH" ".worktrees/$TARGET_BRANCH" "$BASE_BRANCH" && \
+  echo "✓ Worktree created at .worktrees/$TARGET_BRANCH" || \
+  { echo "✗ Worktree creation failed"; exit 1; }
+PLAN_WORKTREE=".worktrees/$TARGET_BRANCH"
 ```
 
-Store the reported worktree path as `PLAN_WORKTREE` (or `""` if `SHOULD_CREATE_WORKTREE=false`). Error and exit if worktree already exists or git commands fail.
+If `SHOULD_CREATE_WORKTREE=false`, set `PLAN_WORKTREE=""`. Error and exit if worktree already exists or git commands fail.
 
 ## Step 3: Understand Scope
 
-**3a. Check for existing research and build objective options**
+**3a. Determine objective — minimize questions**
 
-Check `.codevoyant/explore/` for exploration directories (each sub-directory is a past `dev explore` run).
+Decision tree (in order):
 
-If explorations exist, read the `summary.md` (or derive a one-line description from the directory name) for each, then use **AskUserQuestion** presenting them as options alongside a "Describe something new" option:
+1. **`REMAINING_ARGS` non-empty** → use it directly as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`. Do not ask. Skip to Step 3b.
+2. **`EXTERNAL_CONTEXT` set** → use the fetched title/description as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`. Do not ask. Skip to Step 3b.
+3. **Explorations exist in `.codevoyant/explore/`** → use **one** AskUserQuestion listing the 3 most recent explorations plus "Describe something new":
+   ```
+   question: "What would you like to plan?"
+   header: "Objective"
+   options:
+     - label: "{exploration-name}"
+       description: "{one-line summary from summary.md, or derived from directory name}"
+     - … (up to 3 most recent)
+     - label: "Describe something new"
+       description: "Type your objective in the Other field"
+   ```
+   If user selects an exploration: read all files in that exploration directory and store as `RESEARCH_CONTEXT`; use the exploration topic as `OBJECTIVE`. If "Describe something new": use the typed response as `OBJECTIVE` and set `RESEARCH_CONTEXT=""`.
+4. **No args, no external context, no explorations** → use **one** open-ended AskUserQuestion: "What would you like to plan?" (free-text via Other). Use the typed response as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`.
 
-```
-question: "What would you like to plan?"
-header: "Objective"
-options:
-  - label: "{exploration-name}"
-    description: "{one-line summary from summary.md, or derived from directory name}"
-  - … (one entry per exploration, up to 3 most recent)
-  - label: "Describe something new"
-    description: "Type your objective in the Other field"
-```
+**3b. Confirm objective (silent unless ambiguous)**
 
-If user selects an exploration: read all files in that exploration directory and store as `RESEARCH_CONTEXT`. Use the exploration topic as the candidate `OBJECTIVE`.
-
-If user selects "Describe something new" or no explorations exist: use their typed response as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`.
-
-**3b. Confirm objective**
-
-If `EXTERNAL_CONTEXT` is set, present it to the user and confirm it captures the intent. Ask only if something is unclear.
+If `EXTERNAL_CONTEXT` is set and the title/description is ambiguous, briefly present it and confirm. Otherwise proceed without asking.
 
 Store final value as `OBJECTIVE`.
 
-## Step 3.5: Detect Task Runners
-
-Detect available task runners:
-
-```bash
-npx @codevoyant/agent-kit task-runners detect
-```
-
-Store output as `TASK_RUNNER_SUMMARY`. Identifies commands for: build, test, lint, format, typecheck, run/dev.
-
 ## Step 4: Clarify and Narrow Scope
 
-**4a. Ask clarifying questions**
+**4a. Ask clarifying questions only if needed**
 
-Based on `OBJECTIVE` and `RESEARCH_CONTEXT`, ask targeted questions to narrow the scope enough for autonomous execution. Ask all unknowns in a single **AskUserQuestion** call. Focus on:
+Assess `OBJECTIVE` first. If it has sufficient detail (≥5 words describing a concrete feature, system change, or outcome) and `RESEARCH_CONTEXT` or `EXTERNAL_CONTEXT` covers the major unknowns, **skip this sub-step entirely** and proceed to 4b.
 
-- Key components affected
-- Constraints or non-goals
-- Preferred implementation style (lightweight prototype vs production-grade)
-- Dependencies and ordering
-
-Skip questions that `RESEARCH_CONTEXT` or `EXTERNAL_CONTEXT` already answers.
+If the objective is vague (e.g. "improve auth", "make it faster"), ask **one** focused AskUserQuestion targeting the single biggest unknown. Provide at most 2 options + Other. Do not chain follow-ups.
 
 **4b. Scope check**
 
-After receiving answers, assess whether the scope is narrow enough for direct planning. A scope is **too broad** if:
+Assess whether the scope is narrow enough for direct planning. A scope is **too broad** if:
 
 - It spans more than ~3 unrelated subsystems without a clear integration seam
 - The approach is genuinely undecided between architecturally different options
@@ -162,7 +149,7 @@ Agent (model: claude-opus-4-6, run_in_background: false):
 You are a technical advisor helping scope a software implementation plan.
 
 Objective: {OBJECTIVE}
-Clarifications: {user answers from 4a}
+Clarifications: {user answers from 4a, if any}
 Research context: {RESEARCH_CONTEXT if set}
 
 The scope is too broad for direct planning. Propose 2–3 high-level implementation approaches.
@@ -178,9 +165,9 @@ Keep each proposal to 4–5 lines. Be concrete — reference actual files or pat
 
 Present the proposals to the user.
 
-If `BG_MODE=false`: use **AskUserQuestion** for the user to select one approach.
+If `BG_MODE=true`: instruct the Opus agent to also select the strongest approach and briefly justify it. Use that selection and continue — do not ask.
 
-If `BG_MODE=true`: instruct the Opus agent to also select the strongest approach and briefly justify it. Use that selection and continue.
+If `BG_MODE=false`: use **one** AskUserQuestion for approach selection.
 
 Store selected approach as `SELECTED_APPROACH`. Update `OBJECTIVE` to incorporate it.
 
@@ -190,11 +177,17 @@ Store selected approach as `SELECTED_APPROACH`. Update `OBJECTIVE` to incorporat
 
 - Use provided plan name, or derive from `OBJECTIVE`:
   - Lowercase, hyphens for spaces, alphanumeric + hyphens only, max 50 chars
-- Resolve collisions:
+- Resolve collisions inline:
   ```bash
-  npx @codevoyant/agent-kit plans resolve-name --name "<base-name>"
+  CANDIDATE="<base-name>"
+  SUFFIX=2
+  while grep -q "| $CANDIDATE |" .codevoyant/README.md 2>/dev/null; do
+    CANDIDATE="<base-name>-${SUFFIX}"
+    SUFFIX=$((SUFFIX + 1))
+  done
+  PLAN_NAME="$CANDIDATE"
   ```
-  Returns a unique name. Inform user if name was modified.
+  Inform user if name was modified.
 
 ### 5.2: Create Plan Directory Structure
 
@@ -212,9 +205,9 @@ Report: `✓ Plan directory created at: $PLAN_DIR`
 
 **a. plan.md** at `$PLAN_DIR/plan.md`
 
-Prepare metadata: `CREATED_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")`, `METADATA_BRANCH=$TARGET_BRANCH` (or `"(none)"`), `METADATA_BASE_BRANCH=$BASE_BRANCH` (or `"main"`), `METADATA_WORKTREE=$PLAN_WORKTREE` (or `"(none)"`), `METADATA_TASK_RUNNERS=$TASK_RUNNER_SUMMARY`.
+Prepare metadata: `CREATED_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")`, `METADATA_BRANCH=$TARGET_BRANCH` (or `"(none)"`), `METADATA_BASE_BRANCH=$BASE_BRANCH` (or `"main"`), `METADATA_WORKTREE=$PLAN_WORKTREE` (or `"(none)"`).
 
-Use the template in `references/plan-template.md`. Include task runner metadata. If `SOURCE_URL` set, add `- **Source**: {SOURCE_URL}` in the Metadata section.
+Use the template in `references/plan-template.md`. If `SOURCE_URL` set, add `- **Source**: {SOURCE_URL}` in the Metadata section.
 
 **Phase 0 — Human Prerequisites (include only if needed)**
 
@@ -244,20 +237,19 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 - Code for non-trivial logic
 - Testing and validation steps
 
-**Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use `METADATA_TASK_RUNNERS`. Never invent custom shell commands when a task runner recipe exists.
+**Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/tasks detect` to identify the runner and `/tasks list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
 
 ### 5.4: Register Plan
 
 ```bash
-npx @codevoyant/agent-kit plans register \
-  --name "$PLAN_NAME" \
-  --plugin spec \
-  --description "$PLAN_DESCRIPTION" \
-  --branch "${METADATA_BRANCH}" \
-  --total "$TASK_COUNT"
+grep -q "| $PLAN_NAME |" .codevoyant/README.md 2>/dev/null || \
+  printf "| %s | Active | spec | %s | %s | %s |\n" \
+    "$PLAN_NAME" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "${METADATA_BRANCH:-(none)}" \
+    >> .codevoyant/README.md
+echo "✓ Registered plan: $PLAN_NAME"
 ```
 
-(Set `--branch` only if `METADATA_BRANCH` is not `"(none)"` or empty. Calculate `TASK_COUNT` by counting `[ ]` items in plan.md.)
+(Calculate `TASK_COUNT` by counting `[ ]` items in plan.md for reference, though task count is no longer tracked in the registry.)
 
 ### 5.5: Verify All Implementation Files
 
@@ -319,42 +311,46 @@ TaskOutput(id: PERMS_TASK_ID, block: true)
 
 Parse the JSON and store as `SUGGESTED_ALLOW` and `PERMS_RATIONALE`.
 
-## Step 6: Review
+## Step 6: Review (combined permissions + plan review — single question)
 
-If `SUGGESTED_ALLOW` is non-empty, present permission suggestions before the plan review question:
+If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as informational text (not a question):
 
 ```
-🔐 Permissions needed for autonomous execution:
+🔐 Permissions suggested for autonomous execution:
 
   • {entry}  ← {rationale}
   ...
-
-These can be added to .claude/settings.json now, or later with /spec allow.
 ```
 
-Use **AskUserQuestion**:
+Then ask **one** AskUserQuestion combining permissions decision and plan review:
 
 ```
-question: "Pre-approve these {N} permissions for this plan?"
-header: "Execution Permissions"
+question: "Plan ready — add these {N} permissions and proceed?"
+header: "Plan Review"
 options:
-  - label: "Yes — add to .claude/settings.json"
-  - label: "No — I'll handle permissions separately"
+  - label: "Yes — add permissions and done"
+    description: "Union SUGGESTED_ALLOW into .claude/settings.json and finish"
+  - label: "No — skip permissions, plan is done"
+    description: "Leave .claude/settings.json untouched and finish"
+  - label: "Needs changes"
+    description: "Describe what to adjust in the plan"
 ```
 
-If "Yes": read `.claude/settings.json` (start from `{}` if absent), union `permissions.allow` array with `SUGGESTED_ALLOW` (deduplicate, sort), write back. Report: `✓ Added {N} allow entries to .claude/settings.json`.
-
-Then use **AskUserQuestion** for plan review:
+If `SUGGESTED_ALLOW` is empty, drop the permissions framing and ask:
 
 ```
-question: "Does this plan cover everything? Any changes needed?"
+question: "Plan ready — does this cover everything?"
 header: "Plan Review"
 options:
   - label: "Looks good — done"
-  - label: "Minor adjustments needed"
+  - label: "Needs changes"
 ```
 
-- **Looks good**: ⛔ **STOP HERE. Do not implement anything.** Your job is complete. If `BG_MODE=true`, launch `/spec go {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion:
+**Handling responses:**
+
+- **Yes — add permissions and done**: read `.claude/settings.json` (start from `{}` if absent), union `permissions.allow` array with `SUGGESTED_ALLOW` (deduplicate, sort), write back. Report: `✓ Added {N} allow entries to .claude/settings.json`. Then finish as below.
+- **No — skip permissions, plan is done** / **Looks good — done**: finish as below.
+- **Finish:** ⛔ **STOP HERE. Do not implement anything.** Your job is complete. If `BG_MODE=true`, launch `/spec go {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion:
   ```
   ✅ Plan "{plan-name}" is ready.
 
@@ -363,4 +359,4 @@ options:
   To guide:    /spec guide {plan-name}
   ```
   Then stop. Do not write any more files. Do not start implementing tasks.
-- **Minor adjustments**: accept free-text, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.
+- **Needs changes**: accept free-text, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.

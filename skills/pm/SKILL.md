@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 Product management skill dispatcher.
 
+## Inline Usage
+
+Pass your intent directly on the invocation line — `explore` and `plan` proceed immediately with no opening question when a description is provided.
+
+```
+/pm explore pricing strategy for enterprise tier
+/pm explore competitor analysis for Q3 roadmap
+/pm plan ship retention features this quarter
+```
+
 ## Critical Rules
 
 - **Never execute workflow logic here** — this file only parses args and dispatches

@@ -81,13 +81,6 @@ For each annotation:
 
 1. **Phase ✅ markers** — for every phase touched, re-verify marker matches actual completion
 2. **Phase numbering** — if phases were added or removed, verify phase-N.md files exist for every phase and no orphaned files remain
-3. **Registry:**
-   ```bash
-   npx @codevoyant/agent-kit plans update-progress \
-     --name "$PLAN_NAME" \
-     --completed $COMPLETED \
-     --total $TOTAL
-   ```
 
 ## After Consistency Check: Run Validation
 

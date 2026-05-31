@@ -17,9 +17,12 @@ Received from dispatcher:
 
 ## Step 0: Parse arguments
 
-If no topic, ask: "What kind of skill are you looking for?" and wait.
+- If `REMAINING_ARGS` (from the dispatcher) is non-empty, set `TOPIC = REMAINING_ARGS` and proceed. Do not ask the opening question.
+- If both `TOPIC` and `REMAINING_ARGS` are empty, ask once: "What kind of skill are you looking for?" and wait.
 
 ## Step 1: Determine research scope
+
+Default `EXPLORE_MODE = "Both"` when `REMAINING_ARGS` was non-empty (skip the scope question). Otherwise:
 
 AskUserQuestion:
   question: "What's the goal of this exploration?"
@@ -45,7 +48,7 @@ Launch 3 agents concurrently (model: claude-haiku-4-5-20251001, run_in_backgroun
 - WebFetch agentskill.sh filtered by topic
 - For top 5 results: WebFetch the skill's repo URL, find SKILL.md, extract frontmatter + first 50 lines
 - Save to `.codevoyant/explore/{slug}/agentskill-results.md`
-- Follow research-standards.md in skills/shared/references/
+- Follow research-standards.md in skills/skill/references/
 
 **Agent C — Repo SKILL.md extraction**
 - For any GitHub URLs found by A or B: run `npx skills info {skill}` to get repo details

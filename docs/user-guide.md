@@ -2,65 +2,54 @@
 
 > New here? Start with [Installation](/installation).
 
----
+## How Skills Work
 
-## Spec — plan and execute complex work
+Skills are slash commands that load focused instructions into your AI agent's context before it acts. Some skills — like `spec` or `dev` — are invoked explicitly with a verb. Others — like `sveltekit`, `typescript`, or `mise` — activate automatically when the agent detects relevant files in your project.
+
+**Invoking a skill:**
+
+```bash
+/spec new
+/git commit
+/tasks list
+```
+
+**Passing your intent inline** — all `new`, `explore`, and `plan` verbs accept a description directly on the same line. The skill skips the opening question and proceeds immediately:
+
+```bash
+/spec new add dark mode toggle to the settings page
+/em plan add webhook support to the notifications API
+/dev explore how the auth middleware works
+/pm explore pricing strategy for the enterprise tier
+/ux explore checkout flow
+```
+
+Invoking without a description — `/spec new` — works too; the skill asks once and continues.
+
+## spec — plan and execute complex work
 
 Spec gives you a structured planning layer. You write a plan with AI assistance, then execute it step-by-step or hand it off to a background agent.
 
-**Typical flow:**
-
 ```bash
-/spec new my-feature        # Explores requirements and creates plan + implementation files
-/spec go my-feature         # Execute interactively, with review stops between phases
-/spec done my-feature       # Archive the plan and optionally commit
+/spec new my-feature        # explore requirements and create plan + implementation files
+/spec go my-feature         # execute interactively, with review stops between phases
+/spec done my-feature       # archive the plan and optionally commit
 ```
 
-For long or routine tasks, run in the background instead:
+For long or routine tasks, run in the background:
 
 ```bash
 /spec new my-feature
-/spec bg my-feature         # Background agent works while you do other things
-/spec list                  # Check progress across all plans
+/spec bg my-feature         # background agent works while you do other things
+/spec list                  # check progress across all active plans
 /spec done my-feature
 ```
 
-You can have multiple plans active at once — `/spec list` shows all of them. Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files.
+Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files. Multiple plans can be active at once.
 
-See the [Spec skills reference](/skills/spec) for all skills.
+See the [spec reference](/skills/spec) for all commands.
 
----
-
-## Git — commits, CI, and rebase
-
-Git handles the mechanical parts of the commit loop.
-
-**Committing:**
-
-```bash
-/git commit
-```
-
-Runs formatters, analyzes staged changes, generates a conventional commit message for your review, then commits, pushes, and starts CI monitoring in the background. Use `--atomic` to split logical change groups into separate commits.
-
-**Rebasing safely:**
-
-```bash
-/git rebase main    # handles conflict marker sides correctly
-```
-
-**Watching CI:**
-
-```bash
-/git ci             # runs in background, notifies you when done
-/git ci --autofix   # automatically fixes failures and re-pushes
-```
-
-See the [Git skills reference](/skills/git) for all skills.
-
----
-
-## Dev — architecture, exploration, and PR/MR
+## dev — architecture, exploration, and PR/MR
 
 Dev handles the higher-level parts of the development loop.
 
@@ -75,7 +64,7 @@ Dev handles the higher-level parts of the development loop.
 **Fix review comments on an existing PR/MR:**
 
 ```bash
-/dev pr-fix     # fetches open review threads and proposes fixes (doesn't apply them)
+/dev pr-fix             # fetches open review threads and proposes fixes (doesn't apply them)
 ```
 
 **Architecture planning:**
@@ -85,15 +74,17 @@ Dev handles the higher-level parts of the development loop.
 /dev approve my-plan --push           # promote to docs/architecture/ and create Linear tasks
 ```
 
-See the [Dev skills reference](/skills/dev) for all skills.
+**Technical exploration:**
 
----
+```bash
+/dev explore "caching strategy"       # research approaches, generate parallel proposals
+```
 
-## EM — engineering project planning *(Experimental)*
+See the [dev reference](/skills/dev) for all commands.
 
-EM structures engineering planning: milestone-grouped task plans, capacity and dependency review, and sync with your team's Linear workspace.
+## em — engineering project planning *(Experimental)*
 
-**Plan a project:**
+EM structures engineering planning: milestone-grouped task plans, capacity and dependency review, and sync with Linear.
 
 ```bash
 /em plan "migrate auth to OAuth2"     # draft plan to .codevoyant/plans/
@@ -101,59 +92,43 @@ EM structures engineering planning: milestone-grouped task plans, capacity and d
 /em approve my-plan --push            # promote to docs/ and push to Linear
 ```
 
-**Seed from an existing Linear project:**
+Seed from an existing Linear project:
 
 ```bash
 /em plan https://linear.app/team/project/PRJ-123
 ```
 
-See the [EM skills reference](/skills/em) for all skills.
+See the [em reference](/skills/em) for all commands.
 
----
+## pm — product roadmaps and PRDs *(Experimental)*
 
-## PM — product roadmaps and PRDs *(Experimental)*
-
-PM covers product planning: phased roadmaps with market context and feature prioritization, per-feature PRDs, coverage and feasibility review, and Linear integration.
-
-**Research first, then plan:**
+PM covers product planning: phased roadmaps, per-feature PRDs, and Linear integration.
 
 ```bash
-/pm explore "mobile onboarding"         # research a topic, deposit artifact for /pm plan
-/pm plan quarter                         # draft quarterly roadmap
-/pm review my-roadmap --bg              # background review
-/pm approve my-roadmap --push           # promote to docs/ and push to Linear initiative
+/pm explore "mobile onboarding"       # research a topic, deposit artifact for /pm plan
+/pm plan quarter                      # draft quarterly roadmap
+/pm prd "user authentication"         # standalone PRD
+/pm approve my-roadmap --push         # promote to docs/ and push to Linear initiative
 ```
 
-**Single feature:**
+See the [pm reference](/skills/pm) for all commands.
 
-```bash
-/pm prd "user authentication"           # standalone PRD
-```
+## ux — prototyping and style research *(Experimental)*
 
-See the [PM skills reference](/skills/pm) for all skills.
-
----
-
-## UX — prototyping and style research *(Experimental)*
-
-UX supports frontend design exploration: full SvelteKit prototypes with feature-slice architecture, lightweight single-file wireframes, and automated style extraction from live sites.
+UX supports frontend design exploration: full SvelteKit prototypes, lightweight wireframes, and style extraction from live sites.
 
 **Scaffold a prototype:**
 
 ```bash
-/ux prototype "admin dashboard"    # full SvelteKit + shadcn-svelte prototype
+/ux prototype "admin dashboard"       # full SvelteKit + shadcn-svelte prototype
 ```
 
-Asks whether to scaffold in-repo (single package or monorepo) or out-of-repo. Builds feature-slice structure, implements a layout first, then generates each feature with view-models, factories, and fake data.
-
-**Quick wireframe or approach comparison:**
+**Quick wireframe or comparison:**
 
 ```bash
-/ux explore "checkout flow"              # single HTML wireframe, no build step
+/ux explore "checkout flow"              # single self-contained HTML wireframe
 /ux explore "nav layouts" --slideshow    # compare multiple approaches in one file
 ```
-
-Outputs a self-contained `.html` file using Tailwind CDN — open directly in a browser.
 
 **Extract styles from a live site:**
 
@@ -161,43 +136,60 @@ Outputs a self-contained `.html` file using Tailwind CDN — open directly in a 
 /ux style-synthesize https://example.com
 ```
 
-Screenshots the site at mobile/tablet/desktop breakpoints, analyzes typography, color, and layout patterns, and writes `docs/ux/style-research/{source}/style-report.md` + `theme.css`.
+See the [ux reference](/skills/ux) for all commands.
 
-See the [UX skills reference](/skills/ux) for all skills.
-
----
-
-## Skill — build and maintain skills
-
-Skill gives you a structured workflow for building your own Claude Code / Agent Skills compatible skills: research what already exists, scaffold from a template, iterate, and run quality reviews before shipping.
-
-**Typical workflow:**
+## git — commits, CI, and rebase
 
 ```bash
-/skill explore "linear integration"   # research existing skills first
+/git commit             # format, generate conventional commit message, commit, push, monitor CI
+/git commit --atomic    # split into multiple logical commits
+/git rebase main        # interactive rebase, handles conflict sides correctly
+/git ci                 # monitor CI in background, notify when done
+/git ci --autofix       # automatically fix failures and re-push
+```
+
+See the [git reference](/skills/git) for all commands.
+
+## tasks — run project tasks
+
+Detects your task runner (mise, just, task.dev, or npm scripts) and provides a consistent interface:
+
+```bash
+/tasks                  # list all available tasks
+/tasks run build        # run a named task
+/tasks detect           # show which runner was detected
+```
+
+Other skills call `/tasks` internally before running raw commands like `tsc` or `vitest` — ensuring the project's own conventions are always followed.
+
+See the [tasks reference](/skills/tasks) for all commands.
+
+## skill — build, maintain, and report skills
+
+Skill gives you a workflow for building your own codevoyant-compatible skills, and a feedback loop for reporting issues to skill authors.
+
+```bash
+/skill explore "linear integration"   # research what already exists
 /skill new linear-push                # scaffold from template
-/skill update linear-push             # refine any steps
-/skill review linear-push             # audit spec compliance + effectiveness
+/skill critique linear-push           # audit quality before shipping
+/skill feedback spec                  # open a GitHub/GitLab issue for a skill problem
 ```
 
-See the [Installation guide](/installation) for how to add skills.
+See the [skill reference](/skills/skill) for all commands and a guide to building skills.
 
----
+## Context skills
 
-## Mem — team knowledge (CLI only)
+Context skills activate automatically based on files in your project — no invocation needed. The agent loads the relevant recipes before writing or reviewing code.
 
-Mem lets you capture team conventions, decisions, and procedures as indexed markdown docs. Knowledge loads into AI context at session start so the agent always knows your team's rules.
+| Files detected | Skill loaded |
+|---|---|
+| `*.svelte`, `*.svelte.ts` | **sveltekit** — feature-slice architecture, Svelte 5 runes, shadcn-svelte |
+| `*.ts`, `tsconfig.json` | **typescript** — unknown catch, library types, Zod generic bounds |
+| `Dockerfile`, `docker-compose.yml` | **docker** — multi-stage builds, Compose, cross-platform, GCP registry |
+| `mise.toml`, `.mise.toml` | **mise** — task conventions, tool pinning, language-specific setup |
+| `*.tf`, `GCP_` env vars in mise.toml | **gcp** — Artifact Registry, Cloud Run, gcloud auth |
+| `*.tf` files | **terraform** — directory structure, backends, workspaces, variable management |
 
-The `/mem *` slash commands have been removed — use the `npx @codevoyant/agent-kit mem` CLI directly.
+Each skill loads targeted recipes on demand rather than dumping everything into context at once — so only what's relevant to the current task gets loaded.
 
-**Index and load knowledge:**
-
-```bash
-npx @codevoyant/agent-kit mem list      # Load all indexed docs into context
-npx @codevoyant/agent-kit mem index     # Re-index after manual edits
-npx @codevoyant/agent-kit mem find --tag deployment
-```
-
-Add `npx @codevoyant/agent-kit mem list` to your `CLAUDE.md` to load knowledge automatically at session start.
-
-See the [Mem reference](/skills/mem) for the full CLI.
+See individual skill pages for recipe details: [sveltekit](/skills/sveltekit) · [typescript](/skills/typescript) · [docker](/skills/docker) · [mise](/skills/mise) · [gcp](/skills/gcp) · [terraform](/skills/terraform)

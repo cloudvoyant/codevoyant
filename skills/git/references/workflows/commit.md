@@ -77,18 +77,13 @@ Run formatters and linters before staging so any auto-fixes are included in the 
 
 **Formatters** (auto-fix, run unconditionally if available):
 
-```bash
-npx @codevoyant/agent-kit task-runner run format 2>/dev/null || true
-```
+Detect the project's task runner by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` scripts, then run the format recipe (e.g. `mise run format`, `just fmt`, `make format`, `pnpm run format`). If no formatter recipe exists, skip silently.
 
 If formatter ran and modified files: report `✓ Formatter applied — changes will be included in commit`.
 
 **Linters** (report errors, block commit if they fail):
 
-```bash
-npx @codevoyant/agent-kit task-runner run lint 2>/dev/null || \
-npx @codevoyant/agent-kit task-runner run check 2>/dev/null || true
-```
+Run the project's lint recipe (e.g. `mise run lint`, `just lint`, `make lint`, `pnpm run lint`, or `pnpm run check`). If no lint recipe exists, skip silently.
 
 If linting fails: report the errors and **stop** — do not proceed to staging until fixed:
 

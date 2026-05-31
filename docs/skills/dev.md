@@ -31,13 +31,11 @@ npx skills add cloudvoyant/codevoyant
 /dev pr-fix                 # fix open review comments on an existing PR/MR
 ```
 
-### Tracking Template Drift
-
-If your project was bootstrapped from a template, use `/dev diff` periodically to see how you've diverged:
+### Compare Repos or Branches
 
 ```bash
-/dev diff https://github.com/org/template-repo
-# Review .claude/diff.md for structural differences
+/dev diff https://github.com/org/other-repo    # compare with another repository
+/dev diff feature/my-branch                    # compare current branch with another branch
 ```
 
 ### Architecture Documentation
@@ -58,25 +56,16 @@ If your project was bootstrapped from a template, use `/dev diff` periodically t
 
 ## Skills
 
-### Repository Comparison
+### Repository & Branch Comparison
 
-Compare your current repository with another:
+Compare your current codebase with another repository or branch:
 
 ```bash
-/dev diff <repository-url>
+/dev diff https://github.com/org/other-repo    # compare with a remote repository
+/dev diff feature/my-branch                    # compare with a local branch
 ```
 
-The command will:
-1. Ask for your comparison objective
-2. Clone the target repository to a temp directory
-3. Analyze structural similarities and differences
-4. Generate a comprehensive diff report at `.claude/diff.md`
-5. Clean up temporary files
-
-**Use cases:**
-- Track how your project has diverged from a template or upstream fork
-- Compare architectures between similar codebases
-- Analyze migration differences between versions
+Generates a diff report at `.claude/diff.md` covering structural differences, added/removed files, and architectural divergence. Useful for evaluating migrations, auditing forks, or reviewing a branch before merging.
 
 ### Create PR / MR
 

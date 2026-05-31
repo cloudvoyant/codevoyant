@@ -74,13 +74,7 @@ Agent:
 
 Wait for all agents with `TaskOutput(block=true)`.
 
-After all agents complete, unless `SILENT=true`, use the Bash tool to send a desktop notification:
-
-```bash
-if [ "$SILENT" != "true" ]; then
-  npx @codevoyant/agent-kit notify --title "Claude Code — PR Fix" --message "PR fix proposals ready — {N} PR(s), {N} change requests"
-fi
-```
+After all agents complete, unless `SILENT=true`, report completion to the user with a brief summary stating PR fix proposals are ready and the counts of PRs/change requests addressed.
 
 ## Step 4: Report
 

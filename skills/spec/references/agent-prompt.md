@@ -13,7 +13,7 @@ Worktree: {PLAN_WORKTREE or "(none)"}
 Git commits allowed: {ALLOW_COMMITS}
 
 Task runner commands:
-{TASK_RUNNER_SUMMARY from plan.md metadata}
+{Discover by reading mise.toml/justfile/Makefile/package.json directly}
 
 ## Completed phases (summary only)
 {One line per completed phase: "Phase 1 (Setup) ✅ — 4/4 tasks, tests passing"}
@@ -39,7 +39,7 @@ Apply each annotation (mark done, remove task, rewrite content, etc.) and delete
 
 - Plan: .codevoyant/plans/{plan-name}/plan.md
 - Execution log: .codevoyant/plans/{plan-name}/execution-log.md
-- Registry: .codevoyant/codevoyant.json
+- Registry: .codevoyant/README.md
 
 ## Execution log — required after every task
 

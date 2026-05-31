@@ -15,6 +15,16 @@ disable-model-invocation: true
 command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 ```
 
+## Inline Usage
+
+Pass your intent directly on the invocation line — `new` proceeds immediately with no opening question when a description is provided.
+
+```
+/spec new add OAuth login to the settings page
+/spec new refactor the auth middleware to use JWT
+/spec go my-plan
+```
+
 ## Critical Rules
 
 - **Never execute workflow logic here** — this file only parses args and dispatches

@@ -166,10 +166,6 @@ If an annotation was ambiguous or could not be applied:
     Annotation preserved — resolve manually.
 ```
 
-## Step 7: Notify (--bg only)
+## Step 7: Completion Report (--bg only)
 
-If `BG_MODE=true` and `SILENT=false`:
-
-```bash
-npx @codevoyant/agent-kit notify --title "em:update complete" --message "Roadmap '{slug}' updated"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating roadmap `{slug}` was updated.

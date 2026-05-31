@@ -47,20 +47,47 @@ export default defineConfig({
         ],
       },
       {
+        text: "Workflows",
+        items: [
+          { text: "spec", link: "/skills/spec" },
+          { text: "dev", link: "/skills/dev" },
+          { text: "em · experimental", link: "/skills/em" },
+          { text: "pm · experimental", link: "/skills/pm" },
+          { text: "ux · experimental", link: "/skills/ux" },
+        ],
+      },
+      {
         text: "Skills",
         items: [
-          { text: "Spec", link: "/skills/spec" },
-          { text: "Dev", link: "/skills/dev" },
-          { text: "EM · Experimental", link: "/skills/em" },
-          { text: "PM · Experimental", link: "/skills/pm" },
-          { text: "UX · Experimental", link: "/skills/ux" },
-          { text: "Git", link: "/skills/git" },
+          { text: "git", link: "/skills/git" },
+          { text: "skill", link: "/skills/skill" },
+          { text: "tasks", link: "/skills/tasks" },
+        ],
+      },
+      {
+        text: "Tools",
+        items: [
+          { text: "docker", link: "/skills/docker" },
+          { text: "gcp", link: "/skills/gcp" },
+          { text: "mise", link: "/skills/mise" },
+          { text: "terraform", link: "/skills/terraform" },
+        ],
+      },
+      {
+        text: "Frameworks",
+        items: [
+          { text: "sveltekit", link: "/skills/sveltekit" },
+        ],
+      },
+      {
+        text: "Languages",
+        items: [
+          { text: "typescript", link: "/skills/typescript" },
         ],
       },
       {
         text: "Reference",
         items: [
-          { text: "@codevoyant/agent-kit", link: "/reference/agent-kit" },
           { text: "Changelog", link: "/changelog" },
         ],
       },

@@ -76,11 +76,6 @@ echo "Users install via: npx skills add cloudvoyant/codevoyant"
 # pnpm monorepo tasks (packages/)
 # ==============================================================================
 
-[tasks."build:agent-kit"]
-description = "Build @codevoyant/agent-kit"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/agent-kit run build"
-
 [tasks."build:skill-converter"]
 description = "Build @codevoyant/claude-skill-converter"
 depends     = ["install"]
@@ -124,28 +119,3 @@ description = "Convert plugins into flat skill bundles for OpenCode and Copilot"
 depends     = ["build:skill-converter"]
 run         = "node packages/claude-skill-converter/dist/index.js"
 
-[tasks."test:agent-kit"]
-description = "Run @codevoyant/agent-kit tests"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/agent-kit run test"
-
-[tasks."lint:agent-kit"]
-description = "Lint @codevoyant/agent-kit"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/agent-kit run lint"
-
-[tasks."format-check:agent-kit"]
-description = "Check formatting of packages/"
-depends     = ["install"]
-run         = "pnpm run format:check"
-
-[tasks."publish:agent-kit"]
-description = "Publish @codevoyant/agent-kit to npm"
-depends     = ["build:agent-kit"]
-run         = "pnpm --filter @codevoyant/agent-kit publish --access public --no-git-checks"
-
-
-[tasks."publish-rc:agent-kit"]
-description = "Publish RC @codevoyant/agent-kit to npm with 'next' tag"
-depends     = ["build:agent-kit"]
-run         = "pnpm --filter @codevoyant/agent-kit publish --access public --no-git-checks --tag next"

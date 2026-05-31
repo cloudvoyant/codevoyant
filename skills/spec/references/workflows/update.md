@@ -97,12 +97,6 @@ To annotate, edit any plan file directly:
 
 If an annotation was ambiguous or could not be applied: preserve it and report `⚠️ Skipped annotation at {file}:{line}: {reason}`.
 
-## Step 5.5: Desktop Notification (--bg only)
+## Step 5.5: Completion Report (--bg only)
 
-If `BG_MODE=true` and `SILENT=false`:
-
-```bash
-npx @codevoyant/agent-kit notify \
-  --title "Claude Code — Spec" \
-  --message "Plan '{plan-name}' updated"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating plan `{plan-name}` was updated.

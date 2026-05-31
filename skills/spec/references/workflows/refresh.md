@@ -13,8 +13,7 @@ Update checklist status and phase markers in a plan to reflect actual completion
 If `PLAN_NAME` not provided:
 
 1. ```bash
-   npx @codevoyant/agent-kit plans migrate
-   npx @codevoyant/agent-kit plans list --status Active
+   grep "| Active |" .codevoyant/README.md 2>/dev/null || echo "No active plans"
    ```
 2. Sort by Last Updated (most recent first)
 3. If only one plan exists, auto-select it
@@ -57,17 +56,10 @@ If status is inconsistent:
 
 ## Step 5: Update Registry and Report
 
-```bash
-npx @codevoyant/agent-kit plans update-progress \
-  --name "$PLAN_NAME" \
-  --completed $COMPLETED \
-  --total $TOTAL
-```
-
 If plan is fully complete (100%):
 
 ```bash
-npx @codevoyant/agent-kit plans update-status --name "$PLAN_NAME" --status Complete
+sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Complete |/" .codevoyant/README.md
 ```
 
 Provide a summary showing branch context, per-phase progress, overall %, and whether markers were corrected.
@@ -76,10 +68,4 @@ If `PLAN_BRANCH != CURRENT_BRANCH` and `PLAN_BRANCH != "(none)"`, show branch mi
 
 ## Step 5.5: Desktop Notification (--bg only)
 
-If `BG_MODE=true` and `SILENT=false`:
-
-```bash
-npx @codevoyant/agent-kit notify \
-  --title "Claude Code — Spec" \
-  --message "Plan '{plan-name}' refreshed — {completed}/{total} tasks complete"
-```
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating plan `{plan-name}` was refreshed with `{completed}/{total}` tasks complete.

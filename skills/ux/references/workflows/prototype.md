@@ -287,10 +287,4 @@ Prototype scaffolded: {PROTOTYPE_DIR}
   Recorded in codevoyant.json
 ```
 
-If `BG_MODE=true` and `SILENT=false`, send desktop notification:
-
-```bash
-npx @codevoyant/agent-kit notify --title "ux prototype complete" --message "Prototype '{PROTOTYPE_SLUG}' ready at {PROTOTYPE_DIR}"
-```
-
-See `references/utils.md` for the notification pattern.
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating prototype `{PROTOTYPE_SLUG}` is ready at `{PROTOTYPE_DIR}`.
