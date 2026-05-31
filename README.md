@@ -4,7 +4,7 @@
     <img src="docs/public/codevoyant-logo-light.svg" alt="codevoyant" width="280">
   </picture>
 
-  <p>Plugins and tools for development with AI agents</p>
+  <p>Skills for development with AI coding agents</p>
 
   <p>
     <a href="https://cloudvoyant.github.io/codevoyant">Docs</a> ·
@@ -15,40 +15,86 @@
 
 ---
 
-**codevoyant** is a collection of plugins that give AI coding agents structured workflows for planning, development, and style enforcement. Works with Claude Code, OpenCode, and VS Code Copilot.
+**codevoyant** is a collection of skills (slash commands) that give AI coding agents structured workflows for planning, development, and tooling. Works with Claude Code, OpenCode, and VS Code Copilot.
 
-## Plugins
+## Skills
+
+**Workflows**
 
 <table>
 <tr>
 <td width="48" align="center"><img src="docs/public/icons/spec.svg" width="32"></td>
 <td><strong>spec</strong> — plan and execute complex work<br>
-Research requirements, generate architecture proposals, produce phase-by-phase implementation plans, and execute them autonomously in the background with <code>--bg</code>.</td>
+Research requirements, generate proposals, create phase-by-phase implementation plans, and execute them step-by-step or hand off to a background agent.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/dev.svg" width="32"></td>
-<td><strong>dev</strong> — commits, CI, and code review<br>
-Conventional commits with auto-formatting, background CI monitoring, safe rebasing, PR review comment resolution, and pre-approving agent permissions.</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/style.svg" width="32"></td>
-<td><strong>style</strong> — evolve and enforce your style guide<br>
-Context-aware <code>CLAUDE.md</code> with tagged rule sections that load only when relevant — ~74% fewer tokens than loading everything every interaction.</td>
+<td><strong>dev</strong> — architecture, exploration, and PR/MR<br>
+Architecture planning, technical exploration, PR/MR creation, review comment resolution, and repo/branch comparison.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/em.svg" width="32"></td>
-<td><strong>em</strong> <sup>Beta</sup> — engineering roadmaps and epic planning<br>
-Multi-epic roadmaps with ASCII architecture diagrams, detailed task breakdowns, capacity and dependency review, and bidirectional sync with Linear, Notion, or GitHub.</td>
+<td><strong>em</strong> <sup>Experimental</sup> — engineering project planning<br>
+Milestone-grouped task plans, capacity and dependency review, and sync with Linear.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/pm.svg" width="32"></td>
-<td><strong>pm</strong> <sup>Beta</sup> — product roadmaps and PRDs<br>
-Phased product roadmaps with market context, per-feature PRDs with acceptance criteria and metrics, prioritization review, and docs generation for stakeholders.</td>
+<td><strong>pm</strong> <sup>Experimental</sup> — product roadmaps and PRDs<br>
+Phased roadmaps, per-feature PRDs, prioritization review, and Linear initiative sync.</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/utils.svg" width="32"></td>
-<td><strong>utils</strong> — shared utility scripts<br>
-Cross-platform notification script (macOS, Linux, Windows, WSL) with automatic <code>[project @ branch]</code> context. Infrastructure dependency for em and pm.</td>
+<td align="center"><img src="docs/public/icons/ux.svg" width="32"></td>
+<td><strong>ux</strong> <sup>Experimental</sup> — prototyping and style research<br>
+Scaffold SvelteKit prototypes, create single-file wireframe explorations, and extract styles from live sites.</td>
+</tr>
+</table>
+
+**Skills**
+
+<table>
+<tr>
+<td width="48" align="center"><img src="docs/public/icons/git.svg" width="32"></td>
+<td><strong>git</strong> — commits, CI, and rebase<br>
+Conventional commits with auto-formatting, background CI monitoring, and safe interactive rebase.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/tasks.svg" width="32"></td>
+<td><strong>tasks</strong> — run project tasks<br>
+Detect and run tasks across mise, just, task.dev, and npm scripts with a consistent interface.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/spec.svg" width="32"></td>
+<td><strong>skill</strong> — build, maintain, and report skills<br>
+Scaffold new skills, iterate on existing ones, audit quality, and report issues to skill authors.</td>
+</tr>
+</table>
+
+**Tools & Frameworks** *(context skills — activate automatically)*
+
+<table>
+<tr>
+<td width="48" align="center"><img src="docs/public/icons/docker.svg" width="32"></td>
+<td><strong>docker</strong> — multi-stage builds, Compose, cross-platform networking, GCP registry</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/gcp.svg" width="32"></td>
+<td><strong>gcp</strong> — Artifact Registry, Cloud Run deploy, gcloud auth, service account patterns</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/mise.svg" width="32"></td>
+<td><strong>mise</strong> — mise.toml authoring, task naming conventions, language-specific setup recipes</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/terraform.svg" width="32"></td>
+<td><strong>terraform</strong> — directory structure, backend config, workspace-per-environment for GCP and AWS</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/sveltekit.svg" width="32"></td>
+<td><strong>sveltekit</strong> — feature-slice architecture, Svelte 5 runes, shadcn-svelte, a11y, form patterns</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/typescript.svg" width="32"></td>
+<td><strong>typescript</strong> — unknown catch, library types, Zod generic bounds</td>
 </tr>
 </table>
 
@@ -76,33 +122,30 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 
 ```bash
 # Plan and execute a feature
-/spec:new my-feature          # explore requirements, generate proposals, create plan
-/spec:go my-feature --bg      # hand off to a background agent while you keep working
-/spec:list                    # check progress across all active plans
+/spec new my-feature          # explore requirements and create a plan
+/spec go my-feature           # execute step-by-step with review stops
+/spec bg my-feature           # hand off to a background agent
 
 # Ship code
-/dev:commit                   # format → conventional commit → push → CI monitor
-/dev:ci --autofix             # watch CI, auto-fix failures and re-push
+/git commit                   # format → conventional commit → push → CI monitor
+/git ci --autofix             # watch CI, auto-fix failures and re-push
 
-# Maintain your style guide
-/style:init                   # detect stack, create context-tagged CLAUDE.md
-/style:review                 # check recent work against the guide
+# Open a PR/MR
+/dev pr                       # create PR into main (auto-detects GitHub vs GitLab)
+/dev pr --draft               # create as draft
 
 # Plan engineering work
-/em:plan "Q3 infrastructure roadmap"  # roadmap + architecture diagrams + epic breakdowns
-/em:review my-roadmap --bg           # background capacity and risk review
-/em:sync my-roadmap --push           # push to Linear/Notion/GitHub
+/em plan "migrate auth to OAuth2"    # milestone-grouped task plan
+/em review my-plan                   # capacity and risk review
 
 # Plan product work
-/pm:plan "mobile onboarding"         # phased roadmap + PRDs per feature
-/pm:review my-roadmap                # coverage, prioritization, feasibility check
+/pm plan quarter                     # draft quarterly roadmap
+/pm prd "user authentication"        # standalone PRD
 
-# Pre-approve agent permissions (stop mid-run prompts)
-/dev:allow --plugins spec,dev
-
-# Explore what any plugin can do
-/spec:help                    # list all spec commands
-/dev:help ci                  # show full details for a specific command
+# Build a skill
+/skill new my-command                # scaffold from template
+/skill critique my-command           # audit quality before shipping
+/skill feedback spec                 # report an issue to skill authors
 ```
 
 See the **[full documentation →](https://cloudvoyant.github.io/codevoyant)**
