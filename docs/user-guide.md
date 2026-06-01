@@ -90,7 +90,7 @@ Dev handles the higher-level parts of the development loop.
 
 See the [dev reference](/skills/dev) for all commands.
 
-### em — engineering project planning *(Experimental)*
+### em — engineering project planning _(Experimental)_
 
 EM structures engineering planning: milestone-grouped task plans, capacity and dependency review, and sync with Linear.
 
@@ -108,7 +108,7 @@ Seed from an existing Linear project:
 
 See the [em reference](/skills/em) for all commands.
 
-### pm — product roadmaps and PRDs *(Experimental)*
+### pm — product roadmaps and PRDs _(Experimental)_
 
 PM covers product planning: phased roadmaps, per-feature PRDs, and Linear integration.
 
@@ -121,7 +121,7 @@ PM covers product planning: phased roadmaps, per-feature PRDs, and Linear integr
 
 See the [pm reference](/skills/pm) for all commands.
 
-### ux — prototyping and style research *(Experimental)*
+### ux — prototyping and style research _(Experimental)_
 
 UX supports frontend design exploration: full SvelteKit prototypes, lightweight wireframes, and style extraction from live sites.
 
@@ -146,9 +146,9 @@ UX supports frontend design exploration: full SvelteKit prototypes, lightweight 
 
 See the [ux reference](/skills/ux) for all commands.
 
-## Task Skills
+## Task Execution
 
-Task skills are invoked once to do a single, well-defined job — commit code, run a build task, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
+Task-oriented skills are invoked once to do a single, well-defined job — commit code, run a build task, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
 
 ### git — commits, CI, and rebase
 
@@ -189,18 +189,18 @@ Skill gives you a workflow for building your own codevoyant-compatible skills, a
 
 See the [skill reference](/skills/skill) for all commands and a guide to building skills.
 
-## Context Skills
+## Contextual Invocation
 
-Context skills activate automatically based on files in your project — no invocation needed. The agent loads the relevant recipes before writing or reviewing code.
+Context-based skills activate automatically based on files in your project — no invocation needed. The agent loads the relevant recipes before writing or reviewing code.
 
-| Files detected | Skill loaded |
-|---|---|
-| `*.svelte`, `*.svelte.ts` | **sveltekit** — feature-slice architecture, Svelte 5 runes, shadcn-svelte |
-| `*.ts`, `tsconfig.json` | **typescript** — unknown catch, library types, Zod generic bounds |
-| `Dockerfile`, `docker-compose.yml` | **docker** — multi-stage builds, Compose, cross-platform, GCP registry |
-| `mise.toml`, `.mise.toml` | **mise** — task conventions, tool pinning, language-specific setup |
-| `*.tf`, `GCP_` env vars in mise.toml | **gcp** — Artifact Registry, Cloud Run, gcloud auth |
-| `*.tf` files | **terraform** — directory structure, backends, workspaces, variable management |
+| Files detected                       | Skill loaded                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------ |
+| `*.svelte`, `*.svelte.ts`            | **sveltekit** — feature-slice architecture, Svelte 5 runes, shadcn-svelte      |
+| `*.ts`, `tsconfig.json`              | **typescript** — unknown catch, library types, Zod generic bounds              |
+| `Dockerfile`, `docker-compose.yml`   | **docker** — multi-stage builds, Compose, cross-platform, GCP registry         |
+| `mise.toml`, `.mise.toml`            | **mise** — task conventions, tool pinning, language-specific setup             |
+| `*.tf`, `GCP_` env vars in mise.toml | **gcp** — Artifact Registry, Cloud Run, gcloud auth                            |
+| `*.tf` files                         | **terraform** — directory structure, backends, workspaces, variable management |
 
 Each skill loads targeted recipes on demand rather than dumping everything into context at once — so only what's relevant to the current task gets loaded.
 
