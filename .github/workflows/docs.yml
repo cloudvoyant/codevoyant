@@ -26,16 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - uses: jdx/mise-action@v2
 
       - name: Install dependencies
-        run: npm install
+        run: mise run install
 
       - name: Build docs
-        run: npm run docs:build
+        run: mise run docs:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
