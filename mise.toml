@@ -29,6 +29,11 @@ run         = ".mise-tasks/sync-utils"
 description = "Run tests"
 run         = ".mise-tasks/test"
 
+[tasks."test:agent-kit"]
+description = "Run @codevoyant/agent-kit tests"
+depends     = ["install"]
+run         = "pnpm --filter @codevoyant/agent-kit run test"
+
 # ==============================================================================
 # DOCS
 # ==============================================================================
