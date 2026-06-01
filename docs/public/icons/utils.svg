@@ -13,8 +13,6 @@ l-50 16 -2 1092 c-3 1026 -4 1094 -21 1132 -25 56 -83 113 -142 141 l-50 24
 -58 21 -691 23 -355 1 -658 -2 -675 -6z"/>
     </clipPath>
   </defs>
-  <!-- Interior fill clipped to exact toolbox silhouette -->
-  <rect x="0" y="0" width="64" height="64" fill="#ede9ff" clip-path="url(#toolbox-clip)"/>
   <!-- Potrace paths from tool_13598471.png, rescaled 512→64 (factor 0.125).
        Original potrace transform: translate(0,512) scale(0.1,-0.1)
        Combined for 64px target:   translate(0,64)  scale(0.0125,-0.0125) -->

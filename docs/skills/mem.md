@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/mem.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# Mem
+# mem
 
 Team knowledge capture and recall — structured markdown docs with frontmatter, indexed for fast lookup.
 

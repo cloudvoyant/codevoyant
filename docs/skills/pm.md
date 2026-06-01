@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/pm.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# PM <Badge type="warning" text="Experimental" />
+# pm <Badge type="warning" text="Experimental" />
 
 Product management -- product roadmaps, feature PRDs, prioritization review, and Linear integration.
 

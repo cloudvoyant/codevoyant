@@ -1,28 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Board body -->
-  <rect x="3" y="3" width="58" height="58" rx="5" fill="#ede9ff" stroke="#5555ff" stroke-width="2.5"/>
-  <!-- Column dividers -->
-  <line x1="22" y1="3"  x2="22" y2="61" stroke="#5555ff" stroke-width="2"/>
-  <line x1="42" y1="3"  x2="42" y2="61" stroke="#5555ff" stroke-width="2"/>
-  <!-- Header row divider -->
-  <line x1="3"  y1="14" x2="61" y2="14" stroke="#5555ff" stroke-width="2"/>
-  <!-- Header labels -->
-  <line x1="7"  y1="9"  x2="17" y2="9"  stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
-  <line x1="26" y1="9"  x2="37" y2="9"  stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
-  <line x1="46" y1="9"  x2="57" y2="9"  stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
-  <!-- Left column cards (row 1, 2 — row 3 behind badge) -->
-  <rect x="6"  y="17" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="6"  y="31" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="6"  y="45" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <!-- Middle column cards -->
-  <rect x="25" y="17" width="14" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="25" y="31" width="14" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="25" y="45" width="14" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <!-- Right column cards -->
-  <rect x="45" y="17" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="45" y="31" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <rect x="45" y="45" width="13" height="11" rx="2" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5"/>
-  <!-- Checkmark badge (bottom-left, overlaps board corner) -->
-  <circle cx="14" cy="52" r="11" fill="#ede9ff" stroke="#5555ff" stroke-width="2.5"/>
-  <path d="M8.5 52 L12 55.5 L19.5 47.5" stroke="#5555ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <mask id="cut">
+      <rect x="4" y="4" width="56" height="56" rx="6" fill="white"/>
+      <rect x="12" y="9" width="16" height="7" rx="1.5" fill="black"/>
+      <rect x="20" y="19" width="26" height="7" rx="1.5" fill="black"/>
+      <rect x="28" y="29" width="22" height="7" rx="1.5" fill="black"/>
+      <rect x="16" y="39" width="24" height="7" rx="1.5" fill="black"/>
+      <rect x="26" y="47" width="22" height="7" rx="1.5" fill="black"/>
+    </mask>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="6" fill="#5555ff" mask="url(#cut)"/>
 </svg>

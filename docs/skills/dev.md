@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/dev.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# Dev
+# dev
 
 Developer workflow commands — architecture planning, technical exploration, repo comparison, docs generation, PR review, and Linear integration.
 

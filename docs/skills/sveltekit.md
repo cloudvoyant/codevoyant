@@ -2,7 +2,7 @@
 title: SvelteKit
 ---
 
-# SvelteKit
+# sveltekit
 
 Context skill for Svelte 5 runes and feature-slice architecture. Activates automatically when `.svelte`, `.svelte.ts`, or `.svelte.js` files are detected — no slash command needed.
 

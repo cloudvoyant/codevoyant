@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/utils.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# Git
+# git
 
 Git version control commands — conventional commits, CI monitoring, and interactive rebase.
 

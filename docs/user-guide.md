@@ -1,4 +1,4 @@
-# User Guide
+# user guide
 
 > New here? Start with [Installation](/installation).
 

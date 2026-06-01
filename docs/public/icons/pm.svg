@@ -1,15 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Outer ring -->
-  <circle cx="32" cy="32" r="26" fill="#ede9ff" stroke="#5555ff" stroke-width="2.5"/>
-  <!-- Cardinal tick marks -->
+  <circle cx="32" cy="32" r="26" stroke="#5555ff" stroke-width="2.5"/>
   <line x1="32" y1="7" x2="32" y2="13" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
   <line x1="32" y1="51" x2="32" y2="57" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
   <line x1="7" y1="32" x2="13" y2="32" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
   <line x1="51" y1="32" x2="57" y2="32" stroke="#5555ff" stroke-width="2" stroke-linecap="round"/>
-  <!-- North needle (filled — pointing up) -->
   <path d="M32 13 L36 32 L32 29 L28 32 Z" fill="#5555ff"/>
-  <!-- South needle (outline — opposite) -->
-  <path d="M32 51 L36 32 L32 35 L28 32 Z" fill="#ede9ff" stroke="#5555ff" stroke-width="1.5" stroke-linejoin="round"/>
-  <!-- Center hub -->
+  <path d="M32 51 L36 32 L32 35 L28 32 Z" stroke="#5555ff" stroke-width="1.5" stroke-linejoin="round"/>
   <circle cx="32" cy="32" r="3.5" fill="#5555ff"/>
 </svg>

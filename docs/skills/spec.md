@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/spec.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# Spec
+# spec
 
 Specification-driven development -- plan, execute, and track complex work with structured plans.
 

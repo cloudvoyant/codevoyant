@@ -1,10 +1,4 @@
-<script setup>
-import { withBase } from 'vitepress'
-</script>
-
-<img :src="withBase('/icons/em.svg')" width="64" height="64" style="margin-bottom: 1rem" />
-
-# EM <Badge type="warning" text="Experimental" />
+# em <Badge type="warning" text="Experimental" />
 
 Engineering management -- project planning, task breakdowns, roadmap review, and Linear integration.
 
