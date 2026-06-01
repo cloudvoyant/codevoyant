@@ -32,21 +32,14 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "echo ${nextRelease.version} > version.txt && node -e \"const fs=require('fs'); const pkgPath='packages/agent-kit/package.json'; const pkgData=JSON.parse(fs.readFileSync(pkgPath)); pkgData.version='${nextRelease.version}'; fs.writeFileSync(pkgPath, JSON.stringify(pkgData,null,2)+'\\n');\" && mise run skills:build && cd dist && tar -czf opencode-skills.tar.gz opencode-skills/ && tar -czf copilot-skills.tar.gz copilot-skills/ && cd .."
+        "prepareCmd": "echo ${nextRelease.version} > version.txt"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "version.txt", "packages/agent-kit/package.json"],
+        "assets": ["CHANGELOG.md", "version.txt"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-      }
-    ],
-    [
-      "@semantic-release/npm",
-      {
-        "npmPublish": true,
-        "pkgRoot": "packages/agent-kit"
       }
     ],
     [
