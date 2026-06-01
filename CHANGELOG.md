@@ -1,3 +1,41 @@
+## [1.43.0](https://github.com/cloudvoyant/codevoyant/compare/v1.42.1...v1.43.0) (2026-06-01)
+
+### Features
+
+* **docs:** skill overhaul — new tool skills, docs, icons, and user guide rewrite
+
+- Add docker, gcp, mise, terraform, sveltekit, typescript, tasks skills with full recipe sets
+- Add brand SVG icons for all tool/framework/language skills
+- Rewrite user guide: remove Mem, add all new skills, move context skills last, fix HRs
+- Expand sidebar with Tools / Frameworks / Languages sections; alphabetize tools
+- Add /skill feedback verb with GitHub/GitLab issue creation and --save fallback
+- Update index page: add all 13 skills, match sidebar order, swap hero button to User Guide
+- Separate terraform skill from gcp; move mise task wrappers into mise skill
+- Remove shared/references/research-standards.md; per-skill copies in place
+
+
+### Bug Fixes
+
+* **ci:** allow esbuild build scripts via pnpm.onlyBuiltDependencies
+
+* **ci:** move onlyBuiltDependencies to pnpm-workspace.yaml
+
+* **ci:** pin pnpm to v10 and set onlyBuiltDependencies for esbuild
+
+* **ci:** restore test:agent-kit task in mise.toml
+
+* **ci:** strip agent-kit and npm publish from semantic-release config
+
+- Remove @semantic-release/npm plugin
+- Remove @semantic-release/exec prepareCmd that referenced deleted packages
+- Simplify prepareCmd to just write version.txt
+- Remove packages/agent-kit/package.json from git assets
+
+
+### Documentation
+
+* **readme:** update for skill overhaul — new skills, tools, and command syntax
+
 ## [1.42.1](https://github.com/cloudvoyant/codevoyant/compare/v1.42.0...v1.42.1) (2026-04-13)
 
 ### Bug Fixes
