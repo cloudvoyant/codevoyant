@@ -1,10 +1,14 @@
-# user guide
+# User Guide
 
 > New here? Start with [Installation](/installation).
 
 ## How Skills Work
 
-Skills are slash commands that load focused instructions into your AI agent's context before it acts. Some skills — like `spec` or `dev` — are invoked explicitly with a verb. Others — like `sveltekit`, `typescript`, or `mise` — activate automatically when the agent detects relevant files in your project.
+Skills are slash commands that load focused instructions into your AI agent's context before it acts. There are three kinds:
+
+- **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, em, pm, ux).
+- **Task skills** — discrete operations you invoke directly for a single, well-defined job (git, tasks, skill).
+- **Context skills** — activate automatically based on files in your project; no invocation needed (sveltekit, typescript, docker, and others).
 
 **Invoking a skill:**
 
@@ -26,7 +30,11 @@ Skills are slash commands that load focused instructions into your AI agent's co
 
 Invoking without a description — `/spec new` — works too; the skill asks once and continues.
 
-## spec — plan and execute complex work
+## Workflows
+
+Workflows guide you through multi-step processes: research, planning, execution, and handoff. Each workflow manages state across multiple invocations and can run interactively or hand off to a background agent.
+
+### spec — plan and execute complex work
 
 Spec gives you a structured planning layer. You write a plan with AI assistance, then execute it step-by-step or hand it off to a background agent.
 
@@ -49,7 +57,7 @@ Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-ph
 
 See the [spec reference](/skills/spec) for all commands.
 
-## dev — architecture, exploration, and PR/MR
+### dev — architecture, exploration, and PR/MR
 
 Dev handles the higher-level parts of the development loop.
 
@@ -82,7 +90,7 @@ Dev handles the higher-level parts of the development loop.
 
 See the [dev reference](/skills/dev) for all commands.
 
-## em — engineering project planning *(Experimental)*
+### em — engineering project planning *(Experimental)*
 
 EM structures engineering planning: milestone-grouped task plans, capacity and dependency review, and sync with Linear.
 
@@ -100,7 +108,7 @@ Seed from an existing Linear project:
 
 See the [em reference](/skills/em) for all commands.
 
-## pm — product roadmaps and PRDs *(Experimental)*
+### pm — product roadmaps and PRDs *(Experimental)*
 
 PM covers product planning: phased roadmaps, per-feature PRDs, and Linear integration.
 
@@ -113,7 +121,7 @@ PM covers product planning: phased roadmaps, per-feature PRDs, and Linear integr
 
 See the [pm reference](/skills/pm) for all commands.
 
-## ux — prototyping and style research *(Experimental)*
+### ux — prototyping and style research *(Experimental)*
 
 UX supports frontend design exploration: full SvelteKit prototypes, lightweight wireframes, and style extraction from live sites.
 
@@ -138,7 +146,11 @@ UX supports frontend design exploration: full SvelteKit prototypes, lightweight 
 
 See the [ux reference](/skills/ux) for all commands.
 
-## git — commits, CI, and rebase
+## Task Skills
+
+Task skills are invoked once to do a single, well-defined job — commit code, run a build task, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
+
+### git — commits, CI, and rebase
 
 ```bash
 /git commit             # format, generate conventional commit message, commit, push, monitor CI
@@ -150,7 +162,7 @@ See the [ux reference](/skills/ux) for all commands.
 
 See the [git reference](/skills/git) for all commands.
 
-## tasks — run project tasks
+### tasks — run project tasks
 
 Detects your task runner (mise, just, task.dev, or npm scripts) and provides a consistent interface:
 
@@ -164,7 +176,7 @@ Other skills call `/tasks` internally before running raw commands like `tsc` or 
 
 See the [tasks reference](/skills/tasks) for all commands.
 
-## skill — build, maintain, and report skills
+### skill — build, maintain, and report skills
 
 Skill gives you a workflow for building your own codevoyant-compatible skills, and a feedback loop for reporting issues to skill authors.
 
@@ -177,7 +189,7 @@ Skill gives you a workflow for building your own codevoyant-compatible skills, a
 
 See the [skill reference](/skills/skill) for all commands and a guide to building skills.
 
-## Context skills
+## Context Skills
 
 Context skills activate automatically based on files in your project — no invocation needed. The agent loads the relevant recipes before writing or reviewing code.
 

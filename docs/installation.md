@@ -1,4 +1,4 @@
-# installation
+# Installation
 
 ```bash
 npx skills add cloudvoyant/codevoyant
