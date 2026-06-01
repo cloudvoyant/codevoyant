@@ -5,7 +5,7 @@ VERSION  = "{{exec(command='cat version.txt 2>/dev/null | tr -d \"[:space:]\" ||
 
 [tools]
 node       = "lts"
-pnpm       = "latest"
+pnpm       = "10"
 bats       = "latest"
 shellcheck = "latest"
 shfmt      = "latest"
