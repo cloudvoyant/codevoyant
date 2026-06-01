@@ -1,1 +1,0 @@
-{"version":3,"file":"mem.d.ts","sourceRoot":"","sources":["../../src/commands/mem.ts"],"names":[],"mappings":"AAAA;;;;;;;;;GASG;AACH,OAAO,EAAE,OAAO,EAAE,MAAM,WAAW,CAAC;AAKpC,MAAM,WAAW,QAAQ;IACvB,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,MAAM,EAAE,CAAC;IACf,WAAW,EAAE,MAAM,CAAC;CACrB;AAqGD,wBAAgB,UAAU,IAAI,OAAO,CAmIpC"}

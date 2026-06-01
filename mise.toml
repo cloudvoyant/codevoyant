@@ -14,41 +14,20 @@ glab       = "latest"
 "npm:skills-ref" = "0.1.5"
 
 # ==============================================================================
-# UTILS
-# ==============================================================================
-
-[tasks.sync-utils]
-description = "Sync shared utils into all plugins"
-run         = ".mise-tasks/sync-utils"
-
-# ==============================================================================
-# TESTING
-# ==============================================================================
-
-[tasks.test]
-description = "Run tests"
-run         = ".mise-tasks/test"
-
-[tasks."test:agent-kit"]
-description = "Run @codevoyant/agent-kit tests"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/agent-kit run test"
-
-# ==============================================================================
 # DOCS
 # ==============================================================================
 
 [tasks.docs]
 description = "Start local docs dev server"
-run         = "npm run docs:dev"
+run         = "pnpm run docs:dev"
 
 [tasks."docs:build"]
 description = "Build docs site"
-run         = "npm run docs:build"
+run         = "pnpm run docs:build"
 
 [tasks."docs:preview"]
 description = "Preview built docs"
-run         = "npm run docs:preview"
+run         = "pnpm run docs:preview"
 
 [tasks.favicons]
 description = "Generate favicons from SVGs in docs/public/"
@@ -70,21 +49,9 @@ run         = "cat version.txt"
 description = "Run semantic-release to version and update changelog"
 run         = ".mise-tasks/upversion"
 
-[tasks.publish]
-description = "Publish (placeholder — via git tag and GitHub release)"
-run = """
-echo "Plugin published via git tag and GitHub release"
-echo "Users install via: npx skills add cloudvoyant/codevoyant"
-"""
-
 # ==============================================================================
-# pnpm monorepo tasks (packages/)
+# SKILLS
 # ==============================================================================
-
-[tasks."build:skill-converter"]
-description = "Build @codevoyant/claude-skill-converter"
-depends     = ["install"]
-run         = "pnpm --filter @codevoyant/claude-skill-converter run build"
 
 [tasks."skills:validate"]
 description = "Validate all SKILL.md files against the Agent Skills base spec"
@@ -118,9 +85,3 @@ echo "All skills passed validation."
 [tasks."skills:install"]
 description = "Install/update all skills from remote (cloudvoyant/codevoyant)"
 run = "npx skills add cloudvoyant/codevoyant -g --all -y"
-
-[tasks."skills:build"]
-description = "Convert plugins into flat skill bundles for OpenCode and Copilot"
-depends     = ["build:skill-converter"]
-run         = "node packages/claude-skill-converter/dist/index.js"
-

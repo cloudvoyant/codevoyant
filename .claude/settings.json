@@ -55,21 +55,5 @@
       "WebSearch",
       "Write"
     ]
-  },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx @codevoyant/agent-kit mem list 2>/dev/null || true"
-          }
-        ]
-      }
-    ]
-  },
-  "enabledPlugins": {
-    "memsearch@memsearch-plugins": true
   }
 }
