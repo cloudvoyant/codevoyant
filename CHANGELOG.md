@@ -1,3 +1,32 @@
+## [1.44.0](https://github.com/cloudvoyant/codevoyant/compare/v1.43.0...v1.44.0) (2026-06-02)
+
+### Features
+
+* **skills:** add gh, glab, pr skills; extract ci and pr workflows from git and dev
+
+- add gh skill: GitHub CI monitoring and PR review primitives
+- add glab skill: GitLab CI monitoring and MR review primitives
+- add pr skill: AI-powered code review (new, address, complete)
+- add skill learn and consolidate workflows
+- remove git ci, dev pr, dev pr-fix (superseded by above)
+- update docs: gh, glab, pr pages; sidebar, index tiles, user guide
+- replace skill/pr/gh/glab icons with official SVGs
+- update README: correct icons, add missing skills, fix quick start
+
+
+### Documentation
+
+* monochrome icons, lowercase page titles, remove doc page icons
+
+- Restyle workflow icons (spec, dev, em, pm, ux, utils) to monochrome
+- Rebuild spec and em icons from reference designs with mask cutouts
+- Lowercase all doc page h1 titles to match sidebar
+- Remove icon img tags and script setup blocks from skill doc pages
+
+* title case headings, restructure user guide by skill category
+
+* update user-guide section headings and table formatting
+
 ## [1.43.0](https://github.com/cloudvoyant/codevoyant/compare/v1.42.1...v1.43.0) (2026-06-01)
 
 ### Features
