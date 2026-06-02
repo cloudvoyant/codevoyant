@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#5555ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Left branch: top commit -->
+  <circle cx="6" cy="5" r="2.3"/>
+  <!-- Left branch: bottom commit -->
+  <circle cx="6" cy="19" r="2.3"/>
+  <!-- Left branch vertical line -->
+  <line x1="6" y1="7.3" x2="6" y2="16.7"/>
+  <!-- Right branch: bottom commit -->
+  <circle cx="18" cy="19" r="2.3"/>
+  <!-- Right branch line curving up and left toward main branch -->
+  <path d="M18 16.7 L18 10 Q18 5 13 5 L9.3 5"/>
+  <!-- Arrow head pointing left -->
+  <polyline points="11.3,3 9.3,5 11.3,7"/>
+</svg>

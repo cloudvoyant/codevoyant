@@ -1,6 +1,6 @@
 ---
 name: git
-description: 'Git version control workflows: create conventional commits with CI monitoring, check CI/CD pipeline status, or run interactive rebase. Triggers on: "git commit", "git ci", "git rebase", "git help", "create a commit", "conventional commit", "commit my changes", "check CI", "monitor CI", "did CI pass", "watch pipeline", "CI status", "interactive rebase", "squash commits".'
+description: 'Git version control workflows: create conventional commits or run interactive rebase. Triggers on: "git commit", "git rebase", "git help", "create a commit", "conventional commit", "commit my changes", "interactive rebase", "squash commits".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
 ---
@@ -35,7 +35,6 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 
 ## Workflow Index
 
-- **ci** (`references/workflows/ci.md`) — check CI/CD pipeline status after a push
 - **commit** (`references/workflows/commit.md`) — create a conventional commit with optional CI monitoring
 - **help** (`references/workflows/help.md`) — print command reference
 - **rebase** (`references/workflows/rebase.md`) — interactive rebase helper

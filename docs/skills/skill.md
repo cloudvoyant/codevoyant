@@ -40,14 +40,45 @@ Searches agentskill.sh and known skill registries. Returns a summary of existing
 
 ### new
 
-Scaffold a new skill from the codevoyant template.
+Scaffold a new skill from a description.
 
 ```bash
 /skill new                             # guided prompts
 /skill new my-command                  # named, proceeds immediately
+/skill new add a /summarize command that condenses long files
 ```
 
 Creates the skill directory structure (`SKILL.md`, `references/workflows/`, etc.), writes a first-draft SKILL.md from the template, and opens a planning loop to flesh out the workflows.
+
+### learn
+
+Extract a skill from an artifact — a local path, a URL, or a PR/MR diff. The workflow reads the source, identifies discrete operations, groups them into workflows, and writes terse recipe steps.
+
+```bash
+/skill learn skills/gh/                             # extract from an existing skill directory
+/skill learn https://docs.example.com/api           # extract from a webpage
+/skill learn https://github.com/org/repo/pull/42    # extract from a PR diff
+/skill learn "watch a file and notify on change"    # extract from a text goal
+/skill learn skills/gh/ --name my-gh               # override the output skill name
+```
+
+**What makes the output terse:**
+- Steps are direct narrow commands (`gh`, `glab`, `git`, `jq`, `grep`) — no wrapper scripts
+- One action per step; flags listed explicitly
+- Fail-fast exits on every step that can fail
+- No prose explanations
+
+### consolidate
+
+Merge two skills (by local path or URL) into one. Deduplicates identical workflows, surfaces conflicts for you to resolve, and produces a unified SKILL.md and workflow files.
+
+```bash
+/skill consolidate skills/gh/ skills/glab/                    # merge two local skills
+/skill consolidate skills/gh/ skills/glab/ --name vcs        # set the output name
+/skill consolidate https://example.com/skill-a skills/gh/    # mix URL and local
+```
+
+Dropped duplicates and resolved conflicts are reported in the final summary. The source skills are left unchanged — delete them manually when ready.
 
 ### update
 

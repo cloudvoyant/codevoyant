@@ -1,6 +1,6 @@
 ---
 name: dev
-description: 'Developer workflows: plan feature architecture, explore technical approaches, compare repos, generate docs, create PRs/MRs, approve tasks in Linear, or fix PR issues. Triggers on: "dev plan", "dev explore", "dev diff", "dev docs", "dev approve", "dev pr", "dev pr-fix", "dev allow", "dev help", "architecture plan", "plan architecture", "technical design", "explore options", "research approaches", "compare repos", "create PR", "open MR", "create merge request", "open pull request", "dev fix", "fix PR".'
+description: 'Developer workflows: plan feature architecture, explore technical approaches, compare repos, generate docs, or approve tasks in Linear. Triggers on: "dev plan", "dev explore", "dev diff", "dev docs", "dev approve", "dev allow", "dev help", "architecture plan", "plan architecture", "technical design", "explore options", "research approaches", "compare repos".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
 disable-model-invocation: true
@@ -17,7 +17,6 @@ Pass your intent directly on the invocation line — `explore` and `plan` procee
 ```
 /dev explore how the auth middleware works
 /dev plan auth system --mode arch
-/dev pr staging
 ```
 
 ## Critical Rules
@@ -35,10 +34,6 @@ REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 case "$VERB" in
   "")              VERB="help" ;;
-  "fix")           VERB="pr-fix" ;;
-  "pull-request")  VERB="pr" ;;
-  "merge-request") VERB="pr" ;;
-  "mr")            VERB="pr" ;;
 esac
 ```
 
@@ -56,9 +51,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **docs** (`references/workflows/docs.md`) — generate or update documentation
 - **explore** (`references/workflows/explore.md`) — research technical approaches, generate proposals
 - **help** (`references/workflows/help.md`) — print command reference
-- **pr** (`references/workflows/pr.md`) — create a pull request or merge request
 - **plan** (`references/workflows/plan.md`) — plan feature or system architecture
-- **pr-fix** (`references/workflows/pr-fix.md`) — review and fix PR issues
 
 ## Agent Index
 

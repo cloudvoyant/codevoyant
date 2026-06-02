@@ -1,10 +1,9 @@
 # dev
 
-Developer workflow commands — architecture planning, technical exploration, repo comparison, docs generation, PR review, and Linear integration.
+Developer workflow commands — architecture planning, technical exploration, repo comparison, docs generation, and Linear integration.
 
-The Dev skills cover the higher-level mechanics of the development loop: drafting architecture plans, researching technical approaches, comparing repositories, resolving PR comments, and generating architecture documentation.
+The Dev skills cover the higher-level mechanics of the development loop: drafting architecture plans, researching technical approaches, comparing repositories, and generating architecture documentation.
 
-> **Looking for commit, CI, and rebase?** Those moved to the [Git skill](/skills/git).
 
 ## Installation
 
@@ -16,14 +15,6 @@ npx skills add cloudvoyant/codevoyant
 **OpenCode / VS Code Copilot:** See the [installation guide](/user-guide#installation).
 
 ## Typical Workflows
-
-### Open a PR or MR
-
-```bash
-/dev pr                     # creates PR/MR into main, auto-detects GitHub vs GitLab
-/dev pr staging             # target a different base branch
-/dev pr-fix                 # fix open review comments on an existing PR/MR
-```
 
 ### Compare Repos or Branches
 
@@ -61,46 +52,17 @@ Compare your current codebase with another repository or branch:
 
 Generates a diff report at `.claude/diff.md` covering structural differences, added/removed files, and architectural divergence. Useful for evaluating migrations, auditing forks, or reviewing a branch before merging.
 
-### Create PR / MR
+### Code Review
 
-Create a pull request (GitHub) or merge request (GitLab) from the current branch:
-
-```bash
-/dev pr                         # into main, auto-detects provider
-/dev pr staging                 # target a different base branch
-/dev pr --draft                 # create as draft
-/dev pr --yes                   # skip confirmation prompt
-/dev pr --github                # force GitHub
-/dev pr --gitlab                # force GitLab
-```
-
-What happens:
-1. Checks working tree is clean (no uncommitted changes)
-2. Detects GitHub vs GitLab from the remote URL
-3. Pushes the branch if it hasn't been pushed yet
-4. Checks no existing open PR/MR for this branch already exists
-5. Drafts a title and body from commits since the base branch
-6. Shows preview for review — you can approve, tweak, or cancel
-7. Creates the PR/MR and reports the URL
-
-**Flags:**
-- `[base-branch]` — target branch (default: `main`)
-- `--draft` — create as draft PR/MR
-- `--yes` / `-y` — skip confirmation
-- `--github` / `--gitlab` — override auto-detected provider
-
-### Fix PR Review Comments
-
-Fetch open PR/MR review comments and propose fixes:
+PR/MR creation and review workflows have moved to the [`/rev` skill](/skills/rev):
 
 ```bash
-/dev pr-fix [pr-id]
-/dev pr-fix [pr-id] --github    # Force GitHub provider
-/dev pr-fix [pr-id] --gitlab    # Force GitLab provider
-/dev pr-fix --silent             # Suppress desktop notification
+/rev new          # generate an AI-powered inline code review for any open PR/MR
+/rev address      # pull review comments and propose targeted fixes
+/rev complete     # publish a pending draft review
 ```
 
-Works with GitHub and GitLab. For each PR/MR with unresolved review comments, creates `.codevoyant/pr-fix/{pr-id}.md` containing the review threads and a "Proposed Fixes" section written by a background agent. Proposals are written to the document only -- **not applied to code** -- so you review them before deciding what to apply.
+See the [rev reference](/skills/rev) for all commands.
 
 ### Technical Exploration
 

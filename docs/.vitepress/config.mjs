@@ -59,7 +59,7 @@ export default defineConfig({
       {
         text: "Skills",
         items: [
-          { text: "git", link: "/skills/git" },
+          { text: "pr", link: "/skills/pr" },
           { text: "skill", link: "/skills/skill" },
           { text: "tasks", link: "/skills/tasks" },
         ],
@@ -67,6 +67,9 @@ export default defineConfig({
       {
         text: "Tools",
         items: [
+          { text: "git", link: "/skills/git" },
+          { text: "gh", link: "/skills/gh" },
+          { text: "glab", link: "/skills/glab" },
           { text: "docker", link: "/skills/docker" },
           { text: "gcp", link: "/skills/gcp" },
           { text: "mise", link: "/skills/mise" },

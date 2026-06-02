@@ -19,17 +19,15 @@ dev — Development workflow commands for Claude Code
   /dev approve  [plan-slug] [--push [linear-project-url]] [--silent]
       Promote a draft architecture plan and optionally push tasks to Linear
 
-  /dev pr  [base-branch] [--github|--gitlab] [--draft] [--yes|-y]
-      Create a pull request (GitHub) or merge request (GitLab) into base-branch (default: main)
-
-  /dev pr-fix  [pr-id] [--github|--gitlab] [--silent]
-      Fetch open PR/MR change requests and propose fixes
-
   /dev allow  [--global]
       Pre-approve dev plugin permissions for uninterrupted autonomous agent execution
 
 Git commands have moved to `/git`:
 
   /git commit  [--yes|-y] [--no-push] [--autofix] [--atomic] [--single]
-  /git ci  [--wait] [--autofix] [--silent]
   /git rebase  [base-branch] [--push]
+
+Migrating from `dev pr` / `dev pr-fix`:
+
+  /dev pr     → /rev new      (create and submit a code review)
+  /dev pr-fix → /rev address  (pull comments, propose fixes, respond)

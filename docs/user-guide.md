@@ -57,23 +57,9 @@ Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-ph
 
 See the [spec reference](/skills/spec) for all commands.
 
-### dev — architecture, exploration, and PR/MR
+### dev — architecture and exploration
 
 Dev handles the higher-level parts of the development loop.
-
-**Open a PR or MR:**
-
-```bash
-/dev pr                 # creates PR/MR into main, auto-detects GitHub vs GitLab
-/dev pr staging         # target a different base branch
-/dev pr --draft         # create as draft
-```
-
-**Fix review comments on an existing PR/MR:**
-
-```bash
-/dev pr-fix             # fetches open review threads and proposes fixes (doesn't apply them)
-```
 
 **Architecture planning:**
 
@@ -89,6 +75,34 @@ Dev handles the higher-level parts of the development loop.
 ```
 
 See the [dev reference](/skills/dev) for all commands.
+
+### pr — AI-powered code review
+
+PR orchestrates the full review lifecycle: generating inline comments from a diff, addressing reviewer feedback, and publishing the completed review.
+
+**Review an open PR/MR:**
+
+```bash
+/pr new                # generate professional inline review comments from the diff
+/pr new 42             # review a specific PR/MR number
+```
+
+**Address review comments on your PR/MR:**
+
+```bash
+/pr address            # pull open threads, propose fixes, apply approved changes
+```
+
+**Publish a pending draft:**
+
+```bash
+/pr complete           # submit the draft review
+/pr complete --event APPROVE
+```
+
+Review documents live in `.codevoyant/review/{slug}/` and are reusable across `new`, `address`, and `complete` invocations.
+
+See the [pr reference](/skills/pr) for all commands.
 
 ### em — engineering project planning _(Experimental)_
 
@@ -150,17 +164,28 @@ See the [ux reference](/skills/ux) for all commands.
 
 Task-oriented skills are invoked once to do a single, well-defined job — commit code, run a build task, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
 
-### git — commits, CI, and rebase
+### git — commits and rebase
 
 ```bash
-/git commit             # format, generate conventional commit message, commit, push, monitor CI
+/git commit             # format, generate conventional commit message, commit, and push
 /git commit --atomic    # split into multiple logical commits
 /git rebase main        # interactive rebase, handles conflict sides correctly
-/git ci                 # monitor CI in background, notify when done
-/git ci --autofix       # automatically fix failures and re-push
 ```
 
 See the [git reference](/skills/git) for all commands.
+
+### gh / glab — CI monitoring and PR/MR review primitives
+
+Platform-specific skills for GitHub (`gh`) and GitLab (`glab`). Used directly or called internally by `/pr`.
+
+```bash
+/gh ci                  # watch GitHub Actions for the current branch (background)
+/gh ci --autofix        # fix failures and re-push automatically
+/glab ci                # watch GitLab CI for the current branch (background)
+/glab ci --autofix      # fix failures and re-push automatically
+```
+
+See the [gh reference](/skills/gh) and [glab reference](/skills/glab) for all commands.
 
 ### tasks — run project tasks
 

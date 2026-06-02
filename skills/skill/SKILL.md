@@ -1,5 +1,5 @@
 ---
-description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "explore skills", "create a skill", "make a skill for", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue". Pass a subcommand as the first argument.'
+description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill learn", "skill consolidate", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "explore skills", "create a skill", "make a skill for", "learn from", "extract skill from", "skill from PR", "skill from URL", "skill from path", "merge skills", "consolidate skills", "combine skills", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue". Pass a subcommand as the first argument.'
 name: skill
 disable-model-invocation: true
 license: MIT
@@ -58,7 +58,9 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 ## Workflow Index
 
 - **explore** (`references/workflows/explore.md`) — research existing skills on agentskill.sh before building
-- **new** (`references/workflows/new.md`) — create a new Claude Code compatible skill
+- **new** (`references/workflows/new.md`) — create a new Claude Code compatible skill from a description
+- **learn** (`references/workflows/learn.md`) — extract a skill from a local path, URL, or PR/MR diff
+- **consolidate** (`references/workflows/consolidate.md`) — merge two skills into one, deduplicating workflows
 - **update** (`references/workflows/update.md`) — update or improve an existing skill
 - **critique** (`references/workflows/critique.md`) — evaluate skill quality across 5 dimensions
 - **feedback** (`references/workflows/feedback.md`) — open a GitHub or GitLab issue to report a skill problem

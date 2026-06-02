@@ -1,8 +1,8 @@
 # git
 
-Git version control commands — conventional commits, CI monitoring, and interactive rebase.
+Git version control commands — conventional commits and interactive rebase.
 
-The Git skills handle the mechanical parts of the commit loop: writing good commit messages, monitoring CI pipelines, and rebasing safely onto updated base branches.
+The Git skills handle the mechanical parts of the commit loop: writing good commit messages and rebasing safely onto updated base branches.
 
 ## Installation
 
@@ -24,14 +24,13 @@ Use `/git commit` frequently — small, focused commits with clear messages are 
 /git commit
 # Review the generated message
 # Approve to create the commit and push
-# /git ci runs automatically in background after push
 ```
 
-### Before opening a PR
+### Before addressing review comments
 
 ```bash
 /git commit
-/dev pr-fix     # if there are open review comments
+/rev address    # pull open review comments and propose fixes
 ```
 
 ### Rebase onto an updated base branch
@@ -72,16 +71,12 @@ Follows the [Conventional Commits](https://www.conventionalcommits.org/) specifi
 
 ### CI Monitor
 
-Monitor CI/CD workflows and verify status after a push:
+CI monitoring has moved to platform-specific skills:
 
-```bash
-/git ci
-/git ci --wait       # Block until CI completes
-/git ci --autofix    # Automatically fix failures and re-push (up to 2 attempts)
-/git ci --silent     # Suppress desktop notification
-```
+- **GitHub:** [`/gh ci`](/skills/gh) — watches GitHub Actions using `gh run watch`
+- **GitLab:** [`/glab ci`](/skills/glab) — watches GitLab CI using `glab ci`
 
-Works with both **GitHub Actions** and **GitLab CI** — provider is auto-detected from the remote URL. Runs in the **background by default** so you can keep working. A desktop notification fires when checks complete or fail.
+Both support `--autofix` (fix failures and re-push) and `--silent` (suppress notification).
 
 ### Safe Rebase
 

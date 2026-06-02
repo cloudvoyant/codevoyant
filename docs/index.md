@@ -26,7 +26,7 @@ features:
   - icon:
       src: /icons/dev.svg
     title: dev
-    details: Architecture planning, technical exploration, repo comparison, docs generation, and PR review.
+    details: Architecture planning, technical exploration, repo comparison, and docs generation.
     link: /skills/dev
   - icon:
       src: /icons/em.svg
@@ -44,15 +44,35 @@ features:
     details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
     link: /skills/ux
   - icon:
-      src: /icons/git.svg
-    title: git
-    details: Conventional commits, CI monitoring, and safe interactive rebase.
-    link: /skills/git
+      src: /icons/pr.svg
+    title: pr
+    details: AI-powered code review — generate professional inline comments from a diff, address change requests, and publish a draft review.
+    link: /skills/pr
+  - icon:
+      src: /icons/skill.svg
+    title: skill
+    details: Build, iterate, critique, and report on codevoyant-compatible skills. Includes learn and consolidate to extract skills from existing artifacts.
+    link: /skills/skill
   - icon:
       src: /icons/tasks.svg
     title: tasks
     details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
     link: /skills/tasks
+  - icon:
+      src: /icons/git.svg
+    title: git
+    details: Conventional commits and safe interactive rebase.
+    link: /skills/git
+  - icon:
+      src: /icons/gh.svg
+    title: gh
+    details: GitHub CI monitoring and PR review management — pull comments, push inline notes, draft and publish reviews.
+    link: /skills/gh
+  - icon:
+      src: /icons/glab.svg
+    title: glab
+    details: GitLab CI monitoring and MR review management — pull discussions, push inline notes, draft and publish reviews.
+    link: /skills/glab
   - icon:
       src: /icons/docker.svg
     title: docker

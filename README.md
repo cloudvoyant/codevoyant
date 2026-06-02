@@ -29,8 +29,8 @@ Research requirements, generate proposals, create phase-by-phase implementation 
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/dev.svg" width="32"></td>
-<td><strong>dev</strong> — architecture, exploration, and PR/MR<br>
-Architecture planning, technical exploration, PR/MR creation, review comment resolution, and repo/branch comparison.</td>
+<td><strong>dev</strong> — architecture and exploration<br>
+Architecture planning, technical exploration, and repo/branch comparison.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/em.svg" width="32"></td>
@@ -53,9 +53,14 @@ Scaffold SvelteKit prototypes, create single-file wireframe explorations, and ex
 
 <table>
 <tr>
-<td width="48" align="center"><img src="docs/public/icons/git.svg" width="32"></td>
-<td><strong>git</strong> — commits, CI, and rebase<br>
-Conventional commits with auto-formatting, background CI monitoring, and safe interactive rebase.</td>
+<td width="48" align="center"><img src="docs/public/icons/pr.svg" width="32"></td>
+<td><strong>pr</strong> — AI-powered code review<br>
+Generate professional inline review comments from a diff, address change requests, and publish a draft review.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/skill.svg" width="32"></td>
+<td><strong>skill</strong> — build, maintain, and report skills<br>
+Scaffold new skills, iterate on existing ones, audit quality, and report issues to skill authors.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/tasks.svg" width="32"></td>
@@ -63,9 +68,19 @@ Conventional commits with auto-formatting, background CI monitoring, and safe in
 Detect and run tasks across mise, just, task.dev, and npm scripts with a consistent interface.</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/spec.svg" width="32"></td>
-<td><strong>skill</strong> — build, maintain, and report skills<br>
-Scaffold new skills, iterate on existing ones, audit quality, and report issues to skill authors.</td>
+<td align="center"><img src="docs/public/icons/git.svg" width="32"></td>
+<td><strong>git</strong> — commits and rebase<br>
+Conventional commits with auto-formatting and safe interactive rebase.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/gh.svg" width="32"></td>
+<td><strong>gh</strong> — GitHub CI and PR review<br>
+Watch Actions pipelines, fetch and post inline PR review comments, and manage draft reviews.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/glab.svg" width="32"></td>
+<td><strong>glab</strong> — GitLab CI and MR review<br>
+Watch CI pipelines, fetch and post inline MR discussion notes, and manage draft reviews.</td>
 </tr>
 </table>
 
@@ -127,12 +142,13 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 /spec bg my-feature           # hand off to a background agent
 
 # Ship code
-/git commit                   # format → conventional commit → push → CI monitor
-/git ci --autofix             # watch CI, auto-fix failures and re-push
+/git commit                   # format → conventional commit → push
+/gh ci --autofix              # watch GitHub Actions, auto-fix failures and re-push
+/glab ci --autofix            # watch GitLab CI, auto-fix failures and re-push
 
-# Open a PR/MR
-/dev pr                       # create PR into main (auto-detects GitHub vs GitLab)
-/dev pr --draft               # create as draft
+# Review a PR/MR
+/pr new                       # generate inline review comments from the diff
+/pr address                   # pull reviewer feedback and propose fixes
 
 # Plan engineering work
 /em plan "migrate auth to OAuth2"    # milestone-grouped task plan
