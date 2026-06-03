@@ -1,3 +1,79 @@
+## [1.45.0](https://github.com/cloudvoyant/codevoyant/compare/v1.44.0...v1.45.0) (2026-06-03)
+
+### Features
+
+* **nav:** sidebar restructure — Skills & Workflows + Domains section
+
+- Rename Workflows → Skills & Workflows; merge pr/qa/skill in
+- Add Domains section: em, pm, ux, compgeo, hpc, mle (all experimental)
+- Move task to Tools section
+- Add Domains description to user-guide.md
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+
+### Documentation
+
+* **sveltekit:** add monorepo apps/libs overview to feature-architecture page
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+* align apps/libs dir structure and DAG feature rules across React, SvelteKit, TanStack
+
+Consistent architecture across all three framework skills:
+- Primary monorepo layout: apps/ + libs/feature-* packages
+- Within-app: thin routes, hooks, validators, mappers, db, generated/
+- Feature libs: components, hooks, view-models, validators, types, server/
+- Co-location discouraged except for private types/mappers within a route
+- Cross-cutting concerns (logger, etc.) are own libs, not shared utils
+- Feature import rule updated from hard isolation to DAG:
+  pervasive features (auth, user-profile) importable from other features
+  (public API only), all other cross-feature imports blocked
+- Three cross-feature coordination mechanisms: shared stores, cache key
+  sync, route/widget composition
+- Namespacing note: start flat libs/feature-*, namespace under
+  libs/<domain>/feature-* when needed
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+* move TanStack Project Conventions to second position in sidebar
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+* split cpp code-standards and ts pnpm recipes; reorder sidebars
+
+C++:
+- Split code-standards.md into code-standards.md (naming, modern C++,
+  forbidden patterns) and formatting-and-analysis.md (clang-format,
+  clang-tidy, CMake targets, pre-commit, CI gate)
+- Reorder: code-standards + formatting-and-analysis now precede
+  conan dependency management in sidebar and index
+
+Python:
+- Move Project Conventions and Architecture to second position
+  (after uv project setup) in sidebar and index
+
+TypeScript:
+- Split pnpm-workspace.md into pnpm-workspace.md (workspace setup,
+  internal libs, workspace:*) and pnpm-catalog.md (catalogs, named
+  catalogs, onlyBuiltDependencies, minimumReleaseAge, catalogMode)
+- Add pnpm-catalog entry to sidebar and index
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+* update sidebar with descriptive recipe titles and tutorial ordering
+
+- Replace all terse sidebar labels (e.g. "Zustand", "Project setup") with
+  full descriptive titles matching new junior-dev recipe rewrites
+- Reorder recipe groups to follow progressive tutorial flow (foundation →
+  building blocks → data → forms → auth → advanced → conventions)
+- Add new conventions recipe entries for react, tanstack, and typescript
+- Reorder C++ recipes: cmake → conan-packages → conan-profiles → conan-publishing
+  → monorepo → grpc → ci-caching → code-standards
+- Include all accumulated skill, recipe, and docs changes from this session
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## [1.44.0](https://github.com/cloudvoyant/codevoyant/compare/v1.43.0...v1.44.0) (2026-06-02)
 
 ### Features
