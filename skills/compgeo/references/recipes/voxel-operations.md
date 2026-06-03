@@ -253,3 +253,109 @@ file.close();
 ```
 
 The C++ API is the canonical reference. When the Python bindings are missing a function, check whether the C++ `openvdb::tools` namespace has it -- you can often call it via pybind11 or write a small C++ extension.
+
+## NanoVDB GPU Operations
+
+Once you have voxel data that doesn't change (baked geometry, precomputed SDFs, density volumes), move it to a NanoVDB buffer for GPU access. This section covers the read path: converting a built OpenVDB grid, uploading it, and running GPU kernels over it. For modifying voxels, stay on the CPU with OpenVDB, then re-bake to NanoVDB.
+
+### Converting an Existing Grid
+
+```cpp
+#include <nanovdb/util/OpenToNanoVDB.h>
+#include <nanovdb/util/CudaDeviceBuffer.h>
+
+// After any CSG / morphological operation that produces a final grid:
+auto handle = nanovdb::openToNanoVDB(*grid);  // grid is openvdb::FloatGrid::Ptr
+handle.deviceUpload();
+auto* d_grid = handle.deviceGrid<float>();
+// d_grid is now valid on the device — pass to kernels
+```
+
+The conversion allocates a flat host buffer, serializes the VDB tree (root -> internal nodes -> leaf nodes -> values), then copies to device. Total cost is O(active voxels). For a 10M-voxel grid, expect ~100ms on the CPU and ~10ms for the H->D transfer.
+
+### GPU-Side SDF Raymarching
+
+A minimal raymarcher that steps through an SDF on the GPU:
+
+```cuda
+__device__ float sampleSDF(
+    const nanovdb::FloatGrid* grid,
+    const nanovdb::Vec3f& worldPos)
+{
+    auto acc = grid->getAccessor();
+    // World to index space
+    auto ijk = grid->worldToIndexF(worldPos);
+    nanovdb::Coord coord(ijk[0], ijk[1], ijk[2]);
+    return acc.getValue(coord);
+}
+
+__global__ void raymarchKernel(
+    const nanovdb::FloatGrid* grid,
+    float* depthBuffer,
+    int width, int height,
+    nanovdb::Vec3f origin, nanovdb::Vec3f dir)
+{
+    int px = blockIdx.x * blockDim.x + threadIdx.x;
+    int py = blockIdx.y * blockDim.y + threadIdx.y;
+    if (px >= width || py >= height) return;
+
+    nanovdb::Vec3f pos = origin;
+    float t = 0.0f;
+    for (int step = 0; step < 256; ++step) {
+        float sdf = sampleSDF(grid, pos);
+        if (sdf < 0.001f) { depthBuffer[py * width + px] = t; return; }
+        t += sdf;                      // sphere-tracing: step by SDF value
+        pos = origin + dir * t;
+    }
+    depthBuffer[py * width + px] = -1.0f;  // miss
+}
+```
+
+Sphere tracing converges in fewer steps than fixed-step raymarching because the SDF tells you how far you can safely advance without crossing the surface.
+
+### GPU-Side Boolean Queries (Point Containment)
+
+Check whether a batch of points is inside a closed surface (negative SDF = inside):
+
+```cuda
+__global__ void containmentQuery(
+    const nanovdb::FloatGrid* grid,
+    const float3* points,
+    bool* inside,
+    int n)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+
+    auto acc = grid->getAccessor();
+    nanovdb::Vec3f wp(points[i].x, points[i].y, points[i].z);
+    auto ijk = grid->worldToIndexF(wp);
+    nanovdb::Coord coord(ijk[0], ijk[1], ijk[2]);
+    inside[i] = acc.getValue(coord) < 0.0f;
+}
+```
+
+This is the GPU equivalent of OpenVDB's `tools::pointsInsideLevelSet`. At 1M points, this kernel finishes in ~2ms on a modern GPU versus ~200ms for the CPU path.
+
+### Writing a Modified Grid Back to OpenVDB
+
+NanoVDB is read-only. To modify and save:
+
+1. Run any modification on the CPU with OpenVDB
+2. Re-bake: `nanovdb::openToNanoVDB(*modifiedGrid)` -> re-upload
+3. Or keep both: CPU OpenVDB for editing state, NanoVDB handle for rendering
+
+```cpp
+// After GPU raymarching, you may want to rebuild the SDF:
+// (modification is always on the CPU OpenVDB grid)
+vdb::tools::levelSetRebuild(*grid, 0.0f, 3.0f);
+auto newHandle = nanovdb::openToNanoVDB(*grid);
+newHandle.deviceUpload();
+d_grid = newHandle.deviceGrid<float>();  // swap the device pointer
+```
+
+### Performance Notes
+
+- Each call to `handle.deviceUpload()` is a full H->D copy. For large grids (>100M voxels), consider double-buffering: upload the next grid while the GPU renders the current one.
+- `getAccessor()` on device is cheap (stack-allocated cache structure). Prefer one accessor per thread, not one per voxel query.
+- NanoVDB works with OptiX ray tracing kernels identically -- pass `d_grid` to your OptiX `__intersection__` program.

@@ -289,3 +289,262 @@ For web viewers rendering massive geometry, progressive loading avoids the "blan
 Potree: [potree.github.io](https://potree.github.io/)
 
 For custom streaming, the pattern is: partition your geometry into spatial tiles, serve them behind a tile endpoint, and load on demand based on the camera frustum. This is essentially how Google Earth and Cesium work for terrain and 3D tiles.
+
+## Large-Scale Voxel Storage
+
+### Zarr: Chunked Cloud-Native Arrays
+
+For voxel grids that don't fit in RAM or need to be read in parallel from cloud storage, Zarr provides chunked N-D array storage with pluggable compressors. Each chunk is a separate object/file, so you can read a 64-cubed subregion of a 4096-cubed grid with a single object-store GET.
+
+Zarr docs: [zarr.readthedocs.io](https://zarr.readthedocs.io/)
+
+```python
+import zarr
+import numcodecs
+import numpy as np
+
+# Write a 1024-cubed float32 grid in 64-cubed chunks, Blosc+Zstd compressed
+store = zarr.open(
+    "volume.zarr",
+    mode="w",
+    shape=(1024, 1024, 1024),
+    chunks=(64, 64, 64),
+    dtype=np.float32,
+    compressor=numcodecs.Blosc(cname="zstd", clevel=5, shuffle=numcodecs.Blosc.BITSHUFFLE),
+)
+store[0:256, 0:256, 0:256] = my_subgrid  # write a region
+
+# Read only the chunk containing voxel (100, 200, 300) — no full-grid load
+subgrid = store[64:128, 192:256, 256:320]  # numpy array
+```
+
+Zarr stores can live on local disk, S3, GCS, or Azure Blob — swap the `store` argument:
+
+```python
+import s3fs
+
+s3 = s3fs.S3FileSystem()
+store = zarr.open(s3.get_mapper("s3://mybucket/volume.zarr"), mode="r")
+region = store[128:192, 128:192, 128:192]  # streams only the touched chunks
+```
+
+**Chunk size guidance:**
+- 64-cubed (1.05M voxels × 4 bytes = 4 MB): good default for random-access queries
+- 128-cubed (8.4M voxels = 32 MB): better throughput for sequential sweeps, higher random-access cost
+- Match chunk boundaries to your access pattern (e.g., if you always read XZ slices, use tall thin chunks)
+
+### OME-Zarr: Multiscale Volumetric Data
+
+OME-Zarr (Open Microscopy Environment) extends Zarr with a convention for storing multiscale image pyramids — coarse-to-fine resolutions in the same store. Useful for volumetric simulation data, medical imaging, and any dataset where you want to LOD between resolutions.
+
+OME-Zarr spec: [ngff.openmicroscopy.org](https://ngff.openmicroscopy.org/)
+
+```python
+import zarr
+import numpy as np
+
+# Build a 3-level pyramid: [full, half, quarter]
+store = zarr.open_group("volume.ome.zarr", mode="w")
+scales = [1.0, 2.0, 4.0]  # voxel sizes at each level
+
+for level, scale in enumerate(scales):
+    n = 1024 // int(scale)
+    store.require_dataset(
+        f"/{level}",
+        shape=(n, n, n),
+        chunks=(64, 64, 64),
+        dtype=np.float32,
+    )
+
+# Write metadata
+store.attrs["multiscales"] = [{
+    "axes": [{"name": ax, "type": "space", "unit": "micrometer"} for ax in "zyx"],
+    "datasets": [{"path": str(i), "coordinateTransformations":
+        [{"type": "scale", "scale": [s, s, s]}]} for i, s in enumerate(scales)],
+}]
+```
+
+Viewers (Napari, BigDataViewer, neuroglancer) read OME-Zarr natively — they pick the right resolution level based on zoom.
+
+### NanoVDB Page-Streaming
+
+NanoVDB files can be split into pages (fixed-size blocks) and loaded on demand. This lets you stream large NanoVDB grids from disk or object storage without loading the entire file:
+
+```cpp
+#include <nanovdb/util/IO.h>
+
+// Open a multi-grid NanoVDB file in paged mode
+auto handle = nanovdb::io::readGrid<nanovdb::CudaDeviceBuffer>(
+    "large_volume.nvdb",
+    "density",           // grid name
+    0,                   // grid index
+    1                    // verbose
+);
+
+// Only the requested grid is loaded — other grids in the file stay on disk
+handle.deviceUpload();
+```
+
+On the Python side, use `pynanovdb` with memory-mapped reading:
+
+```python
+import pynanovdb
+
+# Memory-mapped: OS pages in only the pages you touch
+handle = pynanovdb.read("large_volume.nvdb", mmap=True)
+grid = handle.grid(0)
+value = grid.getValue((512, 512, 512))  # OS fetches only the relevant page
+```
+
+For object storage, stream NanoVDB pages over HTTP with range requests:
+
+```python
+import requests
+import io
+import pynanovdb
+
+# Range request for just the first 4 MB (header + metadata)
+r = requests.get(
+    "https://mybucket.s3.amazonaws.com/volume.nvdb",
+    headers={"Range": "bytes=0-4194303"}
+)
+handle = pynanovdb.readBuffer(io.BytesIO(r.content))
+```
+
+## Large-Scale Mesh Delivery
+
+### 3D Tiles
+
+3D Tiles is a Cesium-originated open standard (now OGC) for streaming massive 3D datasets — terrain, buildings, photogrammetry, point clouds — over HTTP. The tileset is a JSON hierarchy (`tileset.json`) that describes spatial bounds, geometric error at each level, and child tile URLs. The viewer loads tiles based on camera position and a user-configurable geometric error threshold.
+
+3D Tiles spec: [github.com/CesiumGS/3d-tiles](https://github.com/CesiumGS/3d-tiles)
+
+Tile content format: **B3DM** (Batched 3D Model, glTF-inside) or **PNTS** (point clouds). The `py3dtiles` library generates tilesets from meshes and point clouds:
+
+```python
+from py3dtiles.convert import convert
+
+# Convert a large OBJ mesh to a 3D Tiles tileset
+convert(
+    "large_city.obj",
+    outfolder="./tileset/",
+    jobs=8,            # parallel workers
+    crs_in="EPSG:4326",
+    crs_out="EPSG:4978",
+)
+# Produces: tileset.json + .b3dm tile files
+```
+
+Serve the output directory from any static HTTP server. In a three.js scene, use `3d-tiles-renderer-js`:
+
+```typescript
+import { TilesRenderer } from "3d-tiles-renderer";
+
+const tilesRenderer = new TilesRenderer("/tileset/tileset.json");
+tilesRenderer.setCamera(camera);
+tilesRenderer.setResolutionFromRenderer(camera, renderer);
+
+scene.add(tilesRenderer.group);
+
+function animate() {
+  tilesRenderer.update();
+  renderer.render(scene, camera);
+}
+```
+
+The renderer fetches and discards tiles automatically as the camera moves. A 500M-triangle city model loads in under 2 seconds with appropriate tile sizing because the viewer only fetches tiles covering the current view frustum.
+
+**Tile sizing rule of thumb:** Target 500k–2M triangles per leaf tile and 10–100 leaf tiles in view at any given camera position. Larger tiles reduce request overhead; smaller tiles allow finer-grained LOD transitions.
+
+### Chunked glTF for Progressive Loading
+
+For datasets without geographic coordinates (mechanical assemblies, game levels), split the mesh into spatial chunks and load them independently. Use glTF's `EXT_mesh_gpu_instancing` for repeated objects:
+
+```bash
+# Split a large mesh with gltfpack (from meshoptimizer)
+gltfpack -i large_assembly.glb -o optimized.glb \
+  -si 0.9 \   # simplification ratio per LOD
+  -cc          # vertex/index buffer compression
+```
+
+Then serve chunks separately and load them with a frustum-culling loader:
+
+```typescript
+// Load a chunk only when it's within a given distance
+const chunkLoader = new THREE.GLTFLoader();
+if (camera.frustum.intersectsBox(chunkBBox)) {
+  chunkLoader.load(`/chunks/chunk_${id}.glb`, (gltf) => {
+    scene.add(gltf.scene);
+    loadedChunks.set(id, gltf.scene);
+  });
+}
+```
+
+## Large Point Cloud Attribute Storage
+
+### Apache Arrow / Feather
+
+For point clouds with many per-point attributes (position, normal, color, intensity, classification, GPS time), Apache Arrow provides a columnar binary format with zero-copy reads. Each attribute is a contiguous typed array — a viewer that only needs XYZ positions doesn't pay to read the intensity column.
+
+Apache Arrow Python docs: [arrow.apache.org/docs/python](https://arrow.apache.org/docs/python/)
+
+```python
+import pyarrow as pa
+import pyarrow.feather as feather
+import numpy as np
+
+# Write a point cloud with multiple attributes
+n = 10_000_000  # 10M points
+table = pa.table({
+    "x": pa.array(positions[:, 0], type=pa.float32()),
+    "y": pa.array(positions[:, 1], type=pa.float32()),
+    "z": pa.array(positions[:, 2], type=pa.float32()),
+    "intensity": pa.array(intensity, type=pa.uint16()),
+    "classification": pa.array(labels, type=pa.uint8()),
+    "r": pa.array(colors[:, 0], type=pa.uint8()),
+    "g": pa.array(colors[:, 1], type=pa.uint8()),
+    "b": pa.array(colors[:, 2], type=pa.uint8()),
+})
+
+# Write compressed Feather (IPC format with LZ4)
+feather.write_feather(table, "cloud.feather", compression="lz4")
+
+# Read — only load the columns you need
+xyz = feather.read_feather("cloud.feather", columns=["x", "y", "z"])
+pts = np.stack([xyz["x"], xyz["y"], xyz["z"]], axis=1)  # (N, 3) numpy array
+```
+
+10M float32 XYZ points: ~120 MB uncompressed, ~40 MB LZ4-compressed. Reading only XYZ from a 10-column file skips the remaining 60 MB entirely.
+
+For streaming large files, use Arrow IPC streaming format:
+
+```python
+import pyarrow.ipc as ipc
+
+# Write as IPC stream (can be piped / streamed)
+with open("cloud.arrows", "wb") as f:
+    writer = ipc.new_stream(f, table.schema)
+    for batch in table.to_batches(max_chunksize=100_000):
+        writer.write_batch(batch)
+    writer.close()
+
+# Read in batches (constant memory)
+with ipc.open_stream("cloud.arrows") as reader:
+    for batch in reader:
+        pts = batch.column("x").to_pylist()  # process one batch at a time
+```
+
+### Storage Format Decision Table
+
+| Data | Size | Use |
+|------|------|-----|
+| Voxel grid ≤ 512³ | < 500 MB | NumPy `.npy` or HDF5 |
+| Voxel grid > 512³ or cloud-hosted | Any | Zarr with Blosc/Zstd |
+| Multiscale volumetric data | Any | OME-Zarr |
+| GPU-ready SDF / density volume | Any | NanoVDB (`.nvdb`) |
+| Mesh ≤ 5M triangles | < 200 MB | glTF/GLB + Draco |
+| Mesh > 5M triangles, geographic | Any | 3D Tiles (B3DM) |
+| Mesh > 5M triangles, non-geographic | Any | Chunked GLB + frustum loader |
+| Point cloud with attributes | Any | Feather (Arrow IPC) |
+| LiDAR / geospatial point cloud | Any | LAZ |
+| Point cloud for browser | Any | Potree octree tiles |

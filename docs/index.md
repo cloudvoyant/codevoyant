@@ -36,7 +36,7 @@ features:
   - icon:
       src: /icons/pr.svg
     title: pr
-    details: AI-powered code review — generate professional inline comments from a diff, address change requests, and publish a draft review.
+    details: AI-powered code review — inline comments from a diff, change request resolution, and review publishing.
     link: /skills/pr
   - icon:
       src: /icons/qa.svg
@@ -46,7 +46,7 @@ features:
   - icon:
       src: /icons/skill.svg
     title: skill
-    details: Build, iterate, critique, and report on codevoyant-compatible skills. Includes learn and consolidate to extract skills from existing artifacts.
+    details: Build, iterate, critique, and extract codevoyant-compatible skills from existing artifacts.
     link: /skills/skill
   - icon:
       src: /icons/em.svg
@@ -61,27 +61,27 @@ features:
   - icon:
       src: /icons/ux.svg
     title: ux · experimental
-    details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
+    details: Scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites.
     link: /skills/ux
   - icon:
       src: /icons/compgeo.svg
     title: compgeo · experimental
-    details: Computational geometry — meshes, voxels, point clouds, and signed distance fields across Python (trimesh, open3d), C++ (CGAL, Embree, OpenVDB), and TypeScript (three.js, threlte).
+    details: Computational geometry — meshes, voxels, point clouds, and SDFs across Python, C++, and TypeScript.
     link: /skills/compgeo
   - icon:
       src: /icons/hpc.svg
     title: hpc · experimental
-    details: High-performance computing — threading, SIMD, GPU compute with CUDA/SYCL, MPI clustering, Python parallelism, and distributed Ray across C++ and Python.
+    details: High-performance computing — SIMD, GPU compute with CUDA/SYCL, MPI clustering, and distributed Ray across C++ and Python.
     link: /skills/hpc
   - icon:
       src: /icons/mle.svg
     title: mle · experimental
-    details: ML engineering lifecycle — data pipelines with Ray Data, distributed training, model evaluation, TensorBoard observability, MLflow experiment tracking, and model publishing.
+    details: ML engineering lifecycle — data pipelines, distributed training, experiment tracking with MLflow, and model publishing.
     link: /skills/mle
   - icon:
       src: /icons/llm.svg
     title: llm · experimental
-    details: LLM engineering — agent frameworks (AI SDK, LangGraph), document and image processing, open-weight model serving (vLLM on AWS/GCP), RAG pipelines, and eval tooling (RAGAS, LangSmith).
+    details: LLM engineering — agent frameworks, open-weight model serving with vLLM, RAG pipelines, and eval tooling.
     link: /skills/llm
   - icon:
       src: /icons/aws.svg

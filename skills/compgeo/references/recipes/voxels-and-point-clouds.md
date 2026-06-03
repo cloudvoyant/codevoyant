@@ -98,6 +98,105 @@ OpenVDB gives you a signed distance field (SDF) rather than a binary occupancy g
 
 OpenVDB docs: [openvdb.org/documentation/](https://www.openvdb.org/documentation/)
 
+## NanoVDB: GPU-Friendly Sparse Voxels
+
+NanoVDB is a read-only, header-only sibling of OpenVDB shipped in the same repository (OpenVDB >= 8.0). It serializes a VDB tree into a **flat contiguous buffer** — no heap pointers, no tree traversal overhead on the GPU. Copy the buffer to device memory and launch a kernel. Runs on CUDA, OptiX, Metal, and (experimentally) WebGPU compute.
+
+**When to use NanoVDB over OpenVDB:**
+
+| Need | Use |
+|------|-----|
+| Modify voxels, run CSG | OpenVDB (CPU-side) |
+| Read voxels in a GPU kernel | NanoVDB |
+| Ship a VDB to an embedded device | NanoVDB (header-only, no OpenVDB runtime) |
+| Real-time raymarching on GPU | NanoVDB |
+
+### Python: pynanovdb
+
+```python
+import pynanovdb
+import pyopenvdb as vdb
+
+# Build an OpenVDB grid first (NanoVDB is read-only)
+sphere = vdb.createLevelSetSphere(radius=1.0, voxelSize=0.1)
+vdb.write("sphere.vdb", grids=[sphere])
+
+# Convert to NanoVDB buffer
+handle = pynanovdb.read("sphere.vdb")          # reads first grid
+grid = handle.grid("ls_sphere")                # access by name
+
+# Sample at index-space coordinate
+ijk = (10, 0, 0)
+value = grid.getValue(ijk)
+print(f"SDF at {ijk}: {value:.4f}")
+
+# Save as .nvdb (NanoVDB native format)
+pynanovdb.write("sphere.nvdb", handle)
+```
+
+`pynanovdb` wraps the same flat buffer on the CPU. For GPU usage, use the C++ API below and pass the buffer to CUDA.
+
+### C++: OpenVDB -> NanoVDB -> GPU
+
+```cpp
+#include <openvdb/openvdb.h>
+#include <nanovdb/NanoVDB.h>
+#include <nanovdb/util/OpenToNanoVDB.h>   // conversion
+#include <nanovdb/util/CudaDeviceBuffer.h> // GPU buffer
+#include <cuda_runtime.h>
+
+openvdb::initialize();
+
+// 1. Load or build an OpenVDB grid
+openvdb::io::File file("sphere.vdb");
+file.open();
+auto baseGrid = file.readGrid("ls_sphere");
+file.close();
+auto vdbGrid = openvdb::gridPtrCast<openvdb::FloatGrid>(baseGrid);
+
+// 2. Convert to NanoVDB (returns a host-side handle)
+auto handle = nanovdb::openToNanoVDB(*vdbGrid);
+
+// 3. Upload to GPU
+handle.deviceUpload();  // allocates and copies to CUDA device memory
+
+// 4. Get the device pointer and pass to a kernel
+auto* deviceGrid = handle.deviceGrid<float>();
+// deviceGrid is a nanovdb::FloatGrid* on the device — safe to dereference in a kernel
+```
+
+CUDA kernel that queries SDF values:
+
+```cuda
+__global__ void querySDF(const nanovdb::FloatGrid* grid, float* results, int n) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+
+    // Use a tree-cached accessor for fast repeated lookups
+    auto acc = grid->getAccessor();
+    nanovdb::Coord ijk(i, 0, 0);
+    results[i] = acc.getValue(ijk);
+}
+
+// Launch
+querySDF<<<(n + 255) / 256, 256>>>(deviceGrid, d_results, n);
+```
+
+`nanovdb::FloatGrid::getAccessor()` on device is O(1) amortized — it caches tree node pointers across consecutive calls to nearby coordinates. Use one accessor per thread.
+
+CMake setup (OpenVDB >= 8.0 includes NanoVDB headers):
+
+```cmake
+find_package(OpenVDB REQUIRED)
+find_package(CUDA REQUIRED)
+
+target_link_libraries(myapp PRIVATE OpenVDB::openvdb)
+target_include_directories(myapp PRIVATE ${OpenVDB_INCLUDE_DIRS})
+# NanoVDB is header-only — no separate link target needed
+```
+
+NanoVDB docs: [openvdb.org/documentation/doxygen/NanoVDB_MainPage.html](https://www.openvdb.org/documentation/doxygen/NanoVDB_MainPage.html)
+
 ### Gotcha: Watertightness
 
 Voxelization needs to determine inside vs outside. If your mesh has holes, gaps, or inconsistent face winding, the inside/outside test is undefined. Symptoms: random voxels missing, entire interior unfilled, or voxels leaking outside the mesh.
