@@ -102,11 +102,34 @@ Not all code belongs in a feature lib. Here's how to decide:
 
 **The decision rule**: if the code knows about a business entity (post, series, publication), it belongs in a feature lib. If it's reusable across multiple features with no business knowledge, it belongs in shared infrastructure.
 
+**Namespacing libs for larger monorepos:** The `libs/feature-*` flat naming works well initially. As the monorepo grows, feature libs can be organized under namespaced subdirectories — e.g., `libs/billing/feature-invoices/`, `libs/billing/feature-payments/` — keeping related features grouped without changing any of the import or isolation rules. Start flat; namespace when the flat list becomes hard to navigate.
+
 Examples:
 - `Avatar.svelte` that takes `src` and `name` → `libs/ui/`
 - `AuthorAvatar.svelte` that takes an `Author` view model → `libs/feature-X/`
 - `formatDate()` utility → `libs/shared/`
 - `getSeriesPage()` server function → `libs/feature-series/`
+
+Cross-cutting concerns (logger, analytics, error tracking) are their own lib (e.g. `libs/logger`) or a third-party dep — not a "shared" util that accumulates over time.
+
+
+## Within-app structure
+
+Code that belongs to the app itself (not a reusable feature lib) lives under `apps/web/src/`:
+
+```
+apps/web/src/
+  routes/              # thin coordinators only — call feature server fns, own form actions
+  hooks/               # app-level hooks
+  validators/          # app-level validators (route params, session checks)
+  mappers/             # app-level mappers
+  db/                  # Firestore/DB entities and services owned solely by this app
+  generated/           # generated code (never hand-edit)
+```
+
+Co-location of logic inside a route directory is discouraged. Keep route files as thin coordinators. The only exception is private types, mappers, or objects that are used exclusively by that single route and have no reason to exist elsewhere.
+
+Generated code (OpenAPI types, Firestore SDK types, etc.) goes in `generated/` and must never be hand-edited. If you need to change generated output, update the generator or schema and re-run it.
 
 
 ## Rules
@@ -115,4 +138,12 @@ Examples:
 - View models are the contract: if it's not in the VM, it's not in the UI
 - No `any` — all data flows through typed view models
 - Server functions call services; services call DB documents
-- Features must not import from other feature libs
+
+**Feature dependency rules (DAG):**
+- Most features: no cross-feature imports
+- Pervasive features (auth, user-profile, feature-shell): CAN be imported from other feature libs, but ONLY components and public hooks/stores — never internal implementation
+- The feature dependency graph must be a DAG — no cycles allowed. If importing feature A from feature B would create a cycle, redesign.
+- For cross-feature coordination, in order of preference:
+  1. Shared Svelte stores that features publish to and subscribe from
+  2. SvelteKit's load data/invalidation (page data already in scope at the route)
+  3. Complex coordination: handle in the route/page file, or create a "widget" Svelte component in `libs/shared/` or `apps/web/src/` that composes multiple features

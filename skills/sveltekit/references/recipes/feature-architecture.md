@@ -18,6 +18,7 @@ libs/feature-X/
 ├── src/
 │   ├── components/       # Svelte components — public API for routes
 │   ├── view-models/      # Zod schemas + TypeScript types (the data contracts)
+│   ├── validators/       # input validation schemas (create-foo.schema.ts)
 │   ├── services/         # DB → VM transformation logic
 │   ├── stores/           # Client-side reactive state (.svelte.ts files)
 │   ├── utils/
@@ -27,6 +28,8 @@ libs/feature-X/
 ├── src/index.ts          # Barrel — exports components, VMs, types (client-safe only)
 └── package.json
 ```
+
+**Namespacing libs for larger monorepos:** The `libs/feature-*` flat naming works well initially. As the monorepo grows, feature libs can be organized under namespaced subdirectories — e.g., `libs/billing/feature-invoices/`, `libs/billing/feature-payments/` — keeping related features grouped without changing any of the import or isolation rules. Start flat; namespace when the flat list becomes hard to navigate.
 
 ### Why `.server.ts` for server-only utilities?
 
@@ -114,8 +117,23 @@ export { getFooPage } from "./server";
 Everything not exported here is private to the feature. Other packages cannot import from `./src/services/foo` directly — they can only use the public API.
 
 
+## Server actions and queries within features
+
+For fullstack features, server actions or server-side queries MAY live inside the feature lib (e.g. in `src/server.ts` or a `src/server/` directory) as long as they are NOT shared across features. Keeping server logic inside the feature preserves the hard boundary and makes it clear which feature owns a given server operation.
+
+If a server function needs to be called from multiple features, it no longer belongs to any single feature. Move it to a shared lib or the app's own service layer (`apps/web/src/db/` or a dedicated `libs/` package), and import it from there.
+
+
 ## Cross-feature rules
 
-Feature libs must not import from other feature libs. If two features need the same data shape:
-1. If it's domain-agnostic → move it to `libs/ui/` or `libs/shared/`
-2. If it's domain-aware → the shared type belongs in `@readership/models`, and each feature has its own version of the component
+- Most features: no cross-feature imports
+- Pervasive features (auth, user-profile, feature-shell) MAY be imported from other feature libs — but only components and public hooks/stores, never internal implementation details
+- The feature dependency graph must be a DAG — no cycles allowed. If importing feature A from feature B would create a cycle, redesign.
+- For cross-feature coordination, in order of preference:
+  1. Shared Svelte stores that features publish to and subscribe from
+  2. SvelteKit's load data/invalidation (page data already in scope at the route)
+  3. Complex coordination: handle in the route/page file, or create a "widget" Svelte component in `libs/shared/` or `apps/web/src/` that composes multiple features
+
+If two features need the same data shape:
+- If it's domain-agnostic → move it to `libs/ui/` or `libs/shared/`
+- If it's domain-aware → the shared type belongs in `@readership/models`, and each feature has its own version of the component

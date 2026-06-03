@@ -203,6 +203,8 @@ pnpm build && pnpm start    # Nitro at .output/server/index.mjs
 
 ## Directory layout
 
+Minimal single-app layout after following this recipe:
+
 ```
 src/
   router.tsx            getRouter() + Register module augmentation
@@ -216,6 +218,6 @@ src/
   server.ts             optional custom Nitro server entry (health, version, logging)
 ```
 
-Larger apps add `src/features/<domain>/` for vertical slices and `src/shared/<concern>/` for horizontal utilities (api, auth, components, dev-tools, theme, telemetry).
+In a monorepo, move the app into `apps/web/` and feature code into `libs/feature-*` packages — see `conventions.md` for the full layout.
 
 See `conventions.md` for the complete naming and structure conventions enforced across all TanStack Start projects.
