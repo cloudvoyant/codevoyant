@@ -1,3 +1,21 @@
+## [1.46.0](https://github.com/cloudvoyant/codevoyant/compare/v1.45.0...v1.46.0) (2026-06-03)
+
+### Features
+
+* **domains:** add compgeo, hpc, mle, and llm experimental skills
+
+- compgeo: 13 recipes — 3D formats, bbox, voxels, feature extraction
+  (CGAL Jet_fitting_3 + Shape_detection), ray tracing, GLTF, SDFs,
+  rotations/quaternions, OpenVDB boolean/CSG ops
+- hpc: 13 recipes — C++ threading, OpenMP, TBB, SIMD, CUDA, SYCL,
+  MPI, Python parallelism, Ray, Thrust, Kokkos, Warp GPU
+- mle: 12 recipes — data pipelines, training, MLflow, TensorBoard,
+  model publishing, data curation, Label Studio, DVC, data loaders
+- llm: scaffold + agent/doc/serving/RAG recipes (eval phase in progress)
+- rename "Skills & Workflows" → "Workflows" in sidebar
+- fix home page tile order to match sidebar; refresh AWS icon
+- remove disable-model-invocation from spec, em, pm, ux, skill, dev
+
 ## [1.45.0](https://github.com/cloudvoyant/codevoyant/compare/v1.44.0...v1.45.0) (2026-06-03)
 
 ### Features
