@@ -1,3 +1,28 @@
+## [1.48.0](https://github.com/cloudvoyant/codevoyant/compare/v1.47.0...v1.48.0) (2026-06-03)
+
+### Features
+
+* **compgeo:** add NanoVDB GPU voxels, large-scale storage, and wire formats
+
+- Add NanoVDB sections to voxels-and-point-clouds.md and voxel-operations.md
+  covering OpenVDB→NanoVDB→CUDA pipeline, GPU-side SDF raymarching and
+  containment queries, and pynanovdb Python bindings
+- Expand storage-and-compression.md with Zarr chunked voxels, OME-Zarr
+  multiscale pyramids, NanoVDB page-streaming, 3D Tiles for massive meshes,
+  Apache Arrow/Feather for point cloud attributes, and a format decision table
+- Add wire-formats-realtime.md recipe covering FlatBuffers zero-copy vertex
+  streaming, binary delta encoding, WebSocket binary framing with backpressure,
+  compact 48-byte transform protocol, and gRPC geometry pipelines
+- Update SKILL.md with new recipe link and references
+- Shorten home page tile subtitles to single sentences
+
+
+### Documentation
+
+* **readme:** add Domains section with compgeo, hpc, mle, llm
+
+* **readme:** reorganize skills to match sidebar — Workflows, Domains, Tools, Frameworks, Languages
+
 ## [1.47.0](https://github.com/cloudvoyant/codevoyant/compare/v1.46.0...v1.47.0) (2026-06-03)
 
 ### Features
