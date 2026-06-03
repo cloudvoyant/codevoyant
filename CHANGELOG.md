@@ -1,3 +1,22 @@
+## [1.47.0](https://github.com/cloudvoyant/codevoyant/compare/v1.46.0...v1.47.0) (2026-06-03)
+
+### Features
+
+* **domains:** finalize llm skill — eval recipe, icon, SKILL.md
+
+Phase 6 completion: llm-eval, rag-oss final content, llm.svg icon
+
+
+### Bug Fixes
+
+* **docs:** escape <domain> in changelog, wrap include in v-pre
+
+CHANGELOG.md had a bare <domain> tag in prose that Vue's template
+compiler treated as an unclosed component, breaking the docs build.
+- escape the specific instance in CHANGELOG.md
+- wrap the @include in v-pre so future auto-generated entries with
+  <tag> patterns don't break the build
+
 ## [1.46.0](https://github.com/cloudvoyant/codevoyant/compare/v1.45.0...v1.46.0) (2026-06-03)
 
 ### Features
