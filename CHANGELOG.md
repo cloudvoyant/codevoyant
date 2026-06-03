@@ -1,3 +1,14 @@
+## [1.48.1](https://github.com/cloudvoyant/codevoyant/compare/v1.48.0...v1.48.1) (2026-06-03)
+
+### Bug Fixes
+
+* **docs:** escape bare HTML tags in changelog, shorten index tile descriptions
+
+- Escape <domain> and <tag> in CHANGELOG.md 1.47.0 entry that were
+  breaking the Vue template compiler in the docs build
+- Shorten all home page tile descriptions to punchy single-clause lines
+- Add wire-formats recipe and NanoVDB/Arrow/3D Tiles refs to compgeo docs page
+
 ## [1.48.0](https://github.com/cloudvoyant/codevoyant/compare/v1.47.0...v1.48.0) (2026-06-03)
 
 ### Features
