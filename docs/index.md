@@ -36,62 +36,62 @@ features:
   - icon:
       src: /icons/pr.svg
     title: pr
-    details: AI-powered code review — inline comments from a diff, change request resolution, and review publishing.
+    details: AI-powered code review — inline comments, change requests, and review publishing.
     link: /skills/pr
   - icon:
       src: /icons/qa.svg
     title: qa
-    details: Structured bug investigation, browser-agent smoke tests, and one-command issue filing to GitHub, GitLab, or Linear.
+    details: Structured bug investigation, smoke tests, and one-command issue filing.
     link: /skills/qa
   - icon:
       src: /icons/skill.svg
     title: skill
-    details: Build, iterate, critique, and extract codevoyant-compatible skills from existing artifacts.
+    details: Build, iterate, critique, and extract codevoyant-compatible skills.
     link: /skills/skill
   - icon:
       src: /icons/em.svg
     title: em · experimental
-    details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.
+    details: Engineering roadmaps, epic breakdowns, capacity review, and Linear sync.
     link: /skills/em
   - icon:
       src: /icons/pm.svg
     title: pm · experimental
-    details: Product roadmaps, per-feature PRDs, prioritization review, and product documentation generation.
+    details: Product roadmaps, per-feature PRDs, prioritization, and docs generation.
     link: /skills/pm
   - icon:
       src: /icons/ux.svg
     title: ux · experimental
-    details: Scaffold SvelteKit prototypes, create wireframe explorations, and synthesize visual styles from live sites.
+    details: SvelteKit prototypes, wireframe explorations, and visual style synthesis.
     link: /skills/ux
   - icon:
       src: /icons/compgeo.svg
     title: compgeo · experimental
-    details: Computational geometry — meshes, voxels, point clouds, and SDFs across Python, C++, and TypeScript.
+    details: Meshes, voxels, point clouds, and SDFs — Python, C++, and TypeScript recipes.
     link: /skills/compgeo
   - icon:
       src: /icons/hpc.svg
     title: hpc · experimental
-    details: High-performance computing — SIMD, GPU compute with CUDA/SYCL, MPI clustering, and distributed Ray across C++ and Python.
+    details: SIMD, CUDA/SYCL, MPI, and distributed Ray — high-performance C++ and Python.
     link: /skills/hpc
   - icon:
       src: /icons/mle.svg
     title: mle · experimental
-    details: ML engineering lifecycle — data pipelines, distributed training, experiment tracking with MLflow, and model publishing.
+    details: Data pipelines, distributed training, MLflow tracking, and model publishing.
     link: /skills/mle
   - icon:
       src: /icons/llm.svg
     title: llm · experimental
-    details: LLM engineering — agent frameworks, open-weight model serving with vLLM, RAG pipelines, and eval tooling.
+    details: Agent frameworks, open-weight model serving, RAG pipelines, and eval tooling.
     link: /skills/llm
   - icon:
       src: /icons/aws.svg
     title: aws
-    details: Terraform provider setup, S3/DynamoDB backend, ECS, Lambda, static sites, Ray clusters, and Firecracker VM fleets.
+    details: S3, DynamoDB, ECS, Lambda, Ray clusters, and Firecracker VM fleets on AWS.
     link: /skills/aws
   - icon:
       src: /icons/docker.svg
     title: docker
-    details: Multi-stage builds, Docker Compose, cross-platform networking, and GCP registry integration.
+    details: Multi-stage builds, Docker Compose, cross-platform networking, and registries.
     link: /skills/docker
   - icon:
       src: /icons/gcp.svg
@@ -101,7 +101,7 @@ features:
   - icon:
       src: /icons/gh.svg
     title: gh
-    details: GitHub CI monitoring and PR review management — pull comments, push inline notes, draft and publish reviews.
+    details: GitHub CI monitoring and inline PR review — comments, notes, and publishing.
     link: /skills/gh
   - icon:
       src: /icons/git.svg
@@ -111,7 +111,7 @@ features:
   - icon:
       src: /icons/glab.svg
     title: glab
-    details: GitLab CI monitoring and MR review management — pull discussions, push inline notes, draft and publish reviews.
+    details: GitLab CI monitoring and inline MR review — notes, discussions, and publishing.
     link: /skills/glab
   - icon:
       src: /icons/linear.svg
@@ -131,36 +131,36 @@ features:
   - icon:
       src: /icons/terraform.svg
     title: terraform
-    details: Directory structure, backend config, workspace-per-environment, and variable management for GCP and AWS.
+    details: Directory layout, backend config, workspaces, and variable management for cloud.
     link: /skills/terraform
   - icon:
       src: /icons/react.svg
     title: react
-    details: Zustand state management, shadcn/ui and Tailwind CSS, React Three Fiber and Drei, folder structure, and data fetching.
+    details: Zustand, shadcn/ui, Tailwind, React Three Fiber, folder structure, and data fetching.
     link: /skills/react
   - icon:
       src: /icons/sveltekit.svg
     title: sveltekit
-    details: Feature-slice architecture, composable components, shadcn-svelte, a11y, and form patterns.
+    details: Feature-slice architecture, shadcn-svelte, a11y, and Svelte form patterns.
     link: /skills/sveltekit
   - icon:
       src: /icons/tanstack.svg
     title: tanstack
-    details: TanStack Start file-based routing, Router v1, Query v5, Form, and server functions.
+    details: File-based routing, Router v1, Query v5, Form, and server functions.
     link: /skills/tanstack
   - icon:
       src: /icons/cpp.svg
     title: cpp
-    details: CMake project structure, Conan package management and publishing, gRPC service patterns, code standards, and release profiles.
+    details: CMake, Conan, gRPC, code standards, and release profile recipes.
     link: /skills/cpp
   - icon:
       src: /icons/python.svg
     title: python
-    details: uv workspace and publishing, MLflow tracking and model registry, Ray distributed training, Warp GPU kernels, Pydantic, and Click CLIs.
+    details: uv workspaces, MLflow, Ray, Warp GPU, Pydantic, and Click CLI recipes.
     link: /skills/python
   - icon:
       src: /icons/typescript.svg
     title: typescript
-    details: Strict mode conventions, pnpm monorepo management, Vitest testing, ESLint/Prettier, and GitLab CI.
+    details: Strict mode, pnpm monorepo, Vitest, ESLint/Prettier, and GitLab CI.
     link: /skills/typescript
 ---

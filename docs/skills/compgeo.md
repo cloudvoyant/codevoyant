@@ -25,6 +25,7 @@ Framed around games/simulation use cases, not CAD/CAM. Geometry is treated as da
 - [Dexels and Signed Distance Fields](./compgeo/recipes/dexels-and-sdf) — SDF generation, boolean ops, raymarching
 - [Rotations and Transforms](./compgeo/recipes/rotations-and-transforms) — quaternions, Euler angles, axis-angle, homogeneous transforms, slerp, common pitfalls
 - [Voxel Operations with OpenVDB](./compgeo/recipes/voxel-operations) — CSG boolean ops, dilation/erosion, rotation, querying, mesh/point-cloud round-trip
+- [Wire Formats for Real-Time Geometry](./compgeo/recipes/wire-formats-realtime) — FlatBuffers, delta encoding, WebSocket framing, compact transform protocol
 
 ## References
 
@@ -33,7 +34,11 @@ Framed around games/simulation use cases, not CAD/CAM. Geometry is treated as da
 - [CGAL](https://www.cgal.org/)
 - [Intel Embree](https://www.embree.org/)
 - [OpenVDB](https://www.openvdb.org/)
+- [NanoVDB](https://www.openvdb.org/documentation/doxygen/NanoVDB_MainPage.html)
 - [libigl](https://libigl.github.io/)
 - [three.js](https://threejs.org/docs/)
 - [react-drei](https://drei.docs.pmnd.rs/)
 - [threlte](https://threlte.xyz/docs)
+- [FlatBuffers](https://flatbuffers.dev/)
+- [Apache Arrow](https://arrow.apache.org/)
+- [3D Tiles](https://github.com/CesiumGS/3d-tiles)
