@@ -237,7 +237,7 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 - Code for non-trivial logic
 - Testing and validation steps
 
-**Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/tasks detect` to identify the runner and `/tasks list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
+**Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
 
 ### 5.4: Register Plan
 

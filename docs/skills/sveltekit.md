@@ -4,80 +4,55 @@ title: SvelteKit
 
 # sveltekit
 
-Context skill for Svelte 5 runes and feature-slice architecture. Activates automatically when `.svelte`, `.svelte.ts`, or `.svelte.js` files are detected — no slash command needed.
+Context skill for SvelteKit applications using a feature-slice architecture with Svelte 5 runes.
 
-## Installation
+## Philosophy
 
-```bash
-npx skills add cloudvoyant/codevoyant
-```
-
-## What It Does
-
-When you're working on a SvelteKit project the agent loads architecture patterns, component conventions, and Svelte 5 APIs before writing or reviewing code. You don't invoke it explicitly; it fires whenever the agent opens or discusses `.svelte` files.
-
-## Architecture Model
-
-Features live in `libs/feature-X/`. Each feature owns:
-
-- **View models** — Zod schemas that form the BFF contract between server and UI
-- **Services** — transform raw data (DB documents, API responses) into view models
-- **Components** — pure UI that receive view model props
-- **server.ts** — called from `+page.server.ts`, orchestrates data flow
-
-Routes in `apps/web/src/routes/` are thin: call the feature's server function, pass data to components, own form actions.
-
-```
-apps/web/src/routes/dashboard/
-  +page.server.ts        ← calls feature-dashboard/server.ts
-  +page.svelte           ← renders <DashboardView>
-
-libs/feature-dashboard/
-  server.ts              ← fetches + transforms data
-  DashboardView.svelte   ← top-level feature component
-  components/            ← internal sub-components
-  view-model.ts          ← Zod schemas
-```
+Features live in `libs/feature-X/` and each owns its view models (Zod schemas), services (data transforms), components (pure UI), and a `server.ts` entry called from `+page.server.ts`. Routes under `apps/web/src/routes/` are thin: they call the feature's server function, pass data to components, and own form actions. The app shell owns layout, navigation, and session helpers. This layering keeps route files small and makes features independently testable.
 
 ## Recipes
 
-The skill loads specific recipes on demand:
+**Foundation — understand the system before building pieces:**
 
-| Working on… | Recipe loaded |
-|---|---|
-| App-level route and data flow | `frontend-architecture` |
-| A feature lib (components, VMs, services) | `feature-architecture` |
-| A component's structure and readability | `composable-components` |
-| A form in a feature lib | `feature-lib-forms` |
-| Deciding where a new component lives | `ui-vs-feature-components` |
-| Designing or extending the app shell | `app-shell` |
-| Service returning a view model | `view-model-parse` |
-| Form action return type + component prop | `form-result-type` |
-| `$state` initialized from `$props` | `initializing-state-from-props` |
-| `<svelte:component>` deprecation warning | `dynamic-component` |
-| Any Svelte a11y warning | `a11y` |
-| shadcn-svelte, bits-ui, tailwind-variants | `shadcn-svelte` |
+- [SvelteKit App Architecture](./sveltekit/recipes/frontend-architecture) — the route → feature → view model → component flow
+- [Feature-Slice Architecture](./sveltekit/recipes/feature-architecture) — directory layout, view models, services, and public API
+- [Building the App Shell](./sveltekit/recipes/app-shell) — layout variants, snippet-based content projection, shared overlays
 
-## Svelte 5 Runes Quick Reference
+**Building blocks:**
 
-```svelte
-<script lang="ts">
-  let { count = 0, label }: { count?: number; label: string } = $props();
+- [Writing Composable Svelte 5 Components](./sveltekit/recipes/composable-components) — one concern per component, derived state, named snippets
+- [UI Components vs Feature Components](./sveltekit/recipes/ui-vs-feature-components) — when to use `ui/` vs `feature/`, cross-feature rules
+- [shadcn-svelte, bits-ui, and tailwind-variants](./sveltekit/recipes/shadcn-svelte) — component registry, variants, global CSS rules
 
-  let doubled = $derived(count * 2);
-  let local = $state(0);
+**Data layer:**
 
-  $effect(() => {
-    console.log('count changed:', count);
-  });
-</script>
-```
+- [HTTP Service Clients](./sveltekit/recipes/service-clients) — OpenAPI-typed clients, generated schemas, shared middleware
+- [Data Transformation with View Models](./sveltekit/recipes/view-model-parse) — always call `.parse()`, never inline-construct return objects
+- [Server-Side Remote Functions](./sveltekit/recipes/remote-functions) — `query` and `command` primitives, calling from load functions and components
 
-Key rules:
-- Use `$props()` not `export let`
-- Use DOM event attributes (`onclick`, `oninput`) not `on:` directives
-- `$bindable()` for two-way bindable props
+**Forms and actions:**
 
-## shadcn-svelte
+- [Building Forms in a Feature Lib](./sveltekit/recipes/feature-lib-forms) — `*FormContent` components, `use:enhance` in routes
+- [Typing Form Action Results](./sveltekit/recipes/form-result-type) — discriminated union types, `satisfies` operator, single source of truth
 
-Includes patterns for shadcn-svelte components, bits-ui primitives, and tailwind-variants for variant composition. The `shadcn-svelte` recipe loads automatically when working with those libraries.
+**Auth:**
+
+- [Auth Sessions with JWT Cookies](./sveltekit/recipes/auth-sessions) — stateless JWT sessions, per-call authorization, `checkAuthorized`
+
+**Svelte 5 patterns:**
+
+- [Reactive State from Props in Svelte 5](./sveltekit/recipes/initializing-state-from-props) — seeding `$state` from `$props` without the `state_referenced_locally` warning
+- [Dynamic Components in Svelte 5](./sveltekit/recipes/dynamic-component) — replacing deprecated `<svelte:component>` with native tag syntax
+
+**Quality:**
+
+- [Accessibility Patterns for Svelte](./sveltekit/recipes/a11y) — roles, label associations, keyboard handlers, focus management
+
+**Config:**
+
+- [SvelteKit Config and Build Adapters](./sveltekit/recipes/config-and-build) — adapter-node, env vars, Tailwind v4, Vitest split, Docker
+
+## References
+
+- [SvelteKit documentation](https://svelte.dev/docs/kit)
+- [Svelte 5 runes](https://svelte.dev/docs/svelte/what-are-runes)

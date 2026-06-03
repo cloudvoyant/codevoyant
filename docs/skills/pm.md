@@ -1,87 +1,80 @@
-# pm <Badge type="warning" text="Experimental" />
+# pm
 
-Product management -- product roadmaps, feature PRDs, prioritization review, and Linear integration.
+Product management workflows for roadmap planning, PRD writing, product area research, prioritization review, and Linear integration.
 
-The PM skills structure product planning work: phased roadmaps with market context and feature prioritization, per-feature PRDs with acceptance criteria and metrics, coverage and feasibility review, and conversational plan updates.
+## Workflows
 
-## Installation
+### explore — research a product area
 
-**Claude Code:**
-```bash
-npx skills add cloudvoyant/codevoyant
-```
-
-**OpenCode / VS Code Copilot:** See the [installation guide](/user-guide#installation).
-
-## Typical Workflows
-
-### Research a product area
+Run parallel research agents and deposit a summary artifact to `.codevoyant/explore/{slug}/summary.md` for use by `/pm plan` and `/pm prd`.
 
 ```bash
-/pm explore "user onboarding"                     # Research a topic, generate a research artifact
-/pm explore "pricing strategy" --bg               # Run in background
+/pm explore "user onboarding"                          # research and generate artifact
+/pm explore "pricing strategy" --bg                    # run in background
 ```
 
-Deposits a research artifact to `.codevoyant/explore/{slug}/summary.md` for use by `/pm plan` and `/pm prd`.
+### plan — draft a product roadmap
 
-### Plan a product roadmap
+Produce a phased roadmap with feature prioritization in `.codevoyant/roadmaps/`; `pm review` launches automatically in the background on completion.
 
 ```bash
-/pm plan quarter                                  # Quarterly product roadmap
-/pm plan half                                     # Half-year roadmap
-/pm plan annual                                   # Annual roadmap
+/pm plan quarter                                       # quarterly product roadmap
+/pm plan half                                          # half-year roadmap
+/pm plan annual                                        # annual roadmap
 ```
 
-Drafts a roadmap to `.codevoyant/roadmaps/` with phased feature prioritization. `pm:review` launches automatically in the background on completion. Use `/pm approve` to promote to `docs/product/roadmaps/` and optionally push to a Linear initiative.
+Use `/pm approve` to promote to `docs/product/roadmaps/`.
 
-### Approve and push to Linear
+### prd — write a PRD
+
+Write a structured Product Requirements Document to `docs/prd/` with problem statement, goals, requirements tables, acceptance criteria, and non-goals.
 
 ```bash
-/pm approve                                       # Approve most recent /pm plan draft
-/pm approve my-roadmap                            # Approve specific roadmap by slug
-/pm approve my-roadmap --push                     # Approve and create new Linear initiative
-/pm approve my-roadmap --push https://linear.app/...  # Approve and push to existing initiative
+/pm prd "user authentication"                          # standalone PRD from description
+/pm prd https://linear.app/team/issue/ENG-42           # seed from a Linear issue
 ```
 
-Copies the full roadmap into the Linear initiative description. Research artifacts become Linear documents attached to the initiative.
+### approve — promote roadmap and push to Linear
 
-### Write a PRD for a single feature
+Copy the full roadmap into a Linear initiative description and attach research artifacts as Linear documents.
 
 ```bash
-/pm prd "user authentication"                     # Standalone PRD
-/pm prd https://linear.app/team/issue/ENG-42      # Seed from a Linear issue
+/pm approve                                            # approve most recent pm plan draft
+/pm approve my-roadmap                                 # approve specific roadmap by slug
+/pm approve my-roadmap --push                          # approve and create new Linear initiative
+/pm approve my-roadmap --push https://linear.app/...   # approve and push to existing initiative
 ```
 
-Writes a structured PRD to `docs/prd/` with problem statement, goals, requirements tables, acceptance criteria, and non-goals.
+### review — review roadmap quality
 
-### Review a roadmap
+Check coverage gaps, prioritization quality, missing PRDs, and strategic coherence.
 
 ```bash
-/pm review                          # Auto-selects most recent plan
-/pm review my-roadmap               # Review specific plan
-/pm review my-roadmap --silent      # Suppress output
+/pm review                                             # auto-selects most recent plan
+/pm review my-roadmap                                  # review specific plan
+/pm review my-roadmap --silent                         # suppress output
 ```
 
-Checks coverage gaps, prioritization quality, missing PRDs, and strategic coherence.
+### update — apply plan changes
 
-### Update a plan
+Apply inline annotations or conversational changes to roadmap and PRD files.
 
 ```bash
-/pm update my-plan "add mobile support feature"    # Conversational change
-/pm update my-plan --bg                            # Apply annotations in background
+/pm update my-plan "add mobile support feature"        # conversational change
+/pm update my-plan --bg                                # apply annotations in background
 ```
 
-Applies inline `>` and `>>` annotations or accepts conversational changes to roadmap and PRD files.
+### allow — pre-approve permissions
 
-## Skills
+Write the allow entries needed for pm skills to run without permission prompts.
 
-| Skill | Description |
-|---|---|
-| `/pm explore` | Research a product area and deposit a research artifact for `/pm plan` / `/pm prd` |
-| `/pm plan` | Draft a product roadmap with feature prioritization |
-| `pm:approve` | Promote a draft roadmap to `docs/product/roadmaps/` and optionally push to Linear |
-| `/pm prd` | Structured PRD from a feature description or ticket URL |
-| `pm:review` | Review a product roadmap for coverage, prioritization, and feasibility |
-| `pm:update` | Update a PM roadmap or PRD via annotations or conversational changes |
-| `pm:allow` | Pre-approve pm permissions for uninterrupted agent execution |
-| `pm:help` | List all pm commands |
+```bash
+/pm allow                                              # write to project .claude/settings.json
+/pm allow --global                                     # write to ~/.claude/settings.json
+```
+
+### help — list commands
+
+```bash
+/pm help                                               # list all pm commands
+```

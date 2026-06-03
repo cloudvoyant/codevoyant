@@ -1,13 +1,10 @@
 # Cross-Platform Docker (Mac / Linux / WSL2)
 
-Patterns for Docker setups that work on macOS, Linux, and Windows via WSL2.
+Patterns for Docker setups that work on macOS, Linux, and Windows via WSL2. See the [Docker networking docs](https://docs.docker.com/network/) for the full picture — here's what actually bites across platforms:
 
-## The Core Problem
-
-Docker runs natively on Linux. On macOS and WSL2, it runs inside a VM, which affects:
-- Host networking (`--network host` does not work on Mac)
-- File paths in volume mounts
-- Docker socket location
+- `--network host` silently does nothing on Mac (Docker runs inside a Linux VM)
+- Volume mount performance is dramatically worse on Mac unless you use VirtioFS
+- WSL2 + Docker CE needs the docker bridge IP manually; WSL2 + Docker Desktop does not
 
 ## Host Networking Workaround
 

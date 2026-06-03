@@ -4,67 +4,22 @@ title: typescript
 
 # typescript
 
-Context skill for TypeScript type safety patterns. Activates automatically when `.ts`, `.tsx`, or `tsconfig.json` files are detected — no slash command needed.
+Context skill for TypeScript projects covering type safety patterns, pnpm monorepo management, package publishing, Vitest testing, ESLint/Prettier, and GitLab CI.
 
-## Installation
+## Philosophy
 
-```bash
-npx skills add cloudvoyant/codevoyant
-```
-
-## What It Does
-
-When you're working in a TypeScript codebase the agent loads patterns for common type safety problems before generating or reviewing code: safe error handling, using library-provided types instead of casting, and authoring generic functions that accept Zod schemas.
+All projects enable `strict: true` in `tsconfig.json` and avoid type casts in favour of narrowing or using types exported by the libraries in use. Workspaces are managed with pnpm; packages are linked via workspace protocol rather than copied. Tests run with Vitest using `--import-mode=importlib` so same-named test files can coexist across packages. Linting and formatting are enforced by pre-commit hooks so CI never sees unformatted code.
 
 ## Recipes
 
-| Working on… | Recipe loaded |
-|---|---|
-| Error handling in a `catch` block | `unknown-catch` |
-| A library API rejecting your type | `use-library-types` |
-| A function that accepts a Zod schema | `zod-generic-bounds` |
+- [TypeScript Conventions: Strict Mode, Type Safety, and Error Handling](./typescript/recipes/typescript-conventions) — strict mode setup, `unknown` in catch, avoiding casts, Zod schema typing, naming
+- [Monorepo Dependency Management with pnpm](./typescript/recipes/pnpm-workspace) — workspace setup, catalogs, and inter-package deps
+- [Publishing TypeScript Packages](./typescript/recipes/pnpm-publishing) — npm and GitLab registry, dual ESM/CJS, Changesets
+- [Unit and E2E Testing with Vitest](./typescript/recipes/vitest) — unit, integration, and Playwright browser tests
+- [Code Quality: ESLint, Prettier, and Pre-commit Hooks](./typescript/recipes/lint-format) — flat config, module boundaries, husky/lint-staged
+- [GitLab CI for pnpm Monorepos](./typescript/recipes/gitlab-ci) — cached installs, per-package change detection, publish
 
-## Key Patterns
+## References
 
-### Unknown in catch blocks
-
-```typescript
-// ✅ Narrow before using
-try {
-  await riskyOp();
-} catch (err) {
-  if (err instanceof Error) {
-    console.error(err.message);
-  }
-}
-
-// ❌ Casting hides real errors
-} catch (err) {
-  console.error((err as Error).message);
-}
-```
-
-### Use library types instead of casting
-
-```typescript
-// ✅ Use what the library exports
-import type { User } from '@supabase/supabase-js';
-function greet(user: User) { ... }
-
-// ❌ Casting away type safety
-function greet(user: any) { ... }
-```
-
-### Zod generic bounds
-
-```typescript
-import { z } from 'zod';
-
-function parseWith<T extends z.ZodTypeAny>(schema: T, data: unknown): z.infer<T> {
-  return schema.parse(data);
-}
-```
-
-## Configuration
-
-Projects should use `strict: true` in `tsconfig.json`. The skill enforces strict-mode compatible patterns throughout.
+- [TypeScript documentation](https://www.typescriptlang.org/docs/)
+- [Vitest documentation](https://vitest.dev)

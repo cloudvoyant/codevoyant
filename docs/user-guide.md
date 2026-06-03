@@ -4,18 +4,21 @@
 
 ## How Skills Work
 
-Skills are slash commands that load focused instructions into your AI agent's context before it acts. There are three kinds:
+Skills are slash commands that load focused instructions into your AI agent's context before it acts. There are five kinds:
 
-- **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, em, pm, ux).
-- **Task skills** — discrete operations you invoke directly for a single, well-defined job (git, tasks, skill).
-- **Context skills** — activate automatically based on files in your project; no invocation needed (sveltekit, typescript, docker, and others).
+- **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, flow, em, pm, ux).
+- **Skills** — discrete operations you invoke directly for a single, well-defined job (pr, qa, skill, task).
+- **Tools** — CLI and platform integrations (git, gh, glab, linear, and others).
+- **Context Skills** — activate automatically when relevant files are detected; no invocation needed (sveltekit, react, tanstack, typescript, python, cpp, docker, mise, gcp, aws, terraform).
+
+For the best experience, install the full skill set — several skills compose with each other (`flow save` delegates to `skill new`, `qa report` delegates to `gh` or `glab`, `pr` calls `gh`/`glab` internally). If a required skill is missing when a command runs, you will be told which skill to install and how.
 
 **Invoking a skill:**
 
 ```bash
 /spec new
 /git commit
-/tasks list
+/task list
 ```
 
 **Passing your intent inline** — all `new`, `explore`, and `plan` verbs accept a description directly on the same line. The skill skips the opening question and proceeds immediately:
@@ -76,33 +79,23 @@ Dev handles the higher-level parts of the development loop.
 
 See the [dev reference](/skills/dev) for all commands.
 
-### pr — AI-powered code review
+### flow — end-to-end pipeline orchestration
 
-PR orchestrates the full review lifecycle: generating inline comments from a diff, addressing reviewer feedback, and publishing the completed review.
-
-**Review an open PR/MR:**
+Flow chains multiple skill invocations into a named pipeline that runs sequentially.
 
 ```bash
-/pr new                # generate professional inline review comments from the diff
-/pr new 42             # review a specific PR/MR number
+/flow new my-pipeline \
+  "/dev explore how the auth middleware works" \
+  "/spec new refactor auth middleware" \
+  "/spec go"
+
+/flow go my-pipeline      # execute all steps sequentially
+/flow status my-pipeline  # check checklist state
 ```
 
-**Address review comments on your PR/MR:**
+Pipelines live in `.codevoyant/flows/{name}/flow.md`.
 
-```bash
-/pr address            # pull open threads, propose fixes, apply approved changes
-```
-
-**Publish a pending draft:**
-
-```bash
-/pr complete           # submit the draft review
-/pr complete --event APPROVE
-```
-
-Review documents live in `.codevoyant/review/{slug}/` and are reusable across `new`, `address`, and `complete` invocations.
-
-See the [pr reference](/skills/pr) for all commands.
+See the [flow reference](/skills/flow) for all commands.
 
 ### em — engineering project planning _(Experimental)_
 
@@ -160,48 +153,62 @@ UX supports frontend design exploration: full SvelteKit prototypes, lightweight 
 
 See the [ux reference](/skills/ux) for all commands.
 
-## Task Execution
+## Skills
 
-Task-oriented skills are invoked once to do a single, well-defined job — commit code, run a build task, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
+Skills are invoked once to do a single, well-defined job — create a draft PR, run a smoke test, or file a bug report. They don't manage multi-step state; they just do the thing and finish.
 
-### git — commits and rebase
+### pr — AI-powered code review
 
-```bash
-/git commit             # format, generate conventional commit message, commit, and push
-/git commit --atomic    # split into multiple logical commits
-/git rebase main        # interactive rebase, handles conflict sides correctly
-```
+PR orchestrates the full review lifecycle: generating inline comments from a diff, addressing reviewer feedback, and publishing the completed review.
 
-See the [git reference](/skills/git) for all commands.
-
-### gh / glab — CI monitoring and PR/MR review primitives
-
-Platform-specific skills for GitHub (`gh`) and GitLab (`glab`). Used directly or called internally by `/pr`.
+**Open a draft PR/MR:**
 
 ```bash
-/gh ci                  # watch GitHub Actions for the current branch (background)
-/gh ci --autofix        # fix failures and re-push automatically
-/glab ci                # watch GitLab CI for the current branch (background)
-/glab ci --autofix      # fix failures and re-push automatically
+/pr open              # create draft PR/MR with feature template
+/pr open --bug        # bug fix template
 ```
 
-See the [gh reference](/skills/gh) and [glab reference](/skills/glab) for all commands.
-
-### tasks — run project tasks
-
-Detects your task runner (mise, just, task.dev, or npm scripts) and provides a consistent interface:
+**Review an open PR/MR:**
 
 ```bash
-/tasks                  # list all available tasks
-/tasks run build        # run a named task
-/tasks detect           # show which runner was detected
+/pr review             # generate professional inline review comments from the diff
+/pr review 42          # review a specific PR/MR number
 ```
 
-Other skills call `/tasks` internally before running raw commands like `tsc` or `vitest` — ensuring the project's own conventions are always followed.
+**Address review comments on your PR/MR:**
 
-See the [tasks reference](/skills/tasks) for all commands.
+```bash
+/pr address            # pull open threads, propose fixes, apply approved changes
+```
 
-### skill — build, maintain, and report skills
+**Publish a pending draft:**
+
+```bash
+/pr complete           # submit the draft review
+/pr complete --event APPROVE
+```
+
+Review documents live in `.codevoyant/review/{slug}/` and are reusable across `review`, `address`, and `complete` invocations.
+
+See the [pr reference](/skills/pr) for all commands.
+
+### qa — bug investigation and smoke testing
+
+```bash
+/qa debug login-crash --desc "App crashes on Google OAuth"
+    # investigate, write .codevoyant/qa/login-crash/debug-report.md
+
+/qa smoke https://myapp.com/checkout
+    # browser-agent smoke test, writes smoke-report.md
+
+/qa report login-crash --github
+/qa report login-crash --linear --team ENG
+    # post report as issue to GitHub or Linear
+```
+
+See the [qa reference](/skills/qa) for all commands.
+
+### skill — build and maintain skills
 
 Skill gives you a workflow for building your own codevoyant-compatible skills, and a feedback loop for reporting issues to skill authors.
 
@@ -214,19 +221,72 @@ Skill gives you a workflow for building your own codevoyant-compatible skills, a
 
 See the [skill reference](/skills/skill) for all commands and a guide to building skills.
 
-## Contextual Invocation
+### task — run project tasks
 
-Context-based skills activate automatically based on files in your project — no invocation needed. The agent loads the relevant recipes before writing or reviewing code.
+Detects your task runner (mise, just, task.dev, or npm scripts) and provides a consistent interface:
 
-| Files detected                       | Skill loaded                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------ |
-| `*.svelte`, `*.svelte.ts`            | **sveltekit** — feature-slice architecture, Svelte 5 runes, shadcn-svelte      |
-| `*.ts`, `tsconfig.json`              | **typescript** — unknown catch, library types, Zod generic bounds              |
-| `Dockerfile`, `docker-compose.yml`   | **docker** — multi-stage builds, Compose, cross-platform, GCP registry         |
-| `mise.toml`, `.mise.toml`            | **mise** — task conventions, tool pinning, language-specific setup             |
-| `*.tf`, `GCP_` env vars in mise.toml | **gcp** — Artifact Registry, Cloud Run, gcloud auth                            |
-| `*.tf` files                         | **terraform** — directory structure, backends, workspaces, variable management |
+```bash
+/task                   # list all available tasks
+/task run build         # run a named task
+/task detect            # show which runner was detected
+```
 
-Each skill loads targeted recipes on demand rather than dumping everything into context at once — so only what's relevant to the current task gets loaded.
+Other skills call `/task` internally before running raw commands like `tsc` or `vitest` — ensuring the project's own conventions are always followed.
 
-See individual skill pages for recipe details: [sveltekit](/skills/sveltekit) · [typescript](/skills/typescript) · [docker](/skills/docker) · [mise](/skills/mise) · [gcp](/skills/gcp) · [terraform](/skills/terraform)
+See the [task reference](/skills/task) for all commands.
+
+## Tools
+
+Tools wrap CLIs and platform APIs with focused workflows. They are invoked directly and handle the details of each platform.
+
+### git
+
+```bash
+/git commit             # format, generate conventional commit message, commit, and push
+/git commit --atomic    # split into multiple logical commits
+/git rebase main        # interactive rebase, handles conflict sides correctly
+```
+
+See the [git reference](/skills/git) for all commands.
+
+### gh / glab
+
+Platform-specific skills for GitHub (`gh`) and GitLab (`glab`). Used directly or called internally by `/pr`.
+
+```bash
+/gh ci                  # watch GitHub Actions for the current branch (background)
+/gh ci --autofix        # fix failures and re-push automatically
+/gh report-issue        # file a bug report as a GitHub issue
+/glab ci                # watch GitLab CI for the current branch (background)
+/glab ci --autofix      # fix failures and re-push automatically
+/glab report-issue      # file a bug report as a GitLab issue
+```
+
+See the [gh reference](/skills/gh) and [glab reference](/skills/glab) for all commands.
+
+### linear
+
+```bash
+/linear report-issue --team ENG --title "Login crashes on Safari"
+/linear report-issue --from .codevoyant/qa/login-crash/debug-report.md --team ENG
+```
+
+Requires the Linear MCP server configured in Claude Code. See the [linear reference](/skills/linear) for all commands.
+
+## Context Skills
+
+Context skills activate automatically when relevant files are detected — no invocation needed. The agent loads targeted recipes on demand before writing or reviewing code.
+
+| Files detected | Skill |
+|---|---|
+| `*.svelte`, `*.svelte.ts` | [sveltekit](/skills/sveltekit) — feature-slice architecture, Svelte 5 runes, shadcn-svelte, auth sessions, remote functions |
+| `@tanstack/` in `package.json` | [tanstack](/skills/tanstack) — Router v1, Query v5, Form, server functions |
+| `*.tsx`, React in `package.json` (non-SvelteKit) | [react](/skills/react) — Zustand, shadcn/ui, Tailwind CSS, React Three Fiber, data fetching |
+| `*.ts`, `tsconfig.json` | [typescript](/skills/typescript) — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI |
+| `pyproject.toml`, `uv.lock` | [python](/skills/python) — uv workspace, MLflow, Ray, Warp GPU, Pydantic, Click |
+| `CMakeLists.txt`, `conanfile.py` | [cpp](/skills/cpp) — CMake, Conan 2, gRPC, code standards, release profiles |
+| `Dockerfile`, `docker-compose.yml` | [docker](/skills/docker) — multi-stage builds, Compose, cross-platform, GCP registry |
+| `mise.toml`, `.mise.toml` | [mise](/skills/mise) — task conventions, tool pinning, language-specific setup |
+| `*.tf`, `GCP_` env vars | [gcp](/skills/gcp) — Cloud Run, Artifact Registry, gcloud auth |
+| `*.tf`, `AWS_` env vars | [aws](/skills/aws) — ECS, Lambda, S3 backend, Ray clusters, Firecracker |
+| `*.tf` (generic) | [terraform](/skills/terraform) — backends, workspaces, variable management |

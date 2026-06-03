@@ -45,35 +45,23 @@ Many projects expose a `mise run gcp-login` task that wraps these — check `mis
 
 ## Artifact Registry
 
-Image naming convention:
+See the [Artifact Registry docs](https://cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling) for the full push/pull reference — here's what matters for our projects:
+
+Image naming convention (always construct from these env vars, never hardcode a region):
 
 ```
-REGION-docker.pkg.dev/PROJECT_ID/REGISTRY_NAME/IMAGE_NAME:TAG
+${GCP_REGISTRY_REGION}-docker.pkg.dev/${GCP_REGISTRY_PROJECT_ID}/${GCP_REGISTRY_NAME}/${PROJECT}:${VERSION}
 ```
 
-Example: `us-central1-docker.pkg.dev/my-project/services/api:v1.2.3`
-
-Push:
-
-```bash
-docker push REGION-docker.pkg.dev/PROJECT/REGISTRY/NAME:TAG
-```
-
-Pull auth uses the same `gcloud auth configure-docker` step shown above.
+Projects that use Docker recipes (see the `docker` skill's `gcp-registry` recipe) wire this into `docker-compose.yml` `image:` fields and `mise run docker-push` tasks so the full name never appears as a one-liner in commands.
 
 ## Cloud Run
 
-Deploy from an Artifact Registry image:
+See the [Cloud Run docs](https://cloud.google.com/run/docs/deploying) for full deployment flags — here's what matters:
 
-```bash
-gcloud run deploy SERVICE_NAME \
-  --image REGION-docker.pkg.dev/PROJECT/REGISTRY/NAME:TAG \
-  --region REGION \
-  --project PROJECT_ID \
-  --platform managed
-```
+Always use `mise run deploy` (or equivalent task) rather than bare `gcloud run deploy` — the task bakes in `--image`, `--region`, `--project`, and any service-account bindings. Check `mise.toml` first.
 
-Common flags: `--allow-unauthenticated`, `--service-account`, `--set-env-vars`, `--memory`, `--cpu`, `--min-instances`, `--max-instances`.
+The flags worth knowing when diagnosing a failed deploy: `--service-account` (must have Artifact Registry read), `--min-instances` (avoids cold starts), `--allow-unauthenticated` vs IAP. The most common failure is `Permission denied on image` — the deploying service account needs `roles/artifactregistry.reader` on the registry project.
 
 ## Terraform
 
@@ -94,7 +82,7 @@ Most projects wrap these in mise/just tasks:
 - `mise run tf-plan ENV=dev`
 - `mise run tf-apply ENV=dev`
 
-Always check the project's task runner (call `/tasks list`) before running raw `terraform` commands.
+Always check the project's task runner (call `/task list`) before running raw `terraform` commands.
 
 ## Common Env Vars (mise.toml)
 

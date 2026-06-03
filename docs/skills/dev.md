@@ -1,136 +1,76 @@
 # dev
 
-Developer workflow commands — architecture planning, technical exploration, repo comparison, docs generation, and Linear integration.
+Developer workflows for architecture planning, technical exploration, repo comparison, docs generation, and Linear integration.
 
-The Dev skills cover the higher-level mechanics of the development loop: drafting architecture plans, researching technical approaches, comparing repositories, and generating architecture documentation.
+## Workflows
 
+### diff — compare repos or branches
 
-## Installation
-
-**Claude Code:**
-```bash
-npx skills add cloudvoyant/codevoyant
-```
-
-**OpenCode / VS Code Copilot:** See the [installation guide](/user-guide#installation).
-
-## Typical Workflows
-
-### Compare Repos or Branches
-
-```bash
-/dev diff https://github.com/org/other-repo    # compare with another repository
-/dev diff feature/my-branch                    # compare current branch with another branch
-```
-
-### Architecture Documentation
-
-```bash
-/dev docs                                   # Generate docs/architecture/ from codebase scan
-/dev plan "authentication system"           # Draft architecture plan to .codevoyant/plans/
-/dev plan "auth" --mode arch                # Architecture plan with task breakdown + LOE
-/dev approve                                # Promote draft plan to docs/architecture/
-/dev approve my-plan --push                 # Promote and create Linear tasks
-```
-
-### Technical Research
-
-```bash
-/dev explore "caching strategy"    # Research approaches, generate parallel proposals
-```
-
-## Skills
-
-### Repository & Branch Comparison
-
-Compare your current codebase with another repository or branch:
+Generate a diff report covering structural differences, added/removed files, and architectural divergence between your codebase and another repository or branch.
 
 ```bash
 /dev diff https://github.com/org/other-repo    # compare with a remote repository
 /dev diff feature/my-branch                    # compare with a local branch
 ```
 
-Generates a diff report at `.claude/diff.md` covering structural differences, added/removed files, and architectural divergence. Useful for evaluating migrations, auditing forks, or reviewing a branch before merging.
+Output is written to `.claude/diff.md`.
 
-### Code Review
+### explore — research technical approaches
 
-PR/MR creation and review workflows have moved to the [`/rev` skill](/skills/rev):
+Research a technical problem and generate parallel proposals before building.
 
 ```bash
-/rev new          # generate an AI-powered inline code review for any open PR/MR
-/rev address      # pull review comments and propose targeted fixes
-/rev complete     # publish a pending draft review
+/dev explore "caching strategy"                # research approaches, generate proposals
+/dev explore "auth approaches" --aspects       # break down by aspect
 ```
 
-See the [rev reference](/skills/rev) for all commands.
+Output lives in `.codevoyant/explore/{slug}/` and can feed into `/spec new`.
 
-### Technical Exploration
+### plan — draft an architecture plan
 
-Research a technical problem before building:
+Plan feature architecture or system design and write a draft to `.codevoyant/plans/{slug}/plan.md`.
 
 ```bash
-/dev explore "caching strategy"
-/dev explore "auth approaches" --aspects
+/dev plan "authentication system"              # feature design doc
+/dev plan "auth" --mode arch                   # architecture plan with task breakdown and LOE
+/dev plan "auth" --mode arch --bg              # run in background
 ```
 
-Runs parallel proposal generation via subagents. Output lives in `.codevoyant/explore/{name}/` so it can feed into `/spec new` later.
+`--mode arch` produces a task breakdown with LOE estimates, blocking relationships, and acceptance criteria. Use `/dev approve` to promote the plan to `docs/architecture/`.
 
-### Architecture Documentation
+### docs — generate architecture documentation
 
-Generate or update architecture documentation from a codebase scan:
+Scan the codebase and produce component maps, data flow diagrams, API inventories, and dependency graphs in `docs/architecture/`.
 
 ```bash
-/dev docs                  # Generate docs/architecture/ from codebase
-/dev docs --bg             # Run in background, notify when done
+/dev docs                                      # generate docs/architecture/ from codebase
+/dev docs --bg                                 # run in background, notify when done
 ```
 
-Produces component maps, data flow diagrams, API inventories, and dependency graphs.
+### approve — promote plan to docs and Linear
 
-### Architecture Planning
-
-Plan architecture for a project or feature:
+Promote a draft architecture plan to `docs/architecture/` and optionally create Linear tasks.
 
 ```bash
-/dev plan "authentication system"          # Feature design doc (--mode feat)
-/dev plan "auth" --mode arch               # Architecture plan with task breakdown + LOE
-/dev plan "auth" --mode arch --bg          # Run in background
+/dev approve                                        # approve most recent dev plan draft
+/dev approve my-plan                                # approve specific plan by slug
+/dev approve my-plan --push                         # approve and create new Linear project with tasks
+/dev approve my-plan --push https://linear.app/...  # approve and push to existing Linear project
+/dev approve my-plan --silent                       # suppress notification
 ```
 
-Writes a draft plan to `.codevoyant/plans/{slug}/plan.md`. For architecture-level plans (`--mode arch`), the plan includes a **Task Breakdown** — each task has a LOE estimate, blocking relationships, and acceptance criteria rich enough for autonomous implementation via `/spec new` and `/spec bg`.
+### allow — pre-approve permissions
 
-Use `/dev approve` to promote the plan to `docs/architecture/`.
-
-**Flags:**
-- `--mode arch` — architecture-level plan: produces task breakdown with LOE and dependency graph
-- `--mode feat` — feature design doc only (no task breakdown)
-- If `--mode` is omitted, the skill asks interactively
-
-### Architecture Approve
-
-Promote a draft architecture plan to `docs/architecture/` and optionally create Linear tasks:
+Write the allow entries needed for dev and git skills to run without permission prompts.
 
 ```bash
-/dev approve                                    # Approve most recent dev:plan draft
-/dev approve my-plan                            # Approve specific plan by slug
-/dev approve my-plan --push                     # Approve and create new Linear project + tasks
-/dev approve my-plan --push https://linear.app/...  # Approve and push to existing Linear project
-/dev approve my-plan --silent                   # Suppress notification
+/dev allow                                     # write to project .claude/settings.json
+/dev allow --global                            # write to ~/.claude/settings.json
 ```
 
-Each Linear task created includes: the relevant architecture doc section, scope, key constraints, and verifiable acceptance criteria — enough context for `/spec new` + `/spec bg` to execute autonomously.
-
-### Pre-approve Agent Permissions
+### help — list commands
 
 ```bash
-/dev allow           # Write dev permissions to project .claude/settings.json
-/dev allow --global  # Write to ~/.claude/settings.json
-```
-
-Adds the allow entries needed for dev and git skills to run without permission prompts — git operations (including push), GitHub/GitLab CLI, desktop notifications, and the project's task runner.
-
-### List All Commands
-
-```bash
-/dev help                   # List all dev commands with descriptions
-/dev help ci                # Show full details for a specific command
+/dev help                                      # list all dev commands with descriptions
+/dev help diff                                 # show full details for a specific command
 ```

@@ -34,8 +34,10 @@ glab api "projects/:id/merge_requests/${MR_IID}/discussions" \
 For each id:
 
 ```bash
-glab api "projects/:id/merge_requests/${MR_IID}/discussions/${DISCUSSION_ID}" \
-  --method PUT --field "resolved=true"
+for DISCUSSION_ID in $DISCUSSION_IDS; do
+  glab api "projects/:id/merge_requests/${MR_IID}/discussions/${DISCUSSION_ID}?resolved=true" \
+    --method PUT
+done
 ```
 
 Track success/failure per discussion.

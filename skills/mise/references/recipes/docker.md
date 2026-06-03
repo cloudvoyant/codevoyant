@@ -178,7 +178,7 @@ docker build --target prod -t myapp:latest .
 
 ## COMPOSE_BAKE
 
-`COMPOSE_BAKE=true` enables BuildKit's Bake mode for `docker compose build` — faster parallel builds, better caching. Available in Docker Compose v2.17+.
+Always set `COMPOSE_BAKE=true` for multi-service builds. In our base→web→tester Compose setup, it cuts build time significantly by parallelizing and sharing BuildKit cache. Requires Docker Compose v2.17+. See [Docker BuildKit Bake](https://docs.docker.com/build/bake/) for the underlying mechanism.
 
 ```toml
 [tasks.docker-build]

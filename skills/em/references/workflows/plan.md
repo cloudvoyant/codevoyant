@@ -233,7 +233,7 @@ After running the checkpoint, write the Quality Brief (3–5 bullets) and use it
 
 Create plan directory:
 ```bash
-mkdir -p .codevoyant/plans/{slug}/tasks
+mkdir -p .codevoyant/plans/{slug}/task
 mkdir -p .codevoyant/explore/{slug}
 ```
 
@@ -250,7 +250,7 @@ Generate the three milestone files inline:
 
 Each task file uses the template at `references/task-template.md`. Requirements and ACs must be spelled out per task. Design/SA must be specified or explicitly marked deferred.
 
-**Implementation guidance for `develop.md` tasks:** When a task includes build, test, lint, or format commands, the executing agent MUST call `/tasks detect` to identify the project's task runner and `/tasks list` to discover available recipes — and reference those recipe names in the task body. Never write raw `tsc`, `vitest`, `eslint`, etc. when a task wraps them.
+**Implementation guidance for `develop.md` tasks:** When a task includes build, test, lint, or format commands, the executing agent MUST call `/task detect` to identify the project's task runner and `/task list` to discover available recipes — and reference those recipe names in the task body. Never write raw `tsc`, `vitest`, `eslint`, etc. when a task wraps them.
 
 After generating the task files, proceed to Step 5.5 before writing the Gantt or project-breakdown-proposal.
 

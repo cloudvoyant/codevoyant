@@ -65,21 +65,8 @@ TF_VAR_app_image="123456789.dkr.ecr.us-east-1.amazonaws.com/app:v1.2.3" \
 
 ## Authentication
 
-Local development:
+See the [AWS provider auth docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration) for the full auth chain. Convention in this codebase:
 
-```bash
-export AWS_PROFILE=my-profile
-# or
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
-```
-
-CI — use OIDC (recommended over long-lived keys):
-
-```bash
-aws sts assume-role \
-  --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/TerraformDeployRole \
-  --role-session-name terraform-ci
-```
-
-Never commit AWS credentials — use IAM roles or OIDC federation.
+- **Local dev**: `AWS_PROFILE` pointing to a named profile in `~/.aws/credentials` — never raw key vars
+- **CI**: OIDC role assumption via `aws sts assume-role` to a `TerraformDeployRole` IAM role; the role ARN comes from a CI variable, not the codebase
+- Never put credentials in `terraform.tfvars` or environment files that could be committed

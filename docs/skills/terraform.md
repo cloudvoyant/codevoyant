@@ -4,78 +4,39 @@ title: terraform
 
 # terraform
 
-Context skill for Terraform infrastructure patterns. Activates automatically when `.tf` files are detected — no slash command needed.
+Context skill for Terraform infrastructure patterns — activates automatically, no slash command needed.
 
-## Installation
+## Requirements
 
-```bash
-npx skills add cloudvoyant/codevoyant
-```
+- `terraform` CLI — [terraform.io downloads](https://developer.hashicorp.com/terraform/install)
 
-## What It Does
+## Commands
 
-When you're writing or reviewing Terraform the agent loads directory structure conventions, backend config patterns, workspace management, variable handling, and mise task wrappers — based on nv-gcp-template conventions.
+This is a context skill. It activates automatically when `.tf` files are detected. No slash command is needed.
 
-## Recipes
+### Trigger conditions
 
-| Working on… | Recipe loaded |
+The skill loads when any of the following are present:
+
+- `.tf` or `.tfvars` files in the project
+- User mentions Terraform, `tf-init`, `tf-plan`, or `tf-apply`
+- An `infra/` directory containing Terraform configuration
+
+### Recipes available
+
+| Situation | Recipe loaded |
 |---|---|
 | Directory structure and module layout | `structure` |
-| Backend config and workspace management | `backend-workspaces` |
-| Variable and tfvars management | `variables` |
-| mise task wrappers (tf-init, tf-plan, tf-apply) | `mise-tasks` |
+| GCP backend (GCS) and workspace management | `gcp-backend-workspaces` |
+| GCP variable and tfvars management | `gcp-variables` |
+| AWS backend (S3) and workspace management | `aws-backend-workspaces` |
+| AWS variable and provider setup | `aws-variables` |
 
-## Directory Structure
+For mise task wrappers (`tf-init`, `tf-plan`, `tf-apply`, `tf-destroy`) see the [mise skill](/skills/mise) — recipes `terraform-gcp` and `terraform-aws`.
 
-```
-infra/
-  shared/           ← one-time shared resources (CDN, Artifact Registry, IAM)
-  environments/     ← per-workspace resources (Cloud Run, storage, secrets)
-  modules/          ← reusable modules
-```
+Each recipe loads on demand — only what is relevant to the current task.
 
-Two separate Terraform roots: `shared/` is applied once; `environments/` is applied per workspace.
+## References
 
-## Workspace-per-Environment
-
-Workspaces map to environments: `dev`, `stage`, `prod`, `preview-{issue-id}`.
-
-State lives in a shared GCS backend bucket — one state file per workspace:
-
-```
-${GCP_DEVOPS_PROJECT_ID}-terraform-backend-storage/
-  ${GCP_PROJECT_ID}/${PROJECT}/env:/dev/default.tfstate
-  ${GCP_PROJECT_ID}/${PROJECT}/env:/stage/default.tfstate
-  ${GCP_PROJECT_ID}/${PROJECT}/env:/prod/default.tfstate
-```
-
-## mise Tasks
-
-```bash
-mise run tf-init dev       # initialize backend + select workspace
-mise run tf-plan dev       # plan changes
-mise run tf-apply dev      # apply changes
-
-mise run tf-apply-shared   # apply shared infrastructure (once)
-```
-
-In CI, set `TF_VAR_app_image` before `tf-apply` to deploy a specific image:
-
-```bash
-TF_VAR_app_image="us-east1-docker.pkg.dev/project/registry/app:v1.2.3" \
-  mise run tf-apply prod
-```
-
-## Variable Management
-
-- **Never commit `terraform.tfvars`** — commit `.tfvars.example` templates only
-- Pass vars via `-var` flags in mise tasks for local dev
-- Pass sensitive vars (image tags, secrets) via `TF_VAR_*` env vars in CI
-- Runtime secrets live in GCP Secret Manager — Terraform reads them at apply time via `google_secret_manager_secret_version` data sources
-
-## Common Pitfalls
-
-- Never commit `.tfstate` files or `terraform.tfvars` — add them to `.gitignore`
-- Run `tf-create-backend` once before first `tf-init` to provision the GCS backend bucket
-- Always pin Terraform major version in `mise.toml`: `terraform = "1"`
-- `terraform init -reconfigure` required when switching backend configs
+- [Terraform documentation](https://developer.hashicorp.com/terraform/docs)
+- [Terraform language reference](https://developer.hashicorp.com/terraform/language)

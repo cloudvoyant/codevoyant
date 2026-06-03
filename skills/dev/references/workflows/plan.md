@@ -137,7 +137,7 @@ For each implementation task identified during design, write a self-contained en
   - {specific, verifiable condition checkable in under 5 minutes}
   - {another AC — e.g. unit test passes, endpoint returns expected shape, migration is idempotent}
 
-**Implementation guidance:** When a task body mentions build, test, lint, or format steps, instruct the implementer to first call `/tasks detect` and `/tasks list` to find the project's task runner recipes — then reference those recipe names rather than raw shell commands.
+**Implementation guidance:** When a task body mentions build, test, lint, or format steps, instruct the implementer to first call `/task detect` and `/task list` to find the project's task runner recipes — then reference those recipe names rather than raw shell commands.
 
 Include a Mermaid dependency graph if there are blocking relationships:
 ```mermaid

@@ -127,17 +127,19 @@ Build with `COMPOSE_BAKE=true` for parallel builds:
 COMPOSE_BAKE=true docker compose build
 ```
 
-## ARG re-declaration rule
+## ARG re-declaration rule (gotcha)
 
-After every `FROM`, `ARG` values reset. Re-declare any `ARG` you need in the new stage:
+`ARG` values reset after every `FROM`. This is the most common multi-stage gotcha — a build arg set before the first `FROM` is invisible in subsequent stages unless you re-declare it. See the [Dockerfile ARG docs](https://docs.docker.com/reference/dockerfile/#arg) for the full scoping rules. What matters here:
 
 ```dockerfile
 ARG PROJECT=my-project          # declared before first FROM
 
 FROM base AS builder
-ARG PROJECT=my-project          # must re-declare to use $PROJECT here
+ARG PROJECT=my-project          # must re-declare — the value from before FROM is gone
 RUN echo "Building $PROJECT"
 ```
+
+We hit this every time a new stage is added to a Compose-based build. Add the re-declaration immediately below each `FROM` line.
 
 ## Non-root user pattern (Alpine)
 

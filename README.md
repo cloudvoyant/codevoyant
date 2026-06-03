@@ -58,12 +58,22 @@ Scaffold SvelteKit prototypes, create single-file wireframe explorations, and ex
 Generate professional inline review comments from a diff, address change requests, and publish a draft review.</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/flow.svg" width="32"></td>
+<td><strong>flow</strong> — end-to-end pipeline orchestration<br>
+Chain skill workflows into end-to-end pipelines that run sequentially.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/qa.svg" width="32"></td>
+<td><strong>qa</strong> — bug investigation and smoke testing<br>
+Structured bug investigation, browser-agent smoke tests, one-command issue filing to GitHub, GitLab, or Linear.</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/skill.svg" width="32"></td>
 <td><strong>skill</strong> — build, maintain, and report skills<br>
 Scaffold new skills, iterate on existing ones, audit quality, and report issues to skill authors.</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/tasks.svg" width="32"></td>
+<td align="center"><img src="docs/public/icons/task.svg" width="32"></td>
 <td><strong>tasks</strong> — run project tasks<br>
 Detect and run tasks across mise, just, task.dev, and npm scripts with a consistent interface.</td>
 </tr>
@@ -81,6 +91,11 @@ Watch Actions pipelines, fetch and post inline PR review comments, and manage dr
 <td align="center"><img src="docs/public/icons/glab.svg" width="32"></td>
 <td><strong>glab</strong> — GitLab CI and MR review<br>
 Watch CI pipelines, fetch and post inline MR discussion notes, and manage draft reviews.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/linear.svg" width="32"></td>
+<td><strong>linear</strong> — Linear issue management<br>
+Create Linear issues and bug reports via MCP Linear tools.</td>
 </tr>
 </table>
 
@@ -104,12 +119,32 @@ Watch CI pipelines, fetch and post inline MR discussion notes, and manage draft 
 <td><strong>terraform</strong> — directory structure, backend config, workspace-per-environment for GCP and AWS</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/aws.svg" width="32"></td>
+<td><strong>aws</strong> — Terraform provider setup, S3/DynamoDB backend, ECS, Lambda, static sites, Ray clusters, Firecracker VM fleets</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/sveltekit.svg" width="32"></td>
 <td><strong>sveltekit</strong> — feature-slice architecture, Svelte 5 runes, shadcn-svelte, a11y, form patterns</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/tanstack.svg" width="32"></td>
+<td><strong>tanstack</strong> — TanStack Start file-based routing, Router v1, Query v5, Form, server functions</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/react.svg" width="32"></td>
+<td><strong>react</strong> — Zustand state management, shadcn/ui and Tailwind, React Three Fiber and Drei, data fetching</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/typescript.svg" width="32"></td>
-<td><strong>typescript</strong> — unknown catch, library types, Zod generic bounds</td>
+<td><strong>typescript</strong> — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/python.svg" width="32"></td>
+<td><strong>python</strong> — uv workspace and publishing, MLflow tracking, Ray distributed training, Warp GPU kernels, Pydantic, Click CLIs</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/cpp.svg" width="32"></td>
+<td><strong>cpp</strong> — CMake project structure, Conan package management and publishing, gRPC service patterns, code standards, release profiles</td>
 </tr>
 </table>
 

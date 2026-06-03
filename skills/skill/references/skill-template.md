@@ -26,8 +26,31 @@ context: fork # optional — fork | inline | background
 - `disable-model-invocation` — prevents Claude from auto-running the skill on trigger
 - `context` — execution context; `fork` spawns a subshell, `inline` runs in current context
 - `hooks` — list of lifecycle hooks (e.g. `pre-run`, `post-run`)
+- `requires` — array of skill names this skill delegates to; triggers dep-check at runtime (e.g. `requires: [gh, skill]`)
+- `requires_one_of` — like `requires` but passes if any one skill in the list is present (e.g. `requires_one_of: [gh, glab]`)
 
 **Naming convention:** `namespace:verb` — e.g. `skill:new`, `dev:commit`, `spec:go`
+
+---
+
+## 1b. Dependency Check block (required when `requires` or `requires_one_of` is set)
+
+Immediately after frontmatter, add this block. Adjust for `requires_one_of` when applicable:
+
+```markdown
+## Dependency Check
+
+Before proceeding, verify each skill listed in `requires:` is available in your context.
+
+For each required skill, check whether you can invoke `/{name}` (i.e. its instructions are loaded). If a required skill is missing, stop and report:
+
+\`\`\`
+Required skill not installed: {name}
+Install: npx skills add codevoyant/codevoyant
+\`\`\`
+```
+
+For `requires_one_of`, check whether **any** of the listed skills is present; fail only if none are.
 
 ---
 

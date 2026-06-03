@@ -104,6 +104,7 @@ Only after plan accepted:
 - Frontmatter (description, name, license, compatibility, argument-hint)
   - Add `disable-model-invocation: true` if the skill is stateful or destructive AND does not use `context: fork`. A forked skill already runs in an isolated agent context — the two flags serve the same isolation purpose, don't combine them.
   - Add `context: fork` if the skill is long-running or should be isolated. This also provides stateful safety without needing `disable-model-invocation`.
+  - Add `requires: [skill-name, ...]` if the skill delegates to or invokes other skills. Use `requires_one_of: [a, b]` when any one of a set suffices. Then add a Dependency Check section immediately after frontmatter (see `references/skill-template.md`).
 - Compatibility note block
 - Skill Requirements section (bash checks for deps)
 - Critical Rules (terse, ≤8 bullets; reference `references/` for detail)

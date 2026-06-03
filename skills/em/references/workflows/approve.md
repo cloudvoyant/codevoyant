@@ -30,7 +30,7 @@ Read `plan.md`. Set PLAN_DIR = `.codevoyant/plans/{SLUG}` and PLAN_NAME = slug.
 Check:
 ```bash
 test -s "$PLAN_DIR/plan.md"         && echo "✓ plan.md" || echo "✗ MISSING: plan.md"
-ls "$PLAN_DIR/tasks/"*.md 2>/dev/null | head -1 && echo "✓ tasks/*.md" || echo "✗ MISSING: tasks files"
+ls "$PLAN_DIR/task/"*.md 2>/dev/null | head -1 && echo "✓ tasks/*.md" || echo "✗ MISSING: tasks files"
 ```
 
 If any check fails: report the issue and stop. Do not promote an incomplete plan.
@@ -70,9 +70,9 @@ AskUserQuestion:
 Create the target directory and copy:
 
 ```bash
-mkdir -p "docs/engineering/plans/{SLUG}/tasks"
+mkdir -p "docs/engineering/plans/{SLUG}/task"
 cp "$PLAN_DIR/plan.md" "docs/engineering/plans/{SLUG}/plan.md"
-cp "$PLAN_DIR/tasks/"*.md "docs/engineering/plans/{SLUG}/tasks/" 2>/dev/null
+cp "$PLAN_DIR/task/"*.md "docs/engineering/plans/{SLUG}/task/" 2>/dev/null
 
 # Copy all research artifacts flat into docs/engineering/plans/{SLUG}/research/
 # Sources: .codevoyant/explore/{SLUG}/ and .codevoyant/plans/{SLUG}/research/ (if present)

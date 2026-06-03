@@ -1,5 +1,5 @@
 ---
-description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill learn", "skill consolidate", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "explore skills", "create a skill", "make a skill for", "learn from", "extract skill from", "skill from PR", "skill from URL", "skill from path", "merge skills", "consolidate skills", "combine skills", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue". Pass a subcommand as the first argument.'
+description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill learn", "skill consolidate", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "skill scaffold", "explore skills", "create a skill", "make a skill for", "learn from", "extract skill from", "skill from PR", "skill from URL", "skill from path", "merge skills", "consolidate skills", "combine skills", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue", "scaffold skill repo", "init skill repo", "new skill repo". Pass a subcommand as the first argument.'
 name: skill
 disable-model-invocation: true
 license: MIT
@@ -42,10 +42,13 @@ REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 # Normalise aliases
 case "$VERB" in
-  "")         VERB="help" ;;
-  "create")   VERB="new" ;;
-  "improve")  VERB="update" ;;
-  "review")   VERB="critique" ;;
+  "")           VERB="help" ;;
+  "create")     VERB="new" ;;
+  "improve")    VERB="update" ;;
+  "review")     VERB="critique" ;;
+  "scaffold")   VERB="scaffold" ;;
+  "init")       VERB="scaffold" ;;
+  "bootstrap")  VERB="scaffold" ;;
 esac
 ```
 
@@ -64,4 +67,5 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **update** (`references/workflows/update.md`) — update or improve an existing skill
 - **critique** (`references/workflows/critique.md`) — evaluate skill quality across 5 dimensions
 - **feedback** (`references/workflows/feedback.md`) — open a GitHub or GitLab issue to report a skill problem
+- **scaffold** (`references/workflows/scaffold.md`) — initialise a new skill repo with annotated example skills
 - **help** (`references/workflows/help.md`) — print command reference

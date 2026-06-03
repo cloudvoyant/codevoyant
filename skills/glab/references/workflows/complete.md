@@ -19,7 +19,17 @@ glab auth status >/dev/null 2>&1 || { echo "glab not authenticated. Run: glab au
 
 Detect `MR_IID` from branch if not given (see `pull-comments.md` Step 2).
 
-## Step 3: Strip Draft Prefix
+## Step 3: Publish Draft Notes
+
+Publishes any pending draft inline comments before submitting the review.
+
+```bash
+# Publish all pending draft notes
+glab api "projects/:id/merge_requests/${MR_IID}/draft_notes/bulk_publish" \
+  --method POST
+```
+
+## Step 4: Strip Draft Prefix
 
 Read current title:
 
@@ -39,19 +49,19 @@ glab api "projects/:id/merge_requests/${MR_IID}" \
 
 Otherwise note `MR !{iid} is not a draft.` and continue.
 
-## Step 4: Approve (if `--approve`)
+## Step 5: Approve (if `--approve`)
 
 ```bash
 glab mr approve "${MR_IID}"
 ```
 
-## Step 5: Post Summary Note (if `--body`)
+## Step 6: Post Summary Note (if `--body`)
 
 ```bash
 glab mr note "${MR_IID}" --message "${BODY}"
 ```
 
-## Step 6: Report
+## Step 7: Report
 
 ```
 ✓ MR !{MR_IID} published. {mr-url}

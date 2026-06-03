@@ -98,8 +98,8 @@ options:
 ## Step 2: Scan for Annotations
 
 ```bash
-grep -rn "^>" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
-grep -rn ">>" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
+grep -rn "^>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
+grep -rn ">>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
 ```
 
 For each annotation, parse: FILE, LINE_NUM, CONTENT (before `>>`), INSTRUCTION.
@@ -132,7 +132,7 @@ Remove the annotation marker after applying. Log each change for the summary.
 ## Step 4: Consistency Pass
 
 After all changes:
-- Verify task milestone files still exist: `{PLAN_DIR}/tasks/design.md`, `tasks/develop.md`, `tasks/deploy.md`
+- Verify task milestone files still exist: `{PLAN_DIR}/task/design.md`, `tasks/develop.md`, `tasks/deploy.md`
 - Check milestone naming and task numbering is consistent throughout `plan.md`
 - Verify "NOT this period" section still accurately reflects deferrals
 

@@ -122,8 +122,6 @@ Format-check and typecheck are the CI-safe variants (no side effects):
 # In CI: run format-check, lint, typecheck, test — in that order
 ```
 
-## Node Version Guidance
+## Node version pinning
 
-- `"lts"` — always latest LTS (good for tools/scripts)
-- `"20"` / `"22"` / `"24"` — pin for apps that need a stable baseline
-- Avoid `"latest"` for node — too unpredictable for production projects
+See [mise node docs](https://mise.jdx.dev/lang/node.html) for the full version syntax. Project convention: pin to a major (`"24"`) for apps that deploy to production — never `"latest"` which can silently upgrade between CI runs. Use `"lts"` only for internal tooling scripts where exact node version doesn't matter.

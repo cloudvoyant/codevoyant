@@ -1,6 +1,10 @@
 # Terraform Directory Structure
 
-Based on nv-gcp-template: shared resources vs environment resources split.
+Based on nv-gcp-template: shared resources vs environment resources split. See the [Terraform module docs](https://developer.hashicorp.com/terraform/language/modules) for the general module system — here's the specific layout decision and why.
+
+## Why shared/ vs environments/?
+
+The split avoids a common mistake: applying CDN, Artifact Registry, and IAM setup on every `tf-apply` when those resources only need to be created once. Shared resources are provisioned once, then referenced by environments via data sources. Mixing them into a single workspace means every dev deploy touches your CDN config.
 
 ## Layout
 

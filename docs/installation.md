@@ -34,6 +34,22 @@ npx skills add cloudvoyant/codevoyant@v1.31.0
 npx skills add /path/to/codevoyant
 ```
 
+## Permissions
+
+Skills load reference files (recipes, workflow guides) at runtime. To avoid being prompted on every read, add the skills directory to your allowed paths.
+
+**User-wide** (`~/.claude/settings.json`):
+
+```json
+{
+  "permissions": {
+    "allow": ["Read(~/.claude/skills/**)"]
+  }
+}
+```
+
+**Project-only** (`.claude/settings.json` in your project root) — same format.
+
 ## Troubleshooting
 
 If commands aren't showing up or updates aren't applying, reinstall:

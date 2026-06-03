@@ -1,72 +1,64 @@
-# em <Badge type="warning" text="Experimental" />
+# em
 
-Engineering management -- project planning, task breakdowns, roadmap review, and Linear integration.
+Engineering management workflows for project planning, milestone-grouped task breakdowns, roadmap review, and Linear integration.
 
-The EM skills give AI agents structured workflows for planning engineering work: milestone-grouped task plans with Linear as the primary tracker, capacity and dependency review, and conversational plan updates.
+## Workflows
 
-## Installation
+### plan — draft an engineering project plan
 
-**Claude Code:**
-```bash
-npx skills add cloudvoyant/codevoyant
-```
-
-**OpenCode / VS Code Copilot:** See the [installation guide](/user-guide#installation).
-
-## Typical Workflows
-
-### Plan a project
+Produce a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`; use `/em approve` to promote it to `docs/engineering/plans/`.
 
 ```bash
-/em plan "migrate auth to OAuth2"                     # Draft plan locally
-/em plan https://linear.app/team/project/PRJ-123      # Seed from existing Linear project
+/em plan "migrate auth to OAuth2"                      # draft plan from description
+/em plan https://linear.app/team/project/PRJ-123       # seed from existing Linear project
+/em plan --continue PRJ-123                            # resume from existing Linear state
 ```
 
-Produces a local milestone-grouped task plan in `.codevoyant/plans/{slug}/`. Use `/em approve` to promote to `docs/engineering/plans/` and optionally push to Linear.
+### approve — promote plan and push to Linear
 
-### Approve and push to Linear
+Promote a draft plan to `docs/engineering/plans/`, set start/end dates on the Linear project, and create milestones from the plan's milestone headings.
 
 ```bash
-/em approve                                           # Approve most recent /em plan draft
-/em approve my-plan                                   # Approve specific plan by slug
-/em approve my-plan --push                            # Approve and create new Linear project
-/em approve my-plan --push https://linear.app/...    # Approve and push to existing project
+/em approve                                            # approve most recent em plan draft
+/em approve my-plan                                    # approve specific plan by slug
+/em approve my-plan --push                             # approve and create new Linear project
+/em approve my-plan --push https://linear.app/...      # approve and push to existing project
 ```
 
-Sets start/end dates on the Linear project from the plan's timeline. Creates milestones from the plan's milestone headings (M1, M2, etc.). Copies research artifacts to `docs/engineering/plans/{slug}/research/`. Issue creation is handled separately by `dev:plan`.
+Issue creation is handled separately by `dev:plan`, not by `em approve`.
 
-### Continue from existing Linear state
+### review — review roadmap quality
+
+Check capacity realism, dependency gaps, missing risks, and phasing quality; auto-launched after `/em plan` completes.
 
 ```bash
-/em plan --continue PRJ-123                           # Resume from existing Linear project
+/em review                                             # auto-selects most recent plan
+/em review my-roadmap                                  # review specific plan
+/em review my-roadmap --silent                         # suppress output
 ```
 
-### Review a roadmap
+### update — apply plan changes
+
+Apply inline annotations or conversational changes to plan files.
 
 ```bash
-/em review                          # Auto-selects most recent plan
-/em review my-roadmap               # Review specific plan
-/em review my-roadmap --silent      # Suppress output
+/em update my-plan "add error handling milestone"      # conversational change
+/em update my-plan --bg                                # apply annotations in background
 ```
 
-Checks capacity realism, dependency gaps, missing risks, and phasing quality. Auto-launched after `/em plan` completes.
+Supports `> instruction` (block-level) and `content >> instruction` (line-level) annotation forms.
 
-### Update a plan
+### allow — pre-approve permissions
+
+Write the allow entries needed for em skills to run without permission prompts.
 
 ```bash
-/em update my-plan "add error handling milestone"      # Conversational change
-/em update my-plan --bg                                # Apply annotations in background
+/em allow                                              # write to project .claude/settings.json
+/em allow --global                                     # write to ~/.claude/settings.json
 ```
 
-Applies inline `>` and `>>` annotations or accepts conversational changes to plan files.
+### help — list commands
 
-## Skills
-
-| Skill | Description |
-|---|---|
-| `/em plan` | Draft an engineering project plan locally with milestone-grouped tasks |
-| `em:approve` | Promote a draft plan to `docs/engineering/plans/` and optionally push to Linear |
-| `/em review` | Review a roadmap for capacity, dependencies, risks, and phasing |
-| `em:update` | Update an EM plan via annotations or conversational changes |
-| `em:allow` | Pre-approve em permissions for uninterrupted agent execution |
-| `em:help` | List all em commands |
+```bash
+/em help                                               # list all em commands
+```

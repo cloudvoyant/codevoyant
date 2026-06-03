@@ -78,6 +78,15 @@ Can an agent complete this skill without getting stuck?
 - If the skill uses subagents, are the subagent prompts fully specified, or just sketched?
 - Is there a clear endpoint — does the agent know when it's done?
 
+### Dimension 6 — Dependency Declaration
+
+Does the skill declare and check its skill dependencies correctly?
+
+- If the skill delegates to or invokes another skill (e.g. `/gh`, `/skill new`, `/linear`), does the frontmatter declare `requires:` or `requires_one_of:`?
+- Is there an agent-agnostic dependency check block in the dispatcher that verifies each required skill is loaded in context before proceeding?
+- Does the check produce a clear error message naming the missing skill and the install command?
+- If no other skills are invoked, rate N/A.
+
 ## Step 3: Determine Verdict
 
 Apply these rules — use the first that matches:
@@ -115,6 +124,9 @@ Produce a structured critique using this format (emit markdown directly — do n
 - {finding or ✓ if no issues}
 
 ### Actionability — Strong | Adequate | Weak
+- {finding or ✓ if no issues}
+
+### Dependency Declaration — Strong | Adequate | Weak | N/A
 - {finding or ✓ if no issues}
 
 ---

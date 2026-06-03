@@ -1,8 +1,15 @@
-# Recipe: App Shell
+# Building the App Shell
+
+## Why this matters
+
+Every app has UI that wraps all pages: the navigation sidebar, the top bar, the page layout with gutters and scroll areas. It's tempting to put this directly in `+layout.svelte` and drive it with shared state. But when each route needs different content in the top bar (the editor has a different toolbar than the reader), you end up with either a sprawling `{#if}` chain or invisible global state mutations that are hard to trace.
+
+The app shell pattern solves this cleanly: layout components live in `feature-shell`, they define slots for route-specific content, and each route fills those slots via Svelte 5 snippets. The shell stays content-agnostic; the route stays in control of what it renders.
+
 
 ## What belongs in the shell
 
-The shell owns everything that frames the app — not the content of any feature.
+The shell owns everything that **frames** the app — not the content of any feature:
 
 | Shell concern       | Example                                                  |
 | ------------------- | -------------------------------------------------------- |
@@ -15,24 +22,30 @@ The shell owns everything that frames the app — not the content of any feature
 
 **Not shell**: feature-specific right sidebars (editor sidebar, reading sidebar), route-specific content, business logic.
 
----
+If you're asking "does the editor sidebar belong in the shell?", the answer is no — it's specific to the editor feature. The shell provides the slot; the editor feature fills it.
 
-## Content projection via snippets
 
-Shell components must accept arbitrary content from routes/features via Svelte 5 snippets. Do not use writable stores to inject content into shell components — that creates invisible coupling. Pass content as props.
+## Content projection with Svelte 5 snippets
 
-### Bad: store-based injection
+Routes need to inject content into the shell (a custom top bar, a sidebar). The wrong way to do this is a writable store — it creates invisible coupling where the route mutates global state and the shell reads it, making the data flow impossible to follow.
+
+The right way is snippet props: the layout component declares what slots it accepts, and routes pass content as props.
+
+### What goes wrong with store-based injection
 
 ```svelte
 <!-- route/+page.svelte -->
 <script>
   import { topBarContent } from '@readership/feature-shell/stores';
-  // Invisible side-effect — easy to leak and hard to trace
+  // Sets global state as a side-effect of rendering — easy to leak,
+  // hard to trace, doesn't clean up when the route unmounts.
   topBarContent.set(mySnippet);
 </script>
 ```
 
-### Good: snippet props
+The problem: the shell is now implicitly coupled to the route. There's no way to know from looking at the shell what content it might receive. And if the route forgets to clean up the store, stale content persists.
+
+### The correct approach: snippet props
 
 ```svelte
 <!-- feature-shell/src/components/PageLayout.svelte -->
@@ -50,7 +63,7 @@ Shell components must accept arbitrary content from routes/features via Svelte 5
   } = $props();
 </script>
 
-<!-- top bar -->
+<!-- top bar — only renders if the route provides it -->
 {#if topbar}
   <header class="fixed top-0 inset-x-0 z-50 h-14 border-b bg-background">
     {@render topbar()}
@@ -62,7 +75,7 @@ Shell components must accept arbitrary content from routes/features via Svelte 5
   {@render children()}
 </main>
 
-<!-- right panel -->
+<!-- right panel — only renders if the route provides it -->
 {#if rightSidebar}
   <aside class="fixed right-0 inset-y-0 w-[250px]">
     {@render rightSidebar()}
@@ -92,13 +105,12 @@ Shell components must accept arbitrary content from routes/features via Svelte 5
 </PageLayout>
 ```
 
----
+The data flow is explicit and readable: the route decides what fills each slot. The shell has no knowledge of `EditorTopBar` or `EditorSidebar`.
 
-## Shared shell overlays
 
-Shared overlays (sheet, drawer, command palette) live in `feature-shell`. They accept content via snippets so features can drive their content without owning the overlay chrome.
+## Shared overlays (sheet, drawer, command palette)
 
-### AppSheet pattern
+Global overlays live in `feature-shell` so every feature can use them without reimplementing the chrome. Features drive the content via snippets, not by owning the overlay component.
 
 ```svelte
 <!-- feature-shell/src/components/AppSheet.svelte -->
@@ -131,7 +143,7 @@ Shared overlays (sheet, drawer, command palette) live in `feature-shell`. They a
 </Sheet>
 ```
 
-Usage from a feature:
+Using it from a feature:
 
 ```svelte
 <script lang="ts">
@@ -147,11 +159,12 @@ Usage from a feature:
 </AppSheet>
 ```
 
----
+The feature controls when the sheet opens and what content it shows. The shell provides the animation, backdrop, and close behavior.
+
 
 ## Layout variants
 
-When a route needs a meaningfully different layout (e.g., a full-bleed reading view, a centred marketing page), create a named layout variant in `feature-shell` rather than bypassing `PageLayout` with routing conditionals in `+layout.svelte`.
+Some routes need a fundamentally different layout (a full-bleed reading view, a centered marketing page). Create named layout variants in `feature-shell` rather than adding `{#if isReadPage}` branches to `+layout.svelte`. Each variant is a separate component with its own structure.
 
 ```
 feature-shell/src/components/
@@ -160,7 +173,7 @@ feature-shell/src/components/
 └── CentredLayout.svelte     # marketing: narrow centred column, no sidebar
 ```
 
-In `+layout.svelte`, prefer importing the right variant over an `{#if isReadPage}` branch:
+In `+layout.svelte`, import the right variant:
 
 ```svelte
 <!-- apps/web/src/routes/read/+layout.svelte -->
@@ -174,12 +187,13 @@ In `+layout.svelte`, prefer importing the right variant over an `{#if isReadPage
 </FullBleedLayout>
 ```
 
----
+This keeps each layout variant focused and testable in isolation. The alternative — a single `PageLayout` with boolean flags and `{#if}` branches — becomes unmaintainable once you have three or four layout types.
+
 
 ## Rules
 
 - Shell components are content-agnostic: they receive snippets, not domain types
-- Never import from a feature lib in `feature-shell`
+- Never import from a feature lib in `feature-shell` — the dependency flows outward only
 - Shared overlays (sheet, drawer) live in `feature-shell`, not in individual features
-- Use snippet props for layout injection; avoid stores for content that is scoped to a single route
+- Use snippet props for layout injection; never use stores for content scoped to a single route
 - One layout variant per visual archetype; don't accumulate `{#if}` branches in `+layout.svelte`

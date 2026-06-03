@@ -4,89 +4,42 @@ title: gcp
 
 # gcp
 
-Context skill for Google Cloud Platform patterns. Activates automatically when `*.tf` files, `GCP_` environment variables in `mise.toml`, or Dockerfiles referencing GCP registries are detected — no slash command needed.
+Context skill for Google Cloud Platform patterns — activates automatically, no slash command needed.
 
-## Installation
+## Requirements
 
-```bash
-npx skills add cloudvoyant/codevoyant
-```
+- `gcloud` CLI — [Google Cloud CLI installation](https://cloud.google.com/sdk/docs/install)
+- `terraform` CLI — [terraform.io downloads](https://developer.hashicorp.com/terraform/install)
 
-## What It Does
+## Commands
 
-When you're working on a GCP-backed project the agent loads auth, Artifact Registry, Cloud Run, and Terraform conventions before generating commands or config. It also checks for mise tasks wrapping GCP operations (e.g. `mise run gcp-login`, `mise run tf-apply`) before writing raw `gcloud` or `terraform` commands.
+This is a context skill. It activates automatically when `.tf` files, `GCP_` environment variables in `mise.toml`, or Dockerfiles referencing GCP registries are detected. No slash command is needed.
 
-## Authentication
+### Trigger conditions
 
-Local development — application default credentials:
+The skill loads when any of the following are present:
 
-```bash
-gcloud auth application-default login
-```
+- `.tf` or `.tfvars` files in the project
+- `mise.toml` contains env vars prefixed `GCP_` (e.g. `GCP_REGISTRY_PROJECT_ID`)
+- A `Dockerfile` references `gcr.io` or `*-docker.pkg.dev`
+- Project uses `gcloud` CLI or has a `gcp-login` or `tf-apply` task
+- User mentions GCP, gcloud, Cloud Run, Artifact Registry, BigQuery, GKE, or Terraform on GCP
 
-Docker auth for Artifact Registry (run once per region):
+### Recipes available
 
-```bash
-gcloud auth configure-docker REGION-docker.pkg.dev
-```
+The skill loads auth, Artifact Registry, Cloud Run, and Terraform conventions before generating commands or config. It checks for `mise.toml` task wrappers (e.g. `mise run gcp-login`, `mise run tf-apply`) before writing raw `gcloud` or `terraform` commands.
 
-Many projects expose a `mise run gcp-login` task that wraps these — the agent checks `mise.toml` first.
+| Situation | Recipe loaded |
+|---|---|
+| gcloud authentication and application default credentials | auth conventions |
+| Artifact Registry image naming and push/pull | registry conventions |
+| Cloud Run service deployment | cloud run conventions |
+| Terraform backend, workspaces, and variable management | [terraform skill](/skills/terraform) |
 
-Service account impersonation (preferred over key files):
+Each recipe loads on demand — only what is relevant to the current task.
 
-```bash
-gcloud auth print-access-token \
-  --impersonate-service-account=SA@PROJECT_ID.iam.gserviceaccount.com
-```
+## References
 
-## Artifact Registry
-
-Image naming convention:
-
-```
-REGION-docker.pkg.dev/PROJECT_ID/REGISTRY_NAME/IMAGE_NAME:TAG
-```
-
-Push:
-
-```bash
-docker push us-central1-docker.pkg.dev/my-project/services/api:v1.2.3
-```
-
-Common `mise.toml` env vars:
-
-```toml
-[env]
-GCP_REGISTRY_PROJECT_ID = "devops-466002"
-GCP_REGISTRY_REGION     = "us-east1"
-GCP_REGISTRY_NAME       = "cloudvoyant-docker-registry"
-PROJECT                 = "my-app"
-VERSION                 = "{{ exec(command='cat version.txt') }}"
-```
-
-## Cloud Run
-
-Deploy from Artifact Registry:
-
-```bash
-gcloud run deploy SERVICE_NAME \
-  --image REGION-docker.pkg.dev/PROJECT/REGISTRY/NAME:TAG \
-  --region REGION \
-  --project PROJECT_ID \
-  --platform managed \
-  --allow-unauthenticated
-```
-
-Common flags: `--service-account`, `--set-env-vars`, `--memory`, `--cpu`, `--min-instances`, `--max-instances`.
-
-## Terraform
-
-For full Terraform patterns (directory structure, backends, workspaces, variable management) see the [terraform skill](/skills/terraform).
-
-## Common Pitfalls
-
-- ADC credentials expire — re-run `gcloud auth application-default login` if you see auth errors
-- Artifact Registry regions are distinct hosts — `us-central1-docker.pkg.dev` ≠ `us-east1-docker.pkg.dev`
-- Cloud Run deploy fails with "Permission denied on image" — check IAM bindings for the service account
-- Never commit service account JSON keys — use impersonation or workload identity federation
-- Terraform state must live in a GCS bucket with versioning enabled; never commit `.tfstate`
+- [Google Cloud CLI documentation](https://cloud.google.com/sdk/docs/reference)
+- [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs)
+- [Cloud Run documentation](https://cloud.google.com/run/docs)

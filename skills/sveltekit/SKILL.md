@@ -25,6 +25,10 @@ This skill documents how this codebase structures SvelteKit applications using a
 | `<svelte:component>` deprecation warning       | `references/recipes/dynamic-component.md`             |
 | Any Svelte a11y warning                        | `references/recipes/a11y.md`                          |
 | shadcn-svelte components, bits-ui, tailwind-variants | `references/recipes/shadcn-svelte.md`           |
+| Auth, sessions, cookies, or login flow         | `references/recipes/auth-sessions.md`                 |
+| Server-side remote functions (RPC-style)       | `references/recipes/remote-functions.md`              |
+| HTTP service clients in feature libs           | `references/recipes/service-clients.md`               |
+| svelte.config.js, vite config, or build adapters | `references/recipes/config-and-build.md`            |
 
 Load the first six when designing a new feature from scratch.
 

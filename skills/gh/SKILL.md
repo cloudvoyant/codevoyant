@@ -23,8 +23,10 @@ VERB="[first non-flag argument, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 case "$VERB" in
-  "")       VERB="help" ;;
-  "watch")  VERB="ci"   ;;
+  "")         VERB="help"         ;;
+  "watch")    VERB="ci"           ;;
+  "report")   VERB="report-issue" ;;
+  "bug")      VERB="report-issue" ;;
 esac
 ```
 
@@ -42,4 +44,5 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **draft** (`references/workflows/draft.md`) — create a pending draft PR review
 - **resolve-comments** (`references/workflows/resolve-comments.md`) — mark threads resolved
 - **complete** (`references/workflows/complete.md`) — publish a pending draft review
+- **report-issue** (`references/workflows/report-issue.md`) — create a GitHub issue from a bug report or QA report file
 - **help** (`references/workflows/help.md`) — print command reference
