@@ -19,13 +19,14 @@ Every project is driven by `CMakePresets.json`; neither developers nor CI invoke
 ## Recipes
 
 - [Structuring a CMake Project](./cpp/recipes/cmake-structure) — directory layout, target wiring, install rules, and CMakePresets
+- [C++ Code Standards](./cpp/recipes/code-standards) — naming conventions, headers, modern C++ rules, and forbidden patterns
+- [Formatting, Linting, and Static Analysis](./cpp/recipes/formatting-and-analysis) — clang-format config, clang-tidy checks, CMake targets, pre-commit hook, and CI gate
 - [Managing C++ Dependencies with Conan](./cpp/recipes/conan-packages) — adding and consuming packages with Conan 2.x
 - [Debug, Release, and Sanitizer Build Profiles](./cpp/recipes/conan-profiles) — checked-in profiles for Debug, Release, ASan, TSan, and cross-compilation
 - [Publishing a Conan Package](./cpp/recipes/conan-publishing) — authoring a conanfile.py, publishing to ConanCenter or a private GitLab registry
 - [Monorepo with Multiple Libraries](./cpp/recipes/monorepo) — scaling to multiple libs and apps with a single CMake tree
 - [gRPC Services in C++](./cpp/recipes/grpc-patterns) — proto conventions, CMake codegen, sync/async server and client, testing
 - [Conan Package Cache in CI](./cpp/recipes/ci-caching) — GitHub Actions and GitLab CI cache setup with Conan lockfiles
-- [C++ Code Standards and Static Analysis](./cpp/recipes/code-standards) — clang-format, clang-tidy, naming conventions, and why they matter
 
 ## References
 

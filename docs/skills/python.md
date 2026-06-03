@@ -17,13 +17,13 @@ Context skill for Python projects managed with uv, covering workspaces, ML track
 ## Recipes
 
 - [Python Project Setup with uv](./python/recipes/uv-workspace) — standalone packages, workspaces, ruff, commitizen
+- [Python Project Conventions and Architecture](./python/recipes/service-patterns) — src/ layout, deferred imports, Protocols, typing, testing discipline
 - [Publishing Python Packages with uv](./python/recipes/uv-publishing) — PyPI, GitLab, and GCP Artifact Registry
 - [Experiment Tracking with MLflow](./python/recipes/mlflow) — runs, metrics, model registry, Ray integration
 - [Distributed Computing with Ray](./python/recipes/ray-training) — tasks, actors, three-executor pattern, AWS cluster
 - [GPU Kernels with Nvidia Warp](./python/recipes/warp-hpc) — deferred imports, kernel patterns, slabbed VRAM, backend selector
 - [Data Validation with Pydantic](./python/recipes/pydantic) — BaseModel, frozen models, PrivateAttr, dataclasses
 - [CLI Commands with Click](./python/recipes/click-cli) — groups, ctx.obj, lazy services, error handling
-- [Python Project Conventions and Architecture](./python/recipes/service-patterns) — src/ layout, deferred imports, Protocols, typing, testing discipline
 
 ## References
 

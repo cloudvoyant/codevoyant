@@ -284,6 +284,14 @@ export default defineConfig({
                 link: "/skills/cpp/recipes/cmake-structure",
               },
               {
+                text: "C++ Code Standards",
+                link: "/skills/cpp/recipes/code-standards",
+              },
+              {
+                text: "Formatting, Linting, and Static Analysis",
+                link: "/skills/cpp/recipes/formatting-and-analysis",
+              },
+              {
                 text: "Managing C++ Dependencies with Conan",
                 link: "/skills/cpp/recipes/conan-packages",
               },
@@ -307,10 +315,6 @@ export default defineConfig({
                 text: "Conan Package Cache in CI",
                 link: "/skills/cpp/recipes/ci-caching",
               },
-              {
-                text: "C++ Code Standards and Static Analysis",
-                link: "/skills/cpp/recipes/code-standards",
-              },
             ],
           },
           {
@@ -321,6 +325,10 @@ export default defineConfig({
               {
                 text: "Python Project Setup with uv",
                 link: "/skills/python/recipes/uv-workspace",
+              },
+              {
+                text: "Python Project Conventions and Architecture",
+                link: "/skills/python/recipes/service-patterns",
               },
               {
                 text: "Publishing Python Packages with uv",
@@ -346,10 +354,6 @@ export default defineConfig({
                 text: "CLI Commands with Click",
                 link: "/skills/python/recipes/click-cli",
               },
-              {
-                text: "Python Project Conventions and Architecture",
-                link: "/skills/python/recipes/service-patterns",
-              },
             ],
           },
           {
@@ -362,8 +366,12 @@ export default defineConfig({
                 link: "/skills/typescript/recipes/typescript-conventions",
               },
               {
-                text: "Monorepo Dependency Management with pnpm",
+                text: "pnpm Monorepo Setup",
                 link: "/skills/typescript/recipes/pnpm-workspace",
+              },
+              {
+                text: "Managing Shared Dependencies with pnpm Catalogs",
+                link: "/skills/typescript/recipes/pnpm-catalog",
               },
               {
                 text: "Publishing TypeScript Packages",

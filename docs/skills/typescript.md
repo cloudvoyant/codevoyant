@@ -13,7 +13,8 @@ All projects enable `strict: true` in `tsconfig.json` and avoid type casts in fa
 ## Recipes
 
 - [TypeScript Conventions: Strict Mode, Type Safety, and Error Handling](./typescript/recipes/typescript-conventions) — strict mode setup, `unknown` in catch, avoiding casts, Zod schema typing, naming
-- [Monorepo Dependency Management with pnpm](./typescript/recipes/pnpm-workspace) — workspace setup, catalogs, and inter-package deps
+- [pnpm Monorepo Setup](./typescript/recipes/pnpm-workspace) — workspace declaration, internal libs with workspace:*, consuming packages
+- [Managing Shared Dependencies with pnpm Catalogs](./typescript/recipes/pnpm-catalog) — catalogs, named catalogs, supply-chain guard with onlyBuiltDependencies
 - [Publishing TypeScript Packages](./typescript/recipes/pnpm-publishing) — npm and GitLab registry, dual ESM/CJS, Changesets
 - [Unit and E2E Testing with Vitest](./typescript/recipes/vitest) — unit, integration, and Playwright browser tests
 - [Code Quality: ESLint, Prettier, and Pre-commit Hooks](./typescript/recipes/lint-format) — flat config, module boundaries, husky/lint-staged
