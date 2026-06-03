@@ -99,6 +99,31 @@ Create Linear issues and bug reports via MCP Linear tools.</td>
 </tr>
 </table>
 
+**Domains** *(experimental context skills for specialized engineering)*
+
+<table>
+<tr>
+<td width="48" align="center"><img src="docs/public/icons/compgeo.svg" width="32"></td>
+<td><strong>compgeo</strong> <sup>Experimental</sup> — computational geometry<br>
+3D formats, bounding boxes, voxels, point clouds, feature extraction (CGAL), ray tracing, GLTF, SDFs, rotations/quaternions, OpenVDB ops — Python, C++, TypeScript.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/hpc.svg" width="32"></td>
+<td><strong>hpc</strong> <sup>Experimental</sup> — high-performance computing<br>
+C++ threading, OpenMP, TBB, SIMD, CUDA, SYCL, MPI, Python parallelism, Ray, Thrust, Kokkos, and NVIDIA Warp GPU kernels.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/mle.svg" width="32"></td>
+<td><strong>mle</strong> <sup>Experimental</sup> — ML engineering<br>
+Data pipelines (Ray Data), distributed training, model eval, TensorBoard, MLflow, model publishing, data curation, Label Studio, DVC versioning, data loaders.</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/llm.svg" width="32"></td>
+<td><strong>llm</strong> <sup>Experimental</sup> — LLM engineering<br>
+AI SDK and LangGraph agents, tool calling, document/image processing, open-weight model serving on AWS/GCP, RAG (AWS/GCP/OSS), and LLM eval tooling.</td>
+</tr>
+</table>
+
 **Tools & Frameworks** *(context skills — activate automatically)*
 
 <table>
