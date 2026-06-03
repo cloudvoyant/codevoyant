@@ -27,14 +27,14 @@
 - Move task to Tools section
 - Add Domains description to user-guide.md
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 
 ### Documentation
 
 * **sveltekit:** add monorepo apps/libs overview to feature-architecture page
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * align apps/libs dir structure and DAG feature rules across React, SvelteKit, TanStack
 
@@ -50,13 +50,13 @@ Consistent architecture across all three framework skills:
 - Three cross-feature coordination mechanisms: shared stores, cache key
   sync, route/widget composition
 - Namespacing note: start flat libs/feature-*, namespace under
-  libs/<domain>/feature-* when needed
+  libs/&lt;domain&gt;/feature-* when needed
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * move TanStack Project Conventions to second position in sidebar
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * split cpp code-standards and ts pnpm recipes; reorder sidebars
 
@@ -77,7 +77,7 @@ TypeScript:
   catalogs, onlyBuiltDependencies, minimumReleaseAge, catalogMode)
 - Add pnpm-catalog entry to sidebar and index
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * update sidebar with descriptive recipe titles and tutorial ordering
 
@@ -90,7 +90,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
   → monorepo → grpc → ci-caching → code-standards
 - Include all accumulated skill, recipe, and docs changes from this session
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 ## [1.44.0](https://github.com/cloudvoyant/codevoyant/compare/v1.43.0...v1.44.0) (2026-06-02)
 
@@ -269,7 +269,7 @@ All five researcher agents were writing to .codevoyant/research/{SLUG}/
 instead of .codevoyant/explore/{SLUG}/research/ as declared in SKILL.md,
 causing pm:plan to fail to find the artifacts.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **pm-plan:** replace hardcoded roadmap-backfill with {SLUG} in research paths
 
@@ -278,7 +278,7 @@ Step 1.5 agent prompts were writing research artifacts to a hardcoded
 per-plan slug path. Replace all three occurrences with `{SLUG}` so each
 plan's backfill research lands in the correct explore directory.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **docs:** replace stale .codevoyant/research links in half-year roadmap
 
@@ -286,7 +286,7 @@ All 9 links pointing to .codevoyant/research/ paths now point to the
 actual research files that live alongside the roadmap in
 docs/product/roadmaps/260322-half/.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 
 ### Documentation
@@ -305,7 +305,7 @@ under the project with no milestones. Corrected to reflect actual behavior:
 creates milestones from plan headings, copies research artifacts, and defers
 issue creation to dev:plan.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 ## [1.36.0](https://github.com/cloudvoyant/codevoyant/compare/v1.35.3...v1.36.0) (2026-03-23)
 
@@ -585,7 +585,7 @@ Renames the CLI subcommand `mem remember` to `mem list`, renames the
 skills/mem-remember/ folder to skills/mem-list/, and updates all
 references across source, tests, docs, skills, hooks, and CLAUDE.md.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **config:** split codevoyant.json into plans.json + worktrees.json, remove plugins from settings
 
@@ -601,7 +601,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 - Export new types and functions from index.ts
 - Update all tests and docs to reflect new file layout
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 
 ### Documentation
@@ -952,7 +952,7 @@ and notify.sh path-resolution loops across all ~20 skill plugins.
 - Remove utils plugin section from dev:allow
 - Update README and docs to remove utils install instructions
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 ## [1.22.1](https://github.com/cloudvoyant/codevoyant/compare/v1.22.0...v1.22.1) (2026-03-18)
 
@@ -1120,7 +1120,7 @@ generates (no docs/style-guide/ directory).
 - Add "spec go / run the spec" triggers to go skill
 - Add "spec bg / spec background" triggers to bg skill
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 
 ### Bug Fixes
@@ -1130,7 +1130,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 Update architecture.md and user-guide.md to reflect the renamed directory
 structure, replacing legacy `.spec/plans/` references with `.codevoyant/plans/`.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **docs:** update migration-guide paths from .spec/plans/ to .codevoyant/plans/
 
@@ -1138,14 +1138,14 @@ Replace all occurrences of `.spec/plans/` with `.codevoyant/plans/` and
 `.spec/` directory reference with `.codevoyant/` in the migration guide
 to reflect the project rename.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **docs:** update style plugin config path to .codevoyant/style.json
 
 Move style.json to .codevoyant/ level in the file structure diagram
 and remove the incorrect .codevoyant/style/config.json path.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 
 ### Documentation
@@ -1156,7 +1156,7 @@ Add how-it-works steps covering intent snapshot, confirmation dialog,
 conflict resolution logic, post-rebase verification, and push safety.
 Also document the rebasing-main shortcut and available flags.
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 * **spec:** fix stale paths, expand planning flow and UX documentation
 
@@ -1165,7 +1165,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 - Add inline annotations subsection under /spec:go with syntax reference and examples
 - Add plan-selection note to Best Practices
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 ## [1.16.0](https://github.com/cloudvoyant/codevoyant/compare/v1.15.2...v1.16.0) (2026-03-15)
 
@@ -1188,7 +1188,7 @@ Changes:
 - Improved: proposal-template.md with directory structure section,
   flow diagram guidance, references section, and refinement syntax note
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.6 &lt;noreply@anthropic.com&gt;
 
 ## [1.15.2](https://github.com/cloudvoyant/codevoyant/compare/v1.15.1...v1.15.2) (2026-03-15)
 
@@ -1477,7 +1477,7 @@ Commands:
 - /styleguide:optimize - Reduce token usage
 - /styleguide:contexts - Manage context system
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.5 &lt;noreply@anthropic.com&gt;
 
 ## [1.3.0](https://github.com/codevoyant/codevoyant/compare/v1.2.0...v1.3.0) (2026-02-12)
 
@@ -1498,7 +1498,7 @@ Key improvements:
 - Migrate from .claude/plan.md to .spec/plans/{plan-name}/ structure
 - Support multiple concurrent plans with independent contexts
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Sonnet 4.5 &lt;noreply@anthropic.com&gt;
 
 ## [1.2.0](https://github.com/codevoyant/codevoyant/compare/v1.1.2...v1.2.0) (2025-11-17)
 
