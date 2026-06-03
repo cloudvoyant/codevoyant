@@ -248,6 +248,10 @@ export default defineConfig({
                 link: "/skills/tanstack/recipes/project-setup",
               },
               {
+                text: "Project Conventions",
+                link: "/skills/tanstack/recipes/conventions",
+              },
+              {
                 text: "Type-Safe Routing with TanStack Router",
                 link: "/skills/tanstack/recipes/router",
               },
@@ -262,10 +266,6 @@ export default defineConfig({
               {
                 text: "Async State with TanStack Query and Forms",
                 link: "/skills/tanstack/recipes/query-and-forms",
-              },
-              {
-                text: "Project Conventions",
-                link: "/skills/tanstack/recipes/conventions",
               },
             ],
           },
