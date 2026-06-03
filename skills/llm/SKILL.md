@@ -1,5 +1,8 @@
 ---
-title: llm
+name: llm
+description: 'LLM engineering: agent frameworks (AI SDK, LangGraph), document and image processing, open-weight model serving (vLLM on AWS/GCP), RAG pipelines, and eval tooling (RAGAS, LangSmith). Triggers on: "llm", "llm engineering", "agent framework", "rag", "retrieval augmented generation", "model serving", "vllm", "langchain", "langgraph", "ragas", "langsmith", "llm eval".'
+license: MIT
+compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
 experimental: true
 ---
 

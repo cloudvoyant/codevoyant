@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <mask id="cut">
+      <rect x="4" y="4" width="56" height="56" rx="6" fill="white"/>
+      <!-- Three nodes -->
+      <circle cx="32" cy="16" r="5" fill="black"/>
+      <circle cx="18" cy="42" r="5" fill="black"/>
+      <circle cx="46" cy="42" r="5" fill="black"/>
+      <!-- Connecting lines -->
+      <line x1="32" y1="21" x2="18" y2="37" stroke="black" stroke-width="3"/>
+      <line x1="32" y1="21" x2="46" y2="37" stroke="black" stroke-width="3"/>
+      <line x1="23" y1="42" x2="41" y2="42" stroke="black" stroke-width="3"/>
+    </mask>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="6" fill="#5555ff" mask="url(#cut)"/>
+</svg>
