@@ -9,6 +9,32 @@ Without this structure, teams end up with a flat `components/` folder full of fi
 The feature-slice pattern solves this by giving each domain a hard boundary. You can look at `libs/feature-series/` and know that every line of code related to the Series feature lives there — and nothing outside it.
 
 
+## Monorepo structure
+
+Feature libs live in `libs/` alongside other shared packages. Apps live in `apps/` and import from them.
+
+```
+apps/
+  web/                       # SvelteKit app
+    src/
+      routes/                # thin coordinators — call feature server fns, own form actions
+      hooks/                 # app-level hooks
+      validators/            # app-level validators (route params, session checks)
+      mappers/               # app-level mappers
+      db/                    # Firestore/DB entities and services owned solely by this app
+      generated/             # generated code — never hand-edit
+libs/
+  feature-auth/              # pervasive feature — importable by other features (DAG)
+  feature-user-profile/      # pervasive feature
+  feature-series/            # domain feature
+  feature-posts/             # domain feature
+  ui/                        # generic Svelte component primitives (no business logic)
+  shared/                    # pure utilities and types shared across features
+```
+
+**Namespacing libs for larger monorepos:** Start flat. When the list grows unwieldy, group by domain — e.g., `libs/billing/feature-invoices/`, `libs/billing/feature-payments/` — without changing import or isolation rules.
+
+
 ## Directory layout
 
 Every feature lib follows this structure:
