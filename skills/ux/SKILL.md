@@ -3,7 +3,6 @@ name: ux
 description: 'UX design workflows: quick wireframes and approach comparisons, full SvelteKit prototypes, or CSS design token synthesis from a live URL. Triggers on: "ux explore", "ux prototype", "ux style-synthesize", "ux allow", "ux help", "quick wireframe", "wireframe this", "explore approach", "single file prototype", "html mockup", "ux prototype", "synthesize styles", "extract design tokens".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-disable-model-invocation: true
 ---
 
 # ux

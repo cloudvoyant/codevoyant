@@ -3,7 +3,6 @@ name: em
 description: 'Engineering management workflows: plan epics with Linear tasks, approve milestones, review roadmaps, update plans, or manage execution permissions. Triggers on: "em plan", "em approve", "em review", "em update", "em allow", "em help", "plan an epic", "engineering project planning", "push milestones to Linear", "engineering roadmap", "eng plan".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-disable-model-invocation: true
 ---
 
 # em

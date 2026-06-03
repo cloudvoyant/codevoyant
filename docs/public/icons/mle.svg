@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Input layer (2 nodes) -->
+  <circle cx="12" cy="20" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <circle cx="12" cy="44" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <!-- Hidden layer (3 nodes) -->
+  <circle cx="32" cy="12" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <circle cx="32" cy="32" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <circle cx="32" cy="52" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <!-- Output layer (2 nodes) -->
+  <circle cx="52" cy="20" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <circle cx="52" cy="44" r="5" stroke="#5555ff" stroke-width="2.5"/>
+  <!-- Connections: input to hidden -->
+  <line x1="17" y1="20" x2="27" y2="12" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="17" y1="20" x2="27" y2="32" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="17" y1="20" x2="27" y2="52" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="17" y1="44" x2="27" y2="12" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="17" y1="44" x2="27" y2="32" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="17" y1="44" x2="27" y2="52" stroke="#5555ff" stroke-width="1.5"/>
+  <!-- Connections: hidden to output -->
+  <line x1="37" y1="12" x2="47" y2="20" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="37" y1="12" x2="47" y2="44" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="37" y1="32" x2="47" y2="20" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="37" y1="32" x2="47" y2="44" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="37" y1="52" x2="47" y2="20" stroke="#5555ff" stroke-width="1.5"/>
+  <line x1="37" y1="52" x2="47" y2="44" stroke="#5555ff" stroke-width="1.5"/>
+</svg>

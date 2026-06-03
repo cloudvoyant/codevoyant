@@ -34,21 +34,6 @@ features:
     details: Chain skill workflows into end-to-end pipelines that run sequentially.
     link: /skills/flow
   - icon:
-      src: /icons/em.svg
-    title: em · experimental
-    details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.
-    link: /skills/em
-  - icon:
-      src: /icons/pm.svg
-    title: pm · experimental
-    details: Product roadmaps, per-feature PRDs, prioritization review, and product documentation generation.
-    link: /skills/pm
-  - icon:
-      src: /icons/ux.svg
-    title: ux · experimental
-    details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
-    link: /skills/ux
-  - icon:
       src: /icons/pr.svg
     title: pr
     details: AI-powered code review — generate professional inline comments from a diff, address change requests, and publish a draft review.
@@ -64,10 +49,40 @@ features:
     details: Build, iterate, critique, and report on codevoyant-compatible skills. Includes learn and consolidate to extract skills from existing artifacts.
     link: /skills/skill
   - icon:
-      src: /icons/task.svg
-    title: task
-    details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
-    link: /skills/task
+      src: /icons/em.svg
+    title: em · experimental
+    details: Engineering roadmaps with architecture design, epic breakdowns, capacity review, and Linear/Notion sync.
+    link: /skills/em
+  - icon:
+      src: /icons/pm.svg
+    title: pm · experimental
+    details: Product roadmaps, per-feature PRDs, prioritization review, and product documentation generation.
+    link: /skills/pm
+  - icon:
+      src: /icons/ux.svg
+    title: ux · experimental
+    details: Scaffold SvelteKit prototypes with feature-slice architecture, create single-file wireframe explorations, and synthesize visual styles from live sites.
+    link: /skills/ux
+  - icon:
+      src: /icons/compgeo.svg
+    title: compgeo · experimental
+    details: Computational geometry — meshes, voxels, point clouds, and signed distance fields across Python (trimesh, open3d), C++ (CGAL, Embree, OpenVDB), and TypeScript (three.js, threlte).
+    link: /skills/compgeo
+  - icon:
+      src: /icons/hpc.svg
+    title: hpc · experimental
+    details: High-performance computing — threading, SIMD, GPU compute with CUDA/SYCL, MPI clustering, Python parallelism, and distributed Ray across C++ and Python.
+    link: /skills/hpc
+  - icon:
+      src: /icons/mle.svg
+    title: mle · experimental
+    details: ML engineering lifecycle — data pipelines with Ray Data, distributed training, model evaluation, TensorBoard observability, MLflow experiment tracking, and model publishing.
+    link: /skills/mle
+  - icon:
+      src: /icons/llm.svg
+    title: llm · experimental
+    details: LLM engineering — agent frameworks (AI SDK, LangGraph), document and image processing, open-weight model serving (vLLM on AWS/GCP), RAG pipelines, and eval tooling (RAGAS, LangSmith).
+    link: /skills/llm
   - icon:
       src: /icons/aws.svg
     title: aws
@@ -108,6 +123,11 @@ features:
     title: mise
     details: mise.toml authoring, task naming conventions, and language-specific setup recipes.
     link: /skills/mise
+  - icon:
+      src: /icons/task.svg
+    title: task
+    details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
+    link: /skills/task
   - icon:
       src: /icons/terraform.svg
     title: terraform

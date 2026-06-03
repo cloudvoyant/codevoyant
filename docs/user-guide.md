@@ -239,6 +239,8 @@ See the [task reference](/skills/task) for all commands.
 
 **Domains** are hyperspecialized skills for technical domains that don't fit neatly into the language or framework categories. Current domains: `compgeo` (computational geometry), `hpc` (high-performance computing), and `mle` (machine learning engineering). All are experimental.
 
+`compgeo` is the first domain skill with full recipe coverage — 11 recipes spanning Python (trimesh, open3d), C++ (CGAL, Embree, OpenVDB), and TypeScript (three.js, threlte) for meshes, voxels, point clouds, SDFs, and real-time visualization. See the [compgeo reference](/skills/compgeo) for the full recipe list.
+
 ## Tools
 
 Tools wrap CLIs and platform APIs with focused workflows. They are invoked directly and handle the details of each platform.

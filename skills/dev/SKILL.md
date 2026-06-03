@@ -3,7 +3,6 @@ name: dev
 description: 'Developer workflows: plan feature architecture, explore technical approaches, compare repos, generate docs, or approve tasks in Linear. Triggers on: "dev plan", "dev explore", "dev diff", "dev docs", "dev approve", "dev allow", "dev help", "architecture plan", "plan architecture", "technical design", "explore options", "research approaches", "compare repos".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-disable-model-invocation: true
 ---
 
 # dev

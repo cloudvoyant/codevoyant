@@ -3,7 +3,6 @@ name: pm
 description: 'Product management workflows: explore product areas, plan quarterly roadmaps, write PRDs, approve initiatives in Linear, review roadmap quality, or update plans. Triggers on: "pm plan", "pm prd", "pm explore", "pm approve", "pm review", "pm update", "pm allow", "pm help", "product roadmap", "quarterly plan", "write a PRD", "product requirements", "product planning", "explore product area".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
-disable-model-invocation: true
 ---
 
 # pm

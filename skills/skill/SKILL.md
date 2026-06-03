@@ -1,7 +1,6 @@
 ---
 description: 'Unified skill lifecycle management. Triggers on: "skill explore", "skill new", "skill learn", "skill consolidate", "skill update", "skill critique", "skill feedback", "skill help", "skill create", "skill improve", "skill review", "skill scaffold", "explore skills", "create a skill", "make a skill for", "learn from", "extract skill from", "skill from PR", "skill from URL", "skill from path", "merge skills", "consolidate skills", "combine skills", "update skill", "improve skill", "critique skill", "review skill quality", "report skill bug", "skill issue", "scaffold skill repo", "init skill repo", "new skill repo". Pass a subcommand as the first argument.'
 name: skill
-disable-model-invocation: true
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
 argument-hint: '[verb] [args...]'
