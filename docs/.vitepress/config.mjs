@@ -96,23 +96,25 @@ export default defineConfig({
         ],
       },
       {
-        text: "Workflows",
+        text: "Skills & Workflows",
         items: [
           { text: "spec", link: "/skills/spec" },
           { text: "dev", link: "/skills/dev" },
           { text: "flow", link: "/skills/flow" },
-          { text: "em · experimental", link: "/skills/em" },
-          { text: "pm · experimental", link: "/skills/pm" },
-          { text: "ux · experimental", link: "/skills/ux" },
-        ],
-      },
-      {
-        text: "Skills",
-        items: [
           { text: "pr", link: "/skills/pr" },
           { text: "qa", link: "/skills/qa" },
           { text: "skill", link: "/skills/skill" },
-          { text: "task", link: "/skills/task" },
+        ],
+      },
+      {
+        text: "Domains",
+        items: [
+          { text: "em · experimental", link: "/skills/em" },
+          { text: "pm · experimental", link: "/skills/pm" },
+          { text: "ux · experimental", link: "/skills/ux" },
+          { text: "compgeo · experimental", link: "/skills/compgeo" },
+          { text: "hpc · experimental", link: "/skills/hpc" },
+          { text: "mle · experimental", link: "/skills/mle" },
         ],
       },
       {
@@ -126,6 +128,7 @@ export default defineConfig({
           { text: "glab", link: "/skills/glab" },
           { text: "linear", link: "/skills/linear" },
           { text: "mise", link: "/skills/mise" },
+          { text: "task", link: "/skills/task" },
           { text: "terraform", link: "/skills/terraform" },
         ],
       },

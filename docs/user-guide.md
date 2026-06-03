@@ -235,6 +235,10 @@ Other skills call `/task` internally before running raw commands like `tsc` or `
 
 See the [task reference](/skills/task) for all commands.
 
+## Domains
+
+**Domains** are hyperspecialized skills for technical domains that don't fit neatly into the language or framework categories. Current domains: `compgeo` (computational geometry), `hpc` (high-performance computing), and `mle` (machine learning engineering). All are experimental.
+
 ## Tools
 
 Tools wrap CLIs and platform APIs with focused workflows. They are invoked directly and handle the details of each platform.
