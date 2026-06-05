@@ -1,3 +1,9 @@
+## [1.49.1](https://github.com/cloudvoyant/codevoyant/compare/v1.49.0...v1.49.1) (2026-06-05)
+
+### Bug Fixes
+
+* **docs:** escape bare tags in 1.49.0 changelog entry
+
 ## [1.49.0](https://github.com/cloudvoyant/codevoyant/compare/v1.48.1...v1.49.0) (2026-06-05)
 
 ### Features
