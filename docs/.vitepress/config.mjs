@@ -21,6 +21,8 @@ export default defineConfig({
     ".codevoyant/**",
     // Non-recipe skills (exclude entirely)
     "skills/aws/**",
+    "skills/changelog/**",
+    "skills/cz/**",
     "skills/dev/**",
     "skills/docker/**",
     "skills/em/**",
@@ -34,6 +36,7 @@ export default defineConfig({
     "skills/pm/**",
     "skills/pr/**",
     "skills/qa/**",
+    "skills/release/**",
     "skills/skill/**",
     "skills/spec/**",
     "skills/task/**",
@@ -191,6 +194,8 @@ export default defineConfig({
         text: "Tools",
         items: [
           { text: "aws", link: "/skills/aws" },
+          { text: "changelog", link: "/skills/changelog" },
+          { text: "cz", link: "/skills/cz" },
           { text: "docker", link: "/skills/docker" },
           { text: "gcp", link: "/skills/gcp" },
           { text: "gh", link: "/skills/gh" },
@@ -198,6 +203,7 @@ export default defineConfig({
           { text: "glab", link: "/skills/glab" },
           { text: "linear", link: "/skills/linear" },
           { text: "mise", link: "/skills/mise" },
+          { text: "release", link: "/skills/release" },
           { text: "task", link: "/skills/task" },
           { text: "terraform", link: "/skills/terraform" },
         ],

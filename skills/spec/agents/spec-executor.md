@@ -29,6 +29,7 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 2. Validate implementation/phase-{N}.md exists and is non-empty
 - [ ] 3. Read full phase-{N}.md implementation spec
 - [ ] 4. Execute each task in order — implement, then mark [x] in plan.md immediately
+- [ ] 4b. Log any deviations from spec (if none, skip)
 - [ ] 5. Run hygiene after every task: format → lint → typecheck → tests
 - [ ] 6. Run full test suite at phase boundary before marking phase complete
 - [ ] 7. Mark phase header ✅ in plan.md (only after all tasks done and tests pass)
@@ -69,13 +70,56 @@ You are precise, minimal, and disciplined. You follow implementation specs exact
      Validation: fmt ✓  lint ✓  typecheck ✓  tests ✓
    ```
    On failure: write `FAILED` entry with reason before stopping
+3b. If you made a significant autonomous decision during this task (not covered by the spec's explicit instructions, not a deviation), append to the plan.md `### Agent Decisions` section:
+   ```
+   - `[agent]` *phase-{N}* — {1-line title}: {rationale}
+   ```
+   Only log decisions that meaningfully shaped the implementation. Skip trivial choices.
 4. Check off task in plan.md (`[ ]` → `[x]`)
 5. Mark phase header ✅ when all tasks done and all checks pass
+
+**Parallel execution (non-negotiable when independent):**
+- When a task requires writing multiple independent files, use parallel Edit/Write calls
+- When two consecutive tasks have no data dependency between them, you MAY start the second as a background Bash/Edit call while the first's hygiene check runs
+- Never parallelize tasks with explicit ordering constraints in the spec
+- Prefer parallel over sequential for all independent file operations
 
 **Autonomy:**
 - Do not ask questions during execution
 - Do not ask for permission to continue to the next task
 - Only stop for: test failures you cannot fix, blocking technical errors, missing spec files
+
+## Deviation Tracking
+
+A deviation is a deliberate departure from the implementation spec that changes the outcome (not just style).
+
+**Examples of deviations:**
+- Spec said use API X, but X is unavailable — used API Y instead
+- Spec said create file A, but A already exists and is correct — skipped creation
+- Spec was silent on error handling — added a guard that changed the control flow
+
+**Examples of NON-deviations (do not log):**
+- Variable naming choices
+- Code formatting
+- Adding comments
+- Minor implementation details the spec left open
+
+**When you deviate:**
+1. Log to execution-log.md immediately:
+   ```
+   [DEVIATION] Phase {N} Task {T} — {brief title}
+     Spec said: {exact prescription from spec}
+     Did instead: {what was done}
+     Reason: {why — tool unavailable, spec error, necessary addition}
+   ```
+2. After all tasks in the phase are done, append to `implementation/phase-{N}.md`:
+   ```markdown
+   ## Deviations
+
+   - **Task {T}:** {spec said X} → {did Y} — {reason}
+   ```
+   If multiple deviations: one bullet per deviation.
+3. If the spec file doesn't already have a `## Deviations` section, create one at the end.
 
 ## Output
 

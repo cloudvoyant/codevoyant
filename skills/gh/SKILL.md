@@ -1,6 +1,6 @@
 ---
 name: gh
-description: 'GitHub workflows: watch CI pipelines, manage PR review comments, create and publish draft reviews. Triggers on: "gh ci", "watch github ci", "pull pr comments", "push pr comments", "gh draft", "gh resolve", "gh complete", "github review", "submit pr review".'
+description: 'GitHub workflows: watch CI pipelines, manage PR review comments, create and publish draft reviews. Triggers on: "gh ci", "watch github ci", "pull pr comments", "push pr comments", "gh draft", "gh resolve", "gh complete", "github review", "submit pr review", "gh retcon", "retcon pr commits", "fix commit messages on pr".'
 license: MIT
 compatibility: Requires GitHub CLI (gh). Works on Claude Code and any platform with gh installed.
 ---
@@ -27,6 +27,7 @@ case "$VERB" in
   "watch")    VERB="ci"           ;;
   "report")   VERB="report-issue" ;;
   "bug")      VERB="report-issue" ;;
+  "rc")       VERB="retcon"  ;;
 esac
 ```
 
@@ -45,4 +46,5 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **resolve-comments** (`references/workflows/resolve-comments.md`) — mark threads resolved
 - **complete** (`references/workflows/complete.md`) — publish a pending draft review
 - **report-issue** (`references/workflows/report-issue.md`) — create a GitHub issue from a bug report or QA report file
+- **retcon** (`references/workflows/retcon.md`) — propose and apply commit message edits for the current branch's open GitHub PR
 - **help** (`references/workflows/help.md`) — print command reference

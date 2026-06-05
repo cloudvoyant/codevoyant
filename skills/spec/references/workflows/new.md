@@ -29,6 +29,11 @@ Received from dispatcher:
 - `SILENT` — true if `--silent` present
 - `SOURCE_URL`, `SOURCE_TYPE`, `SOURCE_ID` — populated if a URL was detected in arguments
 
+```
+VALIDATE_MODE=false
+[[ "$*" =~ --validate|-v ]] && VALIDATE_MODE=true
+```
+
 ## Step 0.5: Detect Branch Context
 
 Run `git rev-parse --git-dir` to confirm this is a git repo. If not, disable branch features (`CURRENT_BRANCH=""`, `TARGET_BRANCH=""`, `BASE_BRANCH=""`).
@@ -222,6 +227,23 @@ Format:
 - Keep task descriptions concise (one line each)
 - NO detailed implementation specs in plan.md
 
+**Decision Log (populate immediately after creating plan.md):**
+
+Scan OBJECTIVE, REMAINING_ARGS, and all AskUserQuestion answers for explicit user choices. For each user decision found, add to `### User Decisions`:
+
+```
+- `[user]` *planning* — {1-line title}
+  > {user's exact words or close paraphrase}
+```
+
+For each significant design choice made by the planner (architecture, technology, phasing), add to `### Agent Decisions`:
+
+```
+- `[agent]` *planning* — {1-line title}: {rationale}
+```
+
+Populate the Decision Log before moving to Step 5.4. Aim for 2-5 entries per section. Do not fabricate decisions — only log real choices that shaped the plan.
+
 **b. user-guide.md** at `$PLAN_DIR/user-guide.md`
 
 **Required — do not skip.** Documents how to use what will be built, not how it's implemented. Use `references/user-guide-template.md`. Fill in what is knowable now; mark unknowable sections `<!-- TODO: fill in during/after execution -->`.
@@ -301,9 +323,19 @@ Bash(cat:*), Bash(find:*), Bash(echo:*), Bash(date:*), Bash(jq:*), Bash(bash:*),
 
 Store the Task ID as `PERMS_TASK_ID`.
 
-**Validation loop** — run the loop mechanics in `references/validation-loop.md` (minimum 2 rounds, cap at 3, auto-fix every `NEEDS_IMPROVEMENT` result before next round). Execute all rounds autonomously — do NOT pause for the user.
+**Validation loop** — only runs when `VALIDATE_MODE=true`:
 
-After the validation loop finishes, collect permissions result:
+```
+if [[ "$VALIDATE_MODE" == "true" ]]; then
+```
+
+Run the loop mechanics in `references/validation-loop.md` (minimum 2 rounds, cap at 3, auto-fix every `NEEDS_IMPROVEMENT` result before next round). Execute all rounds autonomously — do NOT pause for the user.
+
+```
+fi
+```
+
+After the validation loop finishes (or was skipped), collect permissions result:
 
 ```
 TaskOutput(id: PERMS_TASK_ID, block: true)
@@ -322,7 +354,9 @@ If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as information
   ...
 ```
 
-Then ask **one** AskUserQuestion combining permissions decision and plan review:
+Then ask **one** AskUserQuestion combining permissions decision and plan review.
+
+If `VALIDATE_MODE=false`, use question text: `"Plan ready — no validation was run (use --validate to enable). Add these {N} permissions and proceed?"`. If `VALIDATE_MODE=true`, use: `"Plan ready — add these {N} permissions and proceed?"`.
 
 ```
 question: "Plan ready — add these {N} permissions and proceed?"
@@ -336,7 +370,9 @@ options:
     description: "Describe what to adjust in the plan"
 ```
 
-If `SUGGESTED_ALLOW` is empty, drop the permissions framing and ask:
+If `SUGGESTED_ALLOW` is empty, drop the permissions framing and ask.
+
+If `VALIDATE_MODE=false`, use question text: `"Plan ready — no validation was run (use --validate to enable)"`. If `VALIDATE_MODE=true`, use: `"Plan ready — does this cover everything?"`.
 
 ```
 question: "Plan ready — does this cover everything?"

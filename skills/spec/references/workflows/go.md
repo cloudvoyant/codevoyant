@@ -85,6 +85,29 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 
 After loop completes, unless `SILENT=true`, report completion to the user with a brief summary stating either that plan `{plan-name}` is complete, or that plan `{plan-name}` stopped at Phase `{N}`.
 
+## Step 6.5: Deviation Summary
+
+After all phases complete, scan `{PLAN_DIR}/execution-log.md` for `[DEVIATION]` lines:
+
+```bash
+grep "^\[DEVIATION\]" .codevoyant/plans/{plan-name}/execution-log.md 2>/dev/null
+```
+
+If any deviations found, include in the final report:
+
+```
+Notable deviations from spec:
+
+Phase N: {brief title}
+  Spec: {what was prescribed}
+  Done: {what was done}
+  Reason: {why}
+
+(See implementation/phase-N.md ## Deviations for full detail.)
+```
+
+If no deviations: omit this section from the report entirely.
+
 ## Step 7: Confirm Launch
 
 ```

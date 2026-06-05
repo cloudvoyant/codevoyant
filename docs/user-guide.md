@@ -279,6 +279,20 @@ See the [gh reference](/skills/gh) and [glab reference](/skills/glab) for all co
 
 Requires the Linear MCP server configured in Claude Code. See the [linear reference](/skills/linear) for all commands.
 
+### changelog / cz / release
+
+Conventional commit hygiene and version introspection tools.
+
+```bash
+/changelog retcon           # propose commit message edits for the current branch
+/changelog retcon --apply   # apply edits via rebase and force-push
+/changelog preview          # show predicted changelog and next version inline
+/cz                         # show current and predicted next version (commitizen)
+/release                    # show current and predicted next version (semantic-release / release-it)
+```
+
+See the [changelog reference](/skills/changelog), [cz reference](/skills/cz), and [release reference](/skills/release) for all commands.
+
 ## Context Skills
 
 Context skills activate automatically when relevant files are detected — no invocation needed. The agent loads targeted recipes on demand before writing or reviewing code.

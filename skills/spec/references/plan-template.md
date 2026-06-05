@@ -23,6 +23,16 @@ Write this structure to `.codevoyant/plans/{plan-name}/plan.md` when creating a 
 [High-level solution architecture — major classes/functions/concepts]
 [Any changes to project or directory structure]
 
+## Decision Log
+
+### User Decisions
+<!-- Decisions explicitly mandated by the user. Quote their exact words. -->
+<!-- Format: - `[user]` *planning* — {title}\n  > {user's words} -->
+
+### Agent Decisions
+<!-- Autonomous design choices made during planning and execution. -->
+<!-- Format: - `[agent]` *planning|phase-N* — {title}: {rationale} -->
+
 ## Implementation
 
 ### Phase 1 - [Phase Name]

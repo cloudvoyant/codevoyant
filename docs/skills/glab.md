@@ -74,6 +74,15 @@ Create a GitLab issue from a bug report or QA report file.
 /glab report-issue --from .codevoyant/qa/login-crash/debug-report.md
 ```
 
+### retcon — propose commit message edits
+
+**`/glab retcon`** — propose commit message edits for the current branch's open MR; delegates to `/changelog retcon`.
+
+```bash
+/glab retcon                # propose edits for the current MR
+/glab retcon --apply        # apply edits via rebase and force-push
+```
+
 ### help — list all commands
 
 ```bash

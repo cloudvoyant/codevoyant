@@ -77,6 +77,15 @@ Create a GitHub issue from a bug report or QA report file.
 /gh report-issue --from .codevoyant/qa/login-crash/debug-report.md
 ```
 
+### retcon — propose commit message edits
+
+**`/gh retcon`** — propose commit message edits for the current branch's open PR; delegates to `/changelog retcon`.
+
+```bash
+/gh retcon                  # propose edits for the current PR
+/gh retcon --apply          # apply edits via rebase and force-push
+```
+
 ### help — list all commands
 
 ```bash

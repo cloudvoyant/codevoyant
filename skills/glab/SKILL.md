@@ -1,6 +1,6 @@
 ---
 name: glab
-description: 'GitLab workflows: watch CI pipelines, manage MR review comments, create and publish draft reviews. Triggers on: "glab ci", "watch gitlab ci", "pull mr comments", "push mr comments", "glab draft", "glab resolve", "glab complete", "gitlab review", "submit mr review".'
+description: 'GitLab workflows: watch CI pipelines, manage MR review comments, create and publish draft reviews. Triggers on: "glab ci", "watch gitlab ci", "pull mr comments", "push mr comments", "glab draft", "glab resolve", "glab complete", "gitlab review", "submit mr review", "glab retcon", "retcon mr commits", "fix commit messages on mr".'
 license: MIT
 compatibility: Requires GitLab CLI (glab). Works on Claude Code and any platform with glab installed.
 ---
@@ -27,6 +27,7 @@ case "$VERB" in
   "watch")    VERB="ci"           ;;
   "report")   VERB="report-issue" ;;
   "bug")      VERB="report-issue" ;;
+  "rc")       VERB="retcon"  ;;
 esac
 ```
 
@@ -45,4 +46,5 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **resolve-comments** (`references/workflows/resolve-comments.md`) — resolve MR discussion threads
 - **complete** (`references/workflows/complete.md`) — publish a draft MR or submit pending review
 - **report-issue** (`references/workflows/report-issue.md`) — create a GitLab issue from a bug report or QA report file
+- **retcon** (`references/workflows/retcon.md`) — propose and apply commit message edits for the current branch's open GitLab MR
 - **help** (`references/workflows/help.md`) — print command reference

@@ -89,6 +89,16 @@ features:
     details: S3, DynamoDB, ECS, Lambda, Ray clusters, and Firecracker VM fleets on AWS.
     link: /skills/aws
   - icon:
+      src: /icons/changelog.svg
+    title: changelog
+    details: Retcon PR/MR commit messages and preview the next changelog.
+    link: /skills/changelog
+  - icon:
+      src: /icons/cz.svg
+    title: cz
+    details: Show current and predicted next version using commitizen.
+    link: /skills/cz
+  - icon:
       src: /icons/docker.svg
     title: docker
     details: Multi-stage builds, Docker Compose, cross-platform networking, and registries.
@@ -123,6 +133,11 @@ features:
     title: mise
     details: mise.toml authoring, task naming conventions, and language-specific setup recipes.
     link: /skills/mise
+  - icon:
+      src: /icons/release.svg
+    title: release
+    details: Show current and predicted next version via semantic-release or release-it.
+    link: /skills/release
   - icon:
       src: /icons/task.svg
     title: task
