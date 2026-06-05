@@ -1,3 +1,37 @@
+## [1.49.0](https://github.com/cloudvoyant/codevoyant/compare/v1.48.1...v1.49.0) (2026-06-05)
+
+### Features
+
+* add changelog/cz/release skills, spec perf improvements, decision log
+
+spec skill:
+- spec new skips validation loop by default; opt in with --validate
+- spec-executor tracks [DEVIATION] entries in execution-log.md and
+  appends ## Deviations to implementation/phase-N.md
+- spec go prints Notable deviations summary after all phases
+- spec-executor encouraged to use parallel Bash/Edit for independent tasks
+- plan-template gains ## Decision Log (User Decisions / Agent Decisions)
+- new.md populates Decision Log during planning; executor logs decisions
+  during execution (step 3b in progress tracking)
+
+changelog skill (new):
+- retcon: propose and apply conventional commit message edits on open
+  PR/MR via git rebase -i + git push --force-with-lease
+- preview: inline changelog and next-version prediction, no files
+- help: command reference
+
+cz skill (new): commitizen version introspection (current + next version)
+release skill (new): semantic-release/release-it version introspection
+
+gh/glab extensions:
+- retcon subcommand added to both (rc alias, platform-specific PR/MR detection)
+
+docs:
+- changelog, cz, release tiles in index.md with single-tone SVG icons
+- docs/skills/ pages for all three new skills
+- sidebar entries and user-guide section
+- retcon documented in gh.md and glab.md
+
 ## [1.48.1](https://github.com/cloudvoyant/codevoyant/compare/v1.48.0...v1.48.1) (2026-06-03)
 
 ### Bug Fixes
