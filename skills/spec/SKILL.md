@@ -3,7 +3,7 @@ description: 'Specification-driven development. Triggers on: "spec new", "spec g
 name: spec
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
-argument-hint: '<new|go|guide|update|review|refresh|clean|help> [plan-name] [--flags]'
+argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--flags]'
 ---
 
 > **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.
@@ -51,6 +51,7 @@ case "$VERB" in
   "delete")    VERB="clean" ;;  # /spec delete → /spec clean
   "bg")        VERB="go"    ;;  # /spec bg     → /spec go
   "run")       VERB="go"    ;;  # /spec run    → /spec go
+  "p")         VERB="polish"  ;;  # /spec p → /spec polish
 esac
 ```
 
@@ -69,6 +70,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **refresh** (`references/workflows/refresh.md`) — sync checklist status with actual progress
 - **update** (`references/workflows/update.md`) — apply annotations or conversational changes
 - **clean** (`references/workflows/clean.md`) — session wrap-up: stop agents, archive to docs, triage active plans (done or cancel)
+- **polish** (`references/workflows/polish.md`) — strip AI-style verbosity from files touched by spec execution
 - **allow** (`references/workflows/allow.md`) — pre-approve permissions for background agents
 - **help** (`references/workflows/help.md`) — print command reference
 

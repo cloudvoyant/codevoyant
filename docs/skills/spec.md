@@ -74,6 +74,17 @@ Stop running agents, archive completed plans to `docs/plan/`, and triage any rem
 /spec clean my-feature            # clean up a specific plan only
 ```
 
+### polish — strip AI verbosity from execution outputs
+
+Run a cleanup pass on files modified during a plan's execution. Removes comments that restate code, rhetorical flair in docs, and unnecessary preamble.
+
+```bash
+/spec polish                    # auto-selects most recent plan
+/spec polish my-plan            # polish a specific plan's output files
+```
+
+Never changes code logic. Reads `execution-log.md` to find modified files, runs parallel cleanup agents per file, and reports what was removed.
+
 ### allow — pre-approve permissions
 
 Write the allow entries needed for `/spec go` to run without permission prompts.
