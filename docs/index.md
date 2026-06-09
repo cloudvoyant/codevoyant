@@ -114,11 +114,6 @@ features:
     details: GitHub CI monitoring and inline PR review — comments, notes, and publishing.
     link: /skills/gh
   - icon:
-      src: /icons/helix.svg
-    title: helix
-    details: Helix editor key bindings for file navigation and selection-based workflows.
-    link: /skills/helix
-  - icon:
       src: /icons/git.svg
     title: git
     details: Conventional commits and safe interactive rebase.
@@ -128,6 +123,11 @@ features:
     title: glab
     details: GitLab CI monitoring and inline MR review — notes, discussions, and publishing.
     link: /skills/glab
+  - icon:
+      src: /icons/helix.svg
+    title: helix
+    details: Helix editor key bindings for file navigation and selection-based workflows.
+    link: /skills/helix
   - icon:
       src: /icons/linear.svg
     title: linear

@@ -102,6 +102,14 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 <td><strong>aws</strong> — Terraform provider setup, S3/DynamoDB backend, ECS, Lambda, static sites, Ray clusters, Firecracker VM fleets</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/changelog.svg" width="32"></td>
+<td><strong>changelog</strong> — retcon PR/MR commit messages and preview the next changelog</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/cz.svg" width="32"></td>
+<td><strong>cz</strong> — show current and predicted next version using commitizen</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/docker.svg" width="32"></td>
 <td><strong>docker</strong> — multi-stage builds, Compose, cross-platform networking, GCP registry</td>
 </tr>
@@ -122,6 +130,10 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 <td><strong>glab</strong> — watch CI pipelines, fetch and post inline MR discussion notes, manage draft reviews</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/helix.svg" width="32"></td>
+<td><strong>helix</strong> — Helix editor key bindings for file navigation and selection-based workflows</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/linear.svg" width="32"></td>
 <td><strong>linear</strong> — create Linear issues and bug reports via MCP Linear tools</td>
 </tr>
@@ -130,12 +142,20 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 <td><strong>mise</strong> — mise.toml authoring, task naming conventions, language-specific setup recipes</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/release.svg" width="32"></td>
+<td><strong>release</strong> — show current and predicted next version via semantic-release or release-it</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/task.svg" width="32"></td>
 <td><strong>task</strong> — detect and run tasks across mise, just, task.dev, and npm scripts</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/terraform.svg" width="32"></td>
 <td><strong>terraform</strong> — directory structure, backend config, workspace-per-environment for GCP and AWS</td>
+</tr>
+<tr>
+<td align="center"><img src="docs/public/icons/vim.svg" width="32"></td>
+<td><strong>vim</strong> — Vim and Neovim key bindings for file navigation, search, and splits</td>
 </tr>
 </table>
 
