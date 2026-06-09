@@ -1,3 +1,41 @@
+## [1.50.0](https://github.com/cloudvoyant/codevoyant/compare/v1.49.1...v1.50.0) (2026-06-09)
+
+### Features
+
+* **spec:** add polish command to strip AI verbosity from execution outputs
+
+- Add spec polish workflow: reads execution-log.md to find modified
+  files, runs parallel cleanup agents per file applying a strict ruleset
+  (remove comments restating code, rhetorical flair, preamble, hedge
+  phrases) — never touches logic, config, or plan artifacts
+- Add 'p' alias to spec dispatcher
+- Document polish in docs/skills/spec.md
+- Verify docs/skills/changelog.md, cz.md, release.md — all already clean
+
+* add vim and helix skills, guide editor hints
+
+- /vim and /helix reference skills: 8-key spec workflow quick-ref plus
+  5 contexts each (files, search, splits, buffers, all); helix includes
+  selection-first framing and full % → s → c search-replace chain
+- spec guide --vim / --helix flags: injects 3-4 editor key bindings at
+  each task step, keyed to detected task type (files/search/splits/buffers);
+  both flags can be combined for side-by-side hints
+- Monochrome SVG icons: vim diamond+V, helix hx letterform
+- VitePress: index tiles, sidebar entries, docs pages for both skills,
+  guide section updated with flag docs
+
+
+### Bug Fixes
+
+* **release:** convert sanitize-changelog.js to ESM (package.json type=module)
+
+* **release:** sanitize bare HTML tags in CHANGELOG.md after each release
+
+scripts/sanitize-changelog.js wraps `<word>` patterns in backticks so the
+Vue template compiler doesn't choke on them in the docs build. Runs in
+prepareCmd after @semantic-release/changelog writes CHANGELOG.md and
+before @semantic-release/git commits it.
+
 ## [1.49.1](https://github.com/cloudvoyant/codevoyant/compare/v1.49.0...v1.49.1) (2026-06-05)
 
 ### Bug Fixes
