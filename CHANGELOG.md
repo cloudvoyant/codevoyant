@@ -1,3 +1,18 @@
+## [1.52.0](https://github.com/cloudvoyant/codevoyant/compare/v1.51.0...v1.52.0) (2026-06-09)
+
+### Features
+
+* **docs:** add docs skill with new/update/review/retcon + site wiring
+
+- add skills/dev-docs/ (template library) and skills/docs/ (operational skill
+  with new/update/review/retcon commands extracted from dev-docs)
+- add monochrome docs icon, VitePress tile and sidebar entry in correct order
+  (spec → dev → docs → flow → pr); update README workflow table
+- parallelize docs new/retcon/review and usage report with background agents
+- parallelize diff.md steps 3–4 (repo structure scan + category diffs)
+- fix spec new: replace dead-end "Needs changes" button with Other free-text
+- add xargs, sed, sort, pnpm run docs:build to allowed commands
+
 ## [1.51.0](https://github.com/cloudvoyant/codevoyant/compare/v1.50.5...v1.51.0) (2026-06-09)
 
 ### Features
