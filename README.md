@@ -98,11 +98,7 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 
 <table>
 <tr>
-<td width="48" align="center"><img src="docs/public/icons/aws.svg" width="32"></td>
-<td><strong>aws</strong> — Terraform provider setup, S3/DynamoDB backend, ECS, Lambda, static sites, Ray clusters, Firecracker VM fleets</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/changelog.svg" width="32"></td>
+<td width="48" align="center"><img src="docs/public/icons/changelog.svg" width="32"></td>
 <td><strong>changelog</strong> — retcon PR/MR commit messages and preview the next changelog</td>
 </tr>
 <tr>

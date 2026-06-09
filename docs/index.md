@@ -84,11 +84,6 @@ features:
     details: Agent frameworks, open-weight model serving, RAG pipelines, and eval tooling.
     link: /skills/llm
   - icon:
-      src: /icons/aws.svg
-    title: aws
-    details: S3, DynamoDB, ECS, Lambda, Ray clusters, and Firecracker VM fleets on AWS.
-    link: /skills/aws
-  - icon:
       src: /icons/changelog.svg
     title: changelog
     details: Retcon PR/MR commit messages and preview the next changelog.
@@ -153,6 +148,11 @@ features:
     title: terraform
     details: Directory layout, backend config, workspaces, and variable management for cloud.
     link: /skills/terraform
+  - icon:
+      src: /icons/usage.svg
+    title: usage
+    details: Responsible-AI usage reports — decision attribution, commit classification, and review tracking.
+    link: /skills/usage
   - icon:
       src: /icons/vim.svg
     title: vim

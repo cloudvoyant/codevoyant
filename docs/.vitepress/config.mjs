@@ -42,6 +42,7 @@ export default defineConfig({
     "skills/spec/**",
     "skills/task/**",
     "skills/terraform/**",
+    "skills/usage/**",
     "skills/ux/**",
     "skills/vim/**",
     // Recipe skills: exclude non-recipe files
@@ -195,7 +196,6 @@ export default defineConfig({
       {
         text: "Tools",
         items: [
-          { text: "aws", link: "/skills/aws" },
           { text: "changelog", link: "/skills/changelog" },
           { text: "cz", link: "/skills/cz" },
           { text: "docker", link: "/skills/docker" },
@@ -209,6 +209,7 @@ export default defineConfig({
           { text: "release", link: "/skills/release" },
           { text: "task", link: "/skills/task" },
           { text: "terraform", link: "/skills/terraform" },
+          { text: "usage", link: "/skills/usage" },
           { text: "vim", link: "/skills/vim" },
         ],
       },
