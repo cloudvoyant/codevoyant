@@ -3,10 +3,10 @@
 // compiler doesn't treat them as unclosed HTML elements in the docs build.
 // Runs as part of the semantic-release prepareCmd, after CHANGELOG.md is
 // generated and before it is committed.
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import { resolve } from 'path';
 
-const file = path.resolve('CHANGELOG.md');
+const file = resolve('CHANGELOG.md');
 const content = fs.readFileSync(file, 'utf8');
 
 // Match <word> not already wrapped in backticks (lookbehind/lookahead).
