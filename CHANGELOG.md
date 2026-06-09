@@ -1,3 +1,25 @@
+## [1.50.1](https://github.com/cloudvoyant/codevoyant/compare/v1.50.0...v1.50.1) (2026-06-09)
+
+### Bug Fixes
+
+* **vim-helix:** use official SVGs monochrome, free-text queries, richer docs
+
+icons:
+
+- vim: official vimlogo.svg from vim.org; green/black → #5555ff,
+  white/silver/grey paths removed; clean monochrome diamond
+- helix: official logo from helix-editor.com; all colours → #5555ff
+
+skills:
+- /vim and /helix now accept a free-text query instead of fixed
+  context flags (files|search|splits|buffers|all); keyword matching
+  returns the relevant table
+
+docs:
+- Both pages add source links (vim.org, helix-editor.com/keymap.html)
+- Concrete before/after examples showing how the skill responds
+- Guide integration section explains hint-type inference
+
 ## [1.50.0](https://github.com/cloudvoyant/codevoyant/compare/v1.49.1...v1.50.0) (2026-06-09)
 
 ### Features
