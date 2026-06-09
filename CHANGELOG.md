@@ -1,3 +1,29 @@
+## [1.51.0](https://github.com/cloudvoyant/codevoyant/compare/v1.50.5...v1.51.0) (2026-06-09)
+
+### Features
+
+* **usage:** add usage skill for responsible-AI attribution reports
+
+- SKILL.md dispatcher with report/generate/run/help verbs
+- references/methodology.md, report-template.md, attribution-rules.md
+- references/workflows/report.md — 7-step analysis + generation workflow
+- references/workflows/help.md — command reference
+- docs/skills/usage.md + usage.svg icon
+- sidebar entry and index tile; aws hidden from nav
+- spec go/guide/update/new patched with --usage gated integrations
+- pr open patched with passive attribution footer (Step 3.5)
+
+
+### Documentation
+
+* **spec:** add --usage flag examples, split command, and clean --usage docs
+
+- Document --usage flag for new/go/guide/update with example sessions
+- Add split workflow section (was missing)
+- Fix clean description (no longer archives to docs/plan/)
+- Add --usage export-and-clear behaviour for spec clean
+- Add Usage tracking section with feature branch and mainline examples
+
 ## [1.50.5](https://github.com/cloudvoyant/codevoyant/compare/v1.50.4...v1.50.5) (2026-06-09)
 
 ### Bug Fixes
