@@ -1,24 +1,26 @@
 ---
 name: helix
-description: 'Helix editor key binding reference for coding workflows. Triggers on: "helix keys", "helix shortcuts", "hx open file", "helix search replace", "helix splits", "space f helix".'
+description: 'Helix editor key binding reference. Triggers on: "helix keys", "helix shortcuts", "hx open file", "helix search replace", "helix splits", "helix buffers", "space f helix", "how do I navigate in helix".'
 license: MIT
 compatibility: Works on Claude Code and any platform. No external tools required.
-argument-hint: '[files|search|splits|buffers|all]'
+argument-hint: '[query]'
 ---
 
 # helix
 
-Quick key reference for Helix (hx) during spec execution. Helix is selection-first: you select a region, then act on it. This is the opposite of Vim's verb-first approach.
+Quick key reference for Helix (hx). Pass any natural-language query and get the relevant bindings. No query → 8-key spec workflow quick-ref.
 
-## Step 0: Parse context
+Helix is **selection-first**: select a region, then act on it — the opposite of Vim's verb-first approach. Hints are framed accordingly.
+
+## Step 0: Parse query
 
 ```bash
-CONTEXT="${1:-default}"
+QUERY="$*"   # everything after /helix
 ```
 
-## Step 1: Print reference
+## Step 1: Match query and print reference
 
-**Default / no context — spec workflow quick-ref:**
+**No query — spec workflow quick-ref:**
 
 | Key | Action |
 |-----|--------|
@@ -31,15 +33,15 @@ CONTEXT="${1:-default}"
 | `:w` | Save |
 | `g f` | Go to file under cursor |
 
-**Search-replace detail:** `%` selects the whole file. `s<regex><Enter>` narrows selection to each match (multi-cursor). `c<replacement><Esc>` replaces all simultaneously. No `:s` substitution command exists in Helix.
+**Search-replace detail:** `%` selects the whole file. `s<regex><Enter>` narrows selection to each match (multi-cursor). `c<replacement><Esc>` replaces all simultaneously. There is no `:s` substitution command in Helix.
 
 ---
 
-If `CONTEXT=files`:
+If query mentions **opening files, navigating, fuzzy, picker, file explorer**:
 
 | Key | Action |
 |-----|--------|
-| `Space f` | Fuzzy file picker |
+| `Space f` | Fuzzy file picker (workspace root) |
 | `Space F` | File picker from current file's directory |
 | `:e <path>` | Open file by path |
 | `g a` | Alternate (last) file |
@@ -48,7 +50,7 @@ If `CONTEXT=files`:
 
 ---
 
-If `CONTEXT=search`:
+If query mentions **search, find, replace, grep, substitute, rename**:
 
 | Key | Action |
 |-----|--------|
@@ -62,11 +64,11 @@ If `CONTEXT=search`:
 | `c<text><Esc>` | Change selection to text |
 | `r<char>` | Replace each selected char with char |
 
-**Full search-replace:** `%s<pattern><Enter>c<replacement><Esc>`
+**Full search-replace sequence:** `%s<pattern><Enter>c<replacement><Esc>`
 
 ---
 
-If `CONTEXT=splits`:
+If query mentions **split, window, pane, vertical, horizontal, side by side**:
 
 | Key | Action |
 |-----|--------|
@@ -78,7 +80,7 @@ If `CONTEXT=splits`:
 
 ---
 
-If `CONTEXT=buffers`:
+If query mentions **buffer, switch, tab, cycle**:
 
 | Key | Action |
 |-----|--------|
@@ -91,6 +93,6 @@ If `CONTEXT=buffers`:
 
 ---
 
-If `CONTEXT=all`:
+If query is broad, unrecognised, or says **all / everything / full**:
 
-Print all tables above in order: Default, Files, Search, Splits, Buffers.
+Print all tables above in order.

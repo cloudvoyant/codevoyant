@@ -1,24 +1,24 @@
 ---
 name: vim
-description: 'Vim and Neovim key binding reference for coding workflows. Triggers on: "vim keys", "vim shortcuts", "how do I open a file in vim", "vim search replace", "vim splits".'
+description: 'Vim and Neovim key binding reference. Triggers on: "vim keys", "vim shortcuts", "how do I open a file in vim", "vim search replace", "vim splits", "vim buffers", "how do I navigate in vim".'
 license: MIT
 compatibility: Works on Claude Code and any platform. No external tools required.
-argument-hint: '[files|search|splits|buffers|all]'
+argument-hint: '[query]'
 ---
 
 # vim
 
-Quick key reference for Vim/Neovim during spec execution. No context → 8-key spec quick-ref. Pass a context for a focused table.
+Quick key reference for Vim/Neovim. Pass any natural-language query and get the relevant bindings. No query → 8-key spec workflow quick-ref.
 
-## Step 0: Parse context
+## Step 0: Parse query
 
 ```bash
-CONTEXT="${1:-default}"
+QUERY="$*"   # everything after /vim
 ```
 
-## Step 1: Print reference
+## Step 1: Match query and print reference
 
-**Default / no context — spec workflow quick-ref:**
+**No query — spec workflow quick-ref:**
 
 | Key | Action |
 |-----|--------|
@@ -33,7 +33,7 @@ CONTEXT="${1:-default}"
 
 ---
 
-If `CONTEXT=files`:
+If query mentions **opening files, navigating, netrw, explorer, fuzzy find**:
 
 | Key | Action |
 |-----|--------|
@@ -44,11 +44,11 @@ If `CONTEXT=files`:
 | `gf` | Go to filename under cursor |
 | `Ctrl-w gf` | Go to filename under cursor in new tab |
 
-**With Telescope/fzf-lua (neovim):** `<leader>ff` (find files), `<leader>fg` (live grep) — key depends on your config.
+**With Telescope/fzf-lua (neovim):** `<leader>ff` (find files), `<leader>fg` (live grep) — key depends on config.
 
 ---
 
-If `CONTEXT=search`:
+If query mentions **search, find, replace, substitute, grep**:
 
 | Key | Action |
 |-----|--------|
@@ -63,7 +63,7 @@ If `CONTEXT=search`:
 
 ---
 
-If `CONTEXT=splits`:
+If query mentions **split, window, pane, vertical, horizontal**:
 
 | Key | Action |
 |-----|--------|
@@ -77,7 +77,7 @@ If `CONTEXT=splits`:
 
 ---
 
-If `CONTEXT=buffers`:
+If query mentions **buffer, switch, tab, list buffers**:
 
 | Key | Action |
 |-----|--------|
@@ -90,6 +90,6 @@ If `CONTEXT=buffers`:
 
 ---
 
-If `CONTEXT=all`:
+If query is broad, unrecognised, or says **all / everything / full**:
 
-Print all tables above in order: Default, Files, Search, Splits, Buffers.
+Print all tables above in order.
