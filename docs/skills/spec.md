@@ -32,6 +32,24 @@ Spawn an autonomous background agent that reads implementation files, updates pl
 /spec go my-feature --silent      # suppress desktop notification on completion
 ```
 
+### guide — interactive walkthrough
+
+Walk through a plan phase by phase, task by task, with tutorial-style guidance. After each task you decide: proceed, skip, or improvise.
+
+```bash
+/spec guide                       # auto-selects most recently updated plan
+/spec guide my-feature            # guide specific plan
+/spec guide my-feature --phase 2  # start at phase 2
+```
+
+Pass `--vim` or `--helix` (or both) to inject editor key binding hints at each task step:
+
+```bash
+/spec guide my-plan --vim            # vim hints
+/spec guide my-plan --helix          # helix hints
+/spec guide my-plan --vim --helix    # both side-by-side
+```
+
 ### review — review plan quality
 
 Check a plan for ambiguous tasks, missing validation steps, unrealistic ordering, and dependency gaps before running `go`.
