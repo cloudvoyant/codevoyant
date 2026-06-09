@@ -24,6 +24,7 @@ export default defineConfig({
     "skills/changelog/**",
     "skills/cz/**",
     "skills/dev/**",
+    "skills/docs/**",
     "skills/docker/**",
     "skills/em/**",
     "skills/flow/**",
@@ -106,6 +107,7 @@ export default defineConfig({
         items: [
           { text: "spec", link: "/skills/spec" },
           { text: "dev", link: "/skills/dev" },
+          { text: "docs", link: "/skills/docs" },
           { text: "flow", link: "/skills/flow" },
           { text: "pr", link: "/skills/pr" },
           { text: "qa", link: "/skills/qa" },

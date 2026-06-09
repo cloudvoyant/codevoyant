@@ -33,6 +33,11 @@ Research requirements, generate proposals, create phase-by-phase implementation 
 Architecture planning, technical exploration, and repo/branch comparison.</td>
 </tr>
 <tr>
+<td align="center"><img src="docs/public/icons/docs.svg" width="32"></td>
+<td><strong>docs</strong> — engineering documentation<br>
+Generate, update, review, and retroactively create docs from standard templates.</td>
+</tr>
+<tr>
 <td align="center"><img src="docs/public/icons/flow.svg" width="32"></td>
 <td><strong>flow</strong> — end-to-end pipeline orchestration<br>
 Chain skill workflows into end-to-end pipelines that run sequentially.</td>

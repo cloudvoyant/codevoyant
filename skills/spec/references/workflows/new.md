@@ -366,9 +366,8 @@ options:
     description: "Union SUGGESTED_ALLOW into .claude/settings.json and finish"
   - label: "No — skip permissions, plan is done"
     description: "Leave .claude/settings.json untouched and finish"
-  - label: "Needs changes"
-    description: "Describe what to adjust in the plan"
 ```
+(Use **Other** to describe any changes needed — the plan will be updated and this question re-asked.)
 
 If `SUGGESTED_ALLOW` is empty, drop the permissions framing and ask.
 
@@ -379,8 +378,8 @@ question: "Plan ready — does this cover everything?"
 header: "Plan Review"
 options:
   - label: "Looks good — done"
-  - label: "Needs changes"
 ```
+(Use **Other** to describe any changes needed — the plan will be updated and this question re-asked.)
 
 **Handling responses:**
 
@@ -395,4 +394,4 @@ options:
   To guide:    /spec guide {plan-name}
   ```
   Then stop. Do not write any more files. Do not start implementing tasks.
-- **Needs changes**: accept free-text, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.
+- **Other (free-text)**: accept the typed feedback, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.

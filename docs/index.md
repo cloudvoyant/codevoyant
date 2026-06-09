@@ -29,6 +29,11 @@ features:
     details: Architecture planning, technical exploration, repo comparison, and docs generation.
     link: /skills/dev
   - icon:
+      src: /icons/docs.svg
+    title: docs
+    details: Generate, update, review, and retroactively create engineering documentation.
+    link: /skills/docs
+  - icon:
       src: /icons/flow.svg
     title: flow
     details: Chain skill workflows into end-to-end pipelines that run sequentially.

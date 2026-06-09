@@ -33,39 +33,30 @@ mkdir -p .codevoyant/usage
 
 State: `Analyzing session on branch: $BRANCH -> writing to ${OUTPUT_FILE}`
 
-## Step 2: Parse Decision Logs
+## Step 2: Parse Decision Logs and Git History (parallel)
 
-Read every `.codevoyant/plans/*/plan.md` file that exists. For each:
+Launch two background agents simultaneously — do NOT wait for one before starting the other:
 
+**Agent A — Decision Logs:**
+Read every `.codevoyant/plans/*/plan.md` file. For each plan:
 1. Extract the plan name (directory name)
 2. Find `### User Decisions` and `### Agent Decisions` sections
-3. Count and list all `[user]` entries (title + quote)
-4. Count and list all `[agent]` entries (title + rationale)
+3. Collect all `[user]` entries (title + quote) and `[agent]` entries (title + rationale)
 
-Store as:
-- `USER_DECISIONS` — list of `{plan, title, quote}` objects
-- `AGENT_DECISIONS` — list of `{plan, title, rationale}` objects
-- `PLANS_ANALYZED` — list of plan names with non-empty Decision Logs
+Return `{ user_decisions: [{plan, title, quote}], agent_decisions: [{plan, title, rationale}], plans_analyzed: [name] }`.
+If no plans or all logs empty, return `{ decision_log_available: false }`.
 
-If no plans exist or all Decision Logs are empty, set `DECISION_LOG_AVAILABLE=false` and note in the output.
-
-## Step 3: Read Git Commit History
-
+**Agent B — Git Commit History:**
 ```bash
 DIVERGE=$(git merge-base HEAD main 2>/dev/null || git rev-parse HEAD~20 2>/dev/null)
 git log --oneline "$DIVERGE"..HEAD --pretty=format:"%h %s"
 ```
+For each commit: extract conventional type (text before `:` or `(`), apply attribution defaults from `references/attribution-rules.md`. Skip `chore(release)`.
+Return `{ commits: [{hash, subject, type, attribution, basis}] }`.
 
-For each commit:
-1. Extract the conventional commit type (text before `:` or `(`)
-2. Apply attribution default from `references/attribution-rules.md`
-3. If type is `weighted`, compute ratio from Decision Log counts:
-   - `user_pct = USER_DECISIONS.length / (USER_DECISIONS.length + AGENT_DECISIONS.length) * 100`
-   - If no Decision Log: default to 60% user / 40% agent with a note
-
-Build `COMMIT_TABLE` — list of `{hash, subject, type, attribution, basis}`.
-
-Skip `chore(release)` commits from the weighted calculation (they are infrastructure).
+Wait for both agents to complete. Merge results:
+- `USER_DECISIONS`, `AGENT_DECISIONS`, `PLANS_ANALYZED` from Agent A
+- `COMMIT_TABLE` from Agent B (weighted commits use Decision Log ratio computed now)
 
 ## Step 4: Detect Review Rounds
 

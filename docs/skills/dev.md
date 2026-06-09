@@ -40,12 +40,8 @@ Plan feature architecture or system design and write a draft to `.codevoyant/pla
 
 ### docs — generate architecture documentation
 
-Scan the codebase and produce component maps, data flow diagrams, API inventories, and dependency graphs in `docs/architecture/`.
-
-```bash
-/dev docs                                      # generate docs/architecture/ from codebase
-/dev docs --bg                                 # run in background, notify when done
-```
+> **Moved to `docs` skill.** Use `/docs new`, `/docs update`, `/docs review`, or `/docs retcon` instead.
+> See [`/skills/docs`](/skills/docs) for the full command reference.
 
 ### approve — promote plan to docs and Linear
 
