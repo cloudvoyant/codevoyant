@@ -1,3 +1,9 @@
+## [1.50.3](https://github.com/cloudvoyant/codevoyant/compare/v1.50.2...v1.50.3) (2026-06-09)
+
+### Bug Fixes
+
+* **icons:** remove broken rdf/cc metadata from vim.svg (undeclared namespaces)
+
 ## [1.50.2](https://github.com/cloudvoyant/codevoyant/compare/v1.50.1...v1.50.2) (2026-06-09)
 
 ### Bug Fixes
