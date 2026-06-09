@@ -1,3 +1,13 @@
+## [1.50.5](https://github.com/cloudvoyant/codevoyant/compare/v1.50.4...v1.50.5) (2026-06-09)
+
+### Bug Fixes
+
+* **docs:** alphabetise tools sidebar and index tiles; replace vim icon
+
+- Move helix after glab in config.mjs sidebar and index.md features
+- Add missing tools to README (changelog, cz, helix, release, vim)
+- Replace vim.svg with downloaded icon, recoloured to brand purple
+
 ## [1.50.4](https://github.com/cloudvoyant/codevoyant/compare/v1.50.3...v1.50.4) (2026-06-09)
 
 ### Bug Fixes
