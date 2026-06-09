@@ -1,3 +1,14 @@
+## [1.50.4](https://github.com/cloudvoyant/codevoyant/compare/v1.50.3...v1.50.4) (2026-06-09)
+
+### Bug Fixes
+
+* **icons:** restore VIM letter cutouts in monochrome vim icon
+
+- switch to mask-on-`<g>` approach: all diamond paths inside masked group
+- mask includes V, I, and M letter paths as black cutouts
+- previous fix used separate `<path>` elements with fill-rule="evenodd"
+  which only creates holes within a single path, not across elements
+
 ## [1.50.3](https://github.com/cloudvoyant/codevoyant/compare/v1.50.2...v1.50.3) (2026-06-09)
 
 ### Bug Fixes
