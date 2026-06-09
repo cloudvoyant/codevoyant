@@ -1,3 +1,9 @@
+## [1.50.2](https://github.com/cloudvoyant/codevoyant/compare/v1.50.1...v1.50.2) (2026-06-09)
+
+### Bug Fixes
+
+* **icons:** square helix viewBox, remove explicit w/h from both SVGs
+
 ## [1.50.1](https://github.com/cloudvoyant/codevoyant/compare/v1.50.0...v1.50.1) (2026-06-09)
 
 ### Bug Fixes
