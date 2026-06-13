@@ -1,3 +1,9 @@
+## [1.53.0](https://github.com/cloudvoyant/codevoyant/compare/v1.52.0...v1.53.0) (2026-06-13)
+
+### Features
+
+* **ed:** add ed educational skill with new/update/quiz/assist + site wiring
+
 ## [1.52.0](https://github.com/cloudvoyant/codevoyant/compare/v1.51.0...v1.52.0) (2026-06-09)
 
 ### Features
