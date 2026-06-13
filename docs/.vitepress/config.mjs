@@ -26,6 +26,7 @@ export default defineConfig({
     "skills/dev/**",
     "skills/docs/**",
     "skills/docker/**",
+    "skills/ed/**",
     "skills/em/**",
     "skills/flow/**",
     "skills/gh/**",
@@ -119,6 +120,7 @@ export default defineConfig({
         items: [
           { text: "em · experimental", link: "/skills/em" },
           { text: "pm · experimental", link: "/skills/pm" },
+          { text: "ed · experimental", link: "/skills/ed" },
           { text: "ux · experimental", link: "/skills/ux" },
           {
             text: "compgeo · experimental",

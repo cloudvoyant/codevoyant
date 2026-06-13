@@ -64,6 +64,11 @@ features:
     details: Product roadmaps, per-feature PRDs, prioritization, and docs generation.
     link: /skills/pm
   - icon:
+      src: /icons/ed.svg
+    title: ed · experimental
+    details: Study notes, assignment guides, learning plans, and quizzes for graduate ML coursework.
+    link: /skills/ed
+  - icon:
       src: /icons/ux.svg
     title: ux · experimental
     details: SvelteKit prototypes, wireframe explorations, and visual style synthesis.
