@@ -1,3 +1,17 @@
+## [1.54.0](https://github.com/cloudvoyant/codevoyant/compare/v1.53.0...v1.54.0) (2026-06-28)
+
+### Features
+
+* **skills:** improve spec/vim/ed, add skill-read perms, drop helix
+
+- spec: delta-free plans (research at plan time only) + always show code
+- spec: drop closing /spec new review question
+- vim: motions & fundamentals section + compact navigation hints
+- ed: artifacts under .codevoyant + --dir, plan to syllabus, per-entry fan-out
+- ed assist: haiku/sonnet/opus tiering + hint/show-answer/verify/next
+- perms: skill-reference Read globs in allow flows + spec new analysis
+- remove helix skill, docs page, icon, sidebar/index entries
+
 ## [1.53.0](https://github.com/cloudvoyant/codevoyant/compare/v1.52.0...v1.53.0) (2026-06-13)
 
 ### Features
