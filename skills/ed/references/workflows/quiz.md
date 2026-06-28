@@ -4,9 +4,10 @@
 
 - `TOPIC` — first non-flag arg (required unless `--interactive` mode)
 - `SLUG` — kebab-case of TOPIC
-- `QUIZ_DIR` — `quizzes/{SLUG}/`
-- `QUIZ_FILE` — `quizzes/{SLUG}/quiz.md`
-- `ANSWERS_FILE` — `quizzes/{SLUG}/answers.md`
+- `ART_ROOT` — `.codevoyant` by default; override via `--dir <path>`
+- `QUIZ_DIR` — `{ART_ROOT}/quizzes/{SLUG}/`
+- `QUIZ_FILE` — `{ART_ROOT}/quizzes/{SLUG}/quiz.md`
+- `ANSWERS_FILE` — `{ART_ROOT}/quizzes/{SLUG}/answers.md`
 - `SOURCE` — file path from `--source` (optional)
 - `QUESTION_COUNT` — integer from `--questions`, default 10
 - `INTERACTIVE` — true if `--interactive` present; value is quiz file path
@@ -29,7 +30,7 @@ If TOPIC empty, ask (AskUserQuestion, free-text): "What topic is this quiz on?"
 
 Priority order:
 1. `--source <file>` if provided (read it)
-2. `notes/{SLUG}/notes.md` if it exists (read it)
+2. `{ART_ROOT}/notes/{SLUG}/notes.md` if it exists (read it)
 3. Deep research agent: find key concepts and testable facts for TOPIC at graduate level
 
 Store as `SOURCE_CONTENT`.
@@ -54,7 +55,7 @@ For each question, prepare:
 
 Create `QUIZ_DIR`:
 ```bash
-mkdir -p quizzes/{SLUG}
+mkdir -p {ART_ROOT}/quizzes/{SLUG}
 ```
 
 **Write `QUIZ_FILE`:**
@@ -97,7 +98,7 @@ mkdir -p quizzes/{SLUG}
 
 {For medium/hard: show full derivation or working}
 
-{If applicable: *See also: notes/{SLUG}/notes.md § {section}*}
+{If applicable: *See also: {ART_ROOT}/notes/{SLUG}/notes.md § {section}*}
 
 ---
 

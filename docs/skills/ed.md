@@ -23,10 +23,9 @@ Break a project or assignment into pedagogical phases with hint-controlled discl
 
 ```bash
 /ed new guide "implement a transformer from scratch" --vim
-/ed new guide "assignment 2 - VAE" --helix
 ```
 
-Flags: `--vim` or `--helix` append editor keyboard hints to each step.
+Flags: `--vim` appends editor keyboard hints to each step.
 
 Output: `guides/{slug}/guide.md`
 
@@ -52,7 +51,7 @@ Scan ed artifacts for `>` (minor) and `>>` (major) annotations added inline, and
 
 ### assist -- interactive guided walkthrough
 
-Step-by-step walkthrough of a guide. AskUserQuestion controls how much of each hint is revealed. Supports `--vim`/`--helix` for keyboard hints.
+Step-by-step walkthrough of a guide. AskUserQuestion controls how much of each hint is revealed. Supports `--vim` for keyboard hints.
 
 ```bash
 /ed assist guides/transformer/guide.md --vim

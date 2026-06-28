@@ -12,6 +12,7 @@ This workflow's **only output** is plan files. If you are about to do anything e
 | Write application code | Stop. Describe it in `implementation/phase-N.md`. |
 | Run build / test / lint | Stop. Record the command in plan metadata. |
 | Fix a bug you noticed | Stop. Add it as a task in the appropriate phase. |
+| Write a task that says "research / investigate / explore / decide / figure out X" | Stop. Resolve it **now**, during planning — read the codebase (Glob/Grep/Read) and use WebSearch/WebFetch — then write the concrete answer and code. The written plan must be delta-free; the execution agent never researches or makes open design decisions. |
 | Keep going after "looks good" | Stop. Your job is done. Tell the user to run `/spec go`. |
 
 **Permitted file writes:** `.codevoyant/plans/{name}/plan.md`, `.codevoyant/plans/{name}/user-guide.md`, `.codevoyant/plans/{name}/implementation/phase-N.md`, `.codevoyant/plans/{name}/research/*`, `.claude/settings.json` (permissions only).
@@ -319,6 +320,10 @@ Return a JSON object:
 Be specific — narrowest command prefix that covers actual usage.
 Do NOT include standard baseline: Write, Edit, Read, Glob, Grep, Bash(mkdir:*), Bash(ls:*),
 Bash(cat:*), Bash(find:*), Bash(echo:*), Bash(date:*), Bash(jq:*), Bash(bash:*), Bash(cp:*), Bash(mv:*).
+
+Always include these portable skill-reference Read globs in the "allow" array (they stop per-session prompts on skill workflow/reference files, which live outside the project dir):
+- "Read(~/.claude/skills/**)"
+- "Read(~/.claude/plugins/**/skills/**)"
 ```
 
 Store the Task ID as `PERMS_TASK_ID`.
@@ -343,9 +348,9 @@ TaskOutput(id: PERMS_TASK_ID, block: true)
 
 Parse the JSON and store as `SUGGESTED_ALLOW` and `PERMS_RATIONALE`.
 
-## Step 6: Review (combined permissions + plan review — single question)
+## Step 6: Finish (permissions + completion)
 
-If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as informational text (not a question):
+If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as informational text:
 
 ```
 🔐 Permissions suggested for autonomous execution:
@@ -354,44 +359,20 @@ If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as information
   ...
 ```
 
-Then ask **one** AskUserQuestion combining permissions decision and plan review.
+Then automatically apply them: read `.claude/settings.json` (start from `{}` if absent), union `permissions.allow` array with `SUGGESTED_ALLOW` (deduplicate, sort), write back. Report: `✓ Added {N} allow entries to .claude/settings.json`.
 
-If `VALIDATE_MODE=false`, use question text: `"Plan ready — no validation was run (use --validate to enable). Add these {N} permissions and proceed?"`. If `VALIDATE_MODE=true`, use: `"Plan ready — add these {N} permissions and proceed?"`.
+Do **not** ask whether the plan covers everything. Finish immediately:
 
-```
-question: "Plan ready — add these {N} permissions and proceed?"
-header: "Plan Review"
-options:
-  - label: "Yes — add permissions and done"
-    description: "Union SUGGESTED_ALLOW into .claude/settings.json and finish"
-  - label: "No — skip permissions, plan is done"
-    description: "Leave .claude/settings.json untouched and finish"
-```
-(Use **Other** to describe any changes needed — the plan will be updated and this question re-asked.)
-
-If `SUGGESTED_ALLOW` is empty, drop the permissions framing and ask.
-
-If `VALIDATE_MODE=false`, use question text: `"Plan ready — no validation was run (use --validate to enable)"`. If `VALIDATE_MODE=true`, use: `"Plan ready — does this cover everything?"`.
+⛔ **STOP HERE. Do not implement anything.** Your job is complete. If `BG_MODE=true`, launch `/spec go {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion:
 
 ```
-question: "Plan ready — does this cover everything?"
-header: "Plan Review"
-options:
-  - label: "Looks good — done"
-```
-(Use **Other** to describe any changes needed — the plan will be updated and this question re-asked.)
-
-**Handling responses:**
-
-- **Yes — add permissions and done**: read `.claude/settings.json` (start from `{}` if absent), union `permissions.allow` array with `SUGGESTED_ALLOW` (deduplicate, sort), write back. Report: `✓ Added {N} allow entries to .claude/settings.json`. Then finish as below.
-- **No — skip permissions, plan is done** / **Looks good — done**: finish as below.
-- **Finish:** ⛔ **STOP HERE. Do not implement anything.** Your job is complete. If `BG_MODE=true`, launch `/spec go {plan-name}` (pass `--silent` if `SILENT=true`) and report launch. If `BG_MODE=false`, report completion:
-  ```
-  ✅ Plan "{plan-name}" is ready.
+✅ Plan "{plan-name}" is ready.
 
   To execute:  /spec go {plan-name}
   To review:   /spec review {plan-name}
-  To guide:    /spec guide {plan-name}
-  ```
-  Then stop. Do not write any more files. Do not start implementing tasks.
-- **Other (free-text)**: accept the typed feedback, apply changes to plan.md and/or implementation files, re-run Step 5.6 if structural changes were made, then return to this Step 6 prompt.
+  To change:   /spec update {plan-name}
+```
+
+If you want any changes, tell the user to run `/spec update {plan-name}` — do not re-prompt here.
+
+Then stop. Do not write any more files. Do not start implementing tasks.

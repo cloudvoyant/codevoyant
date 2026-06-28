@@ -33,6 +33,38 @@ QUERY="$*"   # everything after /vim
 
 ---
 
+If query mentions **how, why, explain, fundamentals, motion, motions, grammar, learn**:
+
+### Motions & Fundamentals
+
+Vim is a **language**: you compose `operator + count + motion/text-object`. Learn the pieces and you can express edits you've never memorized.
+
+**Modes:** `Normal` (navigate/command — press `Esc` to return here), `Insert` (`i a o`), `Visual` (`v` char, `V` line, `Ctrl-v` block), `Command-line` (`:`).
+
+**Operators** (verbs): `d` delete · `c` change (delete + insert) · `y` yank (copy) · `>`/`<` indent · `=` auto-indent · `gu`/`gU` lower/upper.
+
+**Motions** (where the verb acts): `w`/`b`/`e` word fwd/back/end · `0`/`^`/`$` line start/first-nonblank/end · `gg`/`G` file top/bottom · `}`/`{` paragraph · `f<c>`/`t<c>` to char · `%` matching bracket.
+
+**Text objects** (act on a region around the cursor): `iw`/`aw` inner/a word · `i"`/`a"` inside/around quotes · `ip`/`ap` paragraph · `it`/`at` tag · `i(` `i{` `i[` inside brackets.
+
+**Counts** multiply: `3w` three words · `2dd` delete 2 lines · `d3w` delete 3 words · `c2j` change this + 2 lines down.
+
+**Grammar examples:**
+| You want | You type | Read as |
+|----------|----------|---------|
+| Delete a word | `diw` | delete inner word |
+| Change inside quotes | `ci"` | change inside `"` |
+| Delete to end of line | `D` (= `d$`) | delete to `$` |
+| Yank a paragraph | `yap` | yank a paragraph |
+| Delete 3 lines | `3dd` | 3 × delete-line |
+| Indent a block | `>i{` | indent inside `{}` |
+
+**Dot & repeat:** `.` repeats the last change · `;`/`,` repeat last `f`/`t` forward/back. Compose small edits, then `.` your way through the rest.
+
+**Why it's fast:** you never reach for the mouse or arrow keys — your edit *is* a sentence. `caw` ("change a word") is one thought, not three keystrokes you think about.
+
+---
+
 If query mentions **opening files, navigating, netrw, explorer, fuzzy find**:
 
 | Key | Action |
@@ -93,3 +125,14 @@ If query mentions **buffer, switch, tab, list buffers**:
 If query is broad, unrecognised, or says **all / everything / full**:
 
 Print all tables above in order.
+
+---
+
+## Navigation hints (compact)
+
+Terse one-liners for `--vim` consumers — movement, selection, deletion, undo:
+
+`h j k l` move · `w b` word · `0 $` line ends · `gg G` top/bottom · `Ctrl-d Ctrl-u` half-page · `{ }` paragraph · `%` matching bracket
+`v` select · `V` line-select · `Ctrl-v` block · `>` `<` indent sel · `y` yank · `p` paste
+`x` del char · `dd` del line · `dw` del word · `d$` del to EOL · `ciw` change word · `u` undo · `Ctrl-r` redo · `.` repeat
+`:w` save · `:x` save+quit · `Esc` back to Normal

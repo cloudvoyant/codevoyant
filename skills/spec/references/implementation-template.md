@@ -28,6 +28,8 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 
 ## Implementation
 
+> **Gate:** Every task below MUST contain a non-empty `**Code:**` block and MUST NOT defer work to research/investigation/decision. If you cannot show the code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research or open design choices to the execution agent.
+
 {For each task in this phase:}
 
 ### Task {X}: {Task Description}
@@ -35,6 +37,12 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 **Steps:**
 1. {Detailed step-by-step instructions}
 2. {Include exact commands, file paths, code patterns}
+
+**Code (required — never omit):**
+```{lang}
+{The exact code or unified diff this task produces. Show the real lines to add/change/delete.
+A task with no code block here is incomplete and must not be emitted.}
+```
 
 **Files to modify / create:**
 - `path/to/file.ext` — {specific changes}

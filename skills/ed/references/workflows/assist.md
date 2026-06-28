@@ -4,16 +4,27 @@
 
 - `GUIDE_PATH` — file path from REMAINING_ARGS (required; ask if empty)
 - `VIM_MODE` — true if `--vim` present
-- `HELIX_MODE` — true if `--helix` present
 - `CURRENT_PHASE` — index of current phase (starts at 1)
 - `CURRENT_STEP` — index of current step within phase (starts at 1)
+- `QUESTION_COUNTS` — map of normalized-question → times asked (for model escalation)
+- `REPEAT_THRESHOLD` — escalate to Opus when a question is asked more than this many times (default 3)
+
+## Model tiering
+
+Spawn a sub-agent (Agent tool) with an explicit model for each operation:
+
+- **Hint** and **Verify** → `model: claude-haiku-4-5-20251001` (fast, cheap)
+- **Free-text question** → `model: claude-sonnet-4-6`
+- **Repeated question** (asked more than `REPEAT_THRESHOLD` times) → `model: claude-opus-4-8`
+
+Normalize a question for counting: lowercase, strip punctuation/whitespace. Increment `QUESTION_COUNTS[normalized]` each time; if it exceeds `REPEAT_THRESHOLD`, use Opus and prepend "You've asked this a few times — here's a deeper, more careful answer:".
 
 ## Step 0: Parse args
 
-Parse GUIDE_PATH, VIM_MODE, HELIX_MODE.
+Parse GUIDE_PATH, VIM_MODE.
 
 If GUIDE_PATH empty or not provided:
-- `find . -path './guides/**/*.md' 2>/dev/null` to list available guides
+- `find .codevoyant/guides -path '*/*.md' 2>/dev/null` to list available guides (fall back to `find . -path '*/guides/*/*.md'` for legacy locations)
 - Ask (AskUserQuestion): "Which guide would you like to work through?" listing discovered guides
 
 Verify the guide file exists. If not: stop and suggest `ed new guide "{topic}"`.
@@ -23,9 +34,9 @@ Verify the guide file exists. If not: stop and suggest `ed new guide "{topic}"`.
 Read GUIDE_PATH. Parse:
 - List of phases (`## Phase N: ...`)
 - For each phase: learning objective, list of steps (numbered), hint `<details>` blocks, self-check items
-- Extract editor hints (`<details><summary>Vim hints</summary>` / `<details><summary>Helix hints</summary>`) per step if present
+- Extract Vim hints (`<details><summary>Vim hints</summary>`) per step if present
 
-Store as `GUIDE_STRUCTURE`: `{ phases: [{ title, objective, steps: [{ title, body, hint, vim_hint, helix_hint }] }] }`.
+Store as `GUIDE_STRUCTURE`: `{ phases: [{ title, objective, steps: [{ title, body, hint, vim_hint }] }] }`.
 
 ## Step 2: Session start
 
@@ -36,7 +47,7 @@ Report:
 Phases ({N} total):
   {for each phase: N. Title — Objective}
 
-Starting at Phase 1, Step 1.
+Starting at Phase 1, Step 1.   (Esc to exit anytime)
 ```
 
 ## Step 3: Interactive loop
@@ -53,60 +64,36 @@ Step {CURRENT_STEP}: {step title}
 {step body — the goal/question, no hints yet}
 ```
 
+If `VIM_MODE` and the step has a `vim_hint`, display it as one terse line below the body (mirror the "Navigation hints (compact)" block in `skills/vim/SKILL.md`).
+
 **Ask (AskUserQuestion):**
 ```
-question: "How would you like to proceed?"
+question: "Step {CURRENT_PHASE}.{CURRENT_STEP} — what next?  (Esc to exit)"
 header: "Step {CURRENT_PHASE}.{CURRENT_STEP}"
 options:
-  - label: "Got it — next step"
+  - label: "Hint"
+    description: "Reveal one nudge for this step (quick)"
+  - label: "Show answer"
+    description: "Show the full approach for this step (no solution code unless the guide has it)"
+  - label: "Verify"
+    description: "Paste your attempt in Other — I'll check it (quick)"
+  - label: "Next"
     description: "Move to the next step"
-  - label: "Give me a hint"
-    description: "Reveal one hint for this step"
-  - label: "Show full approach"
-    description: "See the background and all hints (no solution code)"
-  - label: "Skip this step"
-    description: "Move on without hints"
-  - label: "End session"
-    description: "Stop here and see your progress summary"
 ```
 
 **Handle response:**
 
-- **"Got it — next step"**: advance CURRENT_STEP (or CURRENT_PHASE if last step). Log `✓ Phase {P}, Step {S}`.
-- **"Give me a hint"**: display one hint from the step's `<details>` block. Then re-ask the same AskUserQuestion (stay on same step).
-- **"Show full approach"**: display the phase Background + all hints for the step. Re-ask the same AskUserQuestion.
-- **"Skip this step"**: advance without displaying hints.
-- **"End session"**: go to Step 4.
+- **Hint** → spawn a Haiku agent: "Give one short hint for this step (≤2 sentences), no full solution. Step: {body}. Guide hint: {hint}." Display it. Re-ask (stay on step).
+- **Show answer** → display the phase Background + the step's stored hint/approach. If the user typed a follow-up in Other, answer it with Sonnet (or Opus if repeated past threshold). Re-ask.
+- **Verify** → the user's attempt is in the Other free-text. Spawn a Haiku agent: "The learner is on this step: {body}. Their attempt: {user text}. In ≤3 sentences say whether it's on track and the single most useful correction." Display. Re-ask.
+- **Next** → advance CURRENT_STEP (or CURRENT_PHASE if last step). Log `✓ Phase {P}, Step {S}`.
+- **Esc / dismissed / "End"** → go to Step 5 (session end).
 
-**Editor hints (display after step body if mode active):**
-
-If VIM_MODE and vim_hint exists for step: display inline below step body (not in a details block — always visible in assist mode).
-If HELIX_MODE and helix_hint exists: same.
+Any free-text the user types that is a question (not an attempt) is answered with Sonnet, escalating to Opus per the model-tiering rules, then re-ask the same step.
 
 ## Step 4: Phase self-check (after last step in a phase)
 
-Before advancing to the next phase:
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Phase {N} Self-Check
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Before moving on, verify:
-{self-check checklist items from guide}
-```
-
-Ask:
-```
-question: "Ready to move to Phase {N+1}?"
-header: "Phase check"
-options:
-  - label: "Yes, move on"
-  - label: "I need to review a step"
-    description: "Type which step in Other"
-  - label: "End session here"
-```
-
-If "I need to review a step": jump back to that step and re-enter the loop.
+Before advancing to the next phase, display the phase's self-check checklist, then continue to the next phase's first step. (No separate question — the user can Esc to exit or pick Next.)
 
 ## Step 5: Session end / completion
 
@@ -120,12 +107,11 @@ Next:
   /ed quiz "{topic}" --source {notes file if it exists}
 ```
 
-If ended early:
+If exited early (Esc):
 ```
 📌 Session paused at Phase {P}, Step {S}
 
   Completed: Phases {1..P-1} fully, Phase {P} steps {1..S-1}
 
 To resume: /ed assist {GUIDE_PATH}
-(Note: resume restarts from beginning — step into your stopping point)
 ```

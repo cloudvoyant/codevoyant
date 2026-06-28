@@ -6,8 +6,10 @@
 - `RESOURCES` — space-separated list of file paths from `--resources` flag (may be empty)
 - `LEVEL` — value of `--level` flag; defaults to `grad`
 - `SLUG` — kebab-case version of TOPIC (lowercase, hyphens for spaces, alphanum+hyphens only)
-- `NOTES_DIR` — `notes/{SLUG}/`
-- `NOTES_FILE` — `notes/{SLUG}/notes.md`
+- `ART_ROOT` — `.codevoyant` by default; override via `--dir <path>` (see `references/artifact-dir.md`)
+- `SYLLABUS` — file path from `--syllabus` (optional; triggers per-entry fan-out)
+- `NOTES_DIR` — `{ART_ROOT}/notes/{SLUG}/`
+- `NOTES_FILE` — `{ART_ROOT}/notes/{SLUG}/notes.md`
 
 ## Step 0: Parse args
 
@@ -22,6 +24,15 @@ options:
     description: "e.g. 'attention mechanisms', 'backpropagation', 'variational autoencoders'"
 ```
 Use free-text (Other) response.
+
+## Step 0.5: Syllabus fan-out (if --syllabus given)
+
+If `--syllabus <file>` is provided:
+1. Read the syllabus file. Parse each entry (`### Week N: {Topic}` or equivalent) into `{ entry_slug, entry_topic, entry_resources }`.
+2. For **each** entry, run the full notes pipeline (Steps 1–6) independently, writing a **separate** artifact to `{ART_ROOT}/notes/{entry_slug}/notes.md`. Never combine entries into one file.
+3. After all entries, report a summary list of every file written, then stop.
+
+Do not proceed to the single-topic path below when `--syllabus` is set.
 
 ## Step 1: Validate resources — HARD BLOCKER
 
@@ -154,7 +165,7 @@ Apply diagram rules:
 ## Step 5: Create output directory and write file
 
 ```bash
-mkdir -p notes/{SLUG}
+mkdir -p {ART_ROOT}/notes/{SLUG}
 ```
 
 Write synthesized notes to `NOTES_FILE`.

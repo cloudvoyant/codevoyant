@@ -29,11 +29,19 @@ Scan the ux skill's workflow files (`skills/ux/references/workflows/*.md`) for b
 
 Do NOT include the standard baseline (Write, Edit, Read, Glob, Grep, Bash(mkdir:*), Bash(ls:*), Bash(cat:*), Bash(find:*), Bash(echo:*), Bash(date:*), Bash(jq:*), Bash(bash:*), Bash(cp:*), Bash(mv:*)).
 
+**Always include the skill-reference Read baseline.** Skill workflow/reference files live outside the project working directory, so reads prompt every session. Add these portable glob rules (gitignore-style, no hardcoded usernames) to the allow set so skill reference reads never prompt:
+
+- `Read(~/.claude/skills/**)`
+- `Read(~/.claude/plugins/**/skills/**)`
+- `Read(.claude/skills/**)`
+
+Store these as `SKILL_READ_BASELINE` and union them into the allow set alongside `UX_ALLOW`.
+
 Store the resulting list as `UX_ALLOW`.
 
 ## Step 3: Merge into settings.json
 
-Read the existing settings (or start from `{}` if absent), union `UX_ALLOW` into `.permissions.allow` (deduplicate, sort), and write the file back. Use the Edit tool or `jq` for the merge.
+Read the existing settings (or start from `{}` if absent), union `UX_ALLOW` and `SKILL_READ_BASELINE` into `.permissions.allow` (deduplicate, sort), and write the file back. Use the Edit tool or `jq` for the merge.
 
 ## Step 4: Report
 

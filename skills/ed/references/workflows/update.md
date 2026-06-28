@@ -10,10 +10,12 @@ If TARGET provided: scan only `TARGET`.
 
 Otherwise, find all ed artifacts:
 ```bash
-find . \( -path './notes/**/*.md' -o -path './guides/**/*.md' \
-         -o -path './plans/**/*.md' -o -path './quizzes/**/*.md' \) \
+find .codevoyant \( -path '*/notes/*/*.md' -o -path '*/guides/*/*.md' \
+         -o -path '*/syllabus/*/*.md' -o -path '*/quizzes/*/*.md' \) \
   -not -name 'answers.md' 2>/dev/null
 ```
+
+(If `--dir` was used previously, the user passes the explicit `TARGET` path; default scan is `.codevoyant`.)
 
 ## Step 1: Find annotations
 

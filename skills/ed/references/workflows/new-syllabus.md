@@ -1,29 +1,30 @@
-# new-plan — create a week-by-week learning plan
+# new-syllabus — create a week-by-week learning syllabus
 
 ## Variables
 
 - `TOPIC` — first non-flag arg (required; ask if empty)
 - `SLUG` — kebab-case of TOPIC
-- `PLAN_DIR` — `plans/{SLUG}/`
-- `PLAN_FILE` — `plans/{SLUG}/plan.md`
-- `SYLLABUS` — file path from `--syllabus` (optional)
+- `ART_ROOT` — `.codevoyant` by default; override via `--dir <path>` (see `references/artifact-dir.md`)
+- `SYLLABUS_DIR` — `{ART_ROOT}/syllabus/{SLUG}/`
+- `SYLLABUS_FILE` — `{ART_ROOT}/syllabus/{SLUG}/syllabus.md`
+- `SOURCE` — file path from `--syllabus` (optional; an existing course syllabus to follow)
 - `WEEKS` — integer from `--weeks` (optional; auto-detected or defaults to 12)
 
 ## Step 0: Parse args
 
-Parse TOPIC, SYLLABUS, WEEKS from REMAINING_ARGS.
+Parse TOPIC, SOURCE, WEEKS from REMAINING_ARGS. Resolve ART_ROOT per `references/artifact-dir.md`.
 
-If TOPIC is empty, ask (AskUserQuestion, free-text via Other): "What course or topic is this learning plan for?"
+If TOPIC is empty, ask (AskUserQuestion, free-text via Other): "What course or topic is this syllabus for?"
 
 ## Step 1: Load syllabus or research
 
-**If SYLLABUS provided:** Read the file. Extract:
+**If SOURCE provided:** Read the file. Extract:
 - Course title and duration (number of weeks/modules)
 - Topics per week in order
 - Any required readings or assignments per week
-- Set `WEEKS` from syllabus duration if not overridden
+- Set `WEEKS` from source duration if not overridden
 
-**If no SYLLABUS:** Launch deep-research agent:
+**If no SOURCE:** Launch deep-research agent:
 ```
 You are a curriculum designer helping a graduate ML student plan their study of "{TOPIC}".
 
@@ -43,13 +44,13 @@ Return as structured data.
 
 Store result as `CURRICULUM`.
 
-## Step 2: Write plan file
+## Step 2: Write syllabus file
 
 ```markdown
-# Learning Plan: {TOPIC}
+# Learning Syllabus: {TOPIC}
 
-> *{WEEKS}-week graduate-level study plan.*
-> *Sources: {syllabus filename if provided, else "deep research"}*
+> *{WEEKS}-week graduate-level syllabus.*
+> *Sources: {SOURCE filename if provided, else "deep research"}*
 
 ## Overview
 
@@ -92,18 +93,19 @@ Store result as `CURRICULUM`.
 ## Step 3: Write file and report
 
 ```bash
-mkdir -p plans/{SLUG}
+mkdir -p {ART_ROOT}/syllabus/{SLUG}
 ```
 
-Write plan to `PLAN_FILE`.
+Write to `SYLLABUS_FILE`.
 
 Report:
 ```
-✅ Plan ready: {PLAN_FILE}
+✅ Syllabus ready: {SYLLABUS_FILE}
 
   {WEEKS} weeks · {topic count} topics
-  {Based on: {syllabus} / deep research}
+  {Based on: {SOURCE} / deep research}
 
-To annotate: add > or >> comments, then run /ed update {PLAN_FILE}
-To create notes for a week: /ed new notes "{week topic}" --resources {any slides}
+To make a note per entry:  /ed new notes "{TOPIC}" --syllabus {SYLLABUS_FILE}
+To make a guide per entry: /ed new guide "{TOPIC}" --syllabus {SYLLABUS_FILE}
+To annotate: add > or >> comments, then run /ed update {SYLLABUS_FILE}
 ```

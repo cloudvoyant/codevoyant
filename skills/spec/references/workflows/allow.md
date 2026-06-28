@@ -28,6 +28,14 @@ Scan the spec skill's workflow files (`skills/spec/references/workflows/*.md` an
 
 Do NOT include the standard baseline (Write, Edit, Read, Glob, Grep, Bash(mkdir:*), Bash(ls:*), Bash(cat:*), Bash(find:*), Bash(echo:*), Bash(date:*), Bash(jq:*), Bash(bash:*), Bash(cp:*), Bash(mv:*)).
 
+**Always include the skill-reference Read baseline.** Skill workflow/reference files live outside the project working directory, so reads prompt every session. Add these portable glob rules (gitignore-style, no hardcoded usernames) to the allow set so skill reference reads never prompt:
+
+- `Read(~/.claude/skills/**)`
+- `Read(~/.claude/plugins/**/skills/**)`
+- `Read(.claude/skills/**)`
+
+Store these as `SKILL_READ_BASELINE` and union them into the allow set alongside `SPEC_ALLOW`.
+
 Store the resulting list as `SPEC_ALLOW`.
 
 ## Step 3: Merge into settings.json
@@ -42,10 +50,10 @@ else
 fi
 ```
 
-Using the Edit tool (or jq), union `SPEC_ALLOW` into `.permissions.allow` (deduplicate, sort), then write the file back.
+Using the Edit tool (or jq), union `SPEC_ALLOW` and `SKILL_READ_BASELINE` into `.permissions.allow` (deduplicate, sort), then write the file back.
 
 ## Step 4: Report
 
 ```
-✓ spec permissions applied to $SETTINGS_FILE. /spec bg and /spec go can now run without interruption.
+✓ spec permissions applied to $SETTINGS_FILE (incl. skill-reference Read rules). /spec bg and /spec go can now run without read/exec prompts.
 ```

@@ -4,15 +4,16 @@
 
 - `TOPIC` — first non-flag arg (required; ask if empty)
 - `SLUG` — kebab-case of TOPIC
-- `GUIDE_DIR` — `guides/{SLUG}/`
-- `GUIDE_FILE` — `guides/{SLUG}/guide.md`
+- `ART_ROOT` — `.codevoyant` by default; override via `--dir <path>` (see `references/artifact-dir.md`)
+- `GUIDE_DIR` — `{ART_ROOT}/guides/{SLUG}/`
+- `GUIDE_FILE` — `{ART_ROOT}/guides/{SLUG}/guide.md`
 - `VIM_MODE` — true if `--vim` present
-- `HELIX_MODE` — true if `--helix` present
+- `SYLLABUS` — file path from `--syllabus` (optional; triggers per-entry fan-out)
 - `RESOURCES` — optional `--resources` files describing the assignment
 
 ## Step 0: Parse args
 
-Parse TOPIC, RESOURCES, VIM_MODE, HELIX_MODE from REMAINING_ARGS.
+Parse TOPIC, RESOURCES, VIM_MODE, SYLLABUS from REMAINING_ARGS.
 
 If TOPIC is empty, ask:
 ```
@@ -23,6 +24,10 @@ options:
     description: "e.g. 'implement a VAE from scratch', 'assignment 2 — image segmentation'"
 ```
 Use free-text (Other) response.
+
+## Step 0.5: Syllabus fan-out (if --syllabus given)
+
+If `--syllabus <file>` is provided: parse each entry and run Steps 1–4 independently per entry, writing a **separate** guide to `{ART_ROOT}/guides/{entry_slug}/guide.md`. Never combine entries. Report all files written, then stop.
 
 ## Step 1: Understand the assignment
 
@@ -87,15 +92,7 @@ Create `GUIDE_DIR` and write `GUIDE_FILE`:
    <details>
    <summary>Vim hints</summary>
 
-   {Contextually relevant Vim shortcuts for this step. E.g. if reading code: `gd` go to definition, `<C-o>` jump back, `/pattern` search.}
-
-   </details>
-
-   {IF HELIX_MODE:}
-   <details>
-   <summary>Helix hints</summary>
-
-   {Contextually relevant Helix shortcuts. E.g. `gd` go to definition, `<C-s>` save selection, `space + f` file picker.}
+   Terse, context-relevant keys (see /vim "navigation"): e.g. reading code → `gd` def · `Ctrl-o` jump back · `/pat` search · `n` next. Editing → `ciw` change word · `dd` del line · `>i{` indent block · `u` undo · `.` repeat.
 
    </details>
 
@@ -114,7 +111,7 @@ Repeat for all phases.
 ## Step 4: Write file
 
 ```bash
-mkdir -p guides/{SLUG}
+mkdir -p {ART_ROOT}/guides/{SLUG}
 ```
 
 Write guide to `GUIDE_FILE`.
@@ -127,7 +124,7 @@ Report:
   {N} steps total | Hints available via /ed assist
 
 To walk through interactively:
-  /ed assist {GUIDE_FILE} {--vim if VIM_MODE} {--helix if HELIX_MODE}
+  /ed assist {GUIDE_FILE} {--vim if VIM_MODE}
 
 To annotate: add > or >> comments, then run /ed update {GUIDE_FILE}
 ```

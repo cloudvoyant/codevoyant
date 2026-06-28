@@ -1,8 +1,8 @@
-# new — sub-dispatch to notes / guide / plan
+# new — sub-dispatch to notes / guide / syllabus
 
 ## Variables
 
-- `SUBVERB` — first word of REMAINING_ARGS (`notes`, `guide`, or `plan`)
+- `SUBVERB` — first word of REMAINING_ARGS (`notes`, `guide`, or `syllabus`)
 - `REMAINING_ARGS` — everything after SUBVERB
 
 ## Step 0: Parse sub-verb
@@ -12,9 +12,10 @@ SUBVERB="[first word of REMAINING_ARGS, lowercased]"
 REMAINING_ARGS="[everything after SUBVERB]"
 
 case "$SUBVERB" in
-  "notes"|"note")  SUBVERB="notes" ;;
-  "guide"|"guides") SUBVERB="guide" ;;
-  "plan"|"plans")  SUBVERB="plan" ;;
+  "notes"|"note")        SUBVERB="notes" ;;
+  "guide"|"guides")      SUBVERB="guide" ;;
+  "syllabus"|"syllabi")  SUBVERB="syllabus" ;;
+  "plan"|"plans")        SUBVERB="syllabus" ;;  # legacy alias
   "")
     # Ask user
     ;;
@@ -31,8 +32,8 @@ options:
     description: "Feynman-style study notes from lecture slides and research"
   - label: "guide"
     description: "Pedagogical assignment/project guide with hint-controlled phases"
-  - label: "plan"
-    description: "Week-by-week learning plan for a course or topic"
+  - label: "syllabus"
+    description: "Week-by-week learning syllabus for a course or topic"
 ```
 
 ## Step 1: Dispatch

@@ -47,12 +47,10 @@ Walk through a plan phase by phase, task by task, with tutorial-style guidance. 
 /spec guide my-feature --usage          # record decisions for /usage report
 ```
 
-Pass `--vim` or `--helix` (or both) to inject editor key binding hints at each task step:
+Pass `--vim` to inject editor key binding hints at each task step:
 
 ```bash
 /spec guide my-plan --vim               # vim hints
-/spec guide my-plan --helix             # helix hints
-/spec guide my-plan --vim --helix       # both side-by-side
 ```
 
 ### update — apply annotations

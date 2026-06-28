@@ -55,7 +55,6 @@ Pass `--vim` to `spec guide` to inject relevant bindings at each task step:
 
 ```bash
 /spec guide --vim
-/spec guide --vim --helix   # both editors side-by-side
 ```
 
 Hint type is inferred from the task description — file creation tasks get file bindings, refactor tasks get search-replace bindings.

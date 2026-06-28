@@ -129,11 +129,6 @@ features:
     details: GitLab CI monitoring and inline MR review — notes, discussions, and publishing.
     link: /skills/glab
   - icon:
-      src: /icons/helix.svg
-    title: helix
-    details: Helix editor key bindings for file navigation and selection-based workflows.
-    link: /skills/helix
-  - icon:
       src: /icons/linear.svg
     title: linear
     details: Create Linear issues and bug reports via MCP Linear tools.
