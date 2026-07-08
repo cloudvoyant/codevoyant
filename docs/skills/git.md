@@ -17,8 +17,23 @@ Generate a conventional commit message from staged changes, review it, then comm
 /git commit --atomic          # split logical groups into separate commits
 /git commit --yes             # skip confirmation and auto-approve message
 /git commit --no-push         # commit only, do not push or monitor CI
-/git commit --autofix         # fix CI failures and re-push automatically
+/git commit --autofix         # fix CI failures and re-push automatically (background)
+/git commit --fix             # blocking: fix and re-push until CI is green
 ```
+
+Commit messages **never carry agent self-attribution** — no `Co-Authored-By: Claude`, no "Generated with Claude Code", no 🤖 — on any commit, including `--fix`/`--autofix` follow-ups.
+
+### hooks — enforce no self-attribution
+
+Install a `commit-msg` git hook that strips agent self-attribution from **every** commit in the repo, not just those made through `/git commit`. This is the robust backstop for when other agents or ad-hoc fix commits would otherwise add a `Co-Authored-By: Claude` or "Generated with" line.
+
+```bash
+/git hooks install            # install the commit-msg hook (once per clone)
+/git hooks status             # check whether it's installed
+/git hooks uninstall          # remove it (restores any prior hook)
+```
+
+`.git/hooks/` is not tracked, so re-run `install` after a fresh clone; for a team-wide hook, point `core.hooksPath` at a committed directory containing the script.
 
 ### rebase — safe interactive rebase
 

@@ -1,6 +1,8 @@
+<!-- Voice: terse, human, junior-dev friendly. Short sentences. No hype or AI boilerplate. Link refs when they help. See references/voice.md. -->
+
 ## Changes
 
-- {describe what changed and why}
+- {what changed and why — terse, one idea per bullet}
 - {additional change}
 
 ## Validation

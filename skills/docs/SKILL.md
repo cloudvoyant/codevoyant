@@ -1,3 +1,10 @@
+---
+name: docs
+description: 'Generate, update, review, and retroactively create engineering documentation for any project. Triggers on: "docs new", "docs update", "docs review", "docs retcon", "create docs", "generate docs for", "update docs", "review docs", "document this", "add docs".'
+license: MIT
+compatibility: Works on Claude Code. AskUserQuestion falls back to a numbered list on non-Claude-Code platforms.
+---
+
 # docs
 
 Generate, update, review, and retroactively create engineering documentation for any project.

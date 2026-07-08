@@ -39,10 +39,11 @@ VERB="[first non-flag argument, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 case "$VERB" in
-  "")        VERB="help"   ;;
-  "new")     VERB="review" ;;  # alias: /pr new → /pr review
-  "create")  VERB="open"   ;;
-  "draft")   VERB="open"   ;;
+  "")        VERB="help"    ;;
+  "new")     VERB="review"  ;;  # alias: /pr new → /pr review
+  "create")  VERB="open"    ;;
+  "draft")   VERB="open"    ;;
+  "ready")   VERB="publish" ;;  # alias: /pr ready → /pr publish
 esac
 ```
 
@@ -56,6 +57,13 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 
 - **open** (`references/workflows/open.md`) — create a draft PR/MR with a standard template
 - **review** (`references/workflows/review.md`) — generate inline review comments from a PR/MR diff
-- **address** (`references/workflows/address.md`) — pull review comments, propose and apply fixes, respond via draft
+- **address** (`references/workflows/address.md`) — pull review comments, propose and apply fixes, respond + resolve threads
+- **update** (`references/workflows/update.md`) — apply `<!-- > … -->` annotations or a chat edit to the last artifact (description/review/address)
+- **squash** (`references/workflows/squash.md`) — squash branch commits into one or more coherent, changelog-ready commits
+- **publish** (`references/workflows/publish.md`) — publish a draft PR/MR (mark ready) and/or its pending draft review; alias `ready`
 - **complete** (`references/workflows/complete.md`) — publish a pending draft review
 - **help** (`references/workflows/help.md`) — print command reference
+
+## Agent Index
+
+- **slop-detector** (`agents/slop-detector.md`) — detects AI slop and unwanted agent-introduced changes (unnecessary/out-of-scope edits, stochastic churn, boilerplate, leftovers); run by `review` as a dedicated parallel pass

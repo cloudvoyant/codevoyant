@@ -46,7 +46,7 @@ Apply inline annotations or conversational changes to plan files.
 /em update my-plan --bg                                # apply annotations in background
 ```
 
-Supports `> instruction` (block-level) and `content >> instruction` (line-level) annotation forms.
+Supports `<!-- > instruction -->` (block-level) and `content <!-- >> instruction -->` (line-level) annotation forms.
 
 ### allow — pre-approve permissions
 

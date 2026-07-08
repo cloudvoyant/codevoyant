@@ -15,7 +15,7 @@ This workflow's **only output** is plan files. If you are about to do anything e
 | Write a task that says "research / investigate / explore / decide / figure out X" | Stop. Resolve it **now**, during planning — read the codebase (Glob/Grep/Read) and use WebSearch/WebFetch — then write the concrete answer and code. The written plan must be delta-free; the execution agent never researches or makes open design decisions. |
 | Keep going after "looks good" | Stop. Your job is done. Tell the user to run `/spec go`. |
 
-**Permitted file writes:** `.codevoyant/plans/{name}/plan.md`, `.codevoyant/plans/{name}/user-guide.md`, `.codevoyant/plans/{name}/implementation/phase-N.md`, `.codevoyant/plans/{name}/research/*`, `.claude/settings.json` (permissions only).
+**Permitted file writes:** `.codevoyant/plans/{name}/intent.md`, `.codevoyant/plans/{name}/plan.md`, `.codevoyant/plans/{name}/user-guide.md`, `.codevoyant/plans/{name}/implementation/phase-N.md`, `.codevoyant/plans/{name}/research/*`, `.claude/settings.json` (permissions only).
 
 Everything else is off-limits until `/spec go` is run.
 
@@ -101,13 +101,45 @@ PLAN_WORKTREE=".worktrees/$TARGET_BRANCH"
 
 If `SHOULD_CREATE_WORKTREE=false`, set `PLAN_WORKTREE=""`. Error and exit if worktree already exists or git commands fail.
 
+## Step 2.7: Intent-file mode (bare name → scaffold, then plan)
+
+`/spec new` accepts **either** an inline objective **or** a bare plan name. Detect the mode from `REMAINING_ARGS` (flags stripped):
+
+- **Bare name** — a single whitespace-free token that reads as a name/slug (e.g. `auth-refactor`, `dark-mode`), or the `--intent` flag is present. No descriptive objective was given.
+- **Inline objective** — a descriptive phrase (contains spaces / reads as a sentence), a URL/external source, or an exploration selection. → **skip this step**, continue to Step 3.
+
+In **bare-name mode**:
+
+1. `PLAN_NAME` = the name, slugged (lowercase, spaces→hyphens, alphanumeric+hyphens, ≤50 chars).
+2. `INTENT_FILE` = `.codevoyant/plans/{PLAN_NAME}/intent.md`.
+3. **If `INTENT_FILE` exists and is filled in** (content beyond the scaffold — the `## Objective` section is non-empty and not a `{…}` placeholder): read it. Set `OBJECTIVE` from `## Objective`; fold Context / Constraints / Out of scope / Open questions into `RESEARCH_CONTEXT`. Continue to **Step 3b** and plan normally (clarify only if something is still unclear). Do not recreate the file.
+4. **Otherwise** (missing, or only the empty scaffold) — scaffold it and **stop**:
+   a. `mkdir -p .codevoyant/plans/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
+   b. Print the clickable path:
+      ```
+      📝 Tell me what you want built — fill in:
+         .codevoyant/plans/{PLAN_NAME}/intent.md
+      ```
+   c. Best-effort open + focus it in the user's editor. Never block, never fail the workflow if no editor is available:
+      ```bash
+      f=".codevoyant/plans/{PLAN_NAME}/intent.md"
+      if command -v code >/dev/null 2>&1; then code -r -g "$f" 2>/dev/null
+      elif command -v cursor >/dev/null 2>&1; then cursor -r -g "$f" 2>/dev/null
+      elif command -v open >/dev/null 2>&1; then open "$f" 2>/dev/null       # macOS
+      elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$f" 2>/dev/null # Linux
+      fi
+      ```
+   d. Stop with: `Fill it in, then run /spec new {PLAN_NAME} again — I'll read your intent and start planning (asking only what's still unclear).`
+
+   Do NOT create plan.md or any other files in this mode. This is a deliberate pause point — the user writes their intent, then re-invokes.
+
 ## Step 3: Understand Scope
 
 **3a. Determine objective — minimize questions**
 
 Decision tree (in order):
 
-1. **`REMAINING_ARGS` non-empty** → use it directly as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`. Do not ask. Skip to Step 3b.
+1. **`REMAINING_ARGS` is a descriptive objective** (not a bare name — see Step 2.7) → use it directly as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`. Do not ask. Skip to Step 3b.
 2. **`EXTERNAL_CONTEXT` set** → use the fetched title/description as `OBJECTIVE`. Set `RESEARCH_CONTEXT=""`. Do not ask. Skip to Step 3b.
 3. **Explorations exist in `.codevoyant/explore/`** → use **one** AskUserQuestion listing the 3 most recent explorations plus "Describe something new":
    ```
@@ -150,7 +182,7 @@ If scope is **clear**: proceed directly to Step 5.
 If scope is **too broad**: launch an Opus researcher to propose options:
 
 ```
-Agent (model: claude-opus-4-6, run_in_background: false):
+Agent (model: claude-opus-4-8, run_in_background: false):
 
 You are a technical advisor helping scope a software implementation plan.
 
@@ -257,7 +289,7 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 
 - Dependencies to add/remove
 - Files to create/modify/delete
-- Code for non-trivial logic
+- **The complete code for every task** — full file contents for new files, exact old→new lines or a unified diff for edits. Not "code for non-trivial logic": all of it. No ellipses, pseudocode, or prose-only descriptions. If you can't show the code, resolve the unknown during planning rather than deferring it.
 - Testing and validation steps
 
 **Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.

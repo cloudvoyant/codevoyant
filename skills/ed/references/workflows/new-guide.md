@@ -25,16 +25,23 @@ options:
 ```
 Use free-text (Other) response.
 
-## Step 0.5: Syllabus fan-out (if --syllabus given)
+## Step 0.5: Syllabus fan-out (one guide per module)
 
-If `--syllabus <file>` is provided: parse each entry and run Steps 1–4 independently per entry, writing a **separate** guide to `{ART_ROOT}/guides/{entry_slug}/guide.md`. Never combine entries. Report all files written, then stop.
+Trigger this fan-out when **either**:
+- `--syllabus <file>` is provided, **or**
+- the learner's request references building guides from a syllabus/course outline (e.g. "make a guide for each module of this syllabus", or they point at a `syllabus.md` produced by `/ed new syllabus`). If the file path is implied but not given, resolve it (look under `{ART_ROOT}/syllabus/`) or ask once for the path.
 
-## Step 1: Understand the assignment
+When triggered: read the syllabus and parse each entry (`### Module N: {Title}`, or `### Week N:` for older syllabi). For **each** entry, run Steps 1–4 independently, writing a **separate** guide to `{ART_ROOT}/guides/{entry_slug}/guide.md` — one guide per module. Never combine entries into a single guide. If the syllabus lists per-entry resources, pass them into Step 1 as that entry's references. After all entries, report the full list of guides written, then stop.
 
-If RESOURCES provided, read each file. Extract:
+## Step 1: Understand the assignment and mine references
+
+If RESOURCES provided, read each file **in full** and mine it — do not just skim for the prompt. Extract:
 - What is being asked (problem statement)
 - Any constraints (languages, libraries, time limits)
 - Evaluation criteria if present
+- **Worked examples, sample inputs/outputs, and figures** — reuse these to shape concrete hints and self-checks
+- **Pedagogical detail** — definitions, analogies, notation, and the order the source introduces ideas; mirror that scaffolding so the guide's phases build the same way
+- **Citable links** — capture any URLs/references in the material to surface as clickable links in the guide
 
 If no RESOURCES, ask for a brief description of the assignment objectives.
 
@@ -53,6 +60,8 @@ Example for "implement a transformer":
 - Phase 5: Training loop + evaluation
 
 ## Step 3: Write guide file
+
+**Apply `references/pedagogy.md` throughout** — Feynman explanations, progressive disclosure (phases and hints reveal complexity in layers), at least one ASCII or mermaid diagram per phase where the concept is spatial/structural/flow, and clickable external links for further reading. Add a `### Diagram` block to any phase whose concept benefits from a picture.
 
 Create `GUIDE_DIR` and write `GUIDE_FILE`:
 
@@ -75,6 +84,10 @@ Create `GUIDE_DIR` and write `GUIDE_FILE`:
 
 {2–3 sentences of context or theory the student needs. Reference their notes or course materials. No solutions.}
 
+### Diagram
+
+{Optional — a mermaid or ASCII diagram when the concept is spatial/structural/flow (see `references/pedagogy.md`). Omit this heading if the phase has nothing worth drawing.}
+
 ### Steps
 
 1. **{Step title}**
@@ -90,9 +103,9 @@ Create `GUIDE_DIR` and write `GUIDE_FILE`:
 
    {IF VIM_MODE:}
    <details>
-   <summary>Vim hints</summary>
+   <summary>Vim hints — navigation & selection first</summary>
 
-   Terse, context-relevant keys (see /vim "navigation"): e.g. reading code → `gd` def · `Ctrl-o` jump back · `/pat` search · `n` next. Editing → `ciw` change word · `dd` del line · `>i{` indent block · `u` undo · `.` repeat.
+   Drill motions, not one-off keys (see `/vim "navigation"`). **Navigate:** `w b e` word · `f<c>`/`t<c>` to char · `{ }` paragraph · `%` bracket · `gg G` ends · `/pat` `n` search · `gd` def · `Ctrl-o` jump back — prefer a motion over holding `hjkl`. **Select by structure:** `viw` word · `vi{` inside braces · `vap` paragraph · `vit` inside tag. **Then operate:** `c`/`d`/`y` + the motion/object you just used (`ciw`, `di{`, `yap`), `.` to repeat. The point is to move and select well, not memorize task-specific keys.
 
    </details>
 
@@ -126,5 +139,5 @@ Report:
 To walk through interactively:
   /ed assist {GUIDE_FILE} {--vim if VIM_MODE}
 
-To annotate: add > or >> comments, then run /ed update {GUIDE_FILE}
+To annotate: add <!-- > ... --> or <!-- >> ... --> comments, then run /ed update {GUIDE_FILE}
 ```

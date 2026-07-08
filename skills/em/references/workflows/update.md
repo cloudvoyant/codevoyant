@@ -1,25 +1,27 @@
 # update
 
 Update an EM plan or task milestone file. Two input modes:
-- **Annotations**: `>` and `>>` markers already written in plan files
+- **Annotations**: `<!-- > ... -->` and `<!-- >> ... -->` HTML-comment markers already written in plan files
 - **Conversational**: plain-language description of what to change
 
 ## Annotation syntax
 
-**`> instruction`** — standalone line, applies to the block immediately below it:
+Annotations are HTML comments so they never collide with real blockquotes or shell redirects in generated plans.
+
+**`<!-- > instruction -->`** — standalone marker, applies to the block immediately below it:
 ```markdown
-> rewrite this phase for the new auth approach
+<!-- > rewrite this phase for the new auth approach -->
 ### Phase 2 - Authentication Migration
 ```
 
-**`content >> instruction`** — inline suffix, applies to that line:
+**`content <!-- >> instruction -->`** — inline marker after content, applies to that line:
 ```markdown
-- Migrate user sessions >> mark done
-- Add refresh token rotation >> remove this task
-- Configure OAuth providers >> change to use env vars
+- Migrate user sessions <!-- >> mark done -->
+- Add refresh token rotation <!-- >> remove this task -->
+- Configure OAuth providers <!-- >> change to use env vars -->
 ```
 
-Both can appear in `plan.md` and any `tasks/*.md`.
+Both can appear in `plan.md` and any `tasks/*.md`. Scan for `<!-- >>` (major) before `<!-- >` (minor); the instruction is the text between the marker and the closing `-->` (multi-line allowed).
 
 ## Step -1: Parse Flags
 
@@ -48,7 +50,7 @@ Check the argument string and triggering message for a change description:
 
 Set `INPUT_MODE`:
 - `conversational` — `CHANGE_DESCRIPTION` is non-empty
-- `annotations` — scan plan files for `>` / `>>` markers
+- `annotations` — scan plan files for `<!-- > -->` / `<!-- >> -->` markers
 - If both present, process conversational change first, then apply any annotations
 
 ## Step 1: Process Conversational Change (if INPUT_MODE includes `conversational`)
@@ -98,19 +100,19 @@ options:
 ## Step 2: Scan for Annotations
 
 ```bash
-grep -rn "^>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
-grep -rn ">>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
+grep -rn "<!-- >>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
+grep -rn "<!-- >" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
 ```
 
-For each annotation, parse: FILE, LINE_NUM, CONTENT (before `>>`), INSTRUCTION.
+Scan for `<!-- >>` (major) before `<!-- >` (minor). For each annotation, parse: FILE, LINE_NUM, CONTENT (the line text before the `<!-- >>` marker), INSTRUCTION (text between the marker and the closing `-->`, multi-line allowed).
 
 If `INPUT_MODE=annotations` and no annotations found:
 ```
 No annotations found in {slug}.
 
 To annotate, edit plan.md or tasks/*.md directly:
-  > rewrite this section for the new approach     -- applies to next block
-  - task name >> mark done                        -- applies to this line
+  <!-- > rewrite this section for the new approach -->   -- applies to next block
+  - task name <!-- >> mark done -->                       -- applies to this line
 ```
 Exit.
 
@@ -127,7 +129,7 @@ Work bottom-to-top within each file so line numbers stay valid.
 | "rename" | Update the label/title |
 | Free-form | Interpret and apply as a direct edit |
 
-Remove the annotation marker after applying. Log each change for the summary.
+Remove the entire `<!-- ... -->` annotation comment after applying. Log each change for the summary.
 
 ## Step 4: Consistency Pass
 

@@ -130,9 +130,15 @@ Print all tables above in order.
 
 ## Navigation hints (compact)
 
-Terse one-liners for `--vim` consumers — movement, selection, deletion, undo:
+Terse drill for `--vim` consumers. **Lead with navigation and selection** — the goal is to move precisely and select by *structure*, then let one operator do the edit. Learn to move and select well and the edits fall out for free.
 
-`h j k l` move · `w b` word · `0 $` line ends · `gg G` top/bottom · `Ctrl-d Ctrl-u` half-page · `{ }` paragraph · `%` matching bracket
-`v` select · `V` line-select · `Ctrl-v` block · `>` `<` indent sel · `y` yank · `p` paste
-`x` del char · `dd` del line · `dw` del word · `d$` del to EOL · `ciw` change word · `u` undo · `Ctrl-r` redo · `.` repeat
-`:w` save · `:x` save+quit · `Esc` back to Normal
+**Navigate (move by meaning, not arrow-key by arrow-key):**
+`w b e` word fwd/back/end · `0 ^ $` line start/first-word/end · `f<c> t<c>` jump to/before char (`;`/`,` repeat) · `{ }` paragraph · `%` matching bracket · `gg G` file top/bottom · `Ctrl-d Ctrl-u` half-page · `/pat` `n` `N` search & step · `*` word under cursor · `gd` def · `Ctrl-o Ctrl-i` jump back/forward. Prefer a motion over holding `h j k l`.
+
+**Select (Visual + text objects — select the *thing*, not char-by-char):**
+`v` char · `V` line · `Ctrl-v` block · then extend with any motion above. Best leverage is text objects: `iw`/`aw` word · `i"`/`a"` quotes · `i(` `i{` `i[` inside brackets · `ip`/`ap` paragraph · `it`/`at` tag. e.g. `vi{` select inside braces · `vap` select a paragraph · `viw` select a word.
+
+**Then operate (verb + what you navigated/selected):** `d` delete · `c` change · `y` yank · `>` `<` indent — compose them: `ciw` change word · `di{` delete inside braces · `yap` yank paragraph · `d$` to end of line · `>ip` indent paragraph. `u` undo · `Ctrl-r` redo · `.` repeat last change · `p` paste.
+`:w` save · `:x` save+quit · `Esc` back to Normal.
+
+*Grammar:* `operator + count + motion/text-object`. Master motions and text objects and you can express edits you never memorized — that's the drill.

@@ -1,4 +1,4 @@
-# update — apply > / >> annotations from ed artifacts
+# update — apply `<!-- > -->` / `<!-- >> -->` annotations from ed artifacts
 
 ## Variables
 
@@ -19,15 +19,17 @@ find .codevoyant \( -path '*/notes/*/*.md' -o -path '*/guides/*/*.md' \
 
 ## Step 1: Find annotations
 
-For each file, read it and identify lines matching:
-- `^> ` (single `>`) — minor annotation
-- `^>> ` (double `>>`) — major annotation
+For each file, read it and identify HTML-comment annotations. Scan for `<!-- >>` (major) BEFORE `<!-- >` (minor):
+- `<!-- >> instruction -->` — major annotation
+- `<!-- > instruction -->` — minor annotation
+
+The instruction is the text between the marker and the closing `-->`. HTML comments may span multiple lines. A bare `>` line is an ordinary blockquote, not an annotation — ignore it.
 
 Build `ANNOTATION_LIST`: `{ file, line_number, type (minor|major), annotation_text, context_lines }`.
 
 If no annotations found across all files:
 ```
-No annotations found. Add > or >> inline comments to any ed artifact, then run /ed update.
+No annotations found. Add <!-- > ... --> or <!-- >> ... --> comments to any ed artifact, then run /ed update.
 ```
 Stop.
 
@@ -37,8 +39,8 @@ For each annotation in ANNOTATION_LIST:
 
 1. Read 10 lines of context above and below the annotation
 2. Determine what to change:
-   - **minor (`>`):** fix, rephrase, or add the described correction in-place. Remove the annotation line after applying.
-   - **major (`>>`):** add a new section, expand treatment, or add examples as described. Remove the annotation line after applying.
+   - **minor (`<!-- > -->`):** fix, rephrase, or add the described correction in-place. Remove the entire `<!-- ... -->` comment after applying.
+   - **major (`<!-- >> -->`):** add a new section, expand treatment, or add examples as described. Remove the entire `<!-- ... -->` comment after applying.
 3. Apply the change using Edit
 4. Log: `✓ Applied [{type}] in {file}:{line} — {summary of change}`
 

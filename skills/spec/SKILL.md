@@ -16,11 +16,12 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 
 ## Inline Usage
 
-Pass your intent directly on the invocation line — `new` proceeds immediately with no opening question when a description is provided.
+`/spec new` accepts **either** an inline objective (plans immediately, no opening question) **or** a bare plan name (scaffolds `.codevoyant/plans/{name}/intent.md` for you to fill in, then plans on re-run).
 
 ```
-/spec new add OAuth login to the settings page
-/spec new refactor the auth middleware to use JWT
+/spec new add OAuth login to the settings page   # inline objective → plans now
+/spec new auth-refactor                           # bare name → writes intent.md to fill in
+/spec new auth-refactor                           # re-run after filling it → plans
 /spec go my-plan
 ```
 

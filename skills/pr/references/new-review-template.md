@@ -36,4 +36,4 @@ Write this structure to `.codevoyant/review/{slug}/new-review.md`.
 {...}
 ```
 
-**Severity levels:** `MUST CHANGE` (blocking), `CONSIDER` (non-blocking), `NOTE` (informational)
+**Severity levels:** `BLOCKING` (must change), `CONSIDER` (non-blocking), `NOTE` (informational)

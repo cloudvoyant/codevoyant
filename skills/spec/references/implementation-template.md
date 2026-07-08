@@ -28,7 +28,7 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 
 ## Implementation
 
-> **Gate:** Every task below MUST contain a non-empty `**Code:**` block and MUST NOT defer work to research/investigation/decision. If you cannot show the code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research or open design choices to the execution agent.
+> **Gate:** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files, exact old→new lines or a unified diff for edits. No ellipses (`...`), no pseudocode, no "e.g."/"something like", no prose-only descriptions. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent.
 
 {For each task in this phase:}
 
@@ -38,10 +38,12 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 1. {Detailed step-by-step instructions}
 2. {Include exact commands, file paths, code patterns}
 
-**Code (required — never omit):**
+**Code (required — complete, never omit, never abbreviate):**
 ```{lang}
-{The exact code or unified diff this task produces. Show the real lines to add/change/delete.
-A task with no code block here is incomplete and must not be emitted.}
+{The COMPLETE code this task produces — the entire contents for a new file, or the exact
+old→new lines / unified diff for an edit. Every line the execution agent will write appears
+here verbatim. No ellipses, no pseudocode, no "e.g." A task with a partial or prose-only
+code block is incomplete and must not be emitted.}
 ```
 
 **Files to modify / create:**

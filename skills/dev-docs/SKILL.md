@@ -1,3 +1,10 @@
+---
+name: dev-docs
+description: 'Deprecated alias — superseded by the standalone `docs` skill; use /docs instead. Triggers on: "dev docs", "generate docs", "create docs", "document {component}", "write docs for", "add docs for".'
+license: MIT
+compatibility: Works on Claude Code. Superseded by /docs — kept for backwards compatibility only.
+---
+
 > **Superseded by `docs`** — this skill has been extracted into the standalone `docs` skill.
 > Use `/docs new`, `/docs update`, `/docs review`, or `/docs retcon` instead.
 > This file is kept for backwards compatibility only.

@@ -28,7 +28,7 @@ Use free-text (Other) response.
 ## Step 0.5: Syllabus fan-out (if --syllabus given)
 
 If `--syllabus <file>` is provided:
-1. Read the syllabus file. Parse each entry (`### Week N: {Topic}` or equivalent) into `{ entry_slug, entry_topic, entry_resources }`.
+1. Read the syllabus file. Parse each entry (`### Module N: {Title}`, or `### Week N:` for older/source syllabi) into `{ entry_slug, entry_topic, entry_resources }`.
 2. For **each** entry, run the full notes pipeline (Steps 1–6) independently, writing a **separate** artifact to `{ART_ROOT}/notes/{entry_slug}/notes.md`. Never combine entries into one file.
 3. After all entries, report a summary list of every file written, then stop.
 
@@ -64,9 +64,14 @@ options:
 ```
 If user chooses "No", stop.
 
-## Step 2: Read all resource files
+## Step 2: Read and mine all resource files
 
-For each valid file in RESOURCES, read its full content. Concatenate into `SOURCE_CONTENT`.
+For each valid file in RESOURCES, read its full content and **mine it for teaching material**, not just facts. Concatenate the content into `SOURCE_CONTENT`, and additionally pull out:
+- **Worked examples, derivations, and figures** — reuse them as the notes' examples and diagram sources
+- **Analogies, definitions, and the introduction order** the source uses — mirror this scaffolding for progressive disclosure
+- **Citable links/references** in the material — carry them into the References section as clickable links
+
+These mined examples and pedagogical details take priority over generic web research when both cover the same point.
 
 ## Step 3: Deep research
 
@@ -152,6 +157,8 @@ Write `NOTES_FILE` with the following structure. Level defaults to graduate (`LE
 - [{title}]({url}) — {one-line description}
 ```
 
+Follow `references/pedagogy.md` in full (Feynman technique, progressive disclosure, diagrams, clickable links). In particular:
+
 Apply Feynman style rules:
 - Never use jargon without a plain-English sentence first
 - Prefer concrete analogies before abstract definitions
@@ -190,6 +197,6 @@ Report:
 
   Sections: Overview · Core Concepts ({N} concepts) · Diagrams · Worked Examples · Q&A ({N} questions) · References ({N} sources)
 
-To annotate: add > or >> comments inline, then run /ed update {NOTES_FILE}
+To annotate: add <!-- > ... --> or <!-- >> ... --> comments inline, then run /ed update {NOTES_FILE}
 To quiz yourself: /ed quiz "{TOPIC}" --source {NOTES_FILE}
 ```

@@ -75,15 +75,20 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 
 **Phase 0 gate:** If `HAS_PHASE_0=true` and any Phase 0 tasks are unchecked, stop and list them. Do not launch any executor agents.
 
-**Orchestration loop** — for each phase starting at Phase 1:
+**Model tiers (effort → model):** low = `claude-haiku-4-5-20251001` · medium = `claude-sonnet-4-6` · high = `claude-opus-4-8`. Executors default to **Haiku** for responsiveness; escalate only on trouble.
 
-1. Spawn `spec-executor` agent (see `agents/spec-executor.md`) with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, and `PLAN_NAME` substituted into the prompt
-2. Wait for completion (`TaskOutput` block=true)
-3. Write phase summary to execution-log.md
-4. If phase failed: stop loop, send failure notification, report to user
-5. If phase succeeded: continue to Phase N+1
+**Dependency scan (do this once before the loop):** Read `plan.md` and decide, per phase, whether it depends on an earlier phase's output. A phase depends on another when its implementation file references files created/modified by that earlier phase, or the plan text says so. Phases with **no** such dependency are independent and may run concurrently.
 
-After loop completes, unless `SILENT=true`, report completion to the user with a brief summary stating either that plan `{plan-name}` is complete, or that plan `{plan-name}` stopped at Phase `{N}`.
+**Orchestration loop** — starting at Phase 1, process phases in dependency order:
+
+1. **Batch independent phases.** Group the next set of phases that have no dependency on any unfinished phase. Spawn one `spec-executor` agent per phase in the batch **in a single message** (parallel), each on model `claude-haiku-4-5-20251001`, with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, and `PLAN_NAME` substituted into the prompt. A batch of one is just a single spawn.
+2. Wait for the batch to finish (`TaskOutput` block=true for each).
+3. Write each phase summary to execution-log.md.
+4. **Escalation on trouble.** If an executor's report ends with an `ESCALATE:` line, or the phase otherwise failed, re-spawn *that* phase on the next tier — Haiku → `claude-sonnet-4-6` → `claude-opus-4-8` — up to Opus. Log each escalation to execution-log.md as `[ESCALATE] Phase {N}: {model} — {reason}`. Only after an Opus attempt also fails do you treat the phase as failed.
+5. If a phase is still failed after escalation to Opus: stop the loop, send failure notification, report to user.
+6. If the batch succeeded: continue to the next dependency-ordered batch.
+
+After the loop completes, unless `SILENT=true`, report completion to the user with a brief summary stating either that plan `{plan-name}` is complete, or that plan `{plan-name}` stopped at Phase `{N}`. If any phase escalated, note which phases needed a stronger model.
 
 ## Step 6.5: Deviation Summary
 
