@@ -56,7 +56,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 ## Workflow Index
 
 - **new** (`references/workflows/new.md`) — sub-dispatch to notes / guide / syllabus creation
-- **update** (`references/workflows/update.md`) — apply `>` / `>>` annotations from any ed artifact
+- **update** (`references/workflows/update.md`) — apply `<!-- > -->` / `<!-- >> -->` annotations from any ed artifact
 - **assist** (`references/workflows/assist.md`) — interactive step-by-step guide walkthrough
 - **quiz** (`references/workflows/quiz.md`) — create or interactively administer a quiz
 - **help** (`references/workflows/help.md`) — print command reference

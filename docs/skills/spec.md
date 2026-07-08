@@ -6,11 +6,17 @@ Specification-driven development — create structured plans from requirements, 
 
 ### new — create a plan
 
-Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs.
+Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete code** it will produce — a code-first gate blocks prose-only tasks — so execution needs no further guidance.
+
+Two ways to give the objective:
+
+- **Inline objective** — a description; planning starts immediately.
+- **Bare name** — just a name; `new` scaffolds `.codevoyant/plans/{name}/intent.md`, prints its path (and opens it in your editor when possible), and stops. Fill it in, then re-run `/spec new {name}` and it plans from your intent, asking only what's still unclear.
 
 ```bash
-/spec new                                       # interactive naming
-/spec new my-feature                            # named plan
+/spec new add OAuth login to the settings page  # inline objective → plans now
+/spec new auth-refactor                          # bare name → writes intent.md to fill in
+/spec new auth-refactor                          # re-run after filling → plans
 /spec new https://linear.app/team/issue/ENG-42  # seed from Linear issue
 /spec new https://github.com/org/repo/issues/7  # seed from GitHub issue
 /spec new my-feature --branch feature-branch    # create with a git worktree
@@ -24,7 +30,7 @@ Pass a Linear, GitHub, or GitLab issue URL as the first argument to pre-fill req
 
 ### go — execute a plan
 
-Spawn an autonomous background agent that reads implementation files, updates plan checkboxes in real time, runs tests at phase boundaries, and sends a desktop notification on completion.
+Spawn an autonomous background agent that reads implementation files, updates plan checkboxes in real time, runs tests at phase boundaries, and sends a desktop notification on completion. Independent phases run **in parallel** on a fast (Haiku) executor for responsiveness, escalating to a stronger model only when a phase hits genuine trouble.
 
 ```bash
 /spec go                                # auto-selects most recently updated plan
@@ -64,7 +70,7 @@ Process inline annotations written directly in plan files, or accept a conversat
 /spec update my-feature --usage         # log applied annotations as user decisions
 ```
 
-Two annotation forms: `> instruction` on a standalone line applies to the block below; `content >> instruction` inline applies to that line only.
+Two annotation forms, both written as HTML comments so they never collide with real markdown blockquotes: `<!-- > instruction -->` on a standalone line (minor) applies to the block below; `content <!-- >> instruction -->` inline (major) applies to that line only.
 
 ### split — split a large plan
 
@@ -180,5 +186,5 @@ When active, the planner and executor log every significant autonomous choice to
 | `/spec new --usage` | Every significant autonomous planning choice: phasing strategy, architecture, scope decisions |
 | `/spec go --usage` | Autonomous mid-phase choices: implementation decisions the spec left open |
 | `/spec guide --usage` | Same as `go` for guided execution steps |
-| `/spec update --usage` | Every successfully applied `>` annotation — clear evidence of user direction |
+| `/spec update --usage` | Every successfully applied `<!-- > -->` annotation — clear evidence of user direction |
 | `/spec clean --usage` | Session artifacts zipped to `.ai_usage/` before clearing |

@@ -1,24 +1,26 @@
 # update
 
 Update a spec plan. Accepts two input modes:
-- **Annotations**: `>` and `>>` markers already written directly in plan files
+- **Annotations**: `<!-- > ... -->` and `<!-- >> ... -->` HTML-comment markers already written directly in plan files
 - **Conversational**: a plain-language description of what to change
 
 ## Annotation syntax
 
-**`> instruction`** — standalone line, applies to the block immediately below it:
+Annotations are HTML comments so they never collide with real markdown blockquotes. Scan for `<!-- >>` (major) BEFORE `<!-- >` (minor); the instruction is the text between the marker and the closing `-->`, and the comment may span multiple lines.
+
+**`<!-- > instruction -->`** — minor annotation, standalone comment applies to the block immediately below it:
 ```markdown
-> rewrite this phase for OAuth — drop all JWT references
+<!-- > rewrite this phase for OAuth — drop all JWT references -->
 ### Phase 2 - Authentication
 ```
 
-**`content >> instruction`** — inline suffix, applies to that specific line:
+**`content <!-- >> instruction -->`** — major annotation, inline suffix applies to that specific line:
 ```markdown
-1. [ ] Set up Passport.js >> mark done
-2. [ ] Add refresh tokens >> remove this task
+1. [ ] Set up Passport.js <!-- >> mark done -->
+2. [ ] Add refresh tokens <!-- >> remove this task -->
 ```
 
-Both can appear in `plan.md` and any `implementation/phase-N.md`.
+Both can appear in `plan.md` and any `implementation/phase-N.md`. When applying an annotation, remove the ENTIRE `<!-- ... -->` comment.
 
 ## Variables
 
@@ -67,8 +69,8 @@ After applying, continue to Step 4.
 Scan all plan files:
 
 ```bash
-grep -rn "^>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
-grep -rn ">>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
+grep -rn "<!-- >>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
+grep -rn "<!-- >" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
 ```
 
 Apply the `spec-updater` agent (see `agents/spec-updater.md`) to process all annotations.
@@ -77,8 +79,8 @@ If no annotations found and INPUT_MODE is `annotations` only:
 ```
 No annotations found in plan: {plan-name}
 To annotate, edit any plan file directly:
-  > rewrite this phase for OAuth          ← applies to next block
-  1. [ ] Task name >> mark done           ← applies to this line
+  <!-- > rewrite this phase for OAuth -->          ← applies to next block
+  1. [ ] Task name <!-- >> mark done -->           ← applies to this line
 ```
 
 ## Step 5: Report

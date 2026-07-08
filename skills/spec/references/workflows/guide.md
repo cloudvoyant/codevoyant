@@ -148,7 +148,7 @@ Edit `implementation/phase-{N}.md`: revise the section for this task to reflect 
 
 **3.2c: Annotate remaining implementation files for background update**
 
-Add a `> update this phase given improvisation: {IMPROV_DESCRIPTION}` annotation at the top of each remaining phase implementation file (`phase-{N+1}.md` through `phase-{last}.md`).
+Add a `<!-- > update this phase given improvisation: {IMPROV_DESCRIPTION} -->` annotation at the top of each remaining phase implementation file (`phase-{N+1}.md` through `phase-{last}.md`).
 
 **3.2d: Launch background agents** (in one message, both in parallel)
 
@@ -164,7 +164,7 @@ Add a `> update this phase given improvisation: {IMPROV_DESCRIPTION}` annotation
        Read agents/spec-updater.md and follow its checklist.
        PLAN_NAME={PLAN_NAME}
        CHANGE_DESCRIPTION=User improvised task {M} of Phase {N}: {IMPROV_DESCRIPTION}
-       Apply the > annotations at the top of each remaining implementation file and remove them.
+       Apply the <!-- > --> annotations at the top of each remaining implementation file and remove them.
        Validate for consistency after all edits.
    ```
 
@@ -178,7 +178,7 @@ Add a `> update this phase given improvisation: {IMPROV_DESCRIPTION}` annotation
      prompt: |
        Read references/validation-loop.md and run one validation pass on plan {PLAN_NAME}.
        Focus only on phases {N+1} onward. Report any NEEDS_IMPROVEMENT items as inline
-       > annotations in the affected implementation files so spec-updater can fix them.
+       <!-- > --> annotations in the affected implementation files so spec-updater can fix them.
        Do not fix them yourself.
    ```
 

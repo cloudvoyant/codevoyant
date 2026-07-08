@@ -20,12 +20,12 @@ Task runner commands:
 
 ## Annotations to apply first
 
-Before starting any task, scan plan.md and implementation/phase-{N}.md for inline annotations:
+Before starting any task, scan plan.md and implementation/phase-{N}.md for inline HTML-comment annotations (scan `<!-- >>` before `<!-- >`):
 
-- **`> instruction`** — standalone line applying to the block below it
-- **`content >> instruction`** — inline suffix applying to that specific line
+- **`<!-- > instruction -->`** — minor annotation, standalone comment applying to the block below it
+- **`content <!-- >> instruction -->`** — major annotation, inline suffix applying to that specific line
 
-Apply each annotation (mark done, remove task, rewrite content, etc.) and delete the marker from the file. Log what you applied. If none found, continue silently.
+Apply each annotation (mark done, remove task, rewrite content, etc.) and delete the entire `<!-- ... -->` comment from the file. Log what you applied. If none found, continue silently.
 
 ## Your tasks — Phase {N}
 

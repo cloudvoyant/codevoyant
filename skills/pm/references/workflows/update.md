@@ -26,7 +26,15 @@ Read the selected roadmap as CURRENT_ROADMAP.
 
 ## Step 2: Understand the change
 
-If CHANGE_DESCRIPTION is empty, ask:
+If CHANGE_DESCRIPTION is empty, first scan CURRENT_ROADMAP for inline annotations written as HTML comments:
+
+- Scan for `<!-- >>` (major) BEFORE `<!-- >` (minor).
+- `<!-- > instruction -->` on a standalone line is a minor annotation — the instruction applies to the block immediately below it.
+- `content <!-- >> instruction -->` is a major annotation — the instruction applies to that line, where CONTENT is the line text before the marker.
+- INSTRUCTION is the text between the marker and the closing `-->` (multi-line allowed).
+- Never treat a bare `>` line as an annotation — it is a real markdown blockquote and must be left untouched.
+
+If annotations are found, apply each one and remove the ENTIRE `<!-- ... -->` comment after applying, then continue to Step 3 to confirm. If no annotations are found and CHANGE_DESCRIPTION is empty, ask:
 
 ```
 AskUserQuestion:

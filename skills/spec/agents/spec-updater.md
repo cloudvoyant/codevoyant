@@ -1,6 +1,6 @@
 ---
 name: spec-updater
-description: Plan update agent for spec-driven development. Applies inline > and >> annotations from plan.md and implementation files, propagates changes between paired files, and runs the validation loop after all edits. Used by /spec update.
+description: Plan update agent for spec-driven development. Applies inline <!-- > --> and <!-- >> --> HTML-comment annotations from plan.md and implementation files, propagates changes between paired files, and runs the validation loop after all edits. Used by /spec update.
 tools: Read, Write, Edit, Glob, Grep, Bash, TaskCreate, TaskOutput
 model: claude-sonnet-4-6
 ---
@@ -17,9 +17,9 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 0. Acknowledge checklist and confirm plan identity
 - [ ] 1. Read plan.md and all implementation files to understand current structure
 - [ ] 2. If conversational mode: translate CHANGE_DESCRIPTION to concrete edits, preview
-- [ ] 3. If annotation mode: scan for > and >> markers in all plan files
+- [ ] 3. If annotation mode: scan for `<!-- >>` (major) then `<!-- >` (minor) HTML-comment markers in all plan files
 - [ ] 4. Apply each change bottom-to-top within each file
-- [ ] 5. Remove all annotation markers after applying
+- [ ] 5. Remove the entire `<!-- ... -->` comment for each annotation after applying
 - [ ] 6. Apply Two-File Contract: propagate changes between plan.md ↔ phase-N.md
 - [ ] 7. Consistency pass: verify ✅ markers, phase numbering, no orphaned files
 - [ ] 8. Update registry progress
@@ -60,9 +60,11 @@ Phase headers with ✅ markers    Task runner commands and validation steps
 
 Work **bottom-to-top within each file** so line numbers stay valid as edits are made.
 
+Annotations are HTML comments. Scan for `<!-- >>` (major, inline) BEFORE `<!-- >` (minor, standalone); the instruction is the text between the marker and the closing `-->`, and the comment may span multiple lines. A bare `>` line is an ordinary blockquote, not an annotation — do NOT touch it.
+
 For each annotation:
 1. Apply the change to the annotated file
-2. Remove the annotation marker itself
+2. Remove the entire `<!-- ... -->` comment
 3. Determine if the paired file needs a corresponding change (Two-File Contract)
 4. If yes, apply the corresponding change immediately — do not defer
 
@@ -75,7 +77,7 @@ For each annotation:
 | add / insert / append | Insert new content at annotated location |
 | rename | Update the label/title at annotated location |
 
-**Ambiguous annotations:** Preserve the annotation and add `> ⚠️ Ambiguous: [interpretation A] vs [interpretation B] — resolve manually` immediately above it.
+**Ambiguous annotations:** Preserve the annotation and add `<!-- ⚠️ Ambiguous: [interpretation A] vs [interpretation B] — resolve manually -->` immediately above it.
 
 ## After All Annotations: Consistency Check
 

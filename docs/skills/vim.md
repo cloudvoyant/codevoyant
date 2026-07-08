@@ -51,10 +51,12 @@ Ctrl-w v         Vertical split
 
 ## Guide integration
 
-Pass `--vim` to `spec guide` to inject relevant bindings at each task step:
+Pass `--vim` to inject Vim hints into guided sessions — `spec guide`, `ed new guide`, and `ed assist`:
 
 ```bash
 /spec guide --vim
+/ed new guide "assignment 2" --vim
+/ed assist .codevoyant/guides/assignment-2/guide.md --vim
 ```
 
-Hint type is inferred from the task description — file creation tasks get file bindings, refactor tasks get search-replace bindings.
+The hints **drill navigation and selection** — how to move with motions (`w b e`, `f<c>`, `{ }`, `gg G`, `/pat`, `gd`) and select by structure with text objects (`viw`, `vi{`, `vap`), then compose an operator (`ciw`, `di{`, `yap`). The goal is to teach transferable motions, not just the handful of keys for the task at hand.

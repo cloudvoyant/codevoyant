@@ -64,6 +64,8 @@ Apply inline annotations or conversational changes to roadmap and PRD files.
 /pm update my-plan --bg                                # apply annotations in background
 ```
 
+Supports `<!-- > instruction -->` (block-level) and `content <!-- >> instruction -->` (line-level) annotation forms, both written as HTML comments so they never collide with real markdown blockquotes.
+
 ### allow — pre-approve permissions
 
 Write the allow entries needed for pm skills to run without permission prompts.

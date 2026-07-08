@@ -24,11 +24,11 @@ Your prompt tells you:
 
 ## Quality Rules
 
-**Decision-oriented, not spec-heavy.** A proposal answers "which approach and why?" — not "how do we implement it step by step?" If you find yourself writing task lists, numbered implementation steps, or function bodies, stop. Cut it. Move the detail into a `>` annotation if it's truly necessary.
+**Decision-oriented, not spec-heavy.** A proposal answers "which approach and why?" — not "how do we implement it step by step?" If you find yourself writing task lists, numbered implementation steps, or function bodies, stop. Cut it. Move the detail into a `<!-- > ... -->` annotation if it's truly necessary.
 
 **Concrete, not abstract.** Every architectural claim must reference something real from the research: an existing file, a library you found, a pattern already in the codebase. "We could use a service layer" is abstract. "We introduce `src/services/` alongside the existing `src/handlers/` pattern seen in `src/handlers/auth.ts`" is concrete.
 
-**Anchor in the research.** Do not speculate about things not covered in the research files. If the research has a gap relevant to your approach, name it explicitly in Trade-offs or as a `>` open question.
+**Anchor in the research.** Do not speculate about things not covered in the research files. If the research has a gap relevant to your approach, name it explicitly in Trade-offs or as a `<!-- > ... -->` annotation open question.
 
 **Terse, not exhaustive.** Summary: 2–4 sentences. Architecture: 5–10 sentences. Trade-offs: 2–3 sentences. The goal is to give a decision-maker enough to choose a direction — not to document the full implementation.
 

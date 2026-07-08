@@ -1,4 +1,6 @@
-# new-syllabus — create a week-by-week learning syllabus
+# new-syllabus — create a module-based learning syllabus
+
+Organize a syllabus by **modules** (self-contained units of study), not calendar weeks. A learner moves through modules at their own pace; each module is a coherent chunk of the topic, not a fixed week.
 
 ## Variables
 
@@ -8,21 +10,21 @@
 - `SYLLABUS_DIR` — `{ART_ROOT}/syllabus/{SLUG}/`
 - `SYLLABUS_FILE` — `{ART_ROOT}/syllabus/{SLUG}/syllabus.md`
 - `SOURCE` — file path from `--syllabus` (optional; an existing course syllabus to follow)
-- `WEEKS` — integer from `--weeks` (optional; auto-detected or defaults to 12)
+- `MODULES` — integer from `--modules` (optional; `--weeks` accepted as a back-compat alias; auto-detected from SOURCE, else defaults to 8)
 
 ## Step 0: Parse args
 
-Parse TOPIC, SOURCE, WEEKS from REMAINING_ARGS. Resolve ART_ROOT per `references/artifact-dir.md`.
+Parse TOPIC, SOURCE, MODULES from REMAINING_ARGS (accept `--weeks` as an alias for `--modules`). Resolve ART_ROOT per `references/artifact-dir.md`.
 
 If TOPIC is empty, ask (AskUserQuestion, free-text via Other): "What course or topic is this syllabus for?"
 
 ## Step 1: Load syllabus or research
 
 **If SOURCE provided:** Read the file. Extract:
-- Course title and duration (number of weeks/modules)
-- Topics per week in order
-- Any required readings or assignments per week
-- Set `WEEKS` from source duration if not overridden
+- Course title and how it splits into units/modules (map weeks or lectures onto modules if the source is week-based)
+- Topics per module in order
+- Any required readings or assignments per module
+- Set `MODULES` from the source's natural unit count if not overridden
 
 **If no SOURCE:** Launch deep-research agent:
 ```
@@ -31,11 +33,12 @@ You are a curriculum designer helping a graduate ML student plan their study of 
 Find:
 1. The canonical graduate-level course structure for {TOPIC} (e.g. Stanford CS229, CS231n, CS224n, or equivalent)
 2. The best freely-available resources: lecture notes, video lectures, textbook chapters, seminal papers
-3. A natural week-by-week breakdown covering the topic in {WEEKS} weeks at graduate level
+3. A natural breakdown into {MODULES} self-contained modules at graduate level — group by concept, not calendar. Each module is a coherent unit a learner can complete before moving on.
 
-For each week, return:
-- week number
+For each module, return:
+- module number and a short title
 - topic(s) covered
+- rough effort (e.g. "~4–6 hours") — a guide, not a deadline
 - 2–3 resources with titles and URLs
 - 1–2 learning objectives
 
@@ -49,21 +52,23 @@ Store result as `CURRICULUM`.
 ```markdown
 # Learning Syllabus: {TOPIC}
 
-> *{WEEKS}-week graduate-level syllabus.*
+> *{MODULES}-module graduate-level syllabus. Self-paced — modules are units of study, not weeks.*
 > *Sources: {SOURCE filename if provided, else "deep research"}*
 
 ## Overview
 
 {2–3 sentences on what this plan covers and what the student will be able to do at the end.}
 
-## Week-by-Week Schedule
+## Modules
 
-### Week {N}: {Topic}
+### Module {N}: {Title}
 
 **Topics:** {comma-separated list}
 
+**Estimated effort:** {e.g. ~4–6 hours — a guide, not a deadline}
+
 **Objectives:**
-- {What you should understand by end of week}
+- {What you should understand after this module}
 - {What you should be able to do}
 
 **Resources:**
@@ -76,14 +81,14 @@ Store result as `CURRICULUM`.
 
 ---
 
-{Repeat for all WEEKS}
+{Repeat for all MODULES}
 
 ## Milestones
 
-| Week | Milestone |
-|------|-----------|
-| {N}  | {Concrete checkpoint — e.g. "Complete attention mechanism implementation"} |
-| ...  | ... |
+| Module | Milestone |
+|--------|-----------|
+| {N}    | {Concrete checkpoint — e.g. "Complete attention mechanism implementation"} |
+| ...    | ... |
 
 ## References
 
@@ -102,10 +107,10 @@ Report:
 ```
 ✅ Syllabus ready: {SYLLABUS_FILE}
 
-  {WEEKS} weeks · {topic count} topics
+  {MODULES} modules · {topic count} topics
   {Based on: {SOURCE} / deep research}
 
-To make a note per entry:  /ed new notes "{TOPIC}" --syllabus {SYLLABUS_FILE}
-To make a guide per entry: /ed new guide "{TOPIC}" --syllabus {SYLLABUS_FILE}
-To annotate: add > or >> comments, then run /ed update {SYLLABUS_FILE}
+To make a note per module:   /ed new notes "{TOPIC}" --syllabus {SYLLABUS_FILE}
+To make one guide per module: /ed new guide "{TOPIC}" --syllabus {SYLLABUS_FILE}   (one guide per syllabus entry)
+To annotate: add <!-- > ... --> or <!-- >> ... --> comments, then run /ed update {SYLLABUS_FILE}
 ```
