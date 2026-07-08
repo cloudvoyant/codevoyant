@@ -1,3 +1,31 @@
+## [1.55.0](https://github.com/cloudvoyant/codevoyant/compare/v1.54.0...v1.55.0) (2026-07-08)
+
+### Features
+
+* **skills:** sharpen spec, git, ed, vim, and pr workflows
+
+Cross-skill quality pass. Highlights by skill:
+
+spec:
+- code-first gate — every implementation task carries the complete,
+  literal code before it's written; no prose-only tasks
+- /spec go runs independent phases in parallel on a fast model,
+  escalating only on genuine trouble
+- /spec new accepts an inline objective OR a bare name; a bare name
+  scaffolds .codevoyant/plans/{name}/intent.md to fill in (opened in the
+  editor when possible), then plans on re-run
+
+git:
+- commits never carry agent self-attribution; a commit-msg hook strips
+  it from any commit, installable via /git hooks
+- new commit --fix loops until CI is green (bounded retries)
+
+ed:
+- shared pedagogy guide (Feynman, progressive disclosure, ASCII/mermaid
+  diagrams, links); resources mined for examples
+- syllabi organized by self-paced modules, not weeks; guides fan out one
+  per module
+
 ## [1.54.0](https://github.com/cloudvoyant/codevoyant/compare/v1.53.0...v1.54.0) (2026-06-28)
 
 ### Features
