@@ -10,33 +10,65 @@ End-to-end pipeline orchestration — chain multiple skill workflows into a name
 
 ### new — define a flow
 
-Create a named pipeline with an ordered list of skill invocations; generates `flow.md` and per-step implementation files under `.codevoyant/flows/{name}/`.
+Create a named pipeline with an ordered list of skill invocations; generates `flow.md` and per-step implementation files under `.codevoyant/flows/{name}/`. Add `--global` to store it under `~/.codevoyant/flows/` instead, making it reusable across every project.
 
 ```bash
 /flow new auth-refactor \
   "/dev explore how the auth middleware works" \
   "/spec new refactor auth middleware" \
   "/spec go"
+
+# reusable across projects, with a run-time parameter:
+/flow new ship \
+  "/spec new {{input}}" \
+  "/spec go" \
+  "/git commit" \
+  "/pr open" \
+  --global
 ```
 
 Pass descriptions inline to skip interactive prompts within each step (e.g. `/spec new my-feature add dark mode`).
 
+#### Parameters — dynamic input
+
+Put `{{placeholders}}` in any step and supply values when you run the flow:
+
+- Bare text after the name binds to `{{input}}` — `/flow go ship "add dark mode"`.
+- `--set key=value` binds a named `{{key}}` — `/flow go ship --set env=staging`.
+- Anything still unset is prompted for once.
+
+Each step's key outputs (PR numbers, plan names, file paths) are captured and threaded forward as **flow context**, so later steps can use them automatically — e.g. `/pr open` produces a PR number that a later `/pr address` step picks up without you re-typing it. Flow context is persisted, so an interrupted flow resumes with it intact.
+
+**Chaining interactive skills.** Steps run as subagents and can't prompt you directly, so write each step to run non-interactively — pass its input inline or as a `{{param}}` (give steps that need different values distinct params, not one shared `{{input}}`), and wire a consumer step to the artifact its producer wrote (e.g. `/dev explore` → `.codevoyant/explore/{slug}/` → `/spec new` plans from it). If a step still hits a decision it can't resolve, it escalates one question back to you (`NEEDS_INPUT`) and re-runs with your answer — a fallback, not the plan.
+
 ### go — execute a flow
 
-Run all pending steps sequentially as blocking subagents. Resumes from the first incomplete step if re-run after interruption.
+Run all pending steps sequentially as blocking subagents. Resumes from the first incomplete step if re-run after interruption. Resolves the flow locally first, then globally; pass `--global` to force the global copy.
 
 ```bash
 /flow go auth-refactor             # execute all pending steps
+/flow go ship "add OAuth login"    # bind free text to {{input}}
+/flow go ship --set env=staging    # bind a named parameter
 ```
 
 A failing step stops the pipeline; re-run `/flow go` to resume from where it stopped.
 
+### list — list flows
+
+Show every saved flow across both scopes (local and global) with step counts, status, and parameters.
+
+```bash
+/flow list                         # local + global
+/flow list --global                # global only
+```
+
 ### status — check flow status
 
-Print the `flow.md` checklist with current step status.
+Print the `flow.md` checklist with current step status, scope, and parameters.
 
 ```bash
 /flow status auth-refactor         # print checklist with step status
+/flow status ship --global         # inspect a global flow
 ```
 
 ### save — create a composite skill
@@ -46,9 +78,10 @@ Turn a completed flow into a reusable skill scaffolded via `/skill new`. The gen
 ```bash
 /flow save auth-refactor --skill auth-refactor
 /flow save auth-refactor --skill auth-refactor --desc "Explore, plan, and execute auth middleware refactor"
+/flow save ship --skill ship --global    # source flow lives in ~/.codevoyant/flows
 ```
 
-The new skill is created at `skills/{skill-name}/SKILL.md`. Run `/skill critique {skill-name}` to audit it before shipping.
+The new skill is created at `skills/{skill-name}/SKILL.md`. If the source flow has `{{parameters}}`, the generated skill forwards the text you pass it to `/flow go`. Run `/skill critique {skill-name}` to audit it before shipping.
 
 ### help — list commands
 
