@@ -30,8 +30,8 @@ Aliases:
   "run"   → go
   "exec"  → go
   "start" → go
+  "ls"      → list
   "show"    → status
-  "list"    → status
   "review"  → status
   "export"  → save
   "publish" → save
@@ -39,12 +39,15 @@ Aliases:
 Dispatch to: references/workflows/{VERB}.md
 ```
 
+The `--global` / `-g` flag (store or read a flow under `~/.codevoyant/flows` instead of the local `.codevoyant/flows`) is **not** a verb — pass it through unchanged; each workflow parses it via `references/flow-dir.md`.
+
 ## Workflow index
 
 | Verb | File | Purpose |
 | --- | --- | --- |
 | new | `references/workflows/new.md` | Define a new flow (create flow.md + step files) |
 | go | `references/workflows/go.md` | Execute pending steps sequentially as blocking subagents |
+| list | `references/workflows/list.md` | List all flows (local and global) |
 | status | `references/workflows/status.md` | Print flow.md checklist state |
 | save | `references/workflows/save.md` | Turn a flow into a reusable composite skill via /skill new |
 | help | `references/workflows/help.md` | Usage reference |
@@ -52,7 +55,7 @@ Dispatch to: references/workflows/{VERB}.md
 ## Instructions
 
 1. Extract VERB from the user's message (first non-flag positional argument after "flow").
-2. Apply aliases (run/exec/start → go; show/list/review → status; export/publish → save).
+2. Apply aliases (run/exec/start → go; ls → list; show/review → status; export/publish → save).
 3. If VERB is empty or unrecognized, default to `help`.
 4. Read and execute the corresponding workflow file from `references/workflows/{VERB}.md`.
-5. Pass all remaining arguments to the workflow.
+5. Pass all remaining arguments (including any `--global`/`-g` flag) to the workflow unchanged.
