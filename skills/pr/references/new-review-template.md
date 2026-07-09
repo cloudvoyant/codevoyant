@@ -12,9 +12,9 @@ Write this structure to `.codevoyant/review/{slug}/new-review.md`.
 - **Stats**: +{additions} -{deletions} across {changedFiles} files
 - **Reviewed**: {timestamp}
 
-## Summary
+## Summary — does this deliver its intent?
 
-{One-paragraph overall impression. State the main concern first. No filler phrases.}
+{Lead with an intent verdict: does the change deliver its stated purpose end-to-end? Trace the headline use case. Then the main concern. No filler phrases.}
 
 ## Inline Comments
 
