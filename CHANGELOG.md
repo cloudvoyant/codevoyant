@@ -1,3 +1,36 @@
+## [1.57.0](https://github.com/cloudvoyant/codevoyant/compare/v1.56.0...v1.57.0) (2026-07-09)
+
+### Features
+
+* **spec:** add opt-in AI usage tracking to spec new ([#20](https://github.com/cloudvoyant/codevoyant/issues/20))
+
+Gate AI usage tracking behind a new --usage flag on /spec new. When
+set, a background subagent monitors the executing agent's session
+files and writes token/tool telemetry to ai-usage.md inside the plan
+directory. Behaviour is byte-for-byte unchanged when the flag is
+absent.
+
+**Wiring**
+- Add USAGE_MODE parsing plus monitor and finalize steps to the new
+  workflow.
+- Add ai-usage-template.md and usage-monitor.md references.
+- Document --usage in SKILL.md.
+
+**Session detection and aggregation**
+- Select the cwd-matching session file (skip the subagent's own
+  transcript) so a background monitor measures the parent planning
+  session, not itself.
+- Bound token and tool aggregation to USAGE_START_EPOCH via each
+  line's timestamp, matching the advertised planning window.
+- Guard the best-effort other-agent probe with nullglob/globstar so
+  placeholder globs expand instead of staying literal.
+- Support Claude Code as a first-class source and other agents on a
+  best-effort basis with graceful degradation.
+
+**Reporting**
+- Relabel the usage Total row "Total (all classes)" and clarify it is
+  a tokens-processed record, not a cost figure.
+
 ## [1.56.0](https://github.com/cloudvoyant/codevoyant/compare/v1.55.0...v1.56.0) (2026-07-09)
 
 ### Features
