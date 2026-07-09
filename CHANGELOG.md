@@ -1,3 +1,29 @@
+## [1.56.0](https://github.com/cloudvoyant/codevoyant/compare/v1.55.0...v1.56.0) (2026-07-09)
+
+### Features
+
+* **flow:** global storage, list command, and dynamic parameters
+
+- --global stores flows under ~/.codevoyant/flows, reusable across
+  projects; list enumerates local + global flows (fixes the old
+  list->status alias)
+- dynamic {{parameters}}: bare text binds to {{input}}, --set for named
+  params, prompt for anything unset; step outputs thread forward as flow
+  context, persisted so an interrupted flow resumes with it
+- chain interactive skills safely: steps run non-interactively and, when
+  a step can't resolve a decision, escalate one NEEDS_INPUT question to
+  the user and re-run; authoring guidance for per-step inputs and
+  producer -> consumer artifact handoff
+
+* **pr:** review evaluates changes against stated intent
+
+Reviews judge whether a change delivers its stated purpose, not just
+whether the code is clean. Add an INTENT ALIGNMENT dimension, checked
+first: read the PR/MR title and description as the intent, trace the
+headline use case end-to-end, and flag anything that undercuts it as
+BLOCKING even when the code is well-formed. The summary leads with an
+intent verdict.
+
 ## [1.55.0](https://github.com/cloudvoyant/codevoyant/compare/v1.54.0...v1.55.0) (2026-07-08)
 
 ### Features
