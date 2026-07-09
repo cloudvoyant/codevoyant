@@ -3,7 +3,7 @@ description: 'Specification-driven development. Triggers on: "spec new", "spec g
 name: spec
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
-argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--flags]'
+argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--usage] [--flags]'
 ---
 
 > **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.
@@ -20,6 +20,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 
 ```
 /spec new add OAuth login to the settings page   # inline objective → plans now
+/spec new --usage add OAuth login to settings     # also record planning AI usage → ai-usage.md
 /spec new auth-refactor                           # bare name → writes intent.md to fill in
 /spec new auth-refactor                           # re-run after filling it → plans
 /spec go my-plan
