@@ -32,6 +32,8 @@ The body is written in a **terse, human, junior-dev-friendly voice** — short s
 
 Read a PR/MR diff and generate AI-authored inline comments. Comments are terse (see the voice guide): one or two sentences — problem, then ask — with a code suggestion where it's clearer. Severities are `BLOCKING`, `CONSIDER`, `NOTE`.
 
+Reviews evaluate the change against its **stated intent** first — does the diff actually deliver the PR/MR's purpose end-to-end (tracing the headline use case), not just whether the code is clean? A well-formed change that fails its intent is flagged `BLOCKING`.
+
 Runs a **dedicated slop-detector pass** in parallel: a subagent whose only job is catching AI slop and unwanted agent-introduced change — unnecessary/out-of-scope edits, stochastic churn (random renames, reordering, reformatting), verbose boilerplate, dead/debug leftovers, dependency creep. A prevalent problem with agentic coding. Its findings are prefixed `Slop:`.
 
 ```bash

@@ -127,6 +127,13 @@ Diff:
 
 Write a thorough inline code review. Be thorough in what you CATCH, terse in what you WRITE.
 
+INTENT ALIGNMENT (evaluate this FIRST — it usually matters more than line-level nits):
+- Treat the PR/MR title and description above as the **stated intent** — the goal and its implicit acceptance criteria. If the description is thin, infer the intent from the branch name and the shape of the diff.
+- Judge whether the diff actually **delivers that intent end-to-end**, not just whether the code is clean. **Trace the headline use case concretely** — walk the main path step by step and check it would really work as written.
+- Flag anything that undercuts the stated purpose, even if the code is well-formed: a feature whose main path stalls or needs manual intervention, an abstraction that never connects to its consumer, something billed as "reusable/global/automatic" that isn't, a fix that doesn't actually cover the reported case, a config/flag that has no effect.
+- These are **BLOCKING** when they mean the change doesn't do what it claims. A clean diff that fails its intent is still a failing change — say so, and name the exact scenario where it breaks.
+- Do NOT rubber-stamp scope you didn't verify. If part of the intent can't be confirmed from the diff, say what you couldn't verify rather than assuming it works.
+
 TONE (follow references/voice.md — terse, human, junior-dev friendly):
 - Each comment is usually ONE or TWO short sentences: name the problem, then the ask. Skip the mechanism walk-through and the list of every consequence — the author can read the code.
 - Human and respectful. No sarcasm, no faint praise ("nice work but…"), no rhetorical questions, no hype.
@@ -134,12 +141,15 @@ TONE (follow references/voice.md — terse, human, junior-dev friendly):
 - Example — instead of: "Any logged-in user can POST any pathname and it'll be saved to the DB, so someone could record a path to another user's file or a made-up URL and it shows up as a legitimate upload…" write: "This accepts any pathname, even fake ones. Worth validating." Then a code suggestion if it helps.
 
 CONTENT:
+- **Intent gaps** (does the change deliver its stated purpose?) come first — see INTENT ALIGNMENT above.
 - Flag bugs, logic errors, and security issues as **BLOCKING**
 - Flag style deviations, naming, and structure as non-blocking (CONSIDER)
 - For each non-trivial issue, prefer a concrete code suggestion (diff block or replacement snippet) over prose — it's usually clearer and shorter.
 - Cite external documentation, an RFC, or prior art (URL) only when it saves the author a search or justifies the point — not as decoration.
 - Skip comments on style that matches project conventions — do not nitpick conforming code
-- Focus on correctness, security, and design. **Unnecessary/out-of-scope changes and AI "slop" are handled by a dedicated pass (Step 6b) — don't duplicate that here.**
+- Focus on correctness, security, design, and intent. **Unnecessary/out-of-scope changes and AI "slop" are handled by a dedicated pass (Step 6b) — don't duplicate that here.**
+
+For an intent-gap finding, anchor the comment on the most relevant line of the change (the assumption that doesn't hold, the flag that does nothing, the seam that doesn't connect) and describe the concrete failure scenario in the body.
 
 OUTPUT FORMAT — always produce a valid JSON array (empty array if no comments):
 [
@@ -155,7 +165,7 @@ OUTPUT FORMAT — always produce a valid JSON array (empty array if no comments)
 Return `[]` if the code has no issues. Do not include an overall summary in this JSON — that goes in a separate field.
 ```
 
-Also produce a one-paragraph overall summary as a separate string.
+Also produce a one-paragraph overall summary as a separate string. **Lead the summary with an intent verdict** — does the change deliver its stated purpose end-to-end? — then note the most important findings. If the headline use case wouldn't work as written, say so up front, not buried under line nits.
 
 ## Step 6b: Dedicated slop pass (run in parallel with Step 6)
 
