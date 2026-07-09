@@ -21,7 +21,11 @@
 
 Adjust whatever `open` / `review` / `address` produced last, from `<!-- > … -->` (minor) / `<!-- >> … -->` (major) annotations you add inline to its local file, or a plain-language request (`/pr update "tighten the summary"`). Re-syncs to the platform if the artifact was already pushed.
 
-## review — slop / scope pass
+## review — intent + slop passes
+
+Reviews evaluate the change against its **stated intent** first — does the diff actually deliver the PR/MR's
+purpose end-to-end, tracing the headline use case — not just line-level code quality. A clean diff that fails
+its intent is flagged BLOCKING.
 
 Alongside the correctness review, a dedicated **slop-detector** agent audits the diff for AI slop and unwanted
 agent-introduced change: unnecessary/out-of-scope edits, stochastic churn (random renames, reordering, reformatting),
