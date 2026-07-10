@@ -99,6 +99,13 @@ All mutable run-state lives in a **run instance**, which is **always local to th
 
 `run.md` is the run instance's **identity record**. Because the definition and `progress.md` only ever hold `{{placeholders}}`, the resolved branch / spec-slug / worktree of a real run live nowhere in the definition — `run.md` (and `context.md`'s handoffs) are the only place they exist. `doctor` reads `run.md` as the authoritative "what is this run" anchor to distinguish a legitimately-interrupted `context.md` from one clobbered by a different run.
 
+`run.md` uses these field names, and **`go` (backfill) and `doctor` (Check 1) must use the same ones** — one canonical name per identifier, no synonyms:
+
+- `slug:` — the **flow's** own slug (the definition directory name); set at first run, never overwritten.
+- `branch:` — receives a handoff `branch=` value.
+- `spec-slug:` — receives a handoff `slug=` value (the resolved **spec** slug from a `spec new`/`spec go` step). Note the handoff token is `slug=` but the recorded field is `spec-slug:` precisely so it is never confused with the flow `slug:` above.
+- `worktree:` — receives a handoff `worktree=` value.
+
 Resolve it the same way in every workflow that runs or inspects a flow:
 
 ```bash

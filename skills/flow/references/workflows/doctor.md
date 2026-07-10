@@ -44,8 +44,13 @@ For each flow in the target set, read the definition `flow.md`, the definition's
 
 **Check 1 — Cross-run clobber (FAIL only on a positive clobber signal).** Only applies to a `context.md` that exists. Compare the context against the run's **recorded identity** (`RUN_IDENTITY` from `run.md`) — NOT against the flow's step text, which only ever holds `{{placeholders}}` and so has nothing concrete to match a real run against.
 
-Scan the `context.md` handoff lines for concrete identifiers: `branch=`, spec `slug=`, `worktree=` values. Then:
-- **Positive clobber → FAIL.** `RUN_IDENTITY` is available AND records a concrete `branch` / `spec-slug` / `worktree`, AND the `context.md` names a *different* value for that same identifier (e.g. `run.md` says `branch: feat/auth` but `context.md` handoffs name `go-rust-odin-templates`) → `FAIL: context.md names '{X}' but this run's identity is '{Y}' — two runs likely shared one state file`. This is the only signal that a foreign run clobbered the state.
+Scan the `context.md` handoff lines for concrete identifiers and map each to the `run.md` field it must be compared against — **use the same field names go.md writes** (see go.md Step 1's `run.md` template and Step 2.5's backfill mapping):
+- handoff `branch=` ↔ `run.md` `branch:`
+- handoff `slug=` (the resolved *spec* slug) ↔ `run.md` `spec-slug:` — **never** the flow's own top-level `slug:`
+- handoff `worktree=` ↔ `run.md` `worktree:`
+
+Then:
+- **Positive clobber → FAIL.** `RUN_IDENTITY` is available AND records a concrete `branch` / `spec-slug` / `worktree`, AND the `context.md` names a *different* value for that same identifier (comparing each handoff token to its mapped `run.md` field above — e.g. `run.md` says `branch: feat/auth` but a `context.md` handoff says `branch=go-rust-odin-templates`, or `run.md` `spec-slug: add-oauth` vs a handoff `slug=teardown-migrator`) → `FAIL: context.md names '{X}' but this run's identity is '{Y}' — two runs likely shared one state file`. This is the only signal that a foreign run clobbered the state.
 - **Legacy context beside a global definition → FAIL.** A `FLOW_DIR/context.md` under `~/.codevoyant/flows` is a clobber by construction (global definitions must never hold run-state), regardless of identity → `FAIL: legacy context.md beside global definition`.
 - **Matches identity → PASS.** The context's identifiers agree with `RUN_IDENTITY` (or the run has committed to no conflicting identifier yet) → `PASS` (a legitimately-interrupted run — the resume payload).
 - **Can't determine → PASS (preserve).** No `run.md` / no recorded identity, or `context.md` carries no comparable identifier → there is **no positive clobber signal**, so do NOT flag it. Record `PASS: no clobber signal (identity unavailable — preserved)`. Uncertainty must never escalate to a delete.
