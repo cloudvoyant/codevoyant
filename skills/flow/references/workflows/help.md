@@ -36,7 +36,7 @@ Forwarding flags to steps:
 Definitions vs. run instances:
   A flow's directory is a read-only DEFINITION (steps + implementations). Running a
   flow never mutates it — progress + context for a run live in a local RUN INSTANCE:
-    .codevoyant/runs/<slug>/  (progress.md + context.md)
+    .codevoyant/runs/<slug>/  (run.md + progress.md + context.md)
   so a global flow stays a pristine template and concurrent runs never clobber each
   other. /flow status reads the run instance; /flow doctor cleans up when they don't.
 

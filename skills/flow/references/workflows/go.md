@@ -38,6 +38,20 @@ Read the **definition** `FLOW_DIR/flow.md` (read-only). Parse the Steps checklis
 - **First run** (`RUN_DIR/progress.md` does not exist): copy the definition's `## Steps` checklist verbatim into `RUN_DIR/progress.md` (keep the `N. [ ] {{placeholder}}` lines exactly, all unchecked). Prepend a one-line header `# Run progress: {slug}` and a `Status: Active` line so `status` and `doctor` can read it.
 - **Resume** (`RUN_DIR/progress.md` exists): use it as the source of truth for which steps are already `[x]` — do NOT re-seed from the definition.
 
+**Write the run instance's identity file.** The definition's step text only ever holds `{{placeholders}}`, so the resolved identity of *this* run must be recorded explicitly — otherwise nothing downstream (notably `/flow doctor`) can tell a legitimately-interrupted run apart from a foreign run that clobbered the state file. On **first run**, write `RUN_DIR/run.md`:
+```
+# Run identity: {slug}
+slug: {slug}
+definition: {FLOW_DIR}          # absolute or scope-qualified path to the definition
+scope: {local|global}           # scope of the definition
+started: {ISO timestamp}
+# resolved run identifiers (appended as steps produce them — see Step 2.5):
+branch:
+spec-slug:
+worktree:
+```
+This file is the **authoritative record of what this run is**. `doctor` compares `context.md`'s handoff identifiers against `run.md` (not against placeholder step text) to decide whether a `context.md` belongs to this run or was clobbered by another. On **resume**, leave an existing `run.md` in place (do not overwrite the recorded identity); only backfill empty fields if later steps resolve them.
+
 **Resolve every `{{placeholder}}` used anywhere in the steps:**
 1. Scan all step commands for `{{name}}` tokens; collect the unique set `NEEDED`.
 2. For each token in `NEEDED`:
@@ -88,6 +102,8 @@ For each pending step in order:
    ```
    Keep `CONTEXT` terse — it is injected into every later step, so it must stay a short bulleted log, not full transcripts. **Persist it:** write the accumulated `CONTEXT` to `RUN_DIR/context.md` (the local run instance — **never** beside the definition) so an interrupted flow can resume with it (see Step 1).
 
+   **Backfill the run identity.** If this handoff resolved a concrete `branch`, `spec-slug`, or `worktree` (e.g. a `spec new`/`pr open` step reporting `branch=…`, `slug=…`, `worktree=…`), write those values into the matching empty fields of `RUN_DIR/run.md`. Only fill fields that are still empty — never rewrite an already-recorded identifier (the first value a run commits to is its identity; a later differing value would be the clobber `doctor` looks for). This keeps `run.md` the concrete, resolved anchor `doctor` compares `context.md` against.
+
 6. Update `RUN_DIR/progress.md` — change this step's `[ ]` to `[x]` (keep the original `{{placeholder}}` text; only the run used resolved values). **Never modify the definition's `FLOW_DIR/flow.md`** — it stays a pristine template. Leave `Status` in `progress.md` as `Active` until all steps complete.
 
 7. Report: `✓ Step {N} complete.`
@@ -98,7 +114,7 @@ For each pending step in order:
 
 ## Step 3: Final report
 
-After all steps are complete, update `Status` in `RUN_DIR/progress.md` to `Complete` and remove `RUN_DIR/context.md` (a fresh run starts clean). Leave the definition's `FLOW_DIR/flow.md` untouched — it was never mutated.
+After all steps are complete, update `Status` in `RUN_DIR/progress.md` to `Complete` and remove `RUN_DIR/context.md` (a fresh run starts clean). Leave `RUN_DIR/run.md` in place — it is the completed run's identity record and is harmless once `context.md` is gone (a subsequent first run re-seeds it in Step 1). Leave the definition's `FLOW_DIR/flow.md` untouched — it was never mutated.
 
 Report:
 ```

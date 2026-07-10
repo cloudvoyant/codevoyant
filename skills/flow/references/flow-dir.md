@@ -92,9 +92,12 @@ All mutable run-state lives in a **run instance**, which is **always local to th
 
 ```
 .codevoyant/runs/{slug}/
+  run.md         # this run's resolved identity (slug, definition, branch/spec-slug/worktree) — written at go start
   progress.md    # a copy of the definition's Steps checklist; the ONLY place [ ] → [x] is flipped
   context.md     # the accumulating handoff log (persisted for resume)
 ```
+
+`run.md` is the run instance's **identity record**. Because the definition and `progress.md` only ever hold `{{placeholders}}`, the resolved branch / spec-slug / worktree of a real run live nowhere in the definition — `run.md` (and `context.md`'s handoffs) are the only place they exist. `doctor` reads `run.md` as the authoritative "what is this run" anchor to distinguish a legitimately-interrupted `context.md` from one clobbered by a different run.
 
 Resolve it the same way in every workflow that runs or inspects a flow:
 
