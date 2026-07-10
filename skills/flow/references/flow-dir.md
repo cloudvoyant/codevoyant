@@ -83,3 +83,27 @@ Set `FLOW_DIR` to the resolved `{FLOWS_DIR}/{slug}/` and use it for the rest of 
 ```
 FLOW_DIR = {FLOWS_DIR}/{slug}/     # global if --global, else local
 ```
+
+## Run instance (mutable run-state — for `go`, `status`, `doctor`)
+
+A flow **definition** (`{FLOWS_DIR}/{slug}/` with `flow.md` + `implementation/step-N.md`) is a **read-only template**. `go` must never mutate it — mutating a *global* definition clobbers the shared template and lets concurrent/other-project runs overwrite each other's state.
+
+All mutable run-state lives in a **run instance**, which is **always local to the current project**, regardless of whether the definition is local or global:
+
+```
+.codevoyant/runs/{slug}/
+  progress.md    # a copy of the definition's Steps checklist; the ONLY place [ ] → [x] is flipped
+  context.md     # the accumulating handoff log (persisted for resume)
+```
+
+Resolve it the same way in every workflow that runs or inspects a flow:
+
+```bash
+RUNS_DIR=".codevoyant/runs"          # always local — never under $HOME, even for a global definition
+RUN_DIR="$RUNS_DIR/{slug}"           # {slug} is the resolved definition's directory name
+```
+
+- `{slug}` is the directory name of the resolved definition (from `FLOW_DIR`), so the run instance is stable whether the definition was found locally or globally.
+- Step **implementations** are always read from the definition (`FLOW_DIR/implementation/step-N.md`), never copied into the run instance — only the checklist (`progress.md`) and the handoff log (`context.md`) are instance-local.
+- Create on demand: `mkdir -p "$RUN_DIR"` (safe if it already exists).
+- A run instance whose **definition is global** is expected and normal — it is not corruption or drift.

@@ -11,17 +11,24 @@ FLOW_NAME = first non-flag positional arg (required)
 
 If `FLOW_NAME` is missing, error: "Usage: /flow status <name> [--global]. A flow name is required."
 
-Resolve `FLOW_DIR` per `references/flow-dir.md` (local-first, then global; `--global` forces global). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
+Resolve the **definition** `FLOW_DIR` per `references/flow-dir.md` (local-first, then global; `--global` forces global). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
 
-## Step 1: Read and display flow.md
+Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*: `RUN_DIR=".codevoyant/runs/{slug}/"` (always local). If `RUN_DIR/progress.md` exists, this run's live checkbox/Status state lives there; otherwise the flow has not been run locally and status reflects the definition (all steps pending).
 
-Read `FLOW_DIR/flow.md`. Extract and print:
+## Step 1: Read and display flow state
 
-1. **Flow title** (from the `# Flow: {TITLE}` heading)
-2. **Scope** (local or global — from the resolved location / Metadata)
-3. **Status** (from the Metadata section)
-4. **Parameters** (from the Parameters section, if any)
-5. **Steps checklist** — print each step line as-is, preserving `[ ]` or `[x]` markers and any `{{placeholders}}`
+Read the **definition** `FLOW_DIR/flow.md` for the title, scope, and Parameters. For the live checklist and Status, prefer the **run instance**:
+
+- If `RUN_DIR/progress.md` exists → read the **Steps checklist** and **Status** from it (this is the current run's progress). Note `(run instance: .codevoyant/runs/{slug})` in the output.
+- Otherwise → read the checklist and Status from the definition `FLOW_DIR/flow.md` (all steps pending; the flow has not been run locally).
+
+Extract and print:
+
+1. **Flow title** (from the definition's `# Flow: {TITLE}` heading)
+2. **Scope** (local or global — the definition's resolved location / Metadata)
+3. **Status** (from the run instance if present, else the definition's Metadata)
+4. **Parameters** (from the definition's Parameters section, if any)
+5. **Steps checklist** — print each step line as-is from the chosen source, preserving `[ ]` or `[x]` markers and any `{{placeholders}}`
 
 Then print a summary line:
 

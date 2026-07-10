@@ -22,13 +22,21 @@ Build the parameter map `PARAMS`:
 - `input` = `INPUT` (the joined free text), if any
 - each `--set key=value` → `PARAMS[key] = value`
 
-## Step 0.5: Resolve the flow location
+## Step 0.5: Resolve the flow definition and local run instance
 
-Resolve `FLOW_DIR` per `references/flow-dir.md` (local-first, then global; `--global` forces global only). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
+Resolve `FLOW_DIR` (the **definition** — read-only) per `references/flow-dir.md` (local-first, then global; `--global` forces global only). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
 
-## Step 1: Read flow.md and resolve parameters
+Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*: `RUN_DIR=".codevoyant/runs/{slug}/"` where `{slug}` is the definition's directory name. The run instance is **always local**, even when the definition is global. `mkdir -p "$RUN_DIR"`.
 
-Read `FLOW_DIR/flow.md`. Parse the Steps checklist and the Parameters section.
+**The definition is a template — this workflow never writes to `FLOW_DIR`.** All mutable run-state (`progress.md`, `context.md`) is written under `RUN_DIR` only.
+
+## Step 1: Read the definition, seed the run instance, resolve parameters
+
+Read the **definition** `FLOW_DIR/flow.md` (read-only). Parse the Steps checklist and the Parameters section.
+
+**Seed the run instance's progress file.** The mutable checklist lives at `RUN_DIR/progress.md`, never in the definition:
+- **First run** (`RUN_DIR/progress.md` does not exist): copy the definition's `## Steps` checklist verbatim into `RUN_DIR/progress.md` (keep the `N. [ ] {{placeholder}}` lines exactly, all unchecked). Prepend a one-line header `# Run progress: {slug}` and a `Status: Active` line so `status` and `doctor` can read it.
+- **Resume** (`RUN_DIR/progress.md` exists): use it as the source of truth for which steps are already `[x]` — do NOT re-seed from the definition.
 
 **Resolve every `{{placeholder}}` used anywhere in the steps:**
 1. Scan all step commands for `{{name}}` tokens; collect the unique set `NEEDED`.
@@ -37,9 +45,9 @@ Read `FLOW_DIR/flow.md`. Parse the Steps checklist and the Parameters section.
    - Else → **prompt the user once** for the value, using AskUserQuestion (free-text via Other): question `Value for {{name}}?`, header `Parameter`, and (for `{{input}}`) show the flow's Parameters description as help. Store the answer in `PARAMS[name]`.
 3. Do not proceed with any unresolved token. If the user dismisses a prompt, abort: "Cancelled — {{name}} is required to run this flow."
 
-Collect the pending steps: all lines matching `N. [ ] ...` (unchecked), in order. If none are pending, report "Flow '{FLOW_NAME}' is already complete." and exit.
+Collect the pending steps: all lines in `RUN_DIR/progress.md` matching `N. [ ] ...` (unchecked), in order. If none are pending, report "Flow '{FLOW_NAME}' is already complete." and exit.
 
-Initialize the **flow context** accumulator `CONTEXT`. **On resume:** if `FLOW_DIR/context.md` exists (an earlier, interrupted run), load it into `CONTEXT` so the remaining steps keep the handoffs from steps already marked `[x]`. Otherwise start empty. (Without this, a resumed flow loses e.g. the PR number a completed `pr open` step produced.)
+Initialize the **flow context** accumulator `CONTEXT`. **On resume:** if `RUN_DIR/context.md` exists (an earlier, interrupted run), load it into `CONTEXT` so the remaining steps keep the handoffs from steps already marked `[x]`. Otherwise start empty. (Without this, a resumed flow loses e.g. the PR number a completed `pr open` step produced.)
 
 ## Step 2: Execute steps sequentially
 
@@ -78,19 +86,19 @@ For each pending step in order:
    ```
    [step {N} · {RESOLVED_COMMAND}] → {handoff or one-line summary}
    ```
-   Keep `CONTEXT` terse — it is injected into every later step, so it must stay a short bulleted log, not full transcripts. **Persist it:** write the accumulated `CONTEXT` to `FLOW_DIR/context.md` so an interrupted flow can resume with it (see Step 1).
+   Keep `CONTEXT` terse — it is injected into every later step, so it must stay a short bulleted log, not full transcripts. **Persist it:** write the accumulated `CONTEXT` to `RUN_DIR/context.md` (the local run instance — **never** beside the definition) so an interrupted flow can resume with it (see Step 1).
 
-6. Update `FLOW_DIR/flow.md` — change this step's `[ ]` to `[x]` (keep the original `{{placeholder}}` text in flow.md; only the run used resolved values). Leave `Status` as `Active` until all steps complete.
+6. Update `RUN_DIR/progress.md` — change this step's `[ ]` to `[x]` (keep the original `{{placeholder}}` text; only the run used resolved values). **Never modify the definition's `FLOW_DIR/flow.md`** — it stays a pristine template. Leave `Status` in `progress.md` as `Active` until all steps complete.
 
 7. Report: `✓ Step {N} complete.`
 
 8. Proceed to next pending step.
 
-**On step failure:** if a subagent reports it could not complete (blocking error), stop the loop, leave the step unchecked, and report which step failed and why. `CONTEXT` is already persisted to `FLOW_DIR/context.md`, so re-running `/flow go` resumes from this step with prior context intact. Do not run later steps — they likely depend on this one's context.
+**On step failure:** if a subagent reports it could not complete (blocking error), stop the loop, leave the step unchecked in `RUN_DIR/progress.md`, and report which step failed and why. `CONTEXT` is already persisted to `RUN_DIR/context.md`, so re-running `/flow go` resumes from this step with prior context intact. Do not run later steps — they likely depend on this one's context.
 
 ## Step 3: Final report
 
-After all steps are complete, update `Status` in `FLOW_DIR/flow.md` to `Complete` and remove `FLOW_DIR/context.md` (a fresh run starts clean).
+After all steps are complete, update `Status` in `RUN_DIR/progress.md` to `Complete` and remove `RUN_DIR/context.md` (a fresh run starts clean). Leave the definition's `FLOW_DIR/flow.md` untouched — it was never mutated.
 
 Report:
 ```
