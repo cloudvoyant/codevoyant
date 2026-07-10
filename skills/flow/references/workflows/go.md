@@ -14,7 +14,7 @@ FLOW_NAME = first positional arg (POSITIONALS[0]; required)
 INPUT     = all remaining positional text (POSITIONALS[1..]), joined with spaces → the {{input}} parameter
 ```
 
-Parse flags via `references/flow-dir.md`. From the resulting `PASSTHROUGH_FLAGS`, pull out any `--set key=value` pairs into `PARAMS` (below); the remainder (e.g. `--branch feature/x`) stays in `PASSTHROUGH_FLAGS` and is appended to every step command this run (Step 2).
+Parse flags via `references/flow-dir.md`, iterating the **preserved argv** (`"$@"`) — never re-split a flattened string. From the resulting `PASSTHROUGH_FLAGS`, pull out any `--set key=value` pairs into `PARAMS` (below); the remainder (e.g. `--branch feature/x`) stays in `PASSTHROUGH_FLAGS` and is appended to every step command this run (Step 2).
 
 If `FLOW_NAME` is missing, error: "Usage: /flow go <name> [input text] [--set k=v] [--global]. A flow name is required."
 
@@ -45,7 +45,7 @@ Initialize the **flow context** accumulator `CONTEXT`. **On resume:** if `FLOW_D
 
 For each pending step in order:
 
-1. **Substitute parameters** in the step command: replace every `{{name}}` with `PARAMS[name]`, then append this run's `PASSTHROUGH_FLAGS` (e.g. `--branch feature/x`) to the command string if the step does not already carry them (steps that baked the flag in at `new` time already have it — do not duplicate). Call the result `RESOLVED_COMMAND`. Report: `▶ Step {N}: {RESOLVED_COMMAND}`
+1. **Substitute parameters** in the step command: replace every `{{name}}` with `PARAMS[name]`, then append this run's `PASSTHROUGH_FLAGS` (e.g. `--branch feature/x`) to the command string. **Dedup by flag name:** for each flag in `PASSTHROUGH_FLAGS`, skip appending it if its flag name already appears as a token in the step command string (steps that baked the flag in at `new` time already carry it). Concretely, for a flag token `--branch` (the part before any `=`), append it (and its value) only when a whole-word match for `--branch` is absent from the command — this makes the "don't duplicate" rule deterministic rather than best-effort. Call the result `RESOLVED_COMMAND`. Report: `▶ Step {N}: {RESOLVED_COMMAND}`
 
 2. Read `FLOW_DIR/implementation/step-N.md` to get the agent prompt. Prepare the prompt for this run by filling its injection points:
    - Replace `{step-command}` occurrences with `RESOLVED_COMMAND` (substitute `{{placeholders}}` here too).

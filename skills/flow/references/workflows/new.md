@@ -6,12 +6,14 @@ Create a new named flow — a `{flows-dir}/{slug}/flow.md` checklist plus one `i
 
 ```
 --global / -g     → store under ~/.codevoyant/flows (see references/flow-dir.md); else local .codevoyant/flows
---branch, etc.    → any other flag → PASSTHROUGH_FLAGS (see references/flow-dir.md), baked onto every step command
+--branch, etc.    → any other flag → PASSTHROUGH_FLAGS (see references/flow-dir.md); after dropping --set → BAKED_FLAGS, baked onto every step command
 FLOW_NAME         = first positional arg (POSITIONALS[0]; required; error if missing)
 STEPS             = remaining positionals (POSITIONALS[1..]; each is one step command string)
 ```
 
-Resolve `FLOWS_DIR` and parse flags per `references/flow-dir.md`: it sets `GLOBAL`, fills `PASSTHROUGH_FLAGS` with every non-flow-control flag (e.g. `--branch feature/x`), and leaves the flow name + step strings in `POSITIONALS`. Read `FLOW_NAME`/`STEPS` from `POSITIONALS`.
+Resolve `FLOWS_DIR` and parse flags per `references/flow-dir.md`, iterating the **preserved argv** (`"$@"`) the dispatcher forwarded — never re-split a flattened string, or multi-word step commands and quoted values are corrupted. Parsing sets `GLOBAL`, fills `PASSTHROUGH_FLAGS` with every non-flow-control flag (e.g. `--branch feature/x`), and leaves the flow name + step strings in `POSITIONALS` (each step is one element). Read `FLOW_NAME`/`STEPS` from `POSITIONALS`.
+
+**Drop `--set` from the flags `new` bakes.** `--set key=value` is a `go`-time parameter binding, not a step flag — appending it to a stored step (like `--branch`) is never intended. Before using `PASSTHROUGH_FLAGS` below, remove any `--set` element and its following `key=value` value element, so only real forwarded flags (e.g. `--branch feature/x`) get baked in. Call the filtered result `BAKED_FLAGS`.
 
 If `FLOW_NAME` is missing, error: "Usage: /flow new <name> [steps...] [--global]. A flow name is required."
 
@@ -65,12 +67,14 @@ Use `references/flow-template.md` as the template. Fill in:
 - `{timestamp}` = current ISO timestamp
 - `{Status}` = `Active`
 - **Parameters** section: one bullet per token in `PARAMS` (`` - `{{name}}` — {short description you infer from how the step uses it} ``). If `PARAMS` is empty, replace the list with `_none_`.
-- Steps checklist: one line per step, numbered, all unchecked `[ ]` — keep `{{placeholders}}` verbatim (do not substitute).
+- Steps checklist: one line per step, numbered, all unchecked `[ ]` — keep `{{placeholders}}` verbatim (do not substitute), and **bake `BAKED_FLAGS` into each step command** when non-empty (see below).
 
 Each step line format:
 ```
-N. [ ] {step-command-string}
+N. [ ] {step-command-string}{ BAKED_FLAGS, space-joined, when non-empty}
 ```
+
+When `BAKED_FLAGS` is non-empty, append it (space-separated) to every step command as it is written here — e.g. a step `/spec new {{objective}}` created with `--branch feature/x` is written as `1. [ ] /spec new {{objective}} --branch feature/x`. Bake the flags at write time so the stored checklist matches the step files produced in Step 3; do not defer this. (`--set` was already removed from `BAKED_FLAGS` in Step 0.)
 
 Write to `FLOW_DIR/flow.md`.
 
@@ -80,12 +84,12 @@ For each step N (1-based), create `FLOW_DIR/implementation/step-N.md` using `ref
 
 Fill in:
 - `{N}` = step number
-- `{step-command}` = the step command string, with `{{placeholders}}` left **verbatim** (they are resolved at run time by `go.md`), and with `PASSTHROUGH_FLAGS` appended to the command string when non-empty (e.g. a step `/spec new {{objective}}` created with `--branch feature/x` is stored as `/spec new {{objective}} --branch feature/x`). This bakes run-on-a-branch (and any other forwarded flag) into the flow definition.
+- `{step-command}` = the step command string, with `{{placeholders}}` left **verbatim** (they are resolved at run time by `go.md`), and with the same `BAKED_FLAGS` appended that Step 2 baked into the flow.md line (e.g. a step `/spec new {{objective}}` created with `--branch feature/x` is stored as `/spec new {{objective}} --branch feature/x`). Use the identical flag string for step N here and in flow.md so the two never diverge. This bakes run-on-a-branch (and any other forwarded flag) into the flow definition.
 - `{flow-name}` = slug
 - `{total}` = total number of steps
 - Leave the `## Parameters` and `## Flow context so far` sections as their template placeholders — `go.md` fills them in at run time.
 
-If `PASSTHROUGH_FLAGS` is non-empty, also append the same flags to each step line written to `flow.md` in Step 2, so the stored checklist matches the step files.
+Because the flags were baked into the flow.md step lines in Step 2 and into the step files here using the same `BAKED_FLAGS` string, the stored checklist and the step files stay in sync — there is nothing left to reconcile afterward.
 
 ## Step 4: Report
 
