@@ -2,7 +2,7 @@
 
 Diagnose — and with `--fix`, repair — the health of one flow or every flow across both scopes. Dry-run by default: it reports and changes nothing unless `--fix` is passed.
 
-A flow has two parts (see `references/flow-dir.md`): a read-only **definition** (`flow.md` + `implementation/step-N.md`, local or global) and a local **run instance** (`.codevoyant/runs/{slug}/progress.md` + `context.md`). Doctor checks both and understands that a run instance whose definition is global is **normal**, not corruption.
+A flow has two parts (see `references/flow-dir.md`): a read-only **definition** (`flow.md` + `implementation/step-N.md`, local or global) and a local **run instance** (`.codevoyant/runs/{slug}/run.md` + `progress.md` + `context.md`). `run.md` records the run's resolved identity (slug, branch, spec-slug, worktree) and is the concrete anchor doctor uses to tell a legitimately-interrupted `context.md` from a clobbered one. Doctor checks both parts and understands that a run instance whose definition is global is **normal**, not corruption.
 
 ## Step 0: Parse arguments
 
@@ -30,17 +30,29 @@ Strip `--fix` and `--global`/`-g` before reading the positional name.
 
 For each target definition, also resolve its **run instance**: `RUN_DIR=".codevoyant/runs/{slug}/"` (always local; `{slug}` = the definition's directory name). The run instance may not exist (flow never run here) — that is fine.
 
-Also determine a **legacy context path**: `FLOW_DIR/context.md`. Pre-Phase-1 runs wrote `context.md` beside the definition; doctor inspects it too. For the checks below, `CONTEXT_FILE` = `RUN_DIR/context.md` if it exists, else `FLOW_DIR/context.md` if it exists, else none. A `context.md` found **beside a global definition** (`FLOW_DIR/context.md` under `~/.codevoyant/flows`) is itself abnormal — flag it under check 1/2 as legacy clobber.
+**Load the run identity.** If `RUN_DIR/run.md` exists (written by `go.md` when the run started — see `references/flow-dir.md` → *Run instance*), read it into `RUN_IDENTITY`: the recorded `slug`, and any resolved `branch` / `spec-slug` / `worktree` fields (empty fields count as unknown). `RUN_IDENTITY` is the **authoritative record of what this run is** — the concrete anchor for Check 1, because the definition and `progress.md` only ever hold `{{placeholders}}`. If `run.md` is absent (e.g. a run that predates the identity file, or a legacy context beside the definition), `RUN_IDENTITY` is unavailable — treat that as "can't determine" everywhere below (which biases toward preserve).
+
+**Inspect both context locations independently — do NOT first-match.** Two `context.md` files can coexist: the current run instance's (`RUN_DIR/context.md`) and a lingering legacy one beside the definition (`FLOW_DIR/context.md`, written by pre-run-instance runs). If we picked only the first that exists, a legacy clobber sitting beside the definition would never be inspected or cleaned. So build a list `CONTEXT_FILES` of **every** path that exists:
+- `RUN_DIR/context.md` (if present) — checked against `RUN_IDENTITY`.
+- `FLOW_DIR/context.md` (if present) — a legacy context. A legacy `context.md` beside a **global** definition (`FLOW_DIR` under `~/.codevoyant/flows`) is abnormal by construction — global definitions must never hold run-state — so it is always a clobber candidate under Check 1.
+
+Run the checks below over each entry in `CONTEXT_FILES` (a flow with both gets both inspected).
 
 ## Step 1: Run the checks (per flow)
 
-For each flow in the target set, read the definition `flow.md`, the definition's `implementation/` directory, the run-instance `progress.md` (if any), and `CONTEXT_FILE` (if any). Evaluate each check and record `PASS` / `WARN` / `FAIL` with a one-line reason.
+For each flow in the target set, read the definition `flow.md`, the definition's `implementation/` directory, the run-instance `progress.md` (if any), `RUN_IDENTITY` (from `run.md`, if any), and each entry in `CONTEXT_FILES` (if any). Evaluate each check and record `PASS` / `WARN` / `FAIL` with a one-line reason. Where a check inspects a context file, apply it to every entry in `CONTEXT_FILES`.
 
-**Check 1 — Cross-run clobber (FAIL).** Only applies if a `context.md` exists. Extract from the flow's own step commands (in `flow.md` / `progress.md`) the identifiers this flow is expected to produce/consume — the skill verbs and any literal slugs. Then scan `context.md`'s handoff lines for a branch name, spec slug, or worktree path. If `context.md` references a branch / spec-slug / worktree that is **inconsistent** with this flow's own steps (e.g. a flow whose steps are `/spec new --branch {{prompt}}` … but whose `context.md` handoffs name an unrelated `go-rust-odin-templates` run that this flow's current parameters/steps would not produce) → `FAIL: context.md references '{X}' unrelated to this flow's steps — two runs likely shared one state file`. If the `context.md` handoffs are consistent with the flow's steps → this check is `PASS` (a legitimately-interrupted run). A `CONTEXT_FILE` located beside a **global** definition is inconsistent by construction (global definitions must not hold run-state) → `FAIL: legacy context.md beside global definition`.
+**Check 1 — Cross-run clobber (FAIL only on a positive clobber signal).** Only applies to a `context.md` that exists. Compare the context against the run's **recorded identity** (`RUN_IDENTITY` from `run.md`) — NOT against the flow's step text, which only ever holds `{{placeholders}}` and so has nothing concrete to match a real run against.
+
+Scan the `context.md` handoff lines for concrete identifiers: `branch=`, spec `slug=`, `worktree=` values. Then:
+- **Positive clobber → FAIL.** `RUN_IDENTITY` is available AND records a concrete `branch` / `spec-slug` / `worktree`, AND the `context.md` names a *different* value for that same identifier (e.g. `run.md` says `branch: feat/auth` but `context.md` handoffs name `go-rust-odin-templates`) → `FAIL: context.md names '{X}' but this run's identity is '{Y}' — two runs likely shared one state file`. This is the only signal that a foreign run clobbered the state.
+- **Legacy context beside a global definition → FAIL.** A `FLOW_DIR/context.md` under `~/.codevoyant/flows` is a clobber by construction (global definitions must never hold run-state), regardless of identity → `FAIL: legacy context.md beside global definition`.
+- **Matches identity → PASS.** The context's identifiers agree with `RUN_IDENTITY` (or the run has committed to no conflicting identifier yet) → `PASS` (a legitimately-interrupted run — the resume payload).
+- **Can't determine → PASS (preserve).** No `run.md` / no recorded identity, or `context.md` carries no comparable identifier → there is **no positive clobber signal**, so do NOT flag it. Record `PASS: no clobber signal (identity unavailable — preserved)`. Uncertainty must never escalate to a delete.
 
 **Check 2 — Stale context (WARN/FAIL).** If a `context.md` exists AND the governing Status (run-instance `progress.md` Status if present, else definition `flow.md` Status) is `Complete` → `FAIL: context.md present but Status=Complete (should have been removed on completion)`. Else if no `context.md` → `PASS`.
 
-**Check 3 — Orphaned worktree/branch (WARN).** For every worktree path and branch name mentioned in `CONTEXT_FILE` handoffs:
+**Check 3 — Orphaned worktree/branch (WARN).** For every worktree path and branch name mentioned in any `CONTEXT_FILES` handoff:
 - worktree path → check it exists on disk (`test -d {path}`).
 - branch name → check it exists in git (`git rev-parse --verify --quiet {branch}` or `git worktree list`).
 If a referenced worktree/branch no longer exists → `WARN: context references worktree/branch '{X}' that no longer exists`. If none referenced or all exist → `PASS`.
@@ -60,12 +72,19 @@ Diagnose-only (`FIX=false`): skip this step entirely — never write anything.
 
 When `FIX=true`, for each flow, apply the heals its checks warrant. **State each repair before applying it** (print `→ {what} …` then `✓ {result}`). Never touch a global **definition**'s `flow.md`/step files except the conservative schema migration in heal 4 (which is explicitly a definition repair) — never rewrite a definition's checkboxes.
 
-**Heal A — Remove clobbered/stale `context.md`.**
-Delete `CONTEXT_FILE` **only** when:
-- Check 1 FAILED (inconsistent with this flow's own steps, including a legacy `context.md` beside a global definition), OR
+**Heal A — Remove clobbered/stale `context.md`.** Applied per file across `CONTEXT_FILES`.
+Delete a `context.md` **only** when there is a positive signal that it is safe to remove:
+- Check 1 FAILED with a **positive clobber signal** — its identifiers differ from `RUN_IDENTITY`, or it is a legacy `context.md` beside a global definition, OR
 - Check 2 FAILED (Status=Complete).
 
-**CRITICAL GUARD — never delete a legitimately-interrupted context.** If Check 1 PASSED (the `context.md` handoffs ARE consistent with this flow's steps) AND Status is not `Complete`, the `context.md` is the **resume payload** that `go.md` loads on resume — do NOT delete it. This distinction is the whole point of the check: only clobbered or completed contexts are removed; a matching, mid-run context is preserved. If neither condition holds, report `context.md preserved (legitimate interrupted run — resume payload)` and skip the delete.
+**CRITICAL GUARD — the bias is PRESERVE; delete only on a positive signal.** The default for any `context.md` is to keep it: it may be the **resume payload** that `go.md` loads on resume, and deleting a live one is unrecoverable data loss. Therefore:
+- Delete **only** when a check above produced a positive delete signal (a concrete identity mismatch, a legacy global-scope context, or Status=Complete).
+- **Preserve on uncertainty.** If Check 1 could not determine a clobber — no `run.md` / no recorded identity, or no comparable identifier in the context — that is *not* a delete signal. Never delete "just in case." Report `context.md preserved (no positive clobber signal — resume payload may be live)` and skip.
+- **Preserve on match.** If the context's identifiers agree with `RUN_IDENTITY` and Status is not `Complete`, report `context.md preserved (matches run identity — legitimate interrupted run)` and skip.
+
+A doctor that occasionally leaves a stale file is fine; one that occasionally deletes a live resume payload is not.
+
+**Announce global-scope deletions explicitly.** Deleting a `FLOW_DIR/context.md` under `~/.codevoyant/flows` is the one `--fix` path that writes into global scope (`$HOME`). Before removing it, print an explicit notice — `⚠ Deleting a file under ~/.codevoyant/flows (global scope): {path}` — then `→`/`✓` as usual, so a user running `doctor --fix` locally is never surprised by a `$HOME` mutation.
 
 **Heal B — Reset Status Active → Complete.** In the governing checklist (`RUN_DIR/progress.md` if it exists, else the definition `flow.md` — but only reset the definition's Status if the flow has no run instance, since a definition should stay a template), if every step line is `[x]` but Status is `Active`, set Status to `Complete`. Prefer fixing the run instance.
 
@@ -73,7 +92,7 @@ Delete `CONTEXT_FILE` **only** when:
 
 **Heal D — Migrate old-schema `flow.md` to the current template.** Conservatively backfill only the missing sections/fields identified in Check 5, preserving all existing content: add absent Metadata fields (with best-effort values — `Slug` from dir name, `Scope` from location, `Created`/`Status` left as `unknown`/`Active` if not derivable), and add an empty `## Parameters` (`_none_`) or `## Steps` section only if entirely absent. Never reorder or remove existing content. Report exactly which sections were backfilled.
 
-**Heal E — Prune deleted-worktree references from `context.md`.** For each worktree/branch flagged orphaned in Check 3, remove or annotate that reference in `CONTEXT_FILE` (strip the dead `worktree=`/`branch=` token from the handoff line, keep the rest). Report each pruned reference. (Skip if Heal A already deleted the file.)
+**Heal E — Prune deleted-worktree references from `context.md`.** For each worktree/branch flagged orphaned in Check 3, remove or annotate that reference in the owning file from `CONTEXT_FILES` (strip the dead `worktree=`/`branch=` token from the handoff line, keep the rest). Report each pruned reference. (Skip any file Heal A already deleted.)
 
 ## Step 3: Report
 
