@@ -58,3 +58,4 @@ Write this structure to `.codevoyant/plans/{plan-name}/plan.md` when creating a 
 - Add ✅ to phase header only when all tasks in that phase are complete
 - Do NOT include detailed implementation specs in plan.md — those go in `implementation/phase-N.md`
 - Use `## References` (not `## Resources`) for links and external references
+- Soft-wrap prose — never hard-wrap: write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.

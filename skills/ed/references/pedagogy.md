@@ -43,3 +43,8 @@ Prefer a diagram over a paragraph whenever a concept has spatial, structural, se
 
 - End each concept with a check: a question, a "predict the output", or a "why does this work?" prompt.
 - Prefer worked examples that show every intermediate step over stating a result.
+
+## 6. Soft-wrap prose — never hard-wrap
+
+- Write each paragraph as a single continuous line. Do not insert manual newlines to wrap prose at a fixed column width — hard breaks reflow badly on narrow screens and non-reflowing renderers. Let the renderer wrap.
+- Newlines still separate paragraphs, list items, headings, and code fences (and mermaid/LaTeX/ASCII blocks keep their own line structure) — only mid-paragraph line breaks in prose are forbidden.
