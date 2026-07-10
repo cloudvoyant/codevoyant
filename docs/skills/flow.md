@@ -45,6 +45,8 @@ Each step's key outputs (PR numbers, plan names, file paths) are captured and th
 
 Run all pending steps sequentially as blocking subagents. Resumes from the first incomplete step if re-run after interruption. Resolves the flow locally first, then globally; pass `--global` to force the global copy.
 
+The flow's own directory is a read-only **definition** (its steps and per-step implementations). A run never mutates it: the run's checkbox progress and accumulating context are materialized into a local **run instance** at `.codevoyant/runs/<slug>/` (`progress.md` + `context.md`). This keeps a global flow a pristine, reusable template — running it from any project writes progress only to that project's run instance, so concurrent or cross-project runs never clobber each other. Resume reads the local run instance; `/flow status` shows its progress.
+
 ```bash
 /flow go auth-refactor             # execute all pending steps
 /flow go ship "add OAuth login"    # bind free text to {{input}}
@@ -70,6 +72,21 @@ Print the `flow.md` checklist with current step status, scope, and parameters.
 /flow status auth-refactor         # print checklist with step status
 /flow status ship --global         # inspect a global flow
 ```
+
+### doctor — diagnose and repair flows
+
+Check flows for corruption and, with `--fix`, repair what is safe to repair. Diagnose-only by default. With no name, it scans every flow in both scopes.
+
+```bash
+/flow doctor                       # diagnose all flows (local + global), change nothing
+/flow doctor autospec              # diagnose one flow
+/flow doctor autospec --fix        # apply safe repairs
+/flow doctor autospec --fix --global   # target the global copy
+```
+
+Checks (reported PASS/WARN/FAIL per flow): cross-run **clobber** (a `context.md` referencing an unrelated run's branch/slug/worktree), **stale** context (present although Status is Complete), **orphaned** worktree/branch (referenced but gone), **step-file drift** (step lines ≠ `step-N.md` files), **schema drift** (missing template sections), and **placeholder coherence** (undeclared or unused `{{tokens}}`).
+
+Repairs (`--fix`, each announced before it runs): remove a clobbered or stale `context.md` — but **never** a legitimately-interrupted one that matches the flow's own steps (that is the resume payload); reset Status `Active → Complete` when all steps are done; regenerate missing `step-N.md` stubs; conservatively migrate an old-schema `flow.md` to the current template; and prune references to deleted worktrees from `context.md`.
 
 ### save — create a composite skill
 
