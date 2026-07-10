@@ -5,6 +5,10 @@ license: MIT
 compatibility: Works on Claude Code. smoke verb requires agent-browser (npx @vercel/agent-browser).
 ---
 
+## Critical Rules
+
+- **Markdown output: soft-wrap prose, never hard-wrap** — when any qa workflow writes a `.md` artifact (debug report, smoke report) or markdown posted to GitHub/GitLab/Linear via `report`, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Dispatcher
 
 ```

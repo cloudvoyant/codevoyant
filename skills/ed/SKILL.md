@@ -29,6 +29,7 @@ Pass your intent directly:
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
+- **Markdown output: soft-wrap prose, never hard-wrap** — when any ed workflow writes a `.md` artifact (study notes, guides, syllabi, quizzes), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (Full guidance: `references/pedagogy.md`.)
 
 ## Step 0: Parse Arguments
 
