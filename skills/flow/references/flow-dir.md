@@ -13,9 +13,13 @@ A flow is a directory `{slug}/` containing `flow.md` and `implementation/step-N.
 
 `--global` (alias `-g`) selects the global scope. Parse it out of the arguments in every workflow **before** reading the flow name, and strip it from the positional args.
 
+Work from the **preserved argv** the dispatcher forwarded (each original argument is one array element — a multi-word step string like `/spec new {{objective}}` is a single element, and a quoted flag value like `feature="add OAuth"` stays attached to its flag). Never flatten argv into a string and re-split it: iterate `"$@"` directly.
+
 ```bash
 GLOBAL=false
-case " $ARGS " in *" --global "*|*" -g "*) GLOBAL=true ;; esac
+for a in "$@"; do
+  case "$a" in --global|-g) GLOBAL=true ;; esac
+done
 FLOW_ROOT="$( [ "$GLOBAL" = true ] && echo "$HOME/.codevoyant" || echo ".codevoyant" )"
 FLOWS_DIR="$FLOW_ROOT/flows"
 ```
@@ -27,32 +31,35 @@ FLOWS_DIR="$FLOW_ROOT/flows"
 
 Flow recognizes exactly these **flow-control** flags: `--global`/`-g` (all verbs) and `--set key=value` (`go` only; parsed in `go.md`). **Every other flag must be preserved, not dropped** — for example `--branch feature/x`, which callers use to run a flow's steps on a separate branch.
 
-While stripping the flow-control flags, collect all remaining flags (any token starting with `-`, plus its value token when the following token does not itself start with `-`) into an ordered list `PASSTHROUGH_FLAGS`, and remove them from the positional args. Boolean flags (no value) are kept as-is; `--flag=value` forms are kept whole.
+While stripping the flow-control flags, collect all remaining flags (any element starting with `-`, plus its value element when the following element does not itself start with `-`) into an ordered list `PASSTHROUGH_FLAGS`, and leave the true positionals in `POSITIONALS`. Boolean flags (no value) are kept as-is; `--flag=value` forms are kept whole.
+
+**Iterate the preserved argv, never a re-split string.** The block below walks `"$@"` — the array the dispatcher forwarded — so each element stays intact: a multi-word step command (`/spec new {{objective}}`) remains one `POSITIONALS` entry, and a flag value carried as one shell word (`feature="add OAuth"`) is not shredded. Do **not** write `set -- $ARGS` (or any unquoted re-split): that word-splits every step string and quoted value on whitespace and corrupts both `POSITIONALS` and `PASSTHROUGH_FLAGS`.
 
 ```bash
-# Walk the args left→right; peel flow-control flags, bucket the rest into PASSTHROUGH_FLAGS,
-# leave true positionals (flow name, steps, input) in POSITIONALS.
+# Walk argv "$@" left→right; peel flow-control flags, bucket the rest into PASSTHROUGH_FLAGS,
+# leave true positionals (flow name, steps, input) in POSITIONALS. Each "$@" element is
+# preserved whole — no re-splitting.
 GLOBAL=false
 PASSTHROUGH_FLAGS=()   # e.g. (--branch feature/x)
 POSITIONALS=()
-set -- $ARGS
 while [ $# -gt 0 ]; do
   case "$1" in
     --global|-g) GLOBAL=true; shift ;;
-    --set) PASSTHROUGH_FLAGS+=("$1" "$2"); shift 2 ;;   # go.md re-reads --set from PASSTHROUGH; harmless elsewhere
+    --set) PASSTHROUGH_FLAGS+=("$1" "$2"); shift 2 ;;   # go.md re-reads --set; new.md drops it before baking
     --*|-*)
-      if [ $# -ge 2 ] && [ "${2#-}" = "$2" ]; then       # next token is a value (not another flag)
+      if [ $# -ge 2 ] && [ "${2#-}" = "$2" ]; then       # next element is a value (does not start with -)
         PASSTHROUGH_FLAGS+=("$1" "$2"); shift 2
       else
-        PASSTHROUGH_FLAGS+=("$1"); shift                 # boolean or --flag=value
+        PASSTHROUGH_FLAGS+=("$1"); shift                 # boolean, --flag=value, or value-less trailing flag
       fi ;;
     *) POSITIONALS+=("$1"); shift ;;
   esac
 done
 ```
 
-- `--set` is a special case for `go`: `go.md` parses `--set key=value` into `PARAMS` itself, so it consumes those from `PASSTHROUGH_FLAGS` before forwarding. For `new`/`status`/`list`, `--set` is not meaningful and simply rides along in `PASSTHROUGH_FLAGS` (or is ignored) — this shared rule does not need per-verb branches.
-- `PASSTHROUGH_FLAGS` is what `new` bakes into stored step commands and what `go` appends to each resolved step command at run time (see those workflows).
+- **`--set` handling is verb-specific.** `go.md` parses `--set key=value` out of `PASSTHROUGH_FLAGS` into `PARAMS` and forwards the remainder. For `new`, `--set` is **not** a step flag and must **not** be baked into stored steps: `new.md` explicitly drops any `--set key=value` pair from `PASSTHROUGH_FLAGS` before writing step commands (see new.md Step 2). For `status`/`list`, `--set` is inert and simply ignored.
+- **Caveat — flag values starting with `-`.** The `[ "${2#-}" = "$2" ]` test treats any following element that starts with `-` as *not* this flag's value, so a legitimate value beginning with `-` (e.g. `--message "-n"`) is read as a value-less flag and the `-n` falls through to `POSITIONALS`. This is acceptable for the `--branch feature/x`-style forwarding flow actually uses; **flag values beginning with `-` are not supported** — pass them in `--flag=value` form (kept whole) if ever needed.
+- `PASSTHROUGH_FLAGS` is what `new` bakes into stored step commands (minus `--set`) and what `go` appends to each resolved step command at run time (see those workflows).
 
 ## Resolving a flow by name (for `go`, `status`, `save`)
 
