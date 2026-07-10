@@ -9,9 +9,12 @@ Steps run **non-interactively** — a subagent cannot prompt the user. When a st
 ```
 --global / -g   → read the flow from ~/.codevoyant/flows (see references/flow-dir.md)
 --set key=value → bind a named parameter (repeatable, e.g. --set feature="add OAuth" --set env=staging)
-FLOW_NAME = first non-flag positional arg (required)
-INPUT     = all remaining bare (non-flag, non-name) positional text, joined with spaces → the {{input}} parameter
+--branch, etc.  → any other flag → PASSTHROUGH_FLAGS (see references/flow-dir.md), appended to every step this run
+FLOW_NAME = first positional arg (POSITIONALS[0]; required)
+INPUT     = all remaining positional text (POSITIONALS[1..]), joined with spaces → the {{input}} parameter
 ```
+
+Parse flags via `references/flow-dir.md`. From the resulting `PASSTHROUGH_FLAGS`, pull out any `--set key=value` pairs into `PARAMS` (below); the remainder (e.g. `--branch feature/x`) stays in `PASSTHROUGH_FLAGS` and is appended to every step command this run (Step 2).
 
 If `FLOW_NAME` is missing, error: "Usage: /flow go <name> [input text] [--set k=v] [--global]. A flow name is required."
 
@@ -42,7 +45,7 @@ Initialize the **flow context** accumulator `CONTEXT`. **On resume:** if `FLOW_D
 
 For each pending step in order:
 
-1. **Substitute parameters** in the step command: replace every `{{name}}` with `PARAMS[name]`. Call the result `RESOLVED_COMMAND`. Report: `▶ Step {N}: {RESOLVED_COMMAND}`
+1. **Substitute parameters** in the step command: replace every `{{name}}` with `PARAMS[name]`, then append this run's `PASSTHROUGH_FLAGS` (e.g. `--branch feature/x`) to the command string if the step does not already carry them (steps that baked the flag in at `new` time already have it — do not duplicate). Call the result `RESOLVED_COMMAND`. Report: `▶ Step {N}: {RESOLVED_COMMAND}`
 
 2. Read `FLOW_DIR/implementation/step-N.md` to get the agent prompt. Prepare the prompt for this run by filling its injection points:
    - Replace `{step-command}` occurrences with `RESOLVED_COMMAND` (substitute `{{placeholders}}` here too).

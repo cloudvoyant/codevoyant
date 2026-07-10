@@ -5,12 +5,13 @@ Create a new named flow — a `{flows-dir}/{slug}/flow.md` checklist plus one `i
 ## Step 0: Parse arguments
 
 ```
---global / -g  → store under ~/.codevoyant/flows (see references/flow-dir.md); else local .codevoyant/flows
-FLOW_NAME = first non-flag positional arg (required; error if missing)
-STEPS     = remaining positional args (each is one step command string)
+--global / -g     → store under ~/.codevoyant/flows (see references/flow-dir.md); else local .codevoyant/flows
+--branch, etc.    → any other flag → PASSTHROUGH_FLAGS (see references/flow-dir.md), baked onto every step command
+FLOW_NAME         = first positional arg (POSITIONALS[0]; required; error if missing)
+STEPS             = remaining positionals (POSITIONALS[1..]; each is one step command string)
 ```
 
-Resolve `FLOWS_DIR` per `references/flow-dir.md` (`.codevoyant/flows` local, `$HOME/.codevoyant/flows` if `--global`). Strip `--global`/`-g` before reading positionals.
+Resolve `FLOWS_DIR` and parse flags per `references/flow-dir.md`: it sets `GLOBAL`, fills `PASSTHROUGH_FLAGS` with every non-flow-control flag (e.g. `--branch feature/x`), and leaves the flow name + step strings in `POSITIONALS`. Read `FLOW_NAME`/`STEPS` from `POSITIONALS`.
 
 If `FLOW_NAME` is missing, error: "Usage: /flow new <name> [steps...] [--global]. A flow name is required."
 
@@ -79,10 +80,12 @@ For each step N (1-based), create `FLOW_DIR/implementation/step-N.md` using `ref
 
 Fill in:
 - `{N}` = step number
-- `{step-command}` = the step command string, with `{{placeholders}}` left **verbatim** (they are resolved at run time by `go.md`)
+- `{step-command}` = the step command string, with `{{placeholders}}` left **verbatim** (they are resolved at run time by `go.md`), and with `PASSTHROUGH_FLAGS` appended to the command string when non-empty (e.g. a step `/spec new {{objective}}` created with `--branch feature/x` is stored as `/spec new {{objective}} --branch feature/x`). This bakes run-on-a-branch (and any other forwarded flag) into the flow definition.
 - `{flow-name}` = slug
 - `{total}` = total number of steps
 - Leave the `## Parameters` and `## Flow context so far` sections as their template placeholders — `go.md` fills them in at run time.
+
+If `PASSTHROUGH_FLAGS` is non-empty, also append the same flags to each step line written to `flow.md` in Step 2, so the stored checklist matches the step files.
 
 ## Step 4: Report
 
