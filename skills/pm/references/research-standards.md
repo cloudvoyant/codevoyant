@@ -20,6 +20,8 @@ Every finding in a research artifact must use this structure:
 > Supporting evidence: {quote, file line range, or data point}
 ```
 
+**Markdown output:** Soft-wrap prose — never hard-wrap. Write each paragraph (Observation, Interpretation, evidence) as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ---
 
 ## Confidence Levels

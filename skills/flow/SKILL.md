@@ -41,6 +41,8 @@ Dispatch to: references/workflows/{VERB}.md
 
 The `--global` / `-g` flag (store or read a flow under `~/.codevoyant/flows` instead of the local `.codevoyant/flows`) is **not** a verb — pass it through unchanged; each workflow parses it via `references/flow-dir.md`.
 
+Any flag other than the flow-control flags (`--global`/`-g`, and `--set` for `go`) is **not** dropped: `references/flow-dir.md` collects it into `PASSTHROUGH_FLAGS`, and the `new`/`go` workflows forward it to the step commands. This is how `--branch feature/x` reaches the skills a flow runs (e.g. so `spec new` works on a separate branch).
+
 ## Workflow index
 
 | Verb | File | Purpose |
@@ -58,4 +60,4 @@ The `--global` / `-g` flag (store or read a flow under `~/.codevoyant/flows` ins
 2. Apply aliases (run/exec/start → go; ls → list; show/review → status; export/publish → save).
 3. If VERB is empty or unrecognized, default to `help`.
 4. Read and execute the corresponding workflow file from `references/workflows/{VERB}.md`.
-5. Pass all remaining arguments (including any `--global`/`-g` flag) to the workflow unchanged.
+5. Pass all remaining arguments (including any `--global`/`-g` flag and any other unrecognized flags such as `--branch`) to the workflow unchanged, **as a preserved argv array** — each original argument stays one element, so multi-word step strings (`/spec new {{objective}}`) and quoted flag values (`feature="add OAuth"`) survive intact. The workflow iterates this argv (`"$@"`) to parse flow-control flags and bucket the rest into `PASSTHROUGH_FLAGS` via `references/flow-dir.md`; it must never flatten the args into a single string and re-split them.

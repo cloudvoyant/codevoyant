@@ -14,6 +14,8 @@ Use this structure for each `implementation/phase-N.md` file created in Step 5.5
 
 **Build system preservation:** Do NOT modify the build system, CI config, or dependencies unless this phase is explicitly about them. If the project built before you started, it must build after every task. If a change would require an unplanned build system modification, stop and flag it.
 
+**Markdown output:** Soft-wrap prose — never hard-wrap. Write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ### Task Runner Commands
 {List the relevant task runner commands for this phase. ALWAYS use these — never invent equivalent shell commands. Discover them by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` scripts directly.}
 - Build: `{e.g. just build | make build | task build | mise run build}`

@@ -34,6 +34,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Workflow files are authoritative** — do not duplicate workflow logic in this file
 - **Coding agents always receive a workflow checklist** — see `references/workflow-checklist.md`
+- **Markdown output: soft-wrap prose, never hard-wrap** — when any spec workflow or agent writes a `.md` artifact (plan.md, phase files, user-guide.md, PR body, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 - See `references/workflows/` for per-verb behaviour; see `references/` for all templates
 
 ## Step 0: Parse Arguments

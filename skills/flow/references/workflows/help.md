@@ -25,6 +25,12 @@ Storage:
   local  (default)   .codevoyant/flows/<slug>/       — this project only
   global (--global)  ~/.codevoyant/flows/<slug>/      — reusable across all projects
 
+Forwarding flags to steps:
+  Any flag other than --global/-g (and --set for `go`) is forwarded to every step
+  command — e.g. run a flow's steps on a branch:
+    /flow new ship "/spec new {{input}}" "/spec go" --branch feature/x   (bakes it in)
+    /flow go ship "add OAuth" --branch feature/x                          (one-off run)
+
 Parameters (dynamic input):
   Put {{placeholders}} in any step. At run time:
     • bare text after the name binds to {{input}}

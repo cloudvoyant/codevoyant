@@ -72,3 +72,4 @@ Write this file to `$PLAN_DIR/user-guide.md` when creating a plan. Fill in what 
 - Focus on what the user sees and interacts with, not how it works inside
 - Every code example must be runnable as-is (or clearly marked as pseudo-code)
 - Update this file incrementally during execution — don't leave it as a stub
+- Soft-wrap prose — never hard-wrap: write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.

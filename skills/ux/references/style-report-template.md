@@ -2,6 +2,8 @@
 
 Use for `docs/ux/style-research/{source}/style-report.md`.
 
+**Markdown output:** Soft-wrap prose — never hard-wrap. Write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ---
 
 # {SOURCE_NAME} Style Report

@@ -16,6 +16,7 @@ Triggers: "docs new", "docs update", "docs review", "docs retcon", "create docs"
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently
+- **Markdown output: soft-wrap prose, never hard-wrap** — when any docs workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (Full guidance: `references/language-guide.md`.)
 
 ## Step 0: Parse Arguments
 

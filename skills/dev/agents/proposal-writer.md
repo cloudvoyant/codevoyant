@@ -40,6 +40,8 @@ Your prompt tells you:
 
 **One-sentence verdict.** The opening `>` line must be a verdict a decision-maker can read in isolation and understand the approach's core trade-off. Not "this is a solid approach" — something like "Best when you need strong type safety at the cost of a heavier migration."
 
+**Soft-wrap prose — never hard-wrap.** Write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Output
 
 Before reporting, verify: does the proposal contain a concrete "How it comes together" section with at least one cited library API? If not, add it before writing the file.

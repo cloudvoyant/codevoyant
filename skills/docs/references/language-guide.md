@@ -85,3 +85,20 @@ just dev
 ### 10. Link; don't duplicate
 
 If auth.md already explains the session format, link to it — don't repeat it. Use the `## References` section. Duplication creates maintenance debt.
+
+### 11. Soft-wrap prose — never hard-wrap
+
+Write each paragraph as a single continuous line. Do not insert manual newlines to wrap prose at a fixed column width — on narrow screens and non-reflowing renderers, hard breaks wrap badly. Let the renderer handle wrapping.
+
+Bad (hard-wrapped at ~80 cols):
+```
+The session is stored in an HttpOnly cookie so JavaScript running in the
+browser cannot read it, which prevents XSS attacks from stealing sessions.
+```
+
+Good (one paragraph, one line):
+```
+The session is stored in an HttpOnly cookie so JavaScript running in the browser cannot read it, which prevents XSS attacks from stealing sessions.
+```
+
+Newlines still separate paragraphs, list items, headings, and code fences — only mid-paragraph line breaks are forbidden.
