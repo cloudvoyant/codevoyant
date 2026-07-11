@@ -1,3 +1,14 @@
+## [1.58.0](https://github.com/cloudvoyant/codevoyant/compare/v1.57.1...v1.58.0) (2026-07-11)
+
+### Features
+
+* **flow:** flow doctor and local run-state materialization ([#22](https://github.com/cloudvoyant/codevoyant/issues/22))
+
+Add a flow doctor verb and move run-state into local run instances.
+
+- flow doctor [name] [--fix] [--global]: diagnose (default) or repair flows across both scopes; six checks and five heals, with a guard that never deletes a legitimately-interrupted resume context.
+- flow go materializes mutable run-state into a local .codevoyant/runs/`<slug>`/ instance (run.md + progress.md + context.md); flow definitions become read-only templates, so global and concurrent runs no longer clobber each other. A completed run re-runs cleanly (archive + re-seed); a partial run resumes. status/list read the run instance.
+
 ## [1.57.1](https://github.com/cloudvoyant/codevoyant/compare/v1.57.0...v1.57.1) (2026-07-11)
 
 ### Bug Fixes
