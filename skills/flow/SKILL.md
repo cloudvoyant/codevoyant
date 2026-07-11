@@ -30,11 +30,14 @@ Aliases:
   "run"   → go
   "exec"  → go
   "start" → go
-  "ls"      → list
-  "show"    → status
-  "review"  → status
-  "export"  → save
-  "publish" → save
+  "ls"        → list
+  "show"      → status
+  "review"    → status
+  "export"    → save
+  "publish"   → save
+  "fix"       → doctor
+  "diagnose"  → doctor
+  "check"     → doctor
 
 Dispatch to: references/workflows/{VERB}.md
 ```
@@ -43,6 +46,8 @@ The `--global` / `-g` flag (store or read a flow under `~/.codevoyant/flows` ins
 
 Any flag other than the flow-control flags (`--global`/`-g`, and `--set` for `go`) is **not** dropped: `references/flow-dir.md` collects it into `PASSTHROUGH_FLAGS`, and the `new`/`go` workflows forward it to the step commands. This is how `--branch feature/x` reaches the skills a flow runs (e.g. so `spec new` works on a separate branch).
 
+The `--fix` flag (used by `doctor` to apply repairs instead of only diagnosing) is likewise **not** a verb — pass it through unchanged to the workflow.
+
 ## Workflow index
 
 | Verb | File | Purpose |
@@ -50,14 +55,15 @@ Any flag other than the flow-control flags (`--global`/`-g`, and `--set` for `go
 | new | `references/workflows/new.md` | Define a new flow (create flow.md + step files) |
 | go | `references/workflows/go.md` | Execute pending steps sequentially as blocking subagents |
 | list | `references/workflows/list.md` | List all flows (local and global) |
-| status | `references/workflows/status.md` | Print flow.md checklist state |
+| status | `references/workflows/status.md` | Print flow checklist state (from the local run instance if present) |
+| doctor | `references/workflows/doctor.md` | Diagnose (and with `--fix` repair) broken flows across both scopes |
 | save | `references/workflows/save.md` | Turn a flow into a reusable composite skill via /skill new |
 | help | `references/workflows/help.md` | Usage reference |
 
 ## Instructions
 
 1. Extract VERB from the user's message (first non-flag positional argument after "flow").
-2. Apply aliases (run/exec/start → go; ls → list; show/review → status; export/publish → save).
+2. Apply aliases (run/exec/start → go; ls → list; show/review → status; export/publish → save; fix/diagnose/check → doctor).
 3. If VERB is empty or unrecognized, default to `help`.
 4. Read and execute the corresponding workflow file from `references/workflows/{VERB}.md`.
 5. Pass all remaining arguments (including any `--global`/`-g` flag and any other unrecognized flags such as `--branch`) to the workflow unchanged, **as a preserved argv array** — each original argument stays one element, so multi-word step strings (`/spec new {{objective}}`) and quoted flag values (`feature="add OAuth"`) survive intact. The workflow iterates this argv (`"$@"`) to parse flow-control flags and bucket the rest into `PASSTHROUGH_FLAGS` via `references/flow-dir.md`; it must never flatten the args into a single string and re-split them.

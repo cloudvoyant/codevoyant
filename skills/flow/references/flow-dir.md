@@ -83,3 +83,37 @@ Set `FLOW_DIR` to the resolved `{FLOWS_DIR}/{slug}/` and use it for the rest of 
 ```
 FLOW_DIR = {FLOWS_DIR}/{slug}/     # global if --global, else local
 ```
+
+## Run instance (mutable run-state — for `go`, `status`, `doctor`)
+
+A flow **definition** (`{FLOWS_DIR}/{slug}/` with `flow.md` + `implementation/step-N.md`) is a **read-only template**. `go` must never mutate it — mutating a *global* definition clobbers the shared template and lets concurrent/other-project runs overwrite each other's state.
+
+All mutable run-state lives in a **run instance**, which is **always local to the current project**, regardless of whether the definition is local or global:
+
+```
+.codevoyant/runs/{slug}/
+  run.md         # this run's resolved identity (slug, definition, branch/spec-slug/worktree) — written at go start
+  progress.md    # a copy of the definition's Steps checklist; the ONLY place [ ] → [x] is flipped
+  context.md     # the accumulating handoff log (persisted for resume)
+```
+
+`run.md` is the run instance's **identity record**. Because the definition and `progress.md` only ever hold `{{placeholders}}`, the resolved branch / spec-slug / worktree of a real run live nowhere in the definition — `run.md` (and `context.md`'s handoffs) are the only place they exist. `doctor` reads `run.md` as the authoritative "what is this run" anchor to distinguish a legitimately-interrupted `context.md` from one clobbered by a different run.
+
+`run.md` uses these field names, and **`go` (backfill) and `doctor` (Check 1) must use the same ones** — one canonical name per identifier, no synonyms:
+
+- `slug:` — the **flow's** own slug (the definition directory name); set at first run, never overwritten.
+- `branch:` — receives a handoff `branch=` value.
+- `spec-slug:` — receives a handoff `slug=` value (the resolved **spec** slug from a `spec new`/`spec go` step). Note the handoff token is `slug=` but the recorded field is `spec-slug:` precisely so it is never confused with the flow `slug:` above.
+- `worktree:` — receives a handoff `worktree=` value.
+
+Resolve it the same way in every workflow that runs or inspects a flow:
+
+```bash
+RUNS_DIR=".codevoyant/runs"          # always local — never under $HOME, even for a global definition
+RUN_DIR="$RUNS_DIR/{slug}"           # {slug} is the resolved definition's directory name
+```
+
+- `{slug}` is the directory name of the resolved definition (from `FLOW_DIR`), so the run instance is stable whether the definition was found locally or globally.
+- Step **implementations** are always read from the definition (`FLOW_DIR/implementation/step-N.md`), never copied into the run instance — only the checklist (`progress.md`) and the handoff log (`context.md`) are instance-local.
+- Create on demand: `mkdir -p "$RUN_DIR"` (safe if it already exists).
+- A run instance whose **definition is global** is expected and normal — it is not corruption or drift.

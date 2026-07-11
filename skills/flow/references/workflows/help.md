@@ -12,14 +12,16 @@ flow — chain skill commands into a named, reusable pipeline
                                            — run pending steps sequentially
   /flow list [--global | --local]          — list all flows (local + global)
   /flow status <name> [--global]           — show checklist state
+  /flow doctor [name] [--fix] [--global]   — diagnose (or --fix repair) broken flows
   /flow save <name> --skill <s> [--global] — turn a flow into a reusable skill
   /flow help                               — this message
 
 Verb aliases:
-  run, exec, start  →  go
-  ls                →  list
-  show, review      →  status
-  export, publish   →  save
+  run, exec, start   →  go
+  ls                 →  list
+  show, review       →  status
+  fix, diagnose, check →  doctor
+  export, publish    →  save
 
 Storage:
   local  (default)   .codevoyant/flows/<slug>/       — this project only
@@ -30,6 +32,13 @@ Forwarding flags to steps:
   command — e.g. run a flow's steps on a branch:
     /flow new ship "/spec new {{input}}" "/spec go" --branch feature/x   (bakes it in)
     /flow go ship "add OAuth" --branch feature/x                          (one-off run)
+
+Definitions vs. run instances:
+  A flow's directory is a read-only DEFINITION (steps + implementations). Running a
+  flow never mutates it — progress + context for a run live in a local RUN INSTANCE:
+    .codevoyant/runs/<slug>/  (run.md + progress.md + context.md)
+  so a global flow stays a pristine template and concurrent runs never clobber each
+  other. /flow status reads the run instance; /flow doctor cleans up when they don't.
 
 Parameters (dynamic input):
   Put {{placeholders}} in any step. At run time:
