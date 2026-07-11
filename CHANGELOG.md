@@ -1,3 +1,11 @@
+## [1.57.1](https://github.com/cloudvoyant/codevoyant/compare/v1.57.0...v1.57.1) (2026-07-11)
+
+### Bug Fixes
+
+* soft-wrap generated markdown and forward extra flow flags ([#21](https://github.com/cloudvoyant/codevoyant/issues/21))
+
+Soft-wrap authoring rule across 8 markdown-generating skills (docs, ed, spec, dev, pm, em, ux, qa); flow arg parsing preserves argv and forwards extra flags like --branch, baked into stored steps by new and appended at go time, with run-time flags overriding baked ones.
+
 ## [1.57.0](https://github.com/cloudvoyant/codevoyant/compare/v1.56.0...v1.57.0) (2026-07-09)
 
 ### Features
