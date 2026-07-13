@@ -20,8 +20,6 @@ This PR implements the plan defined in `.codevoyant/plans/{plan-name}/plan.md`
 - Base: {BASE_BRANCH}
 
 See `.codevoyant/plans/{plan-name}/plan.md` for full implementation details.
-
-🤖 Generated with Claude Code /spec:done
 ```
 
 **gh CLI command:**
