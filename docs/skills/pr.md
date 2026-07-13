@@ -26,7 +26,7 @@ Create a draft PR (GitHub) or draft MR (GitLab) from the current branch with a s
 
 Aliases: `/pr create`, `/pr draft`.
 
-The body is written in a **terse, human, junior-dev-friendly voice** — short sentences, no AI boilerplate or hype, respectful, with external references when they help. See `references/voice.md`.
+The description **opens with a clear intent** — one plain-language paragraph, derived from BOTH the diff AND any spec plan executed on the branch (matched by the plan's branch), saying what the branch sets out to do and why. When no spec plan is on the branch, the intent comes from the diff alone. The body is written in a **terse, human, junior-dev-friendly voice** — short sentences, no AI boilerplate or hype, respectful, with external references when they help. See `references/voice.md`.
 
 ### review — Generate inline review
 
@@ -34,7 +34,12 @@ Read a PR/MR diff and generate AI-authored inline comments. Comments are terse (
 
 Reviews evaluate the change against its **stated intent** first — does the diff actually deliver the PR/MR's purpose end-to-end (tracing the headline use case), not just whether the code is clean? A well-formed change that fails its intent is flagged `BLOCKING`.
 
-Runs a **dedicated slop-detector pass** in parallel: a subagent whose only job is catching AI slop and unwanted agent-introduced change — unnecessary/out-of-scope edits, stochastic churn (random renames, reordering, reformatting), verbose boilerplate, dead/debug leftovers, dependency creep. A prevalent problem with agentic coding. Its findings are prefixed `Slop:`.
+Assesses the change with **four subagents in parallel**, one per dimension, then merges their findings into one review:
+
+- **Intent-match** — does the diff deliver the stated intent (from the description, linked issue, or executed spec plan) end-to-end? A well-formed change that fails its intent is `BLOCKING`.
+- **Unnecessary changes** — a dedicated **slop-detector**: scope creep, stray edits, dead/commented code, accidental reverts, stochastic churn (random renames, reordering, reformatting), boilerplate, debug leftovers, dependency creep. Findings prefixed `Slop:`. A prevalent problem with agentic coding.
+- **Code quality** — a **code-quality-auditor** judges the added/edited code against the relevant codevoyant skill (`typescript`, `python`, `react`, `svelte`, `sveltekit`, …) or the language/framework standard. Findings prefixed `Quality:`.
+- **Docs freshness** — a **docs-freshness-checker** decides whether docs should have been updated. By default review stays read-only: stale docs are reported as a `Docs:` finding recommending `/docs update`. Pass `--update-docs` to opt in to having the pass run `/docs update` and refresh docs during the review. Findings prefixed `Docs:`.
 
 ```bash
 /pr review                            # draft the review directly on the PR/MR

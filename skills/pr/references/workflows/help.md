@@ -3,7 +3,7 @@
 | Command | Description |
 |---|---|
 | `/pr open [--base <b>] [--bug\|--feature] [--title "..."] [--local]` | Create a draft PR/MR from the current branch |
-| `/pr review [pr-id] [--name <slug>] [--local]` | Inline review for a PR/MR + a dedicated slop/scope pass |
+| `/pr review [pr-id] [--name <slug>] [--local] [--update-docs]` | Inline review for a PR/MR + a dedicated slop/scope pass (`--update-docs` opts in to refreshing stale docs) |
 | `/pr address [pr-id] [--name <slug>] [--local] [--no-resolve]` | Pull comments, apply fixes, respond + resolve threads |
 | `/pr update ["change request"] [--type body\|review\|address]` | Apply `<!-- > … -->` annotations or a chat edit to the last artifact |
 | `/pr squash [pr-id] [--base <b>] [--onto <n>\|--single] [--no-push]` | Squash branch commits into coherent, changelog-ready commit(s) |
