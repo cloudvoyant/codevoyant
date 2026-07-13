@@ -4,7 +4,7 @@
 
 Run a minimum of 2 validation rounds autonomously (no user prompts). After each round that surfaces issues, apply all fixes before running the next round.
 
-Within each round, launch one validation agent **per phase** plus one plan-level agent — all in parallel. Merge results before applying fixes.
+Within each round, launch one validation agent **per phase**, one plan-level agent, and one **code-completeness** agent — all in parallel. Merge results before applying fixes.
 
 ## Per-Round Execution
 
@@ -41,7 +41,15 @@ Validate only `implementation/phase-{N}.md` against the plan.md tasks for that p
 - Test coverage and success criteria
 - user-guide.md update instructions per task
 
-Store all Task IDs: `[PLAN_LEVEL_TASK_ID, PHASE_1_TASK_ID, PHASE_2_TASK_ID, ...]`
+**Code-completeness agent** — launch one agent (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+
+```
+prompt: [contents of references/validation-prompt.md with SCOPE=code-completeness]
+```
+
+It scans every `implementation/phase-*.md` and fails any task whose code block is missing, empty, elided (`...`), a stub, a TODO/placeholder, or a prose-only description instead of the literal code. This is the gate that stops planners from shipping partial snippets.
+
+Store all Task IDs: `[PLAN_LEVEL_TASK_ID, CODE_COMPLETENESS_TASK_ID, PHASE_1_TASK_ID, PHASE_2_TASK_ID, ...]`
 
 ### c. Collect results
 
@@ -58,6 +66,7 @@ Overall round status = `PASS` only if **all** agents return `PASS`. Any `NEEDS_I
 Work through every issue and recommendation from all agents:
 - Edit the relevant `implementation/phase-N.md` files directly
 - Rewrite vague plan.md tasks to be specific and actionable
+- **For every code-completeness failure, replace the placeholder/stub with the complete literal code** — resolve the unknown now (read the codebase, search the web) and paste the real lines; never carry a `...`/`TODO`/prose stub into the next round
 - Report: `🔧 Round {round} — fixed {N} issues across {M} files: [brief summary]`
 
 ### e. Loop control

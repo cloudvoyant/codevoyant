@@ -66,4 +66,10 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 
 ## Agent Index
 
-- **slop-detector** (`agents/slop-detector.md`) — detects AI slop and unwanted agent-introduced changes (unnecessary/out-of-scope edits, stochastic churn, boilerplate, leftovers); run by `review` as a dedicated parallel pass
+`review` fans its assessment across parallel subagents, one per dimension:
+
+- **slop-detector** (`agents/slop-detector.md`) — Dimension 2: unnecessary/out-of-scope edits, stochastic churn, boilerplate, dead/debug leftovers, accidental reverts
+- **code-quality-auditor** (`agents/code-quality-auditor.md`) — Dimension 3: judges added/edited code against the relevant codevoyant skill (`typescript`, `python`, `react`, `svelte`, `sveltekit`, …) or the language/framework standard
+- **docs-freshness-checker** (`agents/docs-freshness-checker.md`) — Dimension 4: decides whether docs need updating and invokes `/docs update` when they are stale
+
+(Dimension 1, intent-match & correctness, runs as an inline reviewer agent defined in `references/workflows/review.md`.)

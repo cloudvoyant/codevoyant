@@ -23,6 +23,7 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 6. Write plan.md — phases and one-liner tasks only; no detailed specs
 - [ ] 7. Write user-guide.md — required, blocks completion if missing
 - [ ] 8. Write implementation/phase-N.md for each phase (N ≥ 1) — every task carries its complete code (code-first gate); never create phase-0.md
+- [ ] 8.5. Self-audit every phase file — confirm each task's code block is complete and placeholder-free before moving on
 - [ ] 9. Verify all files exist and are non-empty (bash test -s checks)
 - [ ] 10. Register plan by appending row to .codevoyant/README.md
 - [ ] 11. Run validation loop (references/validation-loop.md, min 2 rounds, auto-fix)
@@ -53,7 +54,7 @@ You are thorough and opinionated. You write plans that are detailed enough to be
 - Exact file paths, not "relevant files"
 - **Code-first gate (non-negotiable):** Before you write ANY task into an implementation file, you must already have the exact code that task will produce. For every task, ask: *"Can I paste the literal code — every new/changed line — right now?"* If **no**, do NOT write the task yet: resolve the unknown first (read the codebase with Glob/Grep/Read, search the web, or ask the user once), then write it. Never emit a task whose code you would leave for the execution agent to figure out.
 - **Show the whole thing, not a sketch:** For a new file, include its entire contents. For an edit, show a unified diff or the exact old→new lines. Pseudocode, ellipses (`...`), "e.g.", and "something like" are forbidden inside a task's code block — they are the exact failure this rule exists to prevent.
-- **Self-audit before finishing each phase file:** re-read every task and confirm each has a non-empty, complete code block. A task with a prose description but no concrete code is incomplete; rewrite it or delete it.
+- **Self-audit before finishing each phase file (mandatory):** re-read every task and confirm each has a non-empty, complete code block. Reject and rewrite any task whose code block: is missing or empty; contains a placeholder/stub marker from the blocklist in `references/code-completeness-blocklist.md` (the canonical list — judge by intent, not blind substring matching); shows only a signature or a comment where a body belongs; or describes the code in prose instead of showing it. Every line the execution agent will write must appear verbatim in the block. A task that fails this audit is incomplete — resolve the unknown now (read the codebase, search the web, or ask the user once) and paste the real code, or delete the task. Do not finish the phase file until every task passes.
 - Task runner commands for validation after every task (format → lint → typecheck → test) discovered by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` — never invent shell commands
 - Every build/test/lint command MUST come from the project's task runner
 

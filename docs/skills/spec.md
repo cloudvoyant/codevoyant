@@ -6,7 +6,7 @@ Specification-driven development — create structured plans from requirements, 
 
 ### new — create a plan
 
-Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete code** it will produce — a code-first gate blocks prose-only tasks — so execution needs no further guidance.
+Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce — the planner runs a mandatory self-audit and a dedicated code-completeness validation agent scans every task, rejecting stubs, TODO placeholders, ellipses (`...`), and prose-only descriptions — so execution needs no further guidance.
 
 Two ways to give the objective:
 

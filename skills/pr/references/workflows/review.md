@@ -8,6 +8,7 @@ Generate an AI-powered inline code review for a PR (GitHub) or MR (GitLab). Writ
 - `--github` / `--gitlab` — override provider detection
 - `--name <slug>` — explicit slug for the review directory
 - `--local` — write the review to a local file for review instead of drafting it on the PR/MR
+- `--update-docs` — opt in to letting the docs-freshness pass run `/docs update` and mutate the working tree. Off by default: review stays read-only and only reports stale docs as a `Docs:` finding.
 
 ## Step 0: Parse Args
 
@@ -16,17 +17,21 @@ PR_ID=""
 PROVIDER=""
 SLUG=""
 LOCAL=false
+UPDATE_DOCS=false
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --github) PROVIDER="github"; shift ;;
-    --gitlab) PROVIDER="gitlab"; shift ;;
-    --name)   SLUG="$2"; shift 2 ;;
-    --local)  LOCAL=true; shift ;;
-    *)        [ -z "$PR_ID" ] && PR_ID="$1"; shift ;;
+    --github)      PROVIDER="github"; shift ;;
+    --gitlab)      PROVIDER="gitlab"; shift ;;
+    --name)        SLUG="$2"; shift 2 ;;
+    --local)       LOCAL=true; shift ;;
+    --update-docs) UPDATE_DOCS=true; shift ;;
+    *)             [ -z "$PR_ID" ] && PR_ID="$1"; shift ;;
   esac
 done
 ```
+
+**`--update-docs`** is off by default so `/pr review` stays **read-only** — it drafts comments without touching the working tree. By default the docs-freshness pass (Dimension 4) only *reports* stale docs as a `Docs:` finding that recommends `/docs update`. Pass `--update-docs` to opt in to having that pass actually run `/docs update` and refresh the docs as part of the review.
 
 **`--local`** writes the review to `.codevoyant/review/{slug}/new-review.md` and stops — nothing is pushed. Read/edit it, then push with `/pr review` (no `--local`) or `/pr publish`. Default pushes the review as a pending draft directly on the PR/MR.
 
@@ -107,7 +112,16 @@ BASE_REF=$(echo "$META" | jq -r '.target_branch')
 HEAD_REF=$(echo "$META" | jq -r '.source_branch')
 ```
 
-## Step 6: Generate Review
+## Step 6: Assess the change with parallel subagents
+
+`/pr review` intentionally assesses the branch/PR across **four dimensions**, each handled by a focused subagent. Launch all four **in the same message** so they run concurrently, then merge their findings (Step 6e) before writing the review. The four dimensions:
+
+1. **Intent-match** (Dimension 1, below) — does the diff deliver the stated intent end-to-end?
+2. **Unnecessary changes** (Dimension 2 / Step 6b) — scope creep, stray edits, dead/commented code, accidental reverts, unrelated churn from a poorly-harnessed agentic run.
+3. **Code quality** (Dimension 3 / Step 6c) — is the added/edited code high quality per the relevant codevoyant skill or the language/framework standard?
+4. **Docs freshness** (Dimension 4 / Step 6d) — were docs updated? If not, report a `Docs:` finding recommending `/docs update` (default, read-only), or — only when `--update-docs` is set — invoke `/docs` to update them.
+
+### Dimension 1 — Intent-match & correctness
 
 Run an inline agent (NOT background) with this prompt:
 
@@ -167,18 +181,30 @@ Return `[]` if the code has no issues. Do not include an overall summary in this
 
 Also produce a one-paragraph overall summary as a separate string. **Lead the summary with an intent verdict** — does the change deliver its stated purpose end-to-end? — then note the most important findings. If the headline use case wouldn't work as written, say so up front, not buried under line nits.
 
-## Step 6b: Dedicated slop pass (run in parallel with Step 6)
+### Dimension 2 — Unnecessary changes (Step 6b: dedicated slop pass)
 
-Agentic coding routinely drags in noise beyond the task — unnecessary edits, random churn, verbose boilerplate, debug leftovers. Catch it with a dedicated agent so it never hides in a large diff.
+Agentic coding routinely drags in noise beyond the task — scope creep, stray edits, dead/commented code, accidental reverts, unrelated churn, verbose boilerplate, debug leftovers. Catch it with a dedicated agent so it never hides in a large diff.
 
-Launch the **slop-detector** agent (`agents/slop-detector.md`) via the Agent tool with `subagent_type: slop-detector` — ideally in the **same message** as the Step 6 reviewer so they run concurrently. Give it the same `{TITLE}`, `{BODY}` (stated scope), and `{DIFF_CONTENT}`. It returns a JSON array in the same schema (`file`, `line`, `severity`, `body`, `reference`), flagging only changes the stated goal does not require. It returns `[]` for a clean, focused diff.
+Launch the **slop-detector** agent (`agents/slop-detector.md`) via the Agent tool with `subagent_type: slop-detector` — in the **same message** as the other dimensions so they run concurrently. Give it the same `{TITLE}`, `{BODY}` (stated scope), and `{DIFF_CONTENT}`. It returns a JSON array in the same schema (`file`, `line`, `severity`, `body`, `reference`), flagging only changes the stated goal does not require. It returns `[]` for a clean, focused diff.
 
-**Merge** its findings into the review's comment array before Step 7:
-- Concatenate the reviewer's array and the slop-detector's array.
+### Dimension 3 — Code quality (Step 6c)
+
+Launch the **code-quality-auditor** agent (`agents/code-quality-auditor.md`) via the Agent tool with `subagent_type: code-quality-auditor` — in the **same message** as the other dimensions. Give it the same `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`. It maps each changed file to the relevant codevoyant skill (`typescript`, `python`, `react`, `svelte`, `sveltekit`, …) — reading that skill when available — or, failing a match, the language/framework's own standard, and returns a JSON array in the same schema. It returns `[]` for idiomatic, well-structured code.
+
+### Dimension 4 — Docs freshness (Step 6d)
+
+Launch the **docs-freshness-checker** agent (`agents/docs-freshness-checker.md`) via the Agent tool with `subagent_type: docs-freshness-checker` — in the **same message** as the other dimensions. Give it the same `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`, plus the current `UPDATE_DOCS` value. It decides whether the change touches documented surface and whether the diff already updates the docs.
+
+**By default (`UPDATE_DOCS=false`), review stays read-only:** if docs are stale and not updated in the diff, the agent returns a `Docs:` CONSIDER finding recommending the author run `/docs update` — it does **not** mutate the working tree. Only when `UPDATE_DOCS=true` (the caller passed `--update-docs`) does it invoke `/docs update` to bring docs current and return a NOTE recording what it did. If docs are fine (or the change needs none) it returns `[]`.
+
+### Step 6e — Merge all dimensions
+
+Merge every dimension's findings into a single comment array before Step 7:
+- Concatenate the four arrays: reviewer (Dimension 1), slop-detector (Dimension 2), code-quality-auditor (Dimension 3), docs-freshness-checker (Dimension 4).
 - De-duplicate by `file:line` + overlapping intent (keep the more specific/severe of a pair).
-- Prefix each slop finding's body with `Slop: ` so the author can see it came from the scope pass (e.g. `Slop: unrelated reformat here — revert to keep the diff focused.`).
+- Prefix bodies by source so the author sees which pass raised each: slop findings with `Slop: `, code-quality findings with `Quality: `, docs findings with `Docs: ` (the reviewer's intent/correctness findings are unprefixed).
 
-If the slop-detector returns a non-empty array, add one line to the overall summary noting how many unnecessary-change findings were raised.
+Extend the overall summary: after the intent verdict, add one line each for any non-empty dimension — how many unnecessary-change findings, code-quality findings, and whether docs were refreshed (or need refreshing) — so the reader sees the full assessment at a glance.
 
 ## Step 7: Write Review Document
 

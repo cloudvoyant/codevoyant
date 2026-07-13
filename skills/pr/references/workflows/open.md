@@ -84,6 +84,30 @@ Examples:
 - `fix/login-crash` → `Fix login crash`
 - `eng-123-auth-refactor` → `Auth refactor`
 
+## Step 2.5: Discover executed spec plan(s) on this branch
+
+A PR opened after `/spec go` should state the intent the plan set out to achieve — not just what the diff shows. Find the plan(s) executed on this branch and read them.
+
+```bash
+PLAN_CONTEXT=""
+if [ -d .codevoyant/plans ]; then
+  for pf in .codevoyant/plans/*/plan.md; do
+    [ -f "$pf" ] || continue
+    # Match the plan's Metadata "Branch" line against the current branch.
+    PLAN_BRANCH=$(grep -m1 -E '^- \*\*Branch\*\*:' "$pf" | sed -E 's/^- \*\*Branch\*\*:[[:space:]]*//')
+    if [ "$PLAN_BRANCH" = "$BRANCH" ]; then
+      PLAN_CONTEXT="${PLAN_CONTEXT}
+### Plan: $(dirname "$pf" | xargs basename)
+$(cat "$pf")
+"
+    fi
+  done
+fi
+```
+
+- If `PLAN_CONTEXT` is non-empty, it holds the objective, requirements, and design of every plan run on this branch — use it as the primary source of intent.
+- If no plan matches (`PLAN_CONTEXT` empty), do not block: derive the intent from the diff and commits alone. Many branches have no spec plan; that is fine.
+
 ## Step 3: Select Template
 
 If `--bug` flag given, or `BRANCH` starts with `fix/` or `bug/`: set `TEMPLATE="bug"`.
@@ -96,7 +120,13 @@ Inspect recent commits and the current diff to fill in what is known. Leave `<!-
 
 ## Step 3.5: Write the body in a human voice
 
-Fill the template following `references/voice.md`. Write for a busy teammate or **junior developer** seeing this change for the first time —
+**First, state the intent.** Fill the template's `## Intent` section with ONE short paragraph (2–4 sentences) that says what this branch sets out to do and why — derived from BOTH the diff AND `PLAN_CONTEXT` (Step 2.5):
+
+- If `PLAN_CONTEXT` is set, lead with the plan's objective/requirements as the intent, and confirm the diff delivers it. Reconcile the two: the intent is what the plan aimed for *and* what the code actually does — if they diverge, state what actually shipped.
+- If `PLAN_CONTEXT` is empty, infer the intent from the diff, commits, and branch name.
+- Keep it terse, human, and junior-developer friendly — no plan file paths, no phase numbers, no AI boilerplate ("This PR aims to…"). Say the goal in plain words a new teammate would understand.
+
+Then fill the rest of the template following `references/voice.md`. Write for a busy teammate or **junior developer** seeing this change for the first time —
 
 - **Terse.** Short sentences, one idea each. No long, flowing sentences — split them. Cut filler. Bullets over paragraphs.
 - **Human, not robotic.** Drop AI boilerplate ("This PR aims to…", "It is worth noting…"). Say what changed and why; don't narrate what the diff already shows.
