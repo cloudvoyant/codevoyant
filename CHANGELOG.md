@@ -1,3 +1,13 @@
+## [1.60.0](https://github.com/cloudvoyant/codevoyant/compare/v1.59.0...v1.60.0) (2026-07-13)
+
+### Features
+
+* **pr:** add merge workflow, fold complete into publish ([#24](https://github.com/cloudvoyant/codevoyant/issues/24))
+
+- Add a merge workflow (alias land) so a PR/MR can be merged through the skill: provider detection, mergeability and CI pre-flight, and --squash/--rebase/--merge plus --delete-branch. A squash merge onto main must carry a conventional-commit subject so semantic-release still fires.
+- Remove the redundant complete verb; publish already submits the pending review and marks the PR ready, so its Step 5 now calls the platform review-submit directly.
+- Update skill docs and user guide to match.
+
 ## [1.59.0](https://github.com/cloudvoyant/codevoyant/compare/v1.58.0...v1.59.0) (2026-07-13)
 
 ### Features
