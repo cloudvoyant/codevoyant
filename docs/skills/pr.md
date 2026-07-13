@@ -1,6 +1,6 @@
 # pr
 
-AI-powered code review skill: open draft PRs/MRs, generate inline review comments, address change requests, and publish completed reviews.
+AI-powered code review skill: open draft PRs/MRs, generate inline review comments, address change requests, publish completed reviews, and merge the PR/MR.
 
 ## Requirements
 
@@ -97,15 +97,22 @@ The umbrella publish step. In one command it submits any **pending draft review*
 /pr publish --yes                     # skip the confirmation prompt
 ```
 
-Alias: `/pr ready`. Warns (does not block) if commits are unpushed or CI isn't green. For review-only publishing, `/pr complete` does the same as `--review-only`.
+Alias: `/pr ready`. Warns (does not block) if commits are unpushed or CI isn't green. To publish only the pending draft **review** (the inline comments from `pr review`/`pr address`) and leave the PR/MR itself a draft, use `/pr publish --review-only`.
 
-### complete — Publish draft review
+### merge — Merge the PR/MR
 
-Publish a pending draft **review** (the inline comments from `pr review`/`pr address`) on a PR/MR. To mark the PR/MR itself ready, use `pr publish`.
+Merge the current-branch PR/MR (or a specific `pr-id`) via `gh pr merge` / `glab mr merge`. Squash by default, with `--rebase`/`--merge`. Pre-flight **hard-blocks** on a draft or merge conflicts, and **warns** (without blocking) on non-green CI or unpushed commits (offer `--push`).
+
+It's **semantic-release aware**: for a squash merge onto the release branch (`main`), the squashed commit's subject becomes the release trigger, so `merge` ensures that subject is a conventional-commit line — using `--subject`, the PR title if it already qualifies, or a derived candidate you confirm — so a release is never silently skipped. Non-squash methods and non-release bases skip this guard.
 
 ```bash
-/pr complete                          # publish pending draft review for current branch
-/pr complete 42                       # specific PR/MR number
-/pr complete --event APPROVE          # approve
-/pr complete --event REQUEST_CHANGES  # request changes
+/pr merge                             # squash-merge the current-branch PR/MR
+/pr merge 42                          # specific PR/MR number
+/pr merge --rebase                    # rebase merge
+/pr merge --merge                     # merge commit (no squash)
+/pr merge --delete-branch             # delete the source branch after merge
+/pr merge --subject "feat: add merge" # supply the squash commit subject
+/pr merge --yes                       # skip confirmation and subject prompt
 ```
+
+Alias: `/pr land`. Reports the merge commit SHA and resulting state.
