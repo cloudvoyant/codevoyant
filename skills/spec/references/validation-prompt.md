@@ -2,7 +2,7 @@
 
 > **Variables:** `{PLAN_DIR}` and `{N}` are substituted by the calling skill (Step 5.6 of `new/SKILL.md`) before these prompts are injected into agents.
 
-Two prompt variants — one per agent type launched in Step 5.6.
+Three prompt variants — one per agent type launched in Step 5.6.
 
 ---
 
@@ -113,5 +113,45 @@ Respond ONLY in this exact format:
 
 ### Missing Details
 - What is absent from phase-{N}.md that would block autonomous execution
+(write "none" if nothing is missing)
+```
+
+---
+
+## Code-Completeness Agent Prompt (`SCOPE=code-completeness`)
+
+```
+You are validating that a software development plan contains COMPLETE, ready-to-write code for every implementation task. Spec planners often stub, summarize, or leave placeholders — your entire job is to catch that.
+
+Read every file matching:
+{PLAN_DIR}/implementation/phase-*.md
+
+For each task in each phase file, find its code block (the `**Code:**` / `**Code (required...)**` block, or any fenced code block that represents what the task produces).
+
+The canonical list of placeholder/stub markers that make a code block incomplete lives in `references/code-completeness-blocklist.md` — read it before validating. It also tells you to judge **intent, not blind substring matching**: only fail a block when a marker stands in for code the author declined to write; do not fail complete, working code that legitimately contains one of these substrings (e.g. a `...` spread operator or an `e.g.` inside a real string/comment). Fail the task if its code block:
+- Is missing or empty where the task clearly writes or edits a file.
+- Contains a placeholder or elision from the blocklist (used as a stand-in for missing code, not as a legitimate token).
+- Shows only a signature, a comment, or a heading where a real body belongs.
+- Describes the code in prose instead of showing the literal lines.
+- For an edit, does not show the exact old→new lines or a unified diff (a vague "change X to Y" is a fail).
+
+A task passes only if every line the execution agent will write appears verbatim in its code block. New files show full contents; edits show exact old→new lines or a unified diff.
+
+Respond ONLY in this exact format:
+
+## Validation Report
+
+### Status: [PASS | NEEDS_IMPROVEMENT]
+
+### Issues
+[code-completeness, phase-N, task-X] Description of the incomplete/placeholder code block and what is missing
+(write "none" if every task's code is complete)
+
+### Recommendations
+- The exact phase file, task, and what concrete code must replace the placeholder
+(write "none" if no recommendations)
+
+### Missing Details
+- Any task whose real code cannot be determined from the plan (the planner must resolve it now)
 (write "none" if nothing is missing)
 ```
