@@ -1,3 +1,14 @@
+## [1.59.0](https://github.com/cloudvoyant/codevoyant/compare/v1.58.0...v1.59.0) (2026-07-13)
+
+### Features
+
+* **pr,spec:** intent-driven review and complete-code planning ([#23](https://github.com/cloudvoyant/codevoyant/issues/23))
+
+- pr review: four-dimension subagent assessment (intent match, unnecessary changes, code quality, docs freshness)
+- pr open: derive a terse, junior-friendly Intent from the diff + executed spec plan
+- spec new: code-completeness gate rejects stubs/TODOs so plans carry full code
+- chore(spec): drop banned self-attribution from the PR body template
+
 ## [1.58.0](https://github.com/cloudvoyant/codevoyant/compare/v1.57.1...v1.58.0) (2026-07-11)
 
 ### Features
