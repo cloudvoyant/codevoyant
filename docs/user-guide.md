@@ -184,11 +184,11 @@ PR orchestrates the full review lifecycle: generating inline comments from a dif
 **Publish a pending draft:**
 
 ```bash
-/pr complete           # submit the draft review
-/pr complete --event APPROVE
+/pr publish                    # submit the draft review AND mark the PR/MR ready
+/pr publish --review-only      # submit just the draft review
 ```
 
-Review documents live in `.codevoyant/review/{slug}/` and are reusable across `review`, `address`, and `complete` invocations.
+Review documents live in `.codevoyant/review/{slug}/` and are reusable across `review`, `address`, and `publish` invocations.
 
 See the [pr reference](/skills/pr) for all commands.
 

@@ -5,7 +5,7 @@ Publish what's in draft on a PR/MR — in one step:
 1. Any **pending draft review** (the inline comments from `pr review` / `pr address`) → submitted.
 2. The **PR/MR itself**, if it's still a draft → marked ready for review.
 
-Runs whichever applies. (For review-only publishing, `pr complete` still exists; `publish` is the umbrella.)
+Runs whichever applies. (For review-only publishing, use `--review-only`; `publish` is the umbrella.)
 
 ## Arguments
 
@@ -87,9 +87,9 @@ Cancel → exit without changes.
 
 Do these in order (each only if its flag computed true in Step 2):
 
-1. **Publish the pending review** (`WILL_PUBLISH_REVIEW`): run the `complete` workflow — read and execute `references/workflows/complete.md` with `{PR_NUMBER} --event {EVENT}` — or directly:
-   - GitHub: `/gh complete {PR_NUMBER} --event {EVENT}`
-   - GitLab: `/glab complete {PR_NUMBER}` (`--approve` if `EVENT == APPROVE`)
+1. **Publish the pending review** (`WILL_PUBLISH_REVIEW`): submit the pending draft review inline —
+   - GitHub: confirm a PENDING review still exists (`gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews" --jq '[.[] | select(.state=="PENDING")] | length'`); if none, note `⚠ No pending draft review found — run /gh push-comments first` and skip this sub-step. Otherwise call `/gh complete {PR_NUMBER} --event {EVENT}`.
+   - GitLab: no PENDING concept exists; call `/glab complete {PR_NUMBER}` (`--approve` if `EVENT == APPROVE`).
 2. **Mark the PR/MR ready** (`WILL_MARK_READY`):
    - GitHub: `gh pr ready {PR_NUMBER}`
    - GitLab: `glab mr update {PR_NUMBER} --ready`

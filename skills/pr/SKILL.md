@@ -1,6 +1,6 @@
 ---
 name: pr
-description: 'Code review workflows: create a draft PR/MR, generate AI-powered inline review comments, address change requests, or complete a draft review. Triggers on: "pr open", "pr new", "pr review", "pr address", "pr complete", "open a PR", "create a draft PR", "code review", "pr mr", "pr this PR", "address pr comments", "fix review comments", "complete draft review", "publish review".'
+description: 'Code review workflows: create a draft PR/MR, generate AI-powered inline review comments, address change requests, publish a draft review, or merge a PR/MR. Triggers on: "pr open", "pr new", "pr review", "pr address", "pr publish", "pr merge", "open a PR", "create a draft PR", "code review", "pr mr", "pr this PR", "address pr comments", "fix review comments", "publish review", "merge PR", "land PR".'
 license: MIT
 compatibility: Works on Claude Code. Requires gh (GitHub) or glab (GitLab) CLI.
 requires_one_of: [gh, glab]
@@ -44,8 +44,11 @@ case "$VERB" in
   "create")  VERB="open"    ;;
   "draft")   VERB="open"    ;;
   "ready")   VERB="publish" ;;  # alias: /pr ready → /pr publish
+  "land")    VERB="merge"   ;;  # alias: /pr land → /pr merge
 esac
 ```
+
+Note: `complete` is no longer a `pr` verb — it was folded into `publish` (`/pr publish --review-only`). `/pr complete` falls through to `help`. (The platform `/gh complete` / `/glab complete` subcommands are unaffected.)
 
 ## Step 1: Dispatch to Workflow
 
@@ -61,7 +64,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **update** (`references/workflows/update.md`) — apply `<!-- > … -->` annotations or a chat edit to the last artifact (description/review/address)
 - **squash** (`references/workflows/squash.md`) — squash branch commits into one or more coherent, changelog-ready commits
 - **publish** (`references/workflows/publish.md`) — publish a draft PR/MR (mark ready) and/or its pending draft review; alias `ready`
-- **complete** (`references/workflows/complete.md`) — publish a pending draft review
+- **merge** (`references/workflows/merge.md`) — merge the PR/MR (squash by default, semantic-release aware); alias `land`
 - **help** (`references/workflows/help.md`) — print command reference
 
 ## Agent Index
