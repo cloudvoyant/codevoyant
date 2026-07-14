@@ -31,7 +31,7 @@ For each flow found, read its `flow.md` and extract:
 - **step counts** — `done` = number of `[x]` lines, `total` = total step lines
 - **parameters** — the token names from the Parameters section (or "—")
 
-> **Note:** `list` reads step counts from each flow **definition**, so a freshly defined flow shows `0/N`. Live per-run progress is not in the definition — it lives in the local run instance `.codevoyant/runs/{slug}/progress.md` (see `references/flow-dir.md` → *Run instance*). Use `/flow status <name>` to see a run's actual progress.
+> **Note:** `list` reads step counts from each flow **definition**, so a freshly defined flow shows `0/N`. Live per-run progress is not in the definition — it lives in a local, per-run instance `.codevoyant/flows/{flow-slug}-{plan-slug}/progress.md`, sitting beside the definition (see `references/flow-dir.md` → *Run instance*). Use `/flow status <name>` to see a run's actual progress. (Enumerating definitions here filters to dirs holding `flow.md`, so run instances — which hold `progress.md`, not `flow.md` — are never listed as flows.)
 
 ## Step 2: Render the table
 

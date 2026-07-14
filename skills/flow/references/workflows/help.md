@@ -35,10 +35,17 @@ Forwarding flags to steps:
 
 Definitions vs. run instances:
   A flow's directory is a read-only DEFINITION (steps + implementations). Running a
-  flow never mutates it — progress + context for a run live in a local RUN INSTANCE:
-    .codevoyant/runs/<slug>/  (run.md + progress.md + context.md)
-  so a global flow stays a pristine template and concurrent runs never clobber each
-  other. /flow status reads the run instance; /flow doctor cleans up when they don't.
+  flow never mutates it — progress + context for a run live in a local, PER-RUN
+  RUN INSTANCE keyed by that run's spec-plan slug, sitting BESIDE the definition in
+  the same .codevoyant/flows/ directory:
+    .codevoyant/flows/<flow-slug>/               ← definition (flow.md + implementation/)
+    .codevoyant/flows/<flow-slug>-<plan-name>/   ← run instance (run.md + progress.md + context.md)
+  (before step 1 resolves the plan slug, the instance is a provisional
+  .codevoyant/flows/<flow-slug>-_pending-<run-id>/, renamed on adoption). Definitions
+  and instances are told apart by CONTENT (flow.md vs progress.md + run.md's slug:),
+  not by name. So a global flow stays a pristine template and concurrent runs of the
+  same flow never clobber each other. /flow status reads the newest run instance;
+  /flow doctor checks them all.
 
 Parameters (dynamic input):
   Put {{placeholders}} in any step. At run time:
