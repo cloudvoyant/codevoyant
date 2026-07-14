@@ -3,7 +3,7 @@ description: 'Specification-driven development. Triggers on: "spec new", "spec g
 name: spec
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
-argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--usage] [--flags]'
+argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--worktree] [--usage] [--flags]'
 ---
 
 > **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.

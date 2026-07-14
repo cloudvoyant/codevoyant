@@ -21,7 +21,7 @@ mkdir -p "$(dirname "$SETTINGS_FILE")"
 
 Scan the spec skill's workflow files (`skills/spec/references/workflows/*.md` and `skills/spec/agents/*.md`) for bash commands used during execution. Map each to a Claude Code allow entry using the narrowest command prefix that covers actual usage. Typical spec entries include:
 
-- `Bash(git worktree add:*)`, `Bash(git rev-parse:*)`, `Bash(git status:*)`, `Bash(git log:*)`, `Bash(git diff:*)`
+- `Bash(git worktree add:*)`, `Bash(git show-ref:*)`, `Bash(git rev-parse:*)`, `Bash(git switch:*)`, `Bash(git status:*)`, `Bash(git log:*)`, `Bash(git diff:*)`
 - `Bash(grep:*)`, `Bash(sed:*)`, `Bash(printf:*)`
 - `Bash(mise run:*)` and any task runner recipes detected in the project (e.g. `Bash(just test:*)`, `Bash(make build:*)`)
 - `WebFetch`, `WebSearch`

@@ -39,3 +39,4 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **hooks** (`references/workflows/hooks.md`) — install/manage the commit-msg hook that strips agent self-attribution
 - **help** (`references/workflows/help.md`) — print command reference
 - **rebase** (`references/workflows/rebase.md`) — interactive rebase helper
+- **worktree** (`references/workflows/worktree.md`) — create/switch a branch and/or create a worktree (shared routine reused by spec)

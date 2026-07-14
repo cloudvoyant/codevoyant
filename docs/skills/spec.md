@@ -19,12 +19,18 @@ Two ways to give the objective:
 /spec new auth-refactor                          # re-run after filling → plans
 /spec new https://linear.app/team/issue/ENG-42  # seed from Linear issue
 /spec new https://github.com/org/repo/issues/7  # seed from GitHub issue
-/spec new my-feature --branch feature-branch    # create with a git worktree
+/spec new my-feature --branch                   # create/switch to a branch (name derived from the slug)
+/spec new my-feature --branch feature-branch    # create/switch to a branch with an explicit name
+/spec new my-feature --worktree                 # create a worktree under .codevoyant/worktrees/<branch>
+/spec new my-feature --worktree ../wt           # create a worktree at an explicit path
+/spec new my-feature --branch feat --worktree ../wt  # branch + worktree at an explicit path
 /spec new --blank                               # empty template, no planning session
 /spec new my-feature --bg                       # create and immediately start background execution
 /spec new my-feature --validate                 # run a validation pass on the plan before finishing
 /spec new my-feature --usage                    # record planner decisions for /usage report
 ```
+
+`--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: `.codevoyant/worktrees/<branch>`; with a path: that path). Both delegate to the shared `/git worktree` routine.
 
 Pass a Linear, GitHub, or GitLab issue URL as the first argument to pre-fill requirements from the issue title, description, and comments.
 
