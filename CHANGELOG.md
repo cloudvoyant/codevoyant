@@ -1,3 +1,39 @@
+## [1.61.0](https://github.com/cloudvoyant/codevoyant/compare/v1.60.0...v1.61.0) (2026-07-14)
+
+### Features
+
+* **spec,git:** decouple --branch/--worktree, add git worktree workflow
+
+Branch and worktree creation in the spec workflow were coupled:
+`/spec new --branch` created both a branch and a worktree, there was
+no way to request a worktree independently, and worktrees landed in a
+top-level `.worktrees/` dir even though other spec state now lives
+under `.codevoyant/`. This decouples the two triggers and centralizes
+the shell logic in the git skill.
+
+**git skill**
+- Add a reusable `worktree` workflow: create/switch a branch and/or
+  create a worktree, each independent (request either, both, or
+  neither). Default worktree path is `.codevoyant/worktrees/<branch>`.
+- Guard an empty resolved branch name, normalize slug-derived names
+  (collapse/trim hyphens), and surface git's stderr on switch/add
+  failure instead of hiding it.
+- Register the `worktree` verb in SKILL.md and help.md.
+
+**spec skill**
+- `/spec new` creates a branch only on `--branch` (bare flag derives
+  the name from the plan slug) and a worktree only on
+  `--worktree [path]`; neither flag implies the other.
+- Default worktree path moved from `.worktrees/` to
+  `.codevoyant/worktrees/`; the branch/worktree steps now delegate to
+  the shared git worktree routine.
+- Sync help.md, the SKILL.md argument-hint, and the allow-list.
+
+**docs**
+- Document the decoupled `--branch`/`--worktree` flags and the new
+  `/git worktree` command in docs/skills/spec.md, docs/skills/git.md,
+  and README.md.
+
 ## [1.60.0](https://github.com/cloudvoyant/codevoyant/compare/v1.59.0...v1.60.0) (2026-07-13)
 
 ### Features
