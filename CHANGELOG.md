@@ -1,3 +1,43 @@
+## [1.62.0](https://github.com/cloudvoyant/codevoyant/compare/v1.61.0...v1.62.0) (2026-07-14)
+
+### Features
+
+* **flow:** namespace run-state per plan to fix concurrent-run collision
+
+A flow's mutable run-state (progress.md, run.md, context.md) lived at a
+single path keyed only by the flow slug, so two concurrent runs of the
+same flow shared one directory and clobbered each other's state. This
+namespaces run-state per plan so concurrent runs no longer collide.
+
+**Layout**
+- Run instances now live flat under `.codevoyant/flows/`, named
+  `{flow-slug}-{plan-slug}` (e.g. `.codevoyant/flows/autospec-my-feature/`),
+  as siblings of local flow definitions (`.codevoyant/flows/{flow-slug}/`,
+  which hold `flow.md`). Spec plans stay at `.codevoyant/plans/{name}/`,
+  so a spec plan and a flow run may share a name without colliding.
+- The instance identifier is the resolved plan slug (falling back to the
+  branch slug if a flow yields no plan).
+
+**Bootstrap (plan slug unknown until step 1)**
+- `go` creates a provisional `{flow-slug}-_pending-{run-id}/` instance at
+  start, then atomically adopts it to `{flow-slug}-{plan-slug}/` on the
+  first `slug=` handoff via an `mkdir` claim (never clobbering an
+  existing target; a losing racer keeps its provisional dir).
+- `run.md` records `instance:` / `adopted:`; a completed -> re-seed done
+  in place keeps `instance: {name}` / `adopted: true`.
+
+**Discovery**
+- `status`/`doctor` find instances by name glob `{flow-slug}-*` filtered
+  to dirs containing `progress.md` (definitions hold `flow.md`), then
+  confirmed by `run.md` `slug: {flow-slug}` so a hyphen-prefix flow
+  (`auto` vs `auto-review`) is never mis-attributed.
+- The original `.codevoyant/runs/{slug}/` layout is still recognized as
+  a legacy instance for back-compat.
+
+**Docs**
+- `docs/skills/flow.md` updated to the new layout, bootstrap, and
+  concurrency story.
+
 ## [1.61.0](https://github.com/cloudvoyant/codevoyant/compare/v1.60.0...v1.61.0) (2026-07-14)
 
 ### Features
