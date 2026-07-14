@@ -88,32 +88,92 @@ FLOW_DIR = {FLOWS_DIR}/{slug}/     # global if --global, else local
 
 A flow **definition** (`{FLOWS_DIR}/{slug}/` with `flow.md` + `implementation/step-N.md`) is a **read-only template**. `go` must never mutate it — mutating a *global* definition clobbers the shared template and lets concurrent/other-project runs overwrite each other's state.
 
-All mutable run-state lives in a **run instance**, which is **always local to the current project**, regardless of whether the definition is local or global:
+All mutable run-state lives in a **run instance**, which is **always local to the current project**, regardless of whether the definition is local or global. Run instances live **flat under `.codevoyant/flows/`** — the *same* directory that holds flow **definitions** — with each instance named `{flow-slug}-{plan-slug}`. So instances and definitions are **siblings**: a definition is `.codevoyant/flows/{flow-slug}/` (holds `flow.md` + `implementation/`), while a run instance is `.codevoyant/flows/{flow-slug}-{plan-slug}/` (holds `run.md` + `progress.md` + `context.md`). They are told apart by **content**, not name (see *Resolving / discovering instances* below):
 
 ```
-.codevoyant/runs/{slug}/
-  run.md         # this run's resolved identity (slug, definition, branch/spec-slug/worktree) — written at go start
+.codevoyant/flows/{flow-slug}-{plan-slug}/
+  run.md         # this run's resolved identity (flow slug, definition, branch/spec-slug/worktree) — written at go start
   progress.md    # a copy of the definition's Steps checklist; the ONLY place [ ] → [x] is flipped
   context.md     # the accumulating handoff log (persisted for resume)
+  archive/       # prior completed instances that shared this same {plan-slug}
 ```
+
+`{flow-slug}` is the resolved definition's directory name. `{plan-slug}` is the run's resolved **spec-plan slug** — the value this run's step-1 `/spec new` produces and hands off as `slug=`. If a flow ever produces no plan slug, fall back to the run's **branch slug** — hence the name is "{flow-slug}-{branch-or-plan-slug}". Sanitize the slug the same way the plan/branch naming already does (lowercase, hyphens). Spec plans live at `.codevoyant/plans/{name}/` while a flow's runs live at `.codevoyant/flows/{flow-slug}-{name}/` — so a spec plan and a flow run may share the same `{name}` without colliding. Because each instance dir carries the `{plan-slug}` in its name, **two concurrent runs of the same flow that resolve different plan slugs never share `progress.md`/`context.md`/`run.md`** — the collision that a single flow-slug-keyed directory caused is gone.
+
+**Naming-collision edge case (documented, not guarded).** Because instances (`{flow-slug}-{plan-slug}`) sit beside definitions (`{flow-slug}`) in `.codevoyant/flows/`, an instance directory could *in theory* collide with a **local flow definition literally named `{flow-slug}-{plan-slug}`** (e.g. a flow whose slug is `autospec-my-feature`). This is a documented edge case, not a guarded one: definitions contain `flow.md` and instances contain `progress.md` + a `run.md` whose `slug:` field is the flow's own slug, so the two are always distinguishable by **content**. Discovery below relies on that content distinction rather than the name alone, so no heavy guard is needed.
+
+### Bootstrapping: provisional id, then adopt to the plan-slug
+
+The plan slug does not exist until step 1 (`/spec new`) has run, but the instance (`progress.md`, `run.md`) must exist from the very start of `go`. Reconcile this with a **provisional-then-adopt** scheme:
+
+1. **At run start**, `go` mints a start timestamp `RUN_ID` and seeds the instance under a provisional directory. The provisional is **namespaced by flow-slug** (`{flow-slug}-_pending-{RUN_ID}`) so it is discoverable as this flow's instance and never collides with another flow's provisional:
+   ```bash
+   FLOW_STATE_ROOT=".codevoyant/flows"          # always local — never under $HOME, even for a global definition
+   RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"          # unique per run, sortable
+   RUN_DIR="$FLOW_STATE_ROOT/{flow-slug}-_pending-$RUN_ID"   # provisional instance dir, namespaced by flow-slug
+   mkdir -p "$RUN_DIR"
+   ```
+   `run.md` records `instance: {flow-slug}-_pending-{RUN_ID}` and `adopted: false` — these fields track *this* run's actual directory, so they hold `…-_pending-…`/`false` only for a fresh provisional run. A **completed → re-seed** re-seeds in place under an already-adopted `{flow-slug}-{plan-slug}/` (or legacy `.codevoyant/runs/{flow-slug}/`) dir, so it writes `instance: {basename}` / `adopted: true` instead — it keeps the identity it already earned, and step 2's adoption below is a no-op for it (see go.md Step 1).
+2. **On the first handoff that resolves a concrete `slug=`** (the spec-plan slug — the same value that fills `spec-slug:`), `go` **adopts** the instance: it renames the provisional directory to `{flow-slug}-{plan-slug}/` (using that spec slug) and flips `adopted: true`. Two guards keep this correct:
+   - **Already adopted → no-op.** Adoption only runs while `adopted: false`. A run that is already adopted (a normal run past its first `slug=`, or an in-place re-seed that started adopted) skips the move — in particular when `TARGET_DIR` *is* this run's own current `RUN_DIR`, that is already-adopted, not a collision.
+   - **Atomic claim (no TOCTOU).** Do not `[ ! -e "$TARGET_DIR" ]` then `mv`: a concurrent run could create `TARGET_DIR` in between and `mv` would then nest the provisional dir *inside* it. Claim the slug atomically with `mkdir "$TARGET_DIR"` (fails iff it already exists) and only move the provisional contents in on a successful claim:
+   ```bash
+   PLAN_SLUG="{resolved spec slug}"
+   TARGET_DIR="$FLOW_STATE_ROOT/{flow-slug}-$PLAN_SLUG"
+   if [ "$(sed -n 's/^adopted: *//p' "$RUN_DIR/run.md")" = "true" ]; then
+     :                                             # already adopted — no move
+   elif mkdir "$TARGET_DIR" 2>/dev/null; then      # atomic claim: succeeds iff TARGET_DIR did not exist
+     mv "$RUN_DIR"/* "$RUN_DIR"/.[!.]* "$TARGET_DIR"/ 2>/dev/null   # move contents (incl. dotfiles)
+     rmdir "$RUN_DIR" 2>/dev/null
+     RUN_DIR="$TARGET_DIR"                          # adopt; update RUN_DIR for the rest of the run
+   fi
+   ```
+   If the claim is lost — `mkdir` fails because `TARGET_DIR` already exists (a prior/other run of the same flow already claimed that plan slug) — **do not overwrite it**: keep the provisional name, leave `adopted: false`, and note it: `ℹ Kept provisional run dir '{flow-slug}-_pending-{RUN_ID}' — '{flow-slug}-{plan-slug}' already exists (not clobbering).` Preserving is mandatory: overwriting is exactly the bug this layout fixes.
+3. A run that **never** resolves a spec slug simply lives out its life under `{flow-slug}-_pending-{RUN_ID}/`. That is still collision-free because `RUN_ID` is unique per run.
+
+Adoption happens **once** — only while `adopted: false`. After adoption, `RUN_DIR` points at `{flow-slug}-{plan-slug}/` for the remainder of the run and on every resume (see below).
+
+### Identity record (`run.md`)
 
 `run.md` is the run instance's **identity record**. Because the definition and `progress.md` only ever hold `{{placeholders}}`, the resolved branch / spec-slug / worktree of a real run live nowhere in the definition — `run.md` (and `context.md`'s handoffs) are the only place they exist. `doctor` reads `run.md` as the authoritative "what is this run" anchor to distinguish a legitimately-interrupted `context.md` from one clobbered by a different run.
 
 `run.md` uses these field names, and **`go` (backfill) and `doctor` (Check 1) must use the same ones** — one canonical name per identifier, no synonyms:
 
-- `slug:` — the **flow's** own slug (the definition directory name); set at first run, never overwritten.
+- `slug:` — the **flow's** own slug (the definition directory name); set at first run, never overwritten. This is the **authoritative discovery filter**: `status`/`doctor` confirm a candidate instance really belongs to flow `X` by checking its `run.md` has `slug: X` (see *Resolving / discovering instances*).
+- `instance:` — the current instance directory **basename** under `.codevoyant/flows/` (`{flow-slug}-_pending-{RUN_ID}` before adoption, `{flow-slug}-{plan-slug}` after). Lets `doctor`/`status` confirm which directory a `run.md` belongs to.
+- `adopted:` — `false` until the provisional dir has been renamed to `{flow-slug}-{plan-slug}`, then `true`.
 - `branch:` — receives a handoff `branch=` value.
-- `spec-slug:` — receives a handoff `slug=` value (the resolved **spec** slug from a `spec new`/`spec go` step). Note the handoff token is `slug=` but the recorded field is `spec-slug:` precisely so it is never confused with the flow `slug:` above.
+- `spec-slug:` — receives a handoff `slug=` value (the resolved **spec** slug from a `spec new`/`spec go` step). Note the handoff token is `slug=` but the recorded field is `spec-slug:` precisely so it is never confused with the flow `slug:` above. This is the same value used as the `{plan-slug}` in the adopted `{flow-slug}-{plan-slug}/` directory name.
 - `worktree:` — receives a handoff `worktree=` value.
 
-Resolve it the same way in every workflow that runs or inspects a flow:
+### Resolving / discovering instances
 
-```bash
-RUNS_DIR=".codevoyant/runs"          # always local — never under $HOME, even for a global definition
-RUN_DIR="$RUNS_DIR/{slug}"           # {slug} is the resolved definition's directory name
-```
+The run instance is **always local**, whether the definition is local or global. There are two access patterns:
 
-- `{slug}` is the directory name of the resolved definition (from `FLOW_DIR`), so the run instance is stable whether the definition was found locally or globally.
+- **`go` creating or resuming a run** uses the bootstrap scheme above: on a fresh run it mints `{flow-slug}-_pending-{RUN_ID}`; on a **resume** it must reattach to the same run's directory rather than mint a new one — locate the existing instance (the adopted `{flow-slug}-{plan-slug}/` if it exists, else the newest `{flow-slug}-_pending-*/`) that is not `Complete`, and set `RUN_DIR` to it. **Pre-adoption resume is best-effort by recency:** with several non-`Complete` `{flow-slug}-_pending-*/` dirs and no plan slug yet to key on, newest-mtime may reattach to the wrong provisional run. When the invocation carries identifying params (`--set`/input or `--branch`), prefer the provisional whose `run.md`/`context.md` matches; otherwise use newest-mtime and surface the ambiguity (see go.md Step 0.5).
+- **`status`/`doctor` discovering instances — CRITICAL disambiguation.** `.codevoyant/flows/` mixes definitions and instances, and one flow slug can be a hyphen-prefix of another (e.g. `auto` vs `auto-review`). So discovery must **not** rely on the `{flow-slug}-*` name glob alone. Two filters, applied in order:
+  1. **Content filter — must be an instance, not a definition.** Candidate = an entry under `.codevoyant/flows/` matching `{flow-slug}-*` that contains a `progress.md`. Definition dirs contain `flow.md`, not `progress.md`, so they are excluded automatically.
+  2. **Authoritative slug filter — must belong to *this* flow.** Confirm each candidate's `run.md` records `slug: {flow-slug}` (the flow's own slug field). This rejects `auto-review-{plan}/` instances when discovering flow `auto` — the glob `auto-*` would match `auto-review-…` but its `run.md` says `slug: auto-review`, not `slug: auto`, so it is filtered out.
+
+  ```bash
+  # every instance directory of flow {flow-slug} = an immediate {flow-slug}-* dir that
+  # (1) has a progress.md (so it's an instance, not a definition), AND
+  # (2) whose run.md records slug: {flow-slug} (so it's THIS flow, not a hyphen-prefixed neighbour)
+  for d in "$FLOW_STATE_ROOT"/{flow-slug}-*/; do
+    [ -f "$d/progress.md" ] || continue                                   # excludes definitions (they hold flow.md)
+    [ "$(sed -n 's/^slug: *//p' "$d/run.md" 2>/dev/null)" = "{flow-slug}" ] || continue  # excludes prefix-colliding flows
+    echo "$d"
+  done
+  ```
+  A provisional `{flow-slug}-_pending-{RUN_ID}/` is also an instance (it has `progress.md` and a `run.md` with `slug: {flow-slug}`). `status` picks the **newest** matching directory by mtime (the current run); `doctor` inspects **every** one.
+
+### Back-compat with legacy `.codevoyant/runs/{flow-slug}/` instances
+
+The **original** pre-PR layout put the state files **directly** under `.codevoyant/runs/{flow-slug}/` (a single dir keyed by flow-slug only, no plan subdir). Treat that as a valid **legacy instance**: if `.codevoyant/runs/{flow-slug}/progress.md` exists directly (not in a subdir), discovery must include `.codevoyant/runs/{flow-slug}/` itself as an instance so `status`/`doctor` still find and report it (clearly labeled legacy) — never crash on it. `go` leaves legacy instances untouched and always creates *new* runs under the `.codevoyant/flows/{flow-slug}-…` provisional/adopted scheme; there is no automatic migration. (The unreleased intermediate layouts have no back-compat and leave no references.)
+
+### Invariants
+
+- `{flow-slug}` is the directory name of the resolved definition (from `FLOW_DIR`), so instances are named stably whether the definition was found locally or globally.
 - Step **implementations** are always read from the definition (`FLOW_DIR/implementation/step-N.md`), never copied into the run instance — only the checklist (`progress.md`) and the handoff log (`context.md`) are instance-local.
-- Create on demand: `mkdir -p "$RUN_DIR"` (safe if it already exists).
+- Create directories on demand with `mkdir -p` (safe if they already exist).
 - A run instance whose **definition is global** is expected and normal — it is not corruption or drift.

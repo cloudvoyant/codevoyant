@@ -35,6 +35,7 @@ If still no steps after prompting, error: "A flow must have at least one step."
 ## Step 1: Resolve slug and create directory
 
 - `slug` = `FLOW_NAME` lowercased, spaces replaced with hyphens
+- **Naming-collision note (documented, not guarded).** Run instances live beside definitions in `.codevoyant/flows/`, named `{flow-slug}-{plan-slug}` (see `references/flow-dir.md` → *Run instance*). A flow definition literally named `{flow-slug}-{plan-slug}` could therefore *in theory* share a directory name with another flow's run instance — but definitions hold `flow.md` while instances hold `progress.md` + a `run.md` whose `slug:` is the flow's own slug, so discovery tells them apart by **content**, never by name (see the discovery filters in `status`/`doctor`). No reserved-name guard is needed here.
 - `FLOW_DIR = {FLOWS_DIR}/{slug}/` (global if `--global`, else local — from Step 0)
 - If `--global`, first `mkdir -p "$HOME/.codevoyant/flows"`.
 - If `FLOW_DIR/flow.md` already exists: ask "Flow '{slug}' already exists in {scope}. Replace it or cancel? (replace/cancel)"

@@ -26,7 +26,9 @@ Build the parameter map `PARAMS`:
 
 Resolve `FLOW_DIR` (the **definition** — read-only) per `references/flow-dir.md` (local-first, then global; `--global` forces global only). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
 
-Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*: `RUN_DIR=".codevoyant/runs/{slug}/"` where `{slug}` is the definition's directory name. The run instance is **always local**, even when the definition is global. `mkdir -p "$RUN_DIR"`.
+Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*. Run instances live **flat under `.codevoyant/flows/`** — beside the flow definitions — each named `{flow-slug}-{plan-slug}` (keyed by the run's resolved spec-plan slug). The slug does not exist yet at this point, so **bootstrap a provisional instance**: mint `RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"` and set `FLOW_STATE_ROOT=".codevoyant/flows"`. On a **fresh run**, `RUN_DIR="$FLOW_STATE_ROOT/{flow-slug}-_pending-$RUN_ID"` (the provisional is namespaced by `{flow-slug}` — the definition's directory name — so it never collides with another flow's provisional); on a **resume**, reattach `RUN_DIR` to this run's existing directory instead of minting a new one — the adopted `$FLOW_STATE_ROOT/{flow-slug}-{plan-slug}/` if present, else the newest non-`Complete` `$FLOW_STATE_ROOT/{flow-slug}-_pending-*/` whose `run.md` records `slug: {flow-slug}` (also recognize a legacy `.codevoyant/runs/{flow-slug}/progress.md` sitting directly under the legacy flow dir — reuse `.codevoyant/runs/{flow-slug}/` as `RUN_DIR` in that case). The run instance is **always local**, even when the definition is global. `mkdir -p "$RUN_DIR"`.
+
+**Pre-adoption resume is best-effort by recency.** Once a run has adopted, its `{flow-slug}-{plan-slug}/` is unambiguous. But if **two** runs of this flow were both interrupted *before* adoption, there are multiple non-`Complete` `{flow-slug}-_pending-*/` dirs and no plan slug yet to tell them apart — reattaching to the newest by mtime may pick the wrong one. Disambiguate cheaply: if the current invocation carries identifying params (`--set`/`input`, or an explicit `--branch`), prefer the provisional whose `run.md`/`context.md` **matches** those (e.g. same `branch:` or objective); otherwise fall back to newest-mtime and note it — `ℹ Multiple interrupted runs of '{FLOW_NAME}' found; resuming the most recent ({flow-slug}-_pending-{RUN_ID}). Pass matching --set/--branch to target a specific one, or /flow status to inspect.` Do not silently guess when it's ambiguous.
 
 **The definition is a template — this workflow never writes to `FLOW_DIR`.** All mutable run-state (`progress.md`, `context.md`) is written under `RUN_DIR` only.
 
@@ -46,11 +48,18 @@ slug: {slug}                    # the FLOW's own slug (definition dir name) — 
 definition: {FLOW_DIR}          # absolute or scope-qualified path to the definition
 scope: {local|global}           # scope of the definition
 started: {ISO timestamp}
+instance: {flow-slug}-_pending-{RUN_ID}   # current instance dir basename under .codevoyant/flows/ — renamed to {flow-slug}-{plan-slug} on adoption
+adopted: false                  # flips to true once the provisional dir is renamed to {flow-slug}-{plan-slug}
 # resolved run identifiers (backfilled as steps produce them — see Step 2.5):
 branch:                         # ← handoff branch=
 spec-slug:                      # ← handoff slug=  (the resolved spec slug; distinct from the flow slug above)
 worktree:                       # ← handoff worktree=
 ```
+
+**`instance:`/`adopted:` must match where `run.md` physically lives.** The `{flow-slug}-_pending-{RUN_ID}` / `adopted: false` values above are correct **only for a fresh run**, whose `RUN_DIR` really is a provisional `{flow-slug}-_pending-{RUN_ID}/` dir. A **completed → re-seed** re-seeds *in place* — its `RUN_DIR` is the run's already-adopted `{flow-slug}-{plan-slug}/` directory (or a legacy `.codevoyant/runs/{flow-slug}/` dir), not a provisional one. Writing `…-_pending-…`/`adopted: false` there would immediately mis-record the identity (claiming a provisional instance while living in `{flow-slug}-{plan-slug}/`) and then, on the re-run's first `slug=`, mislead the adoption check into a false "already exists (not clobbering)". So set these two fields from the actual `RUN_DIR` basename:
+- **RUN_DIR is a provisional `{flow-slug}-_pending-{RUN_ID}/` dir** (fresh run) → `instance: {flow-slug}-_pending-{RUN_ID}`, `adopted: false`.
+- **RUN_DIR is already an adopted `{flow-slug}-{plan-slug}/` dir, or a legacy `.codevoyant/runs/{flow-slug}/` dir** (in-place re-seed) → `instance: {basename of RUN_DIR}` (`{flow-slug}-{plan-slug}`, or the flow-slug for legacy), `adopted: true`. The run keeps its already-earned identity; adoption below is a no-op for it.
+
 This file is the **authoritative record of what this run is**. `doctor` compares `context.md`'s handoff identifiers against `run.md` (not against placeholder step text) to decide whether a `context.md` belongs to this run or was clobbered by another. On **resume**, leave an existing `run.md` in place (do not overwrite the recorded identity); only backfill empty fields if later steps resolve them.
 
 **Resolve every `{{placeholder}}` used anywhere in the steps:**
@@ -104,6 +113,27 @@ For each pending step in order:
    Keep `CONTEXT` terse — it is injected into every later step, so it must stay a short bulleted log, not full transcripts. **Persist it:** write the accumulated `CONTEXT` to `RUN_DIR/context.md` (the local run instance — **never** beside the definition) so an interrupted flow can resume with it (see Step 1).
 
    **Backfill the run identity.** If this handoff resolved a concrete `branch`, spec slug, or `worktree` (e.g. a `spec new`/`pr open` step reporting `branch=…`, `slug=…`, `worktree=…`), write those values into the matching empty fields of `RUN_DIR/run.md`. **Field mapping — be exact:** a handoff `slug=` (the resolved *spec* slug from a `spec new`/`spec go` step) maps to `run.md`'s `spec-slug:` field, **never** to the top-level `slug:` (which is the flow's own slug, already populated at first run and never overwritten); handoff `branch=` → `branch:`; handoff `worktree=` → `worktree:`. Only fill fields that are still empty — never rewrite an already-recorded identifier (the first value a run commits to is its identity; a later differing value would be the clobber `doctor` looks for). This keeps `run.md` the concrete, resolved anchor `doctor` compares `context.md` against.
+
+   **Adopt the instance directory (first `slug=` only).** If this is the **first** handoff to resolve a `slug=` (i.e. `run.md`'s `adopted:` is still `false`) and the run instance is still under a provisional `{flow-slug}-_pending-{RUN_ID}/` directory, adopt it to the plan slug per `references/flow-dir.md` → *Bootstrapping*: with `PLAN_SLUG` = the resolved spec slug and `TARGET_DIR="$FLOW_STATE_ROOT/{flow-slug}-$PLAN_SLUG"` (i.e. `.codevoyant/flows/{flow-slug}-$PLAN_SLUG`), move the provisional dir onto `TARGET_DIR`, then point `RUN_DIR` at it and set `run.md`'s `instance: {flow-slug}-{plan-slug}` and `adopted: true`.
+
+   Two guards make this correct:
+   - **Already adopted → no-op.** If `run.md`'s `adopted:` is already `true`, this run owns its `{flow-slug}-{plan-slug}/` (or legacy) dir — skip adoption entirely. In particular, when `TARGET_DIR` **is this run's own current `RUN_DIR`** (an in-place re-seed that started life adopted, per Step 1), there is nothing to move: it is already adopted, not a collision.
+   - **Atomic claim, no TOCTOU.** Do **not** test `[ ! -e TARGET_DIR ]` then `mv` — between the test and the move a concurrent run could create `TARGET_DIR`, and `mv` would then nest the provisional dir *inside* it (`{flow-slug}-{plan-slug}/{flow-slug}-_pending-{RUN_ID}/`). Claim the slug atomically with `mkdir "$TARGET_DIR"` (fails iff it already exists), and only on a successful claim move the provisional dir's contents into it:
+   ```bash
+   if [ "$(sed -n 's/^adopted: *//p' "$RUN_DIR/run.md")" = "true" ]; then
+     :  # already adopted (fresh-adopted earlier, or an in-place re-seed) — no move
+   elif mkdir "$FLOW_STATE_ROOT/{flow-slug}-$PLAN_SLUG" 2>/dev/null; then
+     # won the atomic claim: move provisional contents (incl. dotfiles) into the claimed dir, drop the empty shell
+     mv "$RUN_DIR"/* "$RUN_DIR"/.[!.]* "$FLOW_STATE_ROOT/{flow-slug}-$PLAN_SLUG"/ 2>/dev/null
+     rmdir "$RUN_DIR" 2>/dev/null
+     RUN_DIR="$FLOW_STATE_ROOT/{flow-slug}-$PLAN_SLUG"
+     # then rewrite run.md: instance: {flow-slug}-{plan-slug} ; adopted: true
+   else
+     # lost the claim (dir already exists) — another run of this flow owns that plan slug
+     echo "ℹ Kept provisional run dir — '{flow-slug}-$PLAN_SLUG' already exists (not clobbering)."
+   fi
+   ```
+   If the claim is lost (`TARGET_DIR` already exists, owned by another run of this flow), **do not move** — keep the provisional directory, leave `adopted: false`, and report `ℹ Kept provisional run dir — '{flow-slug}-{plan-slug}' already exists (not clobbering).` All subsequent writes this run (progress.md, context.md, run.md) use the updated `RUN_DIR`.
 
 6. Update `RUN_DIR/progress.md` — change this step's `[ ]` to `[x]` (keep the original `{{placeholder}}` text; only the run used resolved values). **Never modify the definition's `FLOW_DIR/flow.md`** — it stays a pristine template. Leave `Status` in `progress.md` as `Active` until all steps complete.
 

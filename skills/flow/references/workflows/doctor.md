@@ -2,7 +2,7 @@
 
 Diagnose — and with `--fix`, repair — the health of one flow or every flow across both scopes. Dry-run by default: it reports and changes nothing unless `--fix` is passed.
 
-A flow has two parts (see `references/flow-dir.md`): a read-only **definition** (`flow.md` + `implementation/step-N.md`, local or global) and a local **run instance** (`.codevoyant/runs/{slug}/run.md` + `progress.md` + `context.md`). `run.md` records the run's resolved identity (slug, branch, spec-slug, worktree) and is the concrete anchor doctor uses to tell a legitimately-interrupted `context.md` from a clobbered one. Doctor checks both parts and understands that a run instance whose definition is global is **normal**, not corruption.
+A flow has two parts (see `references/flow-dir.md`): a read-only **definition** (`flow.md` + `implementation/step-N.md`, local or global) and one or more local **run instances**. Run instances live **flat under `.codevoyant/flows/`**, beside the definitions: each is a directory `.codevoyant/flows/{flow-slug}-{plan-slug}/` (or a provisional `.codevoyant/flows/{flow-slug}-_pending-{run-id}/` before adoption; or, for pre-PR runs, a legacy `.codevoyant/runs/{flow-slug}/` with state files directly inside) holding `run.md` + `progress.md` + `context.md`. `run.md` records the run's resolved identity (flow slug, branch, spec-slug, worktree) and is the concrete anchor doctor uses both to tell a legitimately-interrupted `context.md` from a clobbered one **and** to confirm a discovered instance really belongs to this flow. Doctor checks the definition plus **every** run instance of each flow, and understands that a run instance whose definition is global is **normal**, not corruption.
 
 ## Step 0: Parse arguments
 
@@ -28,9 +28,23 @@ Strip `--fix` and `--global`/`-g` before reading the positional name.
   ```
   If `--global` was passed, enumerate only the global line. The target set is every definition found. If none, report "No flows found. Create one: /flow new <name> ..." and exit.
 
-For each target definition, also resolve its **run instance**: `RUN_DIR=".codevoyant/runs/{slug}/"` (always local; `{slug}` = the definition's directory name). The run instance may not exist (flow never run here) — that is fine.
+For each target definition, also enumerate **all** its **run instances** (always local; `{flow-slug}` = the definition's directory name). Run-state now lives **flat under `.codevoyant/flows/`**, beside the definitions, each instance named `{flow-slug}-{plan-slug}`; the original pre-PR layout lived at `.codevoyant/runs/{flow-slug}/` (state files directly inside, keyed by flow-slug only). Because `.codevoyant/flows/` mixes definitions and instances — and one flow slug can be a hyphen-prefix of another (`auto` vs `auto-review`) — discovery must **not** trust the `{flow-slug}-*` glob alone (see `references/flow-dir.md` → *Resolving / discovering instances*): a candidate must (1) hold a `progress.md` (definitions hold `flow.md`, so they're excluded), **and** (2) have a `run.md` recording `slug: {flow-slug}` (the authoritative filter — rejects a hyphen-prefixed neighbour like `auto-review-{plan}/` when discovering flow `auto`). Collect every `RUN_DIR` from both current and legacy:
+```bash
+FLOW_STATE_ROOT=".codevoyant/flows"              # instances live flat here, beside definitions
+LEGACY_RUNS_DIR=".codevoyant/runs/{flow-slug}"   # legacy: original pre-PR run-state root
+RUN_DIRS=()
+# current: flat {flow-slug}-* instances (incl. provisional _pending) with progress.md AND run.md slug == {flow-slug}
+for d in "$FLOW_STATE_ROOT"/{flow-slug}-*/; do
+  [ -f "$d/progress.md" ] || continue                                          # excludes definitions
+  [ "$(sed -n 's/^slug: *//p' "$d/run.md" 2>/dev/null)" = "{flow-slug}" ] || continue   # excludes prefix-colliding flows
+  RUN_DIRS+=("${d%/}")
+done
+# legacy: state files directly under the original .codevoyant/runs/{flow-slug}/ dir
+[ -f "$LEGACY_RUNS_DIR/progress.md" ] && RUN_DIRS+=("$LEGACY_RUNS_DIR")
+```
+A flow may have **zero** run instances (never run here) — that is fine; skip the run-instance checks for it. When it has several (concurrent or historical runs), run the per-instance checks below **once for each** `RUN_DIR` in `RUN_DIRS`, reporting each instance separately.
 
-**Load the run identity.** If `RUN_DIR/run.md` exists (written by `go.md` when the run started — see `references/flow-dir.md` → *Run instance*), read it into `RUN_IDENTITY`: the recorded `slug`, and any resolved `branch` / `spec-slug` / `worktree` fields (empty fields count as unknown). `RUN_IDENTITY` is the **authoritative record of what this run is** — the concrete anchor for Check 1, because the definition and `progress.md` only ever hold `{{placeholders}}`. If `run.md` is absent (e.g. a run that predates the identity file, or a legacy context beside the definition), `RUN_IDENTITY` is unavailable — treat that as "can't determine" everywhere below (which biases toward preserve).
+**Load the run identity (per instance).** For the `RUN_DIR` currently being checked, if `RUN_DIR/run.md` exists (written by `go.md` when the run started — see `references/flow-dir.md` → *Run instance*), read it into `RUN_IDENTITY`: the recorded `slug`, `instance`, `adopted`, and any resolved `branch` / `spec-slug` / `worktree` fields (empty fields count as unknown). `RUN_IDENTITY` is the **authoritative record of what this run is** — the concrete anchor for Check 1, because the definition and `progress.md` only ever hold `{{placeholders}}`. If `run.md` is absent (e.g. a run that predates the identity file, or a legacy context beside the definition), `RUN_IDENTITY` is unavailable — treat that as "can't determine" everywhere below (which biases toward preserve).
 
 **Inspect both context locations independently — do NOT first-match.** Two `context.md` files can coexist: the current run instance's (`RUN_DIR/context.md`) and a lingering legacy one beside the definition (`FLOW_DIR/context.md`, written by pre-run-instance runs). If we picked only the first that exists, a legacy clobber sitting beside the definition would never be inspected or cleaned. So build a list `CONTEXT_FILES` of **every** path that exists:
 - `RUN_DIR/context.md` (if present) — checked against `RUN_IDENTITY`.
