@@ -7,6 +7,7 @@
 | `/git commit [flags]` | Create a conventional commit with CI monitoring |
 | `/git hooks [install\|status\|uninstall]` | Manage the commit-msg hook that strips agent self-attribution |
 | `/git rebase` | Interactive rebase helper |
+| `/git worktree [--branch [name]] [--worktree [path]]` | Create/switch a branch and/or create a worktree under `.codevoyant/worktrees/` |
 | `/git help` | Show this reference |
 
 ### commit flags

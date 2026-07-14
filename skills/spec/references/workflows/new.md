@@ -25,6 +25,8 @@ Received from dispatcher:
 
 - `PLAN_NAME` — first non-flag argument (may be empty)
 - `BRANCH_NAME` — value after `--branch` (may be empty)
+- `WORKTREE_FLAG` — true if `--worktree` present
+- `WORKTREE_PATH` — value after `--worktree` (may be empty; bare `--worktree` leaves this empty)
 - `BLANK_MODE` — true if `--blank` present
 - `BG_MODE` — true if `--bg` present
 - `SILENT` — true if `--silent` present
@@ -40,15 +42,20 @@ USAGE_MODE=false
 
 ## Step 0.5: Detect Branch Context
 
-Run `git rev-parse --git-dir` to confirm this is a git repo. If not, disable branch features (`CURRENT_BRANCH=""`, `TARGET_BRANCH=""`, `BASE_BRANCH=""`).
+Run `git rev-parse --git-dir` to confirm this is a git repo. If not, disable branch features (`CURRENT_BRANCH=""`, `WANT_BRANCH=false`, `WANT_WORKTREE=false`, `BASE_BRANCH=""`).
 
 If in a git repo:
 
 - `CURRENT_BRANCH` = `git rev-parse --abbrev-ref HEAD`
-- If `--branch` flag given: `TARGET_BRANCH=$BRANCH_NAME`, `SHOULD_CREATE_WORKTREE=true`, `BASE_BRANCH=$CURRENT_BRANCH`
-- Otherwise: `TARGET_BRANCH=$CURRENT_BRANCH`, `SHOULD_CREATE_WORKTREE=false`, `BASE_BRANCH=$CURRENT_BRANCH`
+- `BASE_BRANCH` = `$CURRENT_BRANCH`
+- If `--branch` flag given: `WANT_BRANCH=true`, `BRANCH=$BRANCH_NAME` (may be empty — bare `--branch` derives from slug later in Step 5.15)
+- Otherwise: `WANT_BRANCH=false`, `BRANCH=""`
+- If `--worktree` flag given (`WORKTREE_FLAG=true`): `WANT_WORKTREE=true` (worktree path from `WORKTREE_PATH`, may be empty — bare `--worktree` defaults in Step 5.15)
+- Otherwise: `WANT_WORKTREE=false`
 
-**If `BLANK_MODE=true`:** After worktree setup (Step 2.5), skip directly to **Step 5.1** — do not ask planning questions. Create the empty template and register it. Do not run validation. Report completion.
+`--branch` and `--worktree` are independent. `--branch` never implies a worktree; `--worktree` never implies a branch (but the `git worktree` workflow will derive a branch from the slug when `WANT_WORKTREE=true` and no branch was explicitly requested — see Step 5.15).
+
+**If `BLANK_MODE=true`:** After branch/worktree setup (Step 5.15), skip directly to **Step 5.2** — do not ask planning questions. Create the empty template and register it. Do not run validation. Report completion.
 
 **If `--bg` flag present:** After the plan is fully created and validated (after Step 6 "Looks good"), automatically launch background execution via `spec bg` on the new plan. Pass `--silent` if `SILENT=true`.
 
@@ -91,18 +98,9 @@ if [ ! -f .codevoyant/README.md ]; then
 fi
 ```
 
-## Step 2.5: Create Worktree (if requested)
+## Step 2.5: Branch / Worktree (deferred)
 
-If `--branch` flag was given:
-
-```bash
-git worktree add -b "$TARGET_BRANCH" ".worktrees/$TARGET_BRANCH" "$BASE_BRANCH" && \
-  echo "✓ Worktree created at .worktrees/$TARGET_BRANCH" || \
-  { echo "✗ Worktree creation failed"; exit 1; }
-PLAN_WORKTREE=".worktrees/$TARGET_BRANCH"
-```
-
-If `SHOULD_CREATE_WORKTREE=false`, set `PLAN_WORKTREE=""`. Error and exit if worktree already exists or git commands fail.
+Branch and worktree creation requires the plan slug (for bare `--branch` / `--worktree` name derivation). The actual resolution happens in **Step 5.15** after the slug is known. No action here.
 
 ## Step 2.7: Intent-file mode (bare name → scaffold, then plan)
 
@@ -229,6 +227,28 @@ Store selected approach as `SELECTED_APPROACH`. Update `OBJECTIVE` to incorporat
   PLAN_NAME="$CANDIDATE"
   ```
   Inform user if name was modified.
+
+### 5.15: Resolve Branch / Worktree
+
+Now that `PLAN_NAME` (the slug) is known, resolve the branch name and worktree path using the variables recorded in Step 0.5, then delegate to the `git worktree` workflow.
+
+Set `SLUG=$PLAN_NAME`. If `BRANCH` is empty and (`WANT_BRANCH=true` or `WANT_WORKTREE=true`), the `git worktree` workflow will derive a branch name from `SLUG`.
+
+Delegate to `skills/git/references/workflows/worktree.md` with these inputs:
+
+- `BRANCH` = `$BRANCH` (explicit name from `--branch <name>`, or empty for slug derivation)
+- `WANT_BRANCH` = `$WANT_BRANCH`
+- `WANT_WORKTREE` = `$WANT_WORKTREE`
+- `WORKTREE_PATH` = `$WORKTREE_PATH` (explicit path from `--worktree <path>`, or empty for default `.codevoyant/worktrees/<branch>`)
+- `SLUG` = `$PLAN_NAME`
+- `BASE_BRANCH` = `$BASE_BRANCH`
+
+The workflow returns:
+
+- `TARGET_BRANCH` — the resolved branch name, or empty if none was requested.
+- `WORKTREE_RESULT` — the worktree path, or empty if none was created.
+
+Set `PLAN_WORKTREE=$WORKTREE_RESULT` (used in Step 5.2 and plan metadata). If neither `WANT_BRANCH` nor `WANT_WORKTREE` is true, set `TARGET_BRANCH=$CURRENT_BRANCH` and `PLAN_WORKTREE=""`.
 
 ### 5.2: Create Plan Directory Structure
 

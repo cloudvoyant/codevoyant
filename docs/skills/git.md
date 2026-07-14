@@ -45,6 +45,20 @@ Safely rebase the current branch onto an updated base branch using a pre-rebase 
 /git rebase main --push       # rebase and push with --force-with-lease
 ```
 
+### worktree — create a branch and/or worktree
+
+Create or switch a git branch and/or create a git worktree. Branch and worktree are **independent** — request either, both, or neither, and neither implies the other. This is the shared routine that `/spec new`'s `--branch` and `--worktree` flags delegate to, so the branch/worktree logic lives in one place.
+
+```bash
+/git worktree --branch                    # create/switch to a branch (name derived from the slug)
+/git worktree --branch my-branch          # create/switch to a branch with an explicit name
+/git worktree --worktree                  # create a worktree at .codevoyant/worktrees/<branch>
+/git worktree --worktree ../wt            # create a worktree at an explicit path
+/git worktree --branch feat --worktree ../wt  # branch + worktree at an explicit path
+```
+
+When a worktree is requested without an explicit branch name, the branch is derived from the slug. The default worktree path is `.codevoyant/worktrees/<branch>`.
+
 ### help — list all commands
 
 ```bash

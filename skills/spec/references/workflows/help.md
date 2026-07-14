@@ -12,8 +12,10 @@ Print the following text exactly as written. Do not reformat, create tables, add
 
 spec — Specification-driven development commands for Claude Code
 
-  /spec new  [plan-name|url] [--branch branch-name] [--blank] [--bg] [--silent]
+  /spec new  [plan-name|url] [--branch [name]] [--worktree [path]] [--blank] [--bg] [--silent]
       Create a new spec plan by exploring requirements and building a structured implementation plan
+      --branch   create/switch branch (bare: derive from slug; with name: use that name)
+      --worktree create worktree (bare: .codevoyant/worktrees/<branch>; with path: use that path)
 
   /spec go  [plan-name] [--yes|-y] [--commit|-c] [--silent]
       Execute a plan hands-free — the agent runs every task autonomously and updates progress in real-time

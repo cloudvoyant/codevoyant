@@ -124,7 +124,7 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/git.svg" width="32"></td>
-<td><strong>git</strong> — conventional commits with auto-formatting and safe interactive rebase</td>
+<td><strong>git</strong> — conventional commits with auto-formatting, safe interactive rebase, and branch/worktree setup</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/glab.svg" width="32"></td>
@@ -218,11 +218,12 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 
 ```bash
 # Plan and execute a feature
-/spec new my-feature          # explore requirements and create a plan
+/spec new my-feature          # explore requirements and create a plan (add --branch / --worktree to isolate work)
 /spec go my-feature           # execute step-by-step with review stops
 /spec bg my-feature           # hand off to a background agent
 
 # Ship code
+/git worktree --branch --worktree  # set up a branch and/or worktree (independent)
 /git commit                   # format → conventional commit → push
 /gh ci --autofix              # watch GitHub Actions, auto-fix failures and re-push
 /glab ci --autofix            # watch GitLab CI, auto-fix failures and re-push
