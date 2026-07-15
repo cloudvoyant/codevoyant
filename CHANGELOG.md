@@ -1,3 +1,38 @@
+## [1.63.0](https://github.com/cloudvoyant/codevoyant/compare/v1.62.0...v1.63.0) (2026-07-15)
+
+### Features
+
+* **pr:** stronger bugfix PR descriptions with failure snippets and evidence
+
+Make bugfix PR descriptions trustworthy by forcing them to show the
+failure and prove the cause, instead of paraphrasing. Feature PR
+descriptions are unaffected.
+
+**Template (pr-bug.md)**
+- Replace the Bug/Fix sections with Summary/Root Cause/Changes.
+- Summary must embed a fenced snippet of the real test failure or
+  exception that motivated the fix -- quoted, not paraphrased.
+- Every Root Cause claim must carry evidence beneath it (debug output,
+  before/after values, or a captured stack trace); bare claims are
+  disallowed.
+- De-nest the Summary REQUIRED instruction: the inner literal
+  <!-- TODO --> marker broke the outer HTML comment (comments don't
+  nest), leaking the rest into the rendered body. Drop the inner angle
+  brackets so the whole instruction stays one non-rendering comment.
+
+**Workflow (open.md)**
+- Add a TEMPLATE=bug-gated Step 3.6 that tells the generator where to
+  find the failing-test snippet and root-cause evidence (captured test
+  output, CI logs, git history, spec plan) before filling Summary and
+  Root Cause. Prefer reading a captured test run; re-running the base
+  state is the caveated fallback.
+- The feature path skips Step 3.6 entirely and is unchanged.
+
+**Voice (voice.md)**
+- Add a Bugfix descriptions section codifying the three extra rules:
+  show the failure, prove the cause, and keep Root Cause/Changes terse
+  and junior-dev friendly.
+
 ## [1.62.0](https://github.com/cloudvoyant/codevoyant/compare/v1.61.0...v1.62.0) (2026-07-14)
 
 ### Features
