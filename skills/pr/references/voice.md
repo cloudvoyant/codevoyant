@@ -40,6 +40,15 @@ Prefer (terse — problem + ask):
 
 Then, if it helps, a short code suggestion — not a paragraph.
 
+## Bugfix descriptions
+
+Bugfix bodies (`pr-bug.md`, used by `/pr open --bug` or a `fix/`/`bug/` branch) have three extra rules on top of the voice above:
+
+- **Show the failure.** The Summary must quote a real snippet of the failing test or exception — the failing assertion, stack trace, or error output. Quote it; don't paraphrase.
+- **Prove the cause.** Every Root Cause claim needs evidence under it: debug-log output, before/after values, or a captured stack trace. No bare claims.
+
+Keep Root Cause and Changes especially terse — short plain sentences, one idea per bullet. State the cause, then prove it. See `references/workflows/open.md` Step 3.6 for how to gather the snippet and evidence. (Feature descriptions are unaffected.)
+
 ---
 
 Keep the structure the template provides. Apply this voice to the prose you fill in.
