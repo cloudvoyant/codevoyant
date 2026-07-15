@@ -135,6 +135,37 @@ Then fill the rest of the template following `references/voice.md`. Write for a 
 - **Link references when they help** — the relevant doc, RFC, issue, ADR, or prior art (URL), only when it saves the reader a search.
 - Flag anything a reviewer should look at closely (risky area, follow-up, known limitation) in plain words.
 
+**If `TEMPLATE="bug"`, do Step 3.6 first** — bugfix bodies have extra hard requirements (test-failure snippet + evidence). Feature bodies (`TEMPLATE="feature"`) skip Step 3.6 entirely; nothing about the feature path changes.
+
+## Step 3.6: Bugfix evidence gathering (only when `TEMPLATE="bug"`)
+
+Run this step ONLY when `TEMPLATE="bug"` (set in Step 3 from `--bug` or a `fix/`/`bug/` branch). For feature PRs, skip it — feature behavior is unchanged.
+
+A bugfix description is only trustworthy if it shows the failure and proves the cause. Before you fill the `## Summary` and `## Root Cause` sections of `references/templates/pr-bug.md`, gather concrete evidence:
+
+**1. Capture the failing-test / exception snippet (for `## Summary`).** Find the actual failure that motivated the fix and quote the load-bearing lines — the failing assertion, the exception + stack trace, or the error/CI output. Look, in order, at whatever is available:
+
+- Local test output — read a captured test run if you have one; otherwise re-run the relevant test on the base state, but only if that is quick and safe (checking out base can be slow or dirty the tree).
+- CI logs for a failing check on this branch or its issue:
+  - GitHub: `gh run list --branch "${BRANCH}" --limit 5` then `gh run view <run-id> --log-failed`
+  - GitLab: `glab ci list` / `glab ci trace`
+- Git history — the commit that introduced the fix, and `git log`/`git show` around the regression.
+- The spec plan for this branch (`PLAN_CONTEXT` from Step 2.5) and any `research/` artifacts under the plan dir — they often already quote the failure.
+
+Trim the snippet to the few lines that matter. Quote it verbatim; do not paraphrase. If you genuinely cannot find it, leave the template's `<!-- TODO: paste failing test output / exception here -->` marker rather than inventing one.
+
+**2. Capture evidence for every root-cause claim (for `## Root Cause`).** For each claim you make about *why* the bug happened, attach one piece of evidence in a fenced block right under the claim. Bare claims are not allowed. Acceptable evidence:
+
+- debug-logging output that shows the faulty value or control flow,
+- before/after values or snapshots (what the code produced vs. what it should have), or
+- a captured stack trace demonstrating the faulty behavior.
+
+Prefer evidence you can pull from the sources above (CI logs, test output, the diff, the spec plan's research notes). If a claim has no evidence, either find some or drop the claim — do not ship an unsupported root cause.
+
+**3. Voice for `## Root Cause` and `## Changes`.** Keep both sections terse and junior-developer friendly: short plain sentences, one idea each, one bullet per change. State the cause, then prove it. No dense multi-clause paragraphs, no hype. This is stricter than the general voice in Step 3.5 — apply it to these two sections specifically.
+
+Then fill the bugfix template's `## Summary`, `## Root Cause`, and `## Changes` sections with the snippet, the evidence, and terse language you gathered here.
+
 ## Step 4: Create Draft PR/MR — or write locally
 
 **If `LOCAL` is true:** write `${BODY}` to `.codevoyant/review/{slug}/pr-body.md` (create the dir), and stop — do not create the PR/MR. Report:
