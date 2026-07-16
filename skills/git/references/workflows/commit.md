@@ -58,8 +58,7 @@ Human co-authors are fine — only **agent** attribution is prohibited.
 
 - `--yes` or `-y`: Skip commit message confirmation (auto-approve message)
 - `--no-push`: Commit only — do not push or monitor CI
-- `--autofix`: After push, hand CI to a background monitor that best-effort auto-fixes failures (non-blocking, fire-and-forget)
-- `--fix`: **Blocking.** After push, stay in the foreground and repeatedly diagnose failures, fix them, and re-push **until CI is green** (bounded retries). Use when you want a guaranteed-green commit before moving on. Implies push.
+- `--fix` (alias `--autofix`): After push, automatically loop — diagnose failures, fix them, and re-push **until CI is green** (bounded retries, cap `MAX_FIX_ATTEMPTS` default 3). Skips the ask-on-failure prompt. Use when you want a guaranteed-green commit before moving on. Implies push.
 - `--atomic`: Detect logical change groups and create one commit per group
 - `--single` (default): All staged changes in one commit
 
@@ -209,22 +208,30 @@ EOF
    c. **If red:** read the failing job logs, identify the root cause, fix the offending files, then `git add -A && git commit -m "fix: address CI failures"` and `git push origin <branch>`. Increment attempt and continue the loop. **This fix commit follows the no-agent-self-attribution rule too — a bare `fix:` message, no `Co-Authored-By` or "Generated with" trailer.**
 4. If the loop exhausts `MAX_FIX_ATTEMPTS` without going green: report `✗ CI still failing after {MAX_FIX_ATTEMPTS} fix attempts — see the last run's logs above` and stop (do not force-continue).
 
-Prefer the platform CI skill's own autofix loop when available: `/gh ci --autofix` / `/glab ci --autofix` already watch-fix-repush; `--fix` simply runs it in the **foreground** and keeps going (re-invoking) until green or the attempt cap.
+This loop drives itself: it watches CI via `/gh ci` / `/glab ci` (without `--autofix`) and runs its own diagnose-fix-commit-repush in the **foreground**, retrying up to `MAX_FIX_ATTEMPTS` (default 3). It does not delegate to `/gh ci --autofix` — that runs in the background and is capped at 2, whereas `--fix` blocks until green (or the cap) so the caller has a settled result before moving on.
 
-**Otherwise (default, FIX not set) — always push, then launch CI monitoring in background:**
+**Otherwise (default, FIX not set) — always push, then watch CI and ask on failure:**
 
-1. Push: `git push origin <branch>`
-2. After push succeeds, launch CI monitoring as a background Task — do NOT wait for it:
+1. Push: `git push origin <branch>`.
+2. Determine the platform CI command: GitHub → `/gh ci`, GitLab → `/glab ci`. If neither `gh` nor `glab` is installed (or the repo has no CI configured), report `✓ Committed and pushed (no CI to watch)` and stop.
+3. Watch the run for the current branch to completion (invoke `/gh ci` / `/glab ci` without `--autofix`).
+4. **If green:** report `✓ Committed, pushed, and CI is green` and stop.
+5. **If red:** show the failing job's relevant log lines, then ask with **AskUserQuestion**:
 
+```yaml
+questions:
+  - question: 'CI failed on <branch>. Fix the failures and re-push until green?'
+    header: 'CI failed'
+    multiSelect: false
+    options:
+      - label: 'Fix it'
+        description: 'Diagnose, fix, and re-push until CI is green (bounded retries)'
+      - label: 'Leave it'
+        description: 'Report the failure and stop'
 ```
-Agent:
-  subagent_type: general-purpose
-  run_in_background: true
-  description: "CI monitoring"
-  prompt: "Run /git ci [--autofix if AUTOFIX=true]. Monitor CI and report results when done."
-```
 
-3. Report immediately: `✓ Committed and pushed. CI monitoring running in background — you'll be notified when checks complete.`
+   - **Fix it** (or **Other** with fix guidance): enter the same bounded fix-until-green loop as `--fix` above (the 3a–3c loop, cap `MAX_FIX_ATTEMPTS` default 3, no agent self-attribution on fix commits).
+   - **Leave it:** report `✗ CI failing on <branch> — left as-is at your request` and stop.
 
 **Skip CI monitoring if:**
 

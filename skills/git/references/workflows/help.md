@@ -14,8 +14,7 @@
 
 - `--yes` / `-y` — skip commit message confirmation
 - `--no-push` — commit only, do not push
-- `--autofix` — background best-effort auto-fix of CI failures after push (non-blocking)
-- `--fix` — blocking: fix and re-push until CI is green (bounded retries)
+- `--fix` (alias `--autofix`) — after push, auto-loop fix and re-push until CI is green (bounded retries). Without it, the default is to watch CI and ask before fixing on failure.
 - `--atomic` — create one commit per logical change group
 
 ### Commit messages never self-attribute

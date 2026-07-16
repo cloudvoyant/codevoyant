@@ -69,7 +69,12 @@ At phase end, append:
 DO NOT run git commit, git add, or git push.
 {endif}
 {if ALLOW_COMMITS=true}
-Commit completed tasks with conventional commit messages.
+Commit completed tasks with conventional commit messages. If a remote/upstream is configured, push the phase.
+
+After committing (and pushing) the phase, run the OPTIONAL CI-green check — this is best-effort and must never block or fail the phase:
+- GitHub repo → `/gh ci --silent` for this branch; GitLab repo → `/glab ci --silent`.
+- Skip silently if there is no remote, no CI configured, or no `gh`/`glab` CLI installed.
+- If CI reports failure, note it in execution-log.md and report it in your summary, but do NOT auto-fix here — leave fixes to `/git commit --fix` or the user. A failing or absent CI does not mark the phase incomplete.
 {endif}
 
 Execute Phase {N} now. Report a summary when done.

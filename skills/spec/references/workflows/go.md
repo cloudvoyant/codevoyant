@@ -6,7 +6,7 @@ Execute the plan in the background using an autonomous agent. The agent works th
 
 - `PLAN_NAME` — plan to execute (may be empty; will prompt if multiple plans exist)
 - `AUTO_APPROVE` — true if `--yes` or `-y` present
-- `ALLOW_COMMITS` — true if `--commit` or `-c` present
+- `ALLOW_COMMITS` — true if `--commit` or `-c` present. When true, each phase is committed (and pushed if a remote exists) and the executor runs the OPTIONAL per-phase CI-green check via `/gh ci` / `/glab ci` (silent skip when no remote / no CI / no CLI). When false, no commits, no push, and no CI check.
 - `SILENT` — true if `--silent` present
 
 ## Step 1: Select Plan

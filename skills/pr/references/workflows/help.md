@@ -8,7 +8,7 @@
 | `/pr update ["change request"] [--type body\|review\|address]` | Apply `<!-- > … -->` annotations or a chat edit to the last artifact |
 | `/pr squash [pr-id] [--base <b>] [--onto <n>\|--single] [--no-push]` | Squash branch commits into coherent, changelog-ready commit(s) |
 | `/pr publish [pr-id] [--push] [--yes] [--ready-only\|--review-only]` | Publish a draft PR/MR (mark ready) and/or its pending review (alias `/pr ready`) |
-| `/pr merge [pr-id] [--squash\|--rebase\|--merge] [--delete-branch] [--subject "..."] [--body "..."] [--yes]` | Merge the PR/MR (squash by default, semantic-release aware; alias `/pr land`) |
+| `/pr merge [pr-id] [--squash\|--rebase\|--merge] [--delete-branch] [--subject "..."] [--body "..."] [--no-watch-ci] [--yes]` | Merge the PR/MR (squash by default, semantic-release aware); then watches post-merge CI on the base branch and notifies on failure (opt out with `--no-watch-ci`; alias `/pr land`) |
 | `/pr help` | Print this reference |
 
 `publish` is the umbrella — it marks the PR/MR ready **and** submits any pending review (use `--review-only` to publish just the review).
