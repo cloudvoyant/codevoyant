@@ -13,6 +13,7 @@ Squash by default, and **semantic-release aware**: a squash merge onto a release
 - `--subject "..."` — the squash commit subject (overrides derivation)
 - `--body "..."` — the squash commit body
 - `--push` — push unpushed local commits before merging
+- `--watch-ci` (default) / `--no-watch-ci` — after the merge lands, best-effort watch CI on the base branch and notify on failure (reuses `/gh ci` / `/glab ci`); `--no-watch-ci` skips it
 - `--github` / `--gitlab` — override provider detection
 
 ## Step 0: Parse Args
@@ -23,6 +24,7 @@ METHOD="squash"          # squash | rebase | merge
 DELETE_BRANCH=false
 ASSUME_YES=false
 DO_PUSH=false
+WATCH_CI=true            # watch post-merge CI on the base branch by default
 SUBJECT=""; BODY=""
 
 while [ $# -gt 0 ]; do
@@ -33,6 +35,8 @@ while [ $# -gt 0 ]; do
     --delete-branch) DELETE_BRANCH=true; shift ;;
     --yes|-y)        ASSUME_YES=true; shift ;;
     --push)          DO_PUSH=true; shift ;;
+    --watch-ci)      WATCH_CI=true; shift ;;
+    --no-watch-ci)   WATCH_CI=false; shift ;;
     --subject)       SUBJECT="$2"; shift 2 ;;
     --body)          BODY="$2"; shift 2 ;;
     --github)        PROVIDER="github"; shift ;;
@@ -136,7 +140,24 @@ Delegate to the platform CLI with the method, subject/body, and delete-branch fl
 
 If the merge fails (not mergeable, auth, permissions, protected-branch rules): report `✗ Merge failed: {error}.` and exit.
 
-## Step 7: Report
+## Step 7: Watch post-merge CI
+
+Best-effort. The merge already succeeded — nothing here can undo it; this step only watches and notifies. Skip silently (leave `CI_STATUS` unset) if `WATCH_CI == false`, if there is no remote, if the repo has no CI configured, or if the needed CLI (`gh` for GitHub, `glab` for GitLab) is not installed.
+
+Otherwise watch the CI run that the merge kicked off on the base branch `{BASE}`, reusing the platform `ci` workflow — do NOT reimplement CI polling:
+
+- **GitHub:** `/gh ci --branch {BASE}` (no `--autofix` — `merge` only watches and notifies).
+- **GitLab:** `/glab ci --branch {BASE}`.
+
+Capture the outcome into `CI_STATUS`:
+
+- Watch completes green → `CI_STATUS = "green"`.
+- Watch reports failure → `CI_STATUS = "failing"` and record the failing check names and the logs pointer (the failing-run URL, or the `gh run view --log-failed` / `glab ci trace` hint the `ci` workflow surfaces).
+- No recent run found for `{BASE}`, or the check was skipped → leave `CI_STATUS` unset (treated as "not watched").
+
+CI_STATUS feeds the report in Step 8; a failing post-merge CI never rolls back the completed merge.
+
+## Step 8: Report
 
 Capture the resulting merge commit SHA (`gh pr view {PR_NUMBER} --json mergeCommit --jq .mergeCommit.oid`, or the CLI output) and report:
 
@@ -148,3 +169,14 @@ Capture the resulting merge commit SHA (`gh pr view {PR_NUMBER} --json mergeComm
 ```
 
 If the semantic-release guard was skipped or the subject wasn't conventional, remind: `Heads-up: the squash subject isn't a conventional-commit line — a release may not be triggered.`
+
+If `CI_STATUS == "failing"`, NOTIFY prominently at the end of the report — this is the headline, not a footnote:
+
+```
+⚠ Post-merge CI is FAILING on {BASE}
+  failing checks: {check names}
+  logs: {failing-run URL or `gh run view <id> --log-failed` / `glab ci trace <job-id>`}
+  The merge is done and was not rolled back. Fix on {BASE} (e.g. /git commit --fix) or open a follow-up.
+```
+
+If `CI_STATUS == "green"`, add a one-line `✓ Post-merge CI is green on {BASE}`. If `CI_STATUS` is unset (not watched — `--no-watch-ci`, no remote, no CI, or no CLI), say nothing about CI.

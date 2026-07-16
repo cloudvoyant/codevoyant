@@ -55,6 +55,7 @@ code block is incomplete and must not be emitted.}
 - [ ] `{fmt command}` — no formatting changes outstanding
 - [ ] `{lint command}` — zero warnings/errors
 - [ ] `{test command}` — all tests pass
+- [ ] *(optional, only under `spec go --commit`)* CI is green for this committed phase — verified via `/gh ci` (GitHub) or `/glab ci` (GitLab). Skip silently when any of: no `--commit`, no remote, no configured CI, no `gh`/`glab` CLI. Never fail a phase for the absence of CI.
 
 ---
 
