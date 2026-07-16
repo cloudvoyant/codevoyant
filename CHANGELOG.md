@@ -1,3 +1,30 @@
+## [1.64.0](https://github.com/cloudvoyant/codevoyant/compare/v1.63.0...v1.64.0) (2026-07-16)
+
+### Features
+
+* **spec,git,pr:** CI-aware validation across spec/git/pr skills
+
+Thread CI-awareness through the spec, git, and pr workflows so
+validation reacts to real pipeline state instead of assuming green.
+
+**spec**
+- Add an optional --commit-gated per-phase CI-green check so each
+  implementation phase can require a passing pipeline before it
+  proceeds.
+- Tighten the CI-green skip conditions in the implementation
+  template.
+
+**git**
+- Default to ask-on-CI-failure so a red pipeline pauses for a
+  decision instead of silently continuing.
+- Unify --fix and --autofix into a single auto-loop; --fix drives
+  its own loop (capped at 3 attempts) rather than delegating to
+  /gh ci --autofix.
+- Repoint the ask-on-fail cross-reference at the 3a-3c loop.
+
+**pr**
+- Watch post-merge CI on the base branch and notify on failure.
+
 ## [1.63.0](https://github.com/cloudvoyant/codevoyant/compare/v1.62.0...v1.63.0) (2026-07-15)
 
 ### Features
