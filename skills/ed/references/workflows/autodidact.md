@@ -56,7 +56,7 @@ Confirm `BOOK_DIR/docs/` exists afterward. If `/diffbook` is unavailable, STOP a
 
 ## Step 3: Initialize the state ledger
 
-Create/refresh `STATE_FILE` from `references/templates/state-template.md`. It tracks, per stage: **stage name · status (pending/running/pass/fail/skipped) · gate score · timestamp · note**. Seed rows for: `explore`, `plan-syllabus`, then (filled in after the syllabus is known) one block per module with `plan-module`, `create-lesson`, `create-quiz`, `create-project`, and finally `course-index`.
+Create/refresh `STATE_FILE` from `references/templates/state-template.md`. It tracks, per stage: **stage name · status (pending/running/pass/warn/fail) · gate score · timestamp · note**. Seed rows for: `explore`, `plan-syllabus`, then (filled in after the syllabus is known) one block per module with `plan-module`, `create-lesson`, `create-quiz`, `create-project`, and finally `course-index`.
 
 Helper used after every stage:
 
@@ -67,9 +67,9 @@ record(stage, status, score, note):
 
 ## Step 4: Run the pipeline in order
 
-Between every stage, apply the relevant gate from `references/quality-gates.md`. On a gate **fail**: `AUTO_YES=true` → `record(..., fail/skipped, score, reason)` and continue best-effort; `AUTO_YES=false` → `record(..., fail, score, reason)`, then **STOP** and report where to resume.
+Between every stage, apply the relevant gate from `references/quality-gates.md`. On a gate **fail**: `AUTO_YES=true` → `record(..., warn, score, reason)` and continue best-effort; `AUTO_YES=false` → `record(..., fail, score, reason)`, then **STOP** and report where to resume.
 
-Invoke each child verb with the same `--book`/`--dir` and `--yes` (when `AUTO_YES`) flags. Mark a stage `running` before, and `pass`/`fail`/`skipped` after.
+Invoke each child verb with the same `--book`/`--dir` and `--yes` (when `AUTO_YES`) flags. Mark a stage `running` before, and `pass`/`warn`/`fail` after.
 
 1. **explore** — `record(explore, running)` → invoke `/ed explore {COURSE}` → gate the source catalog (≥1 verified text source/module surface, annotations present) → `record`.
 2. **plan-syllabus** — `record(plan-syllabus, running)` → invoke `/ed plan-syllabus {COURSE}` → **syllabus gate ≥85** + **foundational smell test** (foundational modules genuinely introductory; inverted dependency → fail) → `record`. On pass, read `syllabus.md` to enumerate modules (`NN-slug`, in order) and expand the per-module rows in `STATE_FILE`.

@@ -7,7 +7,7 @@ book_dir: "book"
 
 # <Course Title> — Pipeline State
 
-Autodidact ledger. Each stage records status, gate score, and timestamp. Statuses: `pending` · `running` · `done` · `warn` (gate failed after auto-fix, continued best-effort) · `blocked`.
+Autodidact ledger. Each stage records status, gate score, and timestamp. Statuses: `pending` · `running` · `pass` · `warn` (gate failed after auto-fix, continued best-effort) · `fail`.
 
 ## Stages
 

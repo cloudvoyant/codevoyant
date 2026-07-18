@@ -85,7 +85,7 @@ For each authored lesson, confirm the agent's self-check against the lesson gate
 - **define-before-display** holds top-to-bottom (every term defined in prose before any diagram/code/table/quiz uses it).
 - **≥1 interactive element per major concept** (`<QA>`, quiz item, `Manim`, `Chart`, or mermaid tied to that concept).
 - **rhythm rule** satisfied (≤3 consecutive pure-prose paragraphs; element types varied).
-- **≥3 verified references**, cited inline and listed at the end.
+- **≥4 verified references**, cited inline and listed at the end.
 - The lesson **ends with a check** (a `<QA>` or a `Quiz`/question).
 - Graduate reading level; all code runnable with shown intermediate outputs; no ellipses/placeholders.
 

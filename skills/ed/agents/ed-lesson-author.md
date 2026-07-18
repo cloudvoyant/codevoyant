@@ -68,13 +68,13 @@ Follow the visualization specs in the lesson spec: build the specific components
    - Write sections in outline order. In each: define terms in prose first, then reinforce with the specified component(s); signpost before each element; keep the rhythm rule; cite the grounding source inline (link or `<Bookmark>`), anchored where possible.
    - Include runnable code with shown intermediate outputs where the concept is procedural/algorithmic.
    - Close every major concept with a `<QA>`; end the lesson with a `<QA>` or a `<Quiz>`/question drawn from the quiz plan.
-   - End with a **References** section listing every source you cited (title, author/venue, URL/citation) — ≥3 verified references.
+   - End with a **References** section listing every source you cited (title, author/venue, URL/citation) — ≥4 verified references.
 4. **Write** to `{BOOK_DIR}/docs/{NN_SLUG}/{MM-lesson-slug}.mdx` (`mkdir -p` the chapter dir if needed). If you specced a `Manim` visual, also write its scene script under `{BOOK_DIR}/docs/_animations/`.
 5. **Self-verify against the lesson gate** (`references/quality-gates.md`) and fix in place before returning:
    - define-before-display holds top-to-bottom (no term used before its prose definition);
    - ≥1 interactive element per major concept;
    - rhythm rule satisfied (≤3 consecutive prose paragraphs; varied element types);
-   - ≥3 verified references, all real and reachable;
+   - ≥4 verified references, all real and reachable;
    - the lesson ends with a check;
    - graduate reading level; all code runnable with shown outputs; no ellipses/placeholders; every component tag is one of the twelve with required props; Mermaid is a fenced block; LaTeX uses `\( \)`/`\[ \]`.
    Fix every failing check before returning — do not hand back a failing lesson.

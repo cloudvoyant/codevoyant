@@ -62,7 +62,6 @@ case "$VERB" in
   "lesson")   VERB="create-lesson" ;;   # /ed lesson   → /ed create-lesson
   "quiz")     VERB="create-quiz" ;;     # /ed quiz     → /ed create-quiz
   "project")  VERB="create-project" ;;  # /ed project  → /ed create-project
-  "course")   VERB="autodidact" ;;      # /ed course   → /ed autodidact
 esac
 ```
 

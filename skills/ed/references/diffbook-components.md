@@ -4,7 +4,7 @@ ed authors interactive textbooks as **diffbook MDX**. This file maps *pedagogica
 
 **Ground rules (memorize these):**
 
-- **All twelve components are auto-available in any `.mdx` file — no import needed.** They are the components diffbook exports: `Bookmark`, `Chart`, `Figure`, `Manim`, `Mermaid`, `MultipleChoiceQuestion`, `Notice`, `NumericQuestion`, `QA`, `Quiz`, `SingleChoiceQuestion`, `YouTube`.
+- **All twelve components diffbook exports are auto-available in any `.mdx` file — no import needed** (`Bookmark`, `Chart`, `Figure`, `Manim`, `Mermaid`, `MultipleChoiceQuestion`, `Notice`, `NumericQuestion`, `QA`, `Quiz`, `SingleChoiceQuestion`, `YouTube`). Eleven are written as tags; `Mermaid` is the exception — author it as a fenced ` ```mermaid ` block, never as a `<Mermaid>` tag (next rule).
 - **Use `.mdx` for any page that uses a component tag; use `.md` for prose-only pages** (e.g. a module's `references.md`).
 - **Mermaid is a fenced ` ```mermaid ` code block, NOT a `<Mermaid>` tag.** A rehype plugin rewrites the fenced block into the component automatically. Never write `<Mermaid>` in a page.
 - **`<Card>` is a layout/slot component, not content** — never place it in page body.
