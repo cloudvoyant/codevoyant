@@ -1,0 +1,63 @@
+---
+title: "<Module Title> — Quiz"
+order: 90
+description: "Module review quiz for <Module Title>."
+---
+
+{/*
+  ed quiz skeleton — diffbook MDX. See quality-gates.md "Quiz gate".
+  BLOOM DISTRIBUTION: match this module's target mix (blooms-taxonomy.md) within +/-15%.
+    - Introductory module ~ 40 Remember / 40 Understand / 15 Apply / 5 Analyze.
+    - Intermediate      ~ 25 / 30 / 30 / 15.
+    - Advanced          ~ 15 / 20 / 25 / 25 / 10 Evaluate / 5 Create.
+  DISTRACTOR QUALITY:
+    - Exactly one defensible answer (single); unambiguous correct set (multiple).
+    - Distractors ~same length as the key and target REAL misconceptions, not filler.
+    - Spread correct positions ~25% across A/B/C/D; no All/None-of-the-above.
+    - Explanations 50-100 words: why the key is right AND why the top distractor is wrong.
+*/}
+
+# <Module Title> — Quiz
+
+<One sentence framing what this quiz assesses and the concepts it draws from.>
+
+<Quiz
+  id="<NN>-quiz"
+  title="Module <NN> review"
+  questions={[
+    {
+      id: "q1",
+      type: "single",
+      prompt: "<question prompt>",
+      choices: ["<A>", "<B>", "<C>", "<D>"],
+      correct: 2,
+      explanation: "<50-100 words explaining the key and rebutting the strongest distractor>",
+    },
+    {
+      id: "q2",
+      type: "multiple",
+      prompt: "<question prompt — select all that apply>",
+      choices: ["<A>", "<B>", "<C>", "<D>"],
+      correct: [0, 3],
+      explanation: "<why exactly these are correct and the others are not>",
+    },
+    {
+      id: "q3",
+      type: "numeric",
+      prompt: "<compute … give the numeric answer>",
+      answer: 5,
+      tolerance: 0,
+      unit: "<unit or empty>",
+      explanation: "<the computation and the reasoning>",
+    },
+  ]}
+/>
+
+{/* Optional: standalone items outside the grouped Quiz for spaced items. */}
+<SingleChoiceQuestion
+  id="q4"
+  prompt="<prompt>"
+  choices={["<A>", "<B>", "<C>", "<D>"]}
+  correct={1}
+  explanation="<50-100 words>"
+/>
