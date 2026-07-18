@@ -1,3 +1,11 @@
+## [1.65.0](https://github.com/cloudvoyant/codevoyant/compare/v1.64.0...v1.65.0) (2026-07-18)
+
+### Features
+
+* **ed:** rewrite into literature-grounded interactive-textbook suite ([#29](https://github.com/cloudvoyant/codevoyant/issues/29))
+
+Replace the notes/guide/assist/syllabus/quiz verbs with an 8-verb pipeline (explore, plan-syllabus, plan-module, create-lesson, create-quiz, create-project, autodidact, update) that authors graduate-level diffbook MDX textbooks. Structured brief files, scored quality gates (syllabus/module/lesson), Bloom-tagged objectives, define-before-display scaffolding, and verified/annotated sources across textbooks/OCW/papers/repos/lecture-series. Plan artifacts in .codevoyant/ed/{course}/, MDX authored into a diffbook book. Pedagogy grounded in the dmccreary intelligent-textbook patterns. Public docs updated.
+
 ## [1.64.0](https://github.com/cloudvoyant/codevoyant/compare/v1.63.0...v1.64.0) (2026-07-16)
 
 ### Features
