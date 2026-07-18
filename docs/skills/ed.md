@@ -1,109 +1,161 @@
 # ed
 
-Educational learning skill for ML graduate students — create study notes, pedagogical guides, module-based syllabi, and quizzes using LLMs as a learning tool.
+Educational skill that builds literature-grounded, graduate-level interactive textbooks as diffbook MDX. Point it at a course topic and it vets real reference materials (open textbooks, MIT/other OCW, arXiv papers, GitHub repos, lecture playlists), plans a dependency-ordered syllabus, and authors Feynman-style lessons, quizzes, and projects into a diffbook project — every concept scaffolded define-before-display, Bloom-tagged, and backed by verified references.
 
 ## Workflows
 
-### new notes -- create Feynman-style study notes
+### explore — vet reference materials
 
-Generate graduate-level notes from lecture slides + deep web research. Notes use Feynman-style explanations, progressive disclosure, mermaid and ASCII diagrams, worked examples, sample Q&A, and clickable references. Provided resources are mined for examples and pedagogical detail, not just skimmed.
-
-```bash
-/ed new notes "attention mechanisms" --resources slides/lec3.pdf papers/vaswani.pdf
-/ed new notes "backpropagation" --resources slides/lec2.pdf --level undergrad
-/ed new notes "CS231n" --syllabus syllabus/cs231n/syllabus.md   # one note per module
-```
-
-Missing resources are a hard blocker — the skill will stop and ask you to provide them. Point at a syllabus to fan out one note per module (never combined).
-
-Output: `notes/{slug}/notes.md`
-
-### new guide -- create a pedagogical assignment guide
-
-Break a project or assignment into pedagogical phases with hint-controlled disclosure. Applies the shared pedagogy guide (Feynman explanations, progressive disclosure, an ASCII/mermaid diagram per phase where it helps, clickable references). Never provides complete solutions — only learning objectives, hints, and approach sketches. Any `--resources` you pass are mined for examples and pedagogical detail.
+Find and verify the source materials a course will be built from: open/available textbooks, MIT OpenCourseWare and other university course sites, arXiv/ACL/NeurIPS papers, GitHub reference implementations and problem sets, named YouTube lecture series, and reputable blogs and course notes. Every online URL is checked with WebFetch before inclusion (dead links are dropped or replaced), and every entry carries a 20–40 word annotation stating what it covers and why it is relevant. The result is a course-wide catalog that guarantees at least one primary text source per prospective module.
 
 ```bash
-/ed new guide "implement a transformer from scratch" --vim
-/ed new guide "CS231n" --syllabus syllabus/cs231n/syllabus.md   # one guide per module
+/ed explore "transformer language models"
 ```
 
-Flags:
-- `--vim` adds **navigation & selection** drills (motions and text objects — how to move and select, not just task-local keys).
-- `--syllabus <file>` fans out one guide per module (also triggers on a plain-language "a guide for each module" request).
-- `--resources <files>` are mined for examples and pedagogy.
+Output: `.codevoyant/ed/{course}/explore/sources.md`
 
-Output: `guides/{slug}/guide.md`
+### plan-syllabus — dependency-ordered module program
 
-### new syllabus -- create a module-based learning syllabus
-
-Generate a self-paced study syllabus at graduate level, organized into **modules** (units of study, not calendar weeks). Follows a source syllabus if provided; otherwise finds resources via deep research.
+Turn the brief and vetted sources into a dependency-ordered program of modules. Each module gets a goal, an expected outcome, Bloom-tagged learning objectives, concept coverage, its primary text sources, and a mini-project idea. A scored gate (≥85) enforces Bloom coverage across the program, strict dependency ordering, at least one text source per module, and a "smell test" that confirms the zero-prerequisite modules are genuinely introductory.
 
 ```bash
-/ed new syllabus "deep learning fundamentals" --modules 8
-/ed new syllabus "Stanford CS231n" --syllabus syllabus.pdf
+/ed plan-syllabus transformer-language-models
 ```
 
-Output: `syllabus/{slug}/syllabus.md`
+Output: `.codevoyant/ed/{course}/syllabus.md`
 
-### update -- apply annotations
+### plan-module — lesson-level outline for one module
 
-Scan ed artifacts for `<!-- > -->` (minor) and `<!-- >> -->` (major) annotations added inline, and apply them in-place.
+Read the actual identified text sources for a single module and craft its lesson-level outline: the lessons, per-lesson sections with learning goals, example Q&As, a quiz plan, and visualization specs (which manim, mermaid, chart, YouTube, or bookmark elements to build). It also writes a per-module source shortlist that the lesson author will read from. A scored gate (≥80) requires every lesson section to be grounded in a cited source and every quiz and visualization spec to be present.
 
 ```bash
-/ed update notes/attention-mechanisms/notes.md
-/ed update    # scan all ed artifacts in cwd
+/ed plan-module transformer-language-models 03
 ```
 
-### assist -- interactive guided walkthrough
+Output: `.codevoyant/ed/{course}/modules/{NN-slug}/plan.md`
 
-Free-flowing, step-by-step walkthrough of a guide. It shows the next step, then you reply in plain language with trigger words — no multiple-choice prompts. Starts autonomously (picks the most recent guide if you don't name one), and stays responsive by defaulting to a fast model, escalating only for questions the guide doesn't answer. `--vim` adds navigation/selection hints.
+### create-lesson — author a lesson page
+
+Author an actual lesson as diffbook `.mdx`, Feynman-style at graduate level, from the module plan and its source shortlist. Uses diffbook MDX components extensively (Notice, QA, Figure, Bookmark, YouTube, Chart, Manim, mermaid) and carries heavy, verified references. The dedicated `ed-lesson-author` agent self-checks the page against the lesson gate: define-before-display holds top to bottom, every major concept has at least one interactive element, the rhythm rule holds, and the page ends with a check.
 
 ```bash
-/ed assist                              # autonomously starts the most recent guide
-/ed assist guides/transformer/guide.md --vim
+/ed create-lesson transformer-language-models 03
+/ed create-lesson transformer-language-models 03 02
 ```
 
-Trigger words: `hint` · `answer` · `check <your attempt>` · `next` · `skip` · `exit` — or just ask a question.
+Output: `{BOOK_DIR}/docs/{NN-module-slug}/{lesson}.mdx`
 
-### quiz -- generate or administer a quiz
+### create-quiz — author a module quiz
 
-Create a quiz from notes or slides. Answers go in a separate file.
+Author a graduate module quiz as `.mdx` using diffbook Quiz and question components (SingleChoiceQuestion, MultipleChoiceQuestion, NumericQuestion). Questions are Bloom-distributed to the module's position, with plausible same-length distractors that target real misconceptions, ~25% A/B/C/D balance, no all/none-of-the-above, and 50–100-word explanations.
 
 ```bash
-/ed quiz "attention mechanisms" --source notes/attention-mechanisms/notes.md --questions 15
-/ed quiz --interactive quizzes/attention-mechanisms/quiz.md
+/ed create-quiz transformer-language-models 03
 ```
 
-Output:
-- `quizzes/{slug}/quiz.md` — questions only
-- `quizzes/{slug}/answers.md` — answers only
+Output: `{BOOK_DIR}/docs/{NN-module-slug}/quiz.mdx`
 
-## Output Directory Structure
+### create-project — author a project + solution guide
+
+Author a graduate project and its solution guide as `.mdx`, grounded in real sourced assignments such as OCW problem sets and reference-repo tasks. The project reaches the "Create" level of Bloom's taxonomy and its solution guide is scaffolded rather than dumped, so learners are led to the answer.
+
+```bash
+/ed create-project transformer-language-models 03
+```
+
+Output: `{BOOK_DIR}/docs/{NN-module-slug}/project.mdx`
+
+### autodidact — one-shot the whole book
+
+Chain the entire pipeline for a topic: brief → explore → plan-syllabus → per-module plan-module → create-lesson → create-quiz → create-project. It scaffolds the diffbook project via `/diffbook init`, runs a scored gate between stages, and writes a pipeline ledger to `state.md`. Run non-interactively with `--yes`: a failing stage auto-fixes once, then logs a warning and continues best-effort rather than stopping.
+
+```bash
+/ed autodidact "transformer language models"
+/ed autodidact "transformer language models" --yes
+```
+
+Output: whole diffbook book + all plan artifacts under `.codevoyant/ed/{course}/`
+
+### update — smart re-application
+
+Locate where a change belongs in the pipeline and re-run the minimal slice: a topic change regenerates, a new OCW course or textbook re-grounds explore and the affected modules, and a single-lesson tweak regenerates just that lesson. It also consumes inline `<!-- > -->` (minor) and `<!-- >> -->` (major) annotations you leave in any ed artifact.
+
+```bash
+/ed update transformer-language-models
+/ed update transformer-language-models 03
+```
+
+Output: varies with the located change
+
+## Pipeline
+
+The recommended order builds a course incrementally, pausing at each scored gate:
+
+```bash
+/ed explore "transformer language models"
+/ed plan-syllabus transformer-language-models
+/ed plan-module transformer-language-models 03
+/ed create-lesson transformer-language-models 03
+/ed create-quiz transformer-language-models 03
+/ed create-project transformer-language-models 03
+```
+
+Or one-shot the entire book:
+
+```bash
+/ed autodidact "transformer language models"
+```
+
+Bare verb aliases are accepted for ergonomics: `syllabus` → `plan-syllabus`, `module` → `plan-module`, `lesson` → `create-lesson`, `quiz` → `create-quiz`, `project` → `create-project`.
+
+## Output Layout
+
+Planning artifacts (the working source of truth) live under `.codevoyant/ed/{course}/`. Published MDX lives in the diffbook project (default `book/`, overridable with `--book`).
 
 ```
-notes/{slug}/
-  notes.md             # Feynman-style notes + diagrams + Q&A
+.codevoyant/ed/{course}/
+  brief.md                       # structured intent (template-filled)
+  state.md                       # autodidact pipeline ledger + gate scores
+  explore/
+    sources.md                   # course-wide vetted source catalog
+    modules/{NN-slug}.md         # per-module source shortlist
+  syllabus.md                    # dependency-ordered module program
+  modules/{NN-slug}/
+    plan.md                      # lesson-level outline for the module
 
-guides/{slug}/
-  guide.md             # pedagogical guide with hint blocks
-
-syllabus/{slug}/
-  syllabus.md          # module-based learning syllabus
-
-quizzes/{slug}/
-  quiz.md              # questions only
-  answers.md           # answers only (keep closed during study!)
+{BOOK_DIR}/                      # diffbook project, scaffolded via /diffbook init
+  astro.config.mjs
+  docs/
+    index.md                     # course landing page (derived from syllabus)
+    {NN-module-slug}/            # module = diffbook chapter (folder)
+      index.mdx                  # module overview (goal, outcomes, lesson map)
+      {MM-lesson-slug}.mdx       # lesson pages
+      quiz.mdx                   # module quiz
+      project.mdx                # module project + solution guide
+      references.md              # module annotated references
 ```
+
+Courses and slugs are kebab-case (≤50 chars). Module and lesson prefixes (`NN`, `MM`) are two-digit zero-padded and reflect syllabus order. All `.md`/`.mdx` prose is soft-wrapped (one line per paragraph).
+
+## Grounding & Pedagogy
+
+- **Verified, annotated references.** Every online URL is confirmed reachable with WebFetch before it is cited; textbooks are cited by title/author/publisher/edition rather than fragile URLs; each source carries a 20–40 word annotation of what it covers and why it matters.
+- **Bloom's taxonomy.** The revised six levels (Remember/Understand/Apply/Analyze/Evaluate/Create) drive objectives, per-lesson goals, quiz question mixes, and project depth, with target distributions that shift from introductory to advanced as modules progress.
+- **Define-before-display scaffolding.** Every term is defined in prose before any diagram, table, or code uses it; tables reinforce and never introduce; a signpost sentence precedes each complex element.
+- **Graduate-level Feynman explanations.** Progressive disclosure (intuition → minimal formalism → full detail → edge cases), Mayer coherence (no decorative visuals — every visual earns its place and is interactive), a rhythm rule (no more than three pure-prose paragraphs without a non-text element), and LaTeX via `\( \)` / `\[ \]` (never `$…$`).
+- **diffbook interactive components.** Lessons are authored as MDX with auto-available components — Notice, QA, Figure, Bookmark, YouTube, Chart, Manim, and the quiz family (SingleChoiceQuestion, MultipleChoiceQuestion, NumericQuestion, Quiz) — plus mermaid fences; authoring runs through the `/diffbook` skill.
+
+This pedagogy is grounded in the "intelligent textbook" patterns pioneered by [Dan McCreary's claude-skills](https://dmccreary.github.io/claude-skills/) — scored quality gates between stages, Bloom-tagged objectives, concept scaffolding, and verified references — retargeted here onto diffbook MDX with added source classes (papers, repos, lecture series).
 
 ## Annotation Format
 
 Add an HTML-comment annotation anywhere in an ed artifact to mark it for later refinement — `<!-- > ... -->` for minor fixes, `<!-- >> ... -->` for major additions:
 
 ```markdown
-## Attention Mechanism
+## Scaled Dot-Product Attention
 
-<!-- > clarify the softmax temperature here -->
-<!-- >> add a worked example showing the full attention computation for a 3-token sequence -->
+<!-- > clarify why the scaling factor is 1/sqrt(d_k) here -->
+<!-- >> add a worked example computing attention for a 3-token sequence end to end -->
 ```
 
-Then run `/ed update` to consume the annotations and apply them.
+Then run `/ed update` to consume the annotations and apply them in the correct pipeline slice (`update` scans `<!-- >>` before `<!-- >`).

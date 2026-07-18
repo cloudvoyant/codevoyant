@@ -66,7 +66,7 @@ features:
   - icon:
       src: /icons/ed.svg
     title: ed · experimental
-    details: Study notes, assignment guides, learning plans, and quizzes for graduate ML coursework.
+    details: Interactive graduate textbooks grounded in OCW and papers, authored as diffbook MDX.
     link: /skills/ed
   - icon:
       src: /icons/ux.svg
