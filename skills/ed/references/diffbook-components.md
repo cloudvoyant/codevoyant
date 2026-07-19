@@ -118,11 +118,23 @@ graph TD
 
 ### Manim — math animation
 
-`scene` (required — scene-script basename, no extension), optional `width` (default 800), `height` (default 450), `caption`. The scene script lives in an asset dir as a `*.{ts,js}` file exporting a default async function that receives a `Scene`; Manim scene scripts resolve from `<docsDir>/_animations/` (i.e. `{BOOK_DIR}/_animations/`). Use for *dynamic* math intuition.
+`scene` (required — scene-script basename, no extension), optional `width` (default 800), `height` (default 450), `caption`. The scene script is a `*.{ts,js}` file under `{BOOK_DIR}/_animations/` that **default-exports an async function receiving a manim-web `Scene`**. diffbook drives the scene through **manim-web** — the scene must import its primitives from the `manim-web` package and animate via `await scene.play(new Create(m))`. Use for *dynamic* math intuition.
 
 ```mdx
-<Manim scene="sine_wave" caption="A sine wave being drawn" />
+<Manim scene="circle_to_square" caption="A circle morphing into a square" />
 ```
+
+```ts
+// {BOOK_DIR}/_animations/circle_to_square.ts
+import { type Scene, Circle, Square, Create, ReplacementTransform } from 'manim-web';
+export default async function circleToSquare(scene: Scene): Promise<void> {
+  const c = new Circle({ radius: 1, color: '#22c55e' });
+  await scene.play(new Create(c));
+  await scene.play(new ReplacementTransform(c, new Square({ sideLength: 2, color: '#eab308' })));
+}
+```
+
+> **Hard rule (PL-30):** scene scripts may only use `manim-web` exports. **Never** invent `scene.circle/line/label/moveTo` or declare a local `interface Scene` — those APIs do not exist and throw at runtime. The full contract, exports catalog, and worked examples live in **`references/manim-scenes.md`** — read it before authoring any scene.
 
 ### SingleChoiceQuestion — one graded single-answer item
 
