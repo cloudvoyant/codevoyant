@@ -1,3 +1,11 @@
+## [1.66.0](https://github.com/cloudvoyant/codevoyant/compare/v1.65.2...v1.66.0) (2026-07-19)
+
+### Features
+
+* **hx,zellij:** fast Helix + Zellij keybinding cheatsheet skills ([#32](https://github.com/cloudvoyant/codevoyant/issues/32))
+
+Two single-file, deterministic reference skills modeled on vim: parse a natural-language query and print a pre-baked table (no runtime web calls, no subagents, instant output), each with a cheatsheet command for a terse one-screen table. hx covers Helix navigation/selection/change/edit/search/pickers/splits/modes + the space-? palette (selection-first grammar and vim gotchas called out); zellij covers the default preset — modes, panes incl. floating, resize/move, tabs, sessions. Bindings verified against the Helix keymap and Zellij defaults. Adds docs skill pages, index cards after vim, sidebar entries, and icons.
+
 ## [1.65.2](https://github.com/cloudvoyant/codevoyant/compare/v1.65.1...v1.65.2) (2026-07-19)
 
 ### Bug Fixes
