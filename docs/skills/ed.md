@@ -43,7 +43,7 @@ Author an actual lesson as diffbook `.mdx`, Feynman-style at graduate level, fro
 /ed create-lesson transformer-language-models 03 02
 ```
 
-Output: `{BOOK_DIR}/docs/{NN-module-slug}/{lesson}.mdx`
+Output: `{BOOK_DIR}/{NN-module-slug}/{lesson}.mdx`
 
 ### create-quiz — author a module quiz
 
@@ -53,7 +53,7 @@ Author a graduate module quiz as `.mdx` using diffbook Quiz and question compone
 /ed create-quiz transformer-language-models 03
 ```
 
-Output: `{BOOK_DIR}/docs/{NN-module-slug}/quiz.mdx`
+Output: `{BOOK_DIR}/{NN-module-slug}/quiz.mdx`
 
 ### create-project — author a project + solution guide
 
@@ -63,7 +63,7 @@ Author a graduate project and its solution guide as `.mdx`, grounded in real sou
 /ed create-project transformer-language-models 03
 ```
 
-Output: `{BOOK_DIR}/docs/{NN-module-slug}/project.mdx`
+Output: `{BOOK_DIR}/{NN-module-slug}/project.mdx`
 
 ### autodidact — one-shot the whole book
 
@@ -86,6 +86,17 @@ Locate where a change belongs in the pipeline and re-run the minimal slice: a to
 ```
 
 Output: varies with the located change
+
+### doctor — repair a mis-scaffolded book
+
+Fix a book that was scaffolded the wrong way (diffbook project buried inside `book/`, content doubly-nested at `book/docs/`, stale `docs` config option). `doctor` moves the diffbook project to the repo root, flattens `book/docs/` into `book/`, de-duplicates `.diffbook/`, and rewrites `astro.config.mjs` to use `contentPath`. It is dry-run by default (pass `--fix` to apply), idempotent, and structural only — it never re-runs the author agents, so authored MDX is preserved.
+
+```bash
+/ed doctor ~/Projects/my-book          # diagnose (dry run)
+/ed doctor ~/Projects/my-book --fix     # apply the repair
+```
+
+Output: the diffbook project relocated to the repo root with `book/` as the content dir
 
 ## Pipeline
 
@@ -110,7 +121,7 @@ Bare verb aliases are accepted for ergonomics: `syllabus` → `plan-syllabus`, `
 
 ## Output Layout
 
-Planning artifacts (the working source of truth) live under `.codevoyant/ed/{course}/`. Published MDX lives in the diffbook project (default `book/`, overridable with `--book`).
+Planning artifacts (the working source of truth) live under `.codevoyant/ed/{course}/`. Published MDX lives in the diffbook **content dir** — `book/` by default (diffbook's `contentPath`, overridable with `--book`) — inside a diffbook project scaffolded at the repo root.
 
 ```
 .codevoyant/ed/{course}/
@@ -123,9 +134,11 @@ Planning artifacts (the working source of truth) live under `.codevoyant/ed/{cou
   modules/{NN-slug}/
     plan.md                      # lesson-level outline for the module
 
-{BOOK_DIR}/                      # diffbook project, scaffolded via /diffbook init
-  astro.config.mjs
-  docs/
+{PROJECT_ROOT}/                  # diffbook project = repo root, scaffolded via /diffbook init
+  astro.config.mjs               # diffbook({ ..., contentPath: './book' })
+  package.json
+  .diffbook/
+  {BOOK_DIR}/                     # the content dir (contentPath, default book/) — content directly here
     index.md                     # course landing page (derived from syllabus)
     {NN-module-slug}/            # module = diffbook chapter (folder)
       index.mdx                  # module overview (goal, outcomes, lesson map)
