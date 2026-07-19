@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# gen-task-alias — generate skills/tasks/ (the /tasks trigger alias) from the
+# canonical skills/task/ package. skills/task/ is the source of truth; skills/tasks/
+# is identical except name/trigger-token/heading substitutions in SKILL.md.
+#
+#   gen-task-alias           regenerate skills/tasks/ in place
+#   gen-task-alias --check    regenerate into a temp dir and diff; exit 1 on drift
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$ROOT/skills/task"
+CHECK=0
+[ "${1:-}" = "--check" ] && CHECK=1
+
+build_into() {
+  dest="$1"
+  rm -rf "$dest"
+  mkdir -p "$dest"
+  # copy everything (references/, scripts/, etc.)
+  cp -R "$SRC/." "$dest/"
+  # rewrite SKILL.md: name, trigger token, H1 heading
+  skill="$dest/SKILL.md"
+  sed -e 's/^name: task$/name: tasks/' \
+      -e 's#"/task"#"/tasks"#g' \
+      -e 's/^# task$/# tasks/' \
+      "$skill" > "$skill.tmp"
+  mv "$skill.tmp" "$skill"
+}
+
+# Detect the stat variant once. GNU stat uses `-c FMT`; BSD/macOS stat uses
+# `-f FMT`. We must NOT probe with `stat -f ... || stat -c ...` per file: on GNU,
+# `-f` means --file-system, so `stat -f '%Lp' FILE` prints a filesystem block
+# (which embeds FILE's path) to stdout AND exits non-zero — the `||` fallback
+# then appends the real mode, and the path-bearing blocks never compare equal,
+# yielding phantom "mode drift" on every file (works on BSD, fails on Linux CI).
+if stat -c '%a' . >/dev/null 2>&1; then
+  _statmode() { stat -c '%a' "$1"; }   # GNU
+else
+  _statmode() { stat -f '%Lp' "$1"; }  # BSD/macOS
+fi
+
+# Compare file modes (permission bits) between two trees. Portable across
+# GNU/BSD stat. Emits "path old new" for each differing file; empty = in sync.
+mode_diff() {
+  a="$1"; b="$2"
+  ( cd "$a" && find . -type f | sort ) | while IFS= read -r rel; do
+    fa="$a/$rel"; fb="$b/$rel"
+    [ -e "$fb" ] || continue
+    ma="$(_statmode "$fa")"
+    mb="$(_statmode "$fb")"
+    [ "$ma" = "$mb" ] || printf '%s %s %s\n' "$rel" "$ma" "$mb"
+  done
+}
+
+if [ "$CHECK" -eq 1 ]; then
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT
+  build_into "$tmp/tasks"
+  modes="$(mode_diff "$ROOT/skills/tasks" "$tmp/tasks")"
+  if ! diff -r "$ROOT/skills/tasks" "$tmp/tasks" >/dev/null 2>&1 || [ -n "$modes" ]; then
+    echo "FAIL: skills/tasks is out of sync with skills/task."
+    echo "Run: mise run skills:sync-task-alias"
+    diff -r "$ROOT/skills/tasks" "$tmp/tasks" || true
+    if [ -n "$modes" ]; then
+      echo "Mode drift (file expected-mode actual-mode):"
+      printf '%s\n' "$modes"
+    fi
+    exit 1
+  fi
+  echo "PASS: skills/tasks is in sync with skills/task (content + modes)."
+else
+  build_into "$ROOT/skills/tasks"
+  echo "Generated skills/tasks/ from skills/task/."
+fi

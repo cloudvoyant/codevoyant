@@ -1,11 +1,11 @@
 ---
-name: task
-description: 'Unified task runner dispatcher: auto-detects mise, just, task.dev, or package.json scripts and provides commands to run, list, or detect the project task runner. Triggers on: "/task", "run task", "list tasks", "detect task runner", "what tasks", "mise run", "just run", "pnpm run", "package.json scripts".'
+name: tasks
+description: 'Unified task runner dispatcher: auto-detects mise, just, task.dev, or package.json scripts and provides commands to run, list, or detect the project task runner. Triggers on: "/tasks", "run task", "list tasks", "detect task runner", "what tasks", "mise run", "just run", "pnpm run", "package.json scripts".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
 ---
 
-# task
+# tasks
 
 Unified task runner skill dispatcher. Auto-detects the project's task runner and provides a consistent interface for listing, detecting, and running tasks. All detection, listing, and running is done by one shipped script (`scripts/task.sh`) invoked in a **single Bash call** — never by reading multiple markdown files.
 
