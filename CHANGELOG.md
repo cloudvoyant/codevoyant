@@ -1,3 +1,56 @@
+## [1.66.1](https://github.com/cloudvoyant/codevoyant/compare/v1.66.0...v1.66.1) (2026-07-19)
+
+### Performance Improvements
+
+* **task:** deterministic single-script runner dispatch + /tasks alias ([#33](https://github.com/cloudvoyant/codevoyant/issues/33))
+
+Model-driven dispatch (SKILL.md -> detect.md -> list.md -> run.md)
+made `/task detect` and `/task list` take ~2 minutes: every verb
+walked several reference docs and ran ad-hoc bash the model
+assembled per call. Replace that hot path with one shipped POSIX-sh
+script so detection, listing, running, and the no-match offer happen
+in a single deterministic process.
+
+**Single shipped dispatcher**
+- Add scripts/task.sh: one source of truth for runner detection
+  (mise -> just -> Taskfile -> package.json -> none), listing, and
+  running.
+- No argument lists tasks; an unrecognised first token is treated as
+  a run query and matched against the runner's task names; a query
+  with no match returns NO_MATCH so the skill can offer to create a
+  runner-native task entry instead of failing.
+- SKILL.md maps every verb to a single Bash call; the three workflow
+  docs shrink to thin references pointing at the script, so no
+  executable bash remains on the hot path.
+
+**Correct lookup signals**
+- List names via `mise tasks ls --no-header` so the first task is no
+  longer dropped by a header-skipping awk (mise 2026.3.x emits no
+  header); dropping it made `/task <first>` wrongly offer to create
+  an existing task.
+- Capture enumeration stderr: a runner present but unable to
+  enumerate (e.g. untrusted mise on a fresh clone) is reported as
+  ENUM_FAILED, surfacing the trust error rather than offering to
+  create the task.
+- Two or more prefix/substring candidates return AMBIGUOUS with the
+  candidate list so the query is disambiguated, not treated as
+  no-match.
+- Match literally via `grep -F` and a lowercased case-glob prefix;
+  the query is never interpreted as a regex.
+
+**/tasks alias with a drift guard**
+- Ship skills/tasks/ as a generated mirror of canonical skills/task/
+  (identical but for the name, `/tasks` trigger token, and SKILL.md
+  H1), so both triggers share the same fast script.
+- Add .mise-tasks/gen-task-alias to regenerate it and a
+  skills:sync-task-alias task; fold a --check drift guard (content
+  and exec-bit modes) into skills:validate so CI fails if the two
+  diverge.
+- Update docs/skills/task.md for no-arg list, bare-query run, and the
+  create-offer.
+
+Closes #33
+
 ## [1.66.0](https://github.com/cloudvoyant/codevoyant/compare/v1.65.2...v1.66.0) (2026-07-19)
 
 ### Features
