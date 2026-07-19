@@ -41,7 +41,7 @@ export default async function myScene(scene: Scene): Promise<void> {
 - `new Line({ start?: [x,y,z], end?: [x,y,z], color?: string, strokeWidth?: number })`
 - `new Arrow({ start?: [x,y,z], end?: [x,y,z], color?: string })`, `new Rectangle({ width?, height?, color? })`, `new Square({ sideLength?, color? })`, `new Polygon({ … })`, `new Triangle({ … })`
 - `new Text({ text: string, fontSize?: number, color?: string })`
-- `new MathTex('x^2 + y^2 = r^2', { color?: string })` — LaTeX math
+- `new MathTex({ latex: 'x^2 + y^2 = r^2', color?: string })` — LaTeX math (the `latex` field is **required**; there is no positional-string form)
 - Graphing: `new Axes({ … })`, `new NumberPlane({ … })`, `new NumberLine({ … })`, `new FunctionGraph({ … })`, `new BarChart({ … })`
 - Group with `new VGroup(a, b, c)`
 
