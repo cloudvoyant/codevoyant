@@ -1,3 +1,11 @@
+## [1.65.1](https://github.com/cloudvoyant/codevoyant/compare/v1.65.0...v1.65.1) (2026-07-19)
+
+### Bug Fixes
+
+* **ed:** repo-root diffbook layout + ed doctor ([#30](https://github.com/cloudvoyant/codevoyant/issues/30))
+
+ed scaffolded the diffbook project inside book/ with content nested at book/docs/, contradicting diffbook's convention (project at repo root, book/ is the contentPath content dir). Model PROJECT_ROOT (cwd, where /diffbook init runs) separately from BOOK_DIR (contentPath, default book/); drop the docs/ content layer; move Manim scenes to book/_animations/. Add 'ed doctor' to repair already-borked books in place (move project to root, flatten book/docs/ -> book/, de-dupe .diffbook/, rewrite astro.config.mjs docs -> contentPath) — dry-run by default, --fix to apply, idempotent, never re-runs author agents. Closes PL-29.
+
 ## [1.65.0](https://github.com/cloudvoyant/codevoyant/compare/v1.64.0...v1.65.0) (2026-07-18)
 
 ### Features
