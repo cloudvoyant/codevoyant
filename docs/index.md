@@ -164,6 +164,16 @@ features:
     details: Vim and Neovim key bindings for file navigation, search, and splits.
     link: /skills/vim
   - icon:
+      src: /icons/hx.svg
+    title: hx
+    details: Helix editor key bindings — instant query lookup and a terse one-screen cheatsheet.
+    link: /skills/hx
+  - icon:
+      src: /icons/zellij.svg
+    title: zellij
+    details: Zellij terminal-multiplexer cheatsheet — panes, tabs, resizing, and sessions.
+    link: /skills/zellij
+  - icon:
       src: /icons/react.svg
     title: react
     details: Zustand, shadcn/ui, Tailwind, React Three Fiber, folder structure, and data fetching.
