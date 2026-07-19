@@ -26,6 +26,7 @@ Read these references and follow them rigorously:
 
 - `references/pedagogy.md` — the pedagogical bar (below).
 - `references/diffbook-components.md` — the pedagogical-intent → component map and exact syntax.
+- `references/manim-scenes.md` — **required before authoring any `<Manim>` scene:** the real manim-web `Scene` contract, exports, and worked examples.
 - `references/blooms-taxonomy.md` — for the learning-goal tags and the end-of-lesson check.
 - `references/source-tiers.md` — for how to cite and annotate sources.
 - `references/quality-gates.md` — the lesson gate you self-verify against.
@@ -48,7 +49,7 @@ Author `.mdx`; all twelve components are auto-available (no imports). Map intent
 
 - **`<QA question="…">…</QA>`** — Feynman self-checks after concepts.
 - **fenced ` ```mermaid ` block** (NOT `<Mermaid>`) — flow/structure/architecture/dependency diagrams.
-- **`<Manim scene="…" caption="…" />`** — math intuition/animation where a static picture or prose can't convey the dynamics; the scene basename lives under `{BOOK_DIR}/_animations/` (create the scene script there when you spec a Manim visual).
+- **`<Manim scene="…" caption="…" />`** — math intuition/animation where a static picture or prose can't convey the dynamics; the scene basename lives under `{BOOK_DIR}/_animations/`. The scene script is a `*.ts` file that default-exports `async function (scene: Scene)` and drives **manim-web** — import primitives from `'manim-web'` and animate with `await scene.play(new Create(m))`. **Follow `references/manim-scenes.md` exactly. NEVER invent `scene.circle/line/label/moveTo` or declare a local `interface Scene` — those do not exist and crash at runtime (PL-30).**
 - **`<YouTube id="…" title="…" chapters={[{ t: 0, label: '…' }]} />`** — a specific lecture from the shortlist.
 - **`<Bookmark url="…" />`** — a reference card for a specific source URL.
 - **`<Figure src="…" alt="…" caption="…" credit="…" />`** — a captioned diagram/image.
@@ -69,7 +70,7 @@ Follow the visualization specs in the lesson spec: build the specific components
    - Include runnable code with shown intermediate outputs where the concept is procedural/algorithmic.
    - Close every major concept with a `<QA>`; end the lesson with a `<QA>` or a `<Quiz>`/question drawn from the quiz plan.
    - End with a **References** section listing every source you cited (title, author/venue, URL/citation) — ≥4 verified references.
-4. **Write** to `{BOOK_DIR}/{NN_SLUG}/{MM-lesson-slug}.mdx` (`mkdir -p` the chapter dir if needed). If you specced a `Manim` visual, also write its scene script under `{BOOK_DIR}/_animations/`.
+4. **Write** to `{BOOK_DIR}/{NN_SLUG}/{MM-lesson-slug}.mdx` (`mkdir -p` the chapter dir if needed). If you specced a `Manim` visual, also write its scene script under `{BOOK_DIR}/_animations/` **strictly per `references/manim-scenes.md`**: `import { type Scene, … } from 'manim-web'`, `export default async function (scene: Scene)`, draw via `new <Mobject>(…)` + `await scene.play(new <Animation>(…))`. Do NOT invent `scene.circle/line/label/moveTo` or a local `interface Scene`.
 5. **Self-verify against the lesson gate** (`references/quality-gates.md`) and fix in place before returning:
    - define-before-display holds top-to-bottom (no term used before its prose definition);
    - ≥1 interactive element per major concept;
@@ -77,6 +78,7 @@ Follow the visualization specs in the lesson spec: build the specific components
    - ≥4 verified references, all real and reachable;
    - the lesson ends with a check;
    - graduate reading level; all code runnable with shown outputs; no ellipses/placeholders; every component tag is one of the twelve with required props; Mermaid is a fenced block; LaTeX uses `\( \)`/`\[ \]`.
+   - **every `<Manim>` scene** you wrote imports from `'manim-web'`, uses only `scene.add/remove/play/wait`, declares no local `interface Scene`, and calls no invented `scene.circle/line/label/moveTo` (run the self-check in `references/manim-scenes.md`).
    Fix every failing check before returning — do not hand back a failing lesson.
 
 ## Return

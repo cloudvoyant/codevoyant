@@ -55,7 +55,11 @@ def attention(q, k, v):
     return F.softmax(scores, dim=-1) @ v
 ```
 
-{/* Use a math animation when motion/derivation aids intuition (scene lives in {BOOK_DIR}/_animations/): */}
+{/* Use a math animation when motion/derivation aids intuition. The scene file
+    {BOOK_DIR}/_animations/<scene_name>.ts must follow references/manim-scenes.md:
+    import { type Scene, Circle, Create } from 'manim-web';
+    export default async function (scene: Scene) { await scene.play(new Create(new Circle())); }
+    NEVER invent scene.circle/line/label/moveTo or a local interface Scene (PL-30). */}
 <Manim scene="<scene_name>" caption="<what the animation shows>" />
 
 ## <Third major concept / application>
