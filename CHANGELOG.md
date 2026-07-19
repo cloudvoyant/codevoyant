@@ -1,3 +1,11 @@
+## [1.65.2](https://github.com/cloudvoyant/codevoyant/compare/v1.65.1...v1.65.2) (2026-07-19)
+
+### Bug Fixes
+
+* **ed:** real manim-web scene API + doctor scene-health ([#31](https://github.com/cloudvoyant/codevoyant/issues/31))
+
+ed generated Manim scene scripts against a fictional Scene API (scene.circle/line/label/moveTo) that diffbook never provided, so every animation crashed at runtime. Add references/manim-scenes.md documenting the real manim-web contract (import from manim-web; export default async (scene: Scene); scene.add/remove/play/wait; new Circle/Line/Text + new Create/Write; .moveTo/.shift/.animate), verified against manim-web@0.3.24, with hard rules and worked examples; wire it into the ed-lesson-author agent, diffbook-components, and the lesson template. Add an ed doctor Manim scene-health pass that flags and best-effort-repairs scenes using the hallucinated API (backing up originals, surfacing non-mechanical cases). Closes PL-30.
+
 ## [1.65.1](https://github.com/cloudvoyant/codevoyant/compare/v1.65.0...v1.65.1) (2026-07-19)
 
 ### Bug Fixes
