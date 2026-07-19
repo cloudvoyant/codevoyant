@@ -89,7 +89,7 @@ Output: varies with the located change
 
 ### doctor — repair a mis-scaffolded book
 
-Fix a book that was scaffolded the wrong way (diffbook project buried inside `book/`, content doubly-nested at `book/docs/`, stale `docs` config option). `doctor` moves the diffbook project to the repo root, flattens `book/docs/` into `book/`, de-duplicates `.diffbook/`, and rewrites `astro.config.mjs` to use `contentPath`. It is dry-run by default (pass `--fix` to apply), idempotent, and structural only — it never re-runs the author agents, so authored MDX is preserved.
+Diagnose and repair an ed-generated book without regenerating it. `doctor` fixes two failure classes: **layout** (diffbook project buried inside `book/`, content doubly-nested at `book/docs/`, stale `docs` config option — moves the project to the repo root, flattens `book/docs/` into `book/`, rewrites `astro.config.mjs` to use `contentPath`), and **Manim scene health** (scene scripts written against a non-existent `Scene` API that crash at runtime — validates each against the real manim-web contract and mechanically repairs the known cases, surfacing the rest for manual fix). It is dry-run by default (pass `--fix` to apply), idempotent, and structural only — it never re-runs the author agents, so authored content is preserved (broken scene scripts are backed up before any rewrite).
 
 ```bash
 /ed doctor ~/Projects/my-book          # diagnose (dry run)
@@ -156,7 +156,7 @@ Courses and slugs are kebab-case (≤50 chars). Module and lesson prefixes (`NN`
 - **Bloom's taxonomy.** The revised six levels (Remember/Understand/Apply/Analyze/Evaluate/Create) drive objectives, per-lesson goals, quiz question mixes, and project depth, with target distributions that shift from introductory to advanced as modules progress.
 - **Define-before-display scaffolding.** Every term is defined in prose before any diagram, table, or code uses it; tables reinforce and never introduce; a signpost sentence precedes each complex element.
 - **Graduate-level Feynman explanations.** Progressive disclosure (intuition → minimal formalism → full detail → edge cases), Mayer coherence (no decorative visuals — every visual earns its place and is interactive), a rhythm rule (no more than three pure-prose paragraphs without a non-text element), and LaTeX via `\( \)` / `\[ \]` (never `$…$`).
-- **diffbook interactive components.** Lessons are authored as MDX with auto-available components — Notice, QA, Figure, Bookmark, YouTube, Chart, Manim, and the quiz family (SingleChoiceQuestion, MultipleChoiceQuestion, NumericQuestion, Quiz) — plus mermaid fences; authoring runs through the `/diffbook` skill.
+- **diffbook interactive components.** Lessons are authored as MDX with auto-available components — Notice, QA, Figure, Bookmark, YouTube, Chart, Manim, and the quiz family (SingleChoiceQuestion, MultipleChoiceQuestion, NumericQuestion, Quiz) — plus mermaid fences; authoring runs through the `/diffbook` skill. `Manim` animation scenes are generated against the real [manim-web](https://www.npmjs.com/package/manim-web) `Scene` API (import from `manim-web`, animate via `scene.play(new Create(…))`) so they render at runtime rather than crashing.
 
 This pedagogy is grounded in the "intelligent textbook" patterns pioneered by [Dan McCreary's claude-skills](https://dmccreary.github.io/claude-skills/) — scored quality gates between stages, Bloom-tagged objectives, concept scaffolding, and verified references — retargeted here onto diffbook MDX with added source classes (papers, repos, lecture series).
 
