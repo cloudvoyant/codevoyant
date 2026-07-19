@@ -1,6 +1,6 @@
 # create-project
 
-Author a graduate-level module **project + solution guide** as diffbook MDX at `{BOOK_DIR}/docs/{NN-module-slug}/project.mdx`. The project must be **adapted from a REAL, sourced assignment** (an MIT OCW problem set, another course's assignment, or a course-repo task) drawn from the module's vetted sources — located, cited, and never fabricated.
+Author a graduate-level module **project + solution guide** as diffbook MDX at `{BOOK_DIR}/{NN-module-slug}/project.mdx`. The project must be **adapted from a REAL, sourced assignment** (an MIT OCW problem set, another course's assignment, or a course-repo task) drawn from the module's vetted sources — located, cited, and never fabricated.
 
 ## ⛔ HARD STOPS — read before every action
 
@@ -14,7 +14,7 @@ This workflow's **only output** is `project.mdx` for one module. If you are abou
 | Paste a source's problem statement verbatim | Stop. Adapt and attribute; cite the origin with a `<Bookmark>`. |
 | Present a solution you did not ground in real solution material where it exists | Stop. Ground the solution guide in the actual solution code/text when the source provides it; otherwise mark clearly as an author-derived reference solution. |
 
-**Permitted file write:** `{BOOK_DIR}/docs/{NN-module-slug}/project.mdx` only.
+**Permitted file write:** `{BOOK_DIR}/{NN-module-slug}/project.mdx` only.
 
 ## Variables
 
@@ -34,7 +34,7 @@ Resolve `ART_ROOT` and `BOOK_DIR` per `references/artifact-layout.md`.
    - `PLAN_FILE` = `$ART_ROOT/ed/{COURSE}/modules/{NN-slug}/plan.md`
    - `SOURCES_FILE` = `$ART_ROOT/ed/{COURSE}/explore/modules/{NN-slug}.md`
    - `COURSE_SOURCES` = `$ART_ROOT/ed/{COURSE}/explore/sources.md`
-   - `PROJECT_MDX` = `$BOOK_DIR/docs/{NN-module-slug}/project.mdx`
+   - `PROJECT_MDX` = `$BOOK_DIR/{NN-module-slug}/project.mdx`
 
 ## Step 1: Require the module plan and sources
 

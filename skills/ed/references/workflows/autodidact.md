@@ -12,7 +12,7 @@ The full chain. From a single topic, produce a complete graduate-level interacti
 | Continue past a failed gate silently *with* `--yes` | Stop. Log the failure to `state.md` first, then continue best-effort. |
 | Forget to record a stage in `state.md` | Stop. Every stage writes status + score + timestamp before the next begins. |
 
-**Permitted writes:** the state ledger `$ART_ROOT/ed/{COURSE}/state.md`, plus whatever the invoked verbs write (their own artifacts and book MDX), and the course landing `{BOOK_DIR}/docs/index.md`.
+**Permitted writes:** the state ledger `$ART_ROOT/ed/{COURSE}/state.md`, plus whatever the invoked verbs write (their own artifacts and book MDX), and the course landing `{BOOK_DIR}/index.md`.
 
 ## Variables
 
@@ -46,13 +46,13 @@ The brief anchors depth, audience, and scope for the whole book.
 
 ## Step 2: Scaffold the diffbook book (if absent)
 
-If `BOOK_DIR` does not exist / is not a diffbook project, scaffold it via the diffbook skill:
+If the diffbook project is not yet scaffolded (no `astro.config.mjs` at the project root), scaffold it via the diffbook skill — run `/diffbook init` at the PROJECT ROOT (cwd), NOT inside `BOOK_DIR`:
 
 ```
-/diffbook init --title "{course title from brief/topic}"   (into BOOK_DIR)
+/diffbook init --title "{course title from brief/topic}"   (run at the PROJECT ROOT / cwd; sets contentPath = BOOK_DIR)
 ```
 
-Confirm `BOOK_DIR/docs/` exists afterward. If `/diffbook` is unavailable, STOP and tell the user to install the diffbook skill (Phase 0 prerequisite).
+Confirm `astro.config.mjs` at the project root and the `BOOK_DIR/` content dir exist afterward. If `/diffbook` is unavailable, STOP and tell the user to install the diffbook skill (Phase 0 prerequisite).
 
 ## Step 3: Initialize the state ledger
 
@@ -79,7 +79,7 @@ Invoke each child verb with the same `--book`/`--dir` and `--yes` (when `AUTO_YE
    c. **create-quiz** — `record` running → `/ed create-quiz {COURSE} {MODULE}` → **quiz gate** → `record`.
    d. **create-project** — `record` running → `/ed create-project {COURSE} {MODULE}` → project must cite a real source (its own hard stop) → `record`.
    Complete each module fully before starting the next (later modules depend on earlier ones).
-4. **Course landing page** — write `{BOOK_DIR}/docs/index.md` from `references/templates/course-index-template.md`, derived from `syllabus.md` (course goal, module map with links, prerequisites, how to use the book). `record(course-index, ...)`.
+4. **Course landing page** — write `{BOOK_DIR}/index.md` from `references/templates/course-index-template.md`, derived from `syllabus.md` (course goal, module map with links, prerequisites, how to use the book). `record(course-index, ...)`.
 
 ## Step 5: Report (staged progress)
 

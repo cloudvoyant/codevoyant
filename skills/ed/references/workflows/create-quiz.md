@@ -1,6 +1,6 @@
 # create-quiz
 
-Author a graduate-level module quiz as diffbook MDX at `{BOOK_DIR}/docs/{NN-module-slug}/quiz.mdx`, using the diffbook `<Quiz>` group with `SingleChoiceQuestion` / `MultipleChoiceQuestion` / `NumericQuestion` items. Questions are Bloom-distributed for the module's syllabus position and must pass the quiz quality gate.
+Author a graduate-level module quiz as diffbook MDX at `{BOOK_DIR}/{NN-module-slug}/quiz.mdx`, using the diffbook `<Quiz>` group with `SingleChoiceQuestion` / `MultipleChoiceQuestion` / `NumericQuestion` items. Questions are Bloom-distributed for the module's syllabus position and must pass the quiz quality gate.
 
 ## ⛔ HARD STOPS — read before every action
 
@@ -14,7 +14,7 @@ This workflow's **only output** is `quiz.mdx` for one module. If you are about t
 | Ship a question with zero or two defensible correct answers | Stop. Fix it — the quiz gate requires exactly one defensible answer. |
 | Proceed past a failing quiz gate without `--yes` | Stop. Report the failure and wait. |
 
-**Permitted file write:** `{BOOK_DIR}/docs/{NN-module-slug}/quiz.mdx` only.
+**Permitted file write:** `{BOOK_DIR}/{NN-module-slug}/quiz.mdx` only.
 
 ## Variables
 
@@ -34,8 +34,8 @@ Resolve `ART_ROOT` and `BOOK_DIR` per `references/artifact-layout.md`.
    - `MODULE_SLUG` = `{NN-slug}`
    - `PLAN_FILE` = `$ART_ROOT/ed/{COURSE}/modules/{NN-slug}/plan.md`
    - `SOURCES_FILE` = `$ART_ROOT/ed/{COURSE}/explore/modules/{NN-slug}.md`
-   - `QUIZ_MDX` = `$BOOK_DIR/docs/{NN-module-slug}/quiz.mdx`
-   - `MODULE_DOCS_DIR` = `$BOOK_DIR/docs/{NN-module-slug}/`
+   - `QUIZ_MDX` = `$BOOK_DIR/{NN-module-slug}/quiz.mdx`
+   - `MODULE_DOCS_DIR` = `$BOOK_DIR/{NN-module-slug}/`
 
 ## Step 1: Require the module plan and authored lessons (scope gate)
 

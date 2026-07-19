@@ -4,7 +4,7 @@
 
 ## ⛔ HARD STOPS — read before every action
 
-This workflow writes **only** into the diffbook book (`{BOOK_DIR}/docs/{NN-module-slug}/…`) and that chapter's `references.md`. If you are about to do anything else, stop.
+This workflow writes **only** into the diffbook book (`{BOOK_DIR}/{NN-module-slug}/…`) and that chapter's `references.md`. If you are about to do anything else, stop.
 
 | You are about to… | Correct action |
 |---|---|
@@ -49,14 +49,14 @@ Resolve the module exactly as `plan-module` Step 1 does: read `{COURSE_DIR}sylla
 
 ## Step 2: Resolve and (if needed) scaffold the diffbook book
 
-Resolve `BOOK_DIR` per `references/artifact-layout.md`.
+Resolve `PROJECT_ROOT` (the diffbook project root, default the cwd/repo root) and `BOOK_DIR` (the content dir = diffbook `contentPath`, default `book`) per `references/artifact-layout.md`.
 
-- If `BOOK_DIR` is **not** a scaffolded diffbook project (no `astro.config.mjs` / no `docs/` root): run `/diffbook init` to scaffold it at `BOOK_DIR` (when invoked under `autodidact`, autodidact has already scaffolded the book — skip and just verify). If `/diffbook` is unavailable, **STOP** and tell the user to install the diffbook skill and run `/diffbook init` (Phase 0 prerequisite).
-- Ensure the course landing page `docs/index.md` exists (derived from `syllabus.md`); if absent, create it from `references/templates/course-index-template.md`.
+- If `PROJECT_ROOT` is **not** a scaffolded diffbook project (no `astro.config.mjs` at the project root): run `/diffbook init` **at `PROJECT_ROOT`** (the repo root — NOT inside `BOOK_DIR`) so the project files (`astro.config.mjs`, `package.json`, `.diffbook/`) land at the root and `BOOK_DIR` becomes the `contentPath` content dir. When invoked under `autodidact`, the book is already scaffolded — skip and just verify. If `/diffbook` is unavailable, **STOP** and tell the user to install the diffbook skill and run `/diffbook init` (Phase 0 prerequisite).
+- Ensure the course landing page `{BOOK_DIR}/index.md` exists (derived from `syllabus.md`); if absent, create it from `references/templates/course-index-template.md`.
 
 ## Step 3: Ensure the module chapter directory + overview
 
-`CHAPTER_DIR = {BOOK_DIR}/docs/{NN_SLUG}/` (`mkdir -p` it).
+`CHAPTER_DIR = {BOOK_DIR}/{NN_SLUG}/` (`mkdir -p` it).
 
 Ensure `CHAPTER_DIR/index.mdx` (the module overview, `order: 0`) exists — module goal, expected outcomes, and the lesson map — derived from `plan.md` + the module's `syllabus.md` entry. If absent, create it (frontmatter `title`, `order: 0`, `description`; soft-wrapped prose; a `mermaid` lesson-dependency map is encouraged). If present, leave it unless a lesson was added/removed (then update the lesson map).
 
@@ -98,11 +98,11 @@ Write `CHAPTER_DIR/references.md` (plain `.md`, prose-only) from the module sour
 ## Step 8: Report
 
 ```
-✅ Lessons authored into {BOOK_DIR}/docs/{NN_SLUG}/
+✅ Lessons authored into {BOOK_DIR}/{NN_SLUG}/
 
    {count} lesson(s): {list of MM-lesson-slug.mdx}   (gate: all ≥ pass)
-   Chapter overview: docs/{NN_SLUG}/index.mdx
-   References: docs/{NN_SLUG}/references.md
+   Chapter overview: {BOOK_DIR}/{NN_SLUG}/index.mdx
+   References: {BOOK_DIR}/{NN_SLUG}/references.md
 
 Preview:  npx diffbook dev   (in {BOOK_DIR})
 Next:     /ed create-quiz {COURSE} {module}

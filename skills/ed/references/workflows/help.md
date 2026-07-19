@@ -35,17 +35,17 @@ ed — Build graduate-level, literature-grounded interactive textbooks as diffbo
   /ed create-lesson  <course> <module> [lesson]   [--book <path>] [--dir <path>]   (alias: /ed lesson)
       Author the actual lesson .mdx into the diffbook book, Feynman-style at graduate level,
       define-before-display, interactive components, heavy verified references.
-      → <book>/docs/<NN-module-slug>/<MM-lesson-slug>.mdx
+      → <book>/<NN-module-slug>/<MM-lesson-slug>.mdx
       e.g.  /ed create-lesson transformer-architectures 02 01
 
   /ed create-quiz  <course> <module>    [--book <path>] [--dir <path>]             (alias: /ed quiz)
       Author a graduate module quiz .mdx with diffbook Quiz components, Bloom-distributed,
-      quality distractors. → <book>/docs/<NN-module-slug>/quiz.mdx
+      quality distractors. → <book>/<NN-module-slug>/quiz.mdx
       e.g.  /ed create-quiz transformer-architectures 02
 
   /ed create-project  <course> <module> [--book <path>] [--dir <path>]            (alias: /ed project)
       Author a graduate project + solution guide grounded in a real sourced assignment
-      (OCW problem set, repo task). → <book>/docs/<NN-module-slug>/project.mdx
+      (OCW problem set, repo task). → <book>/<NN-module-slug>/project.mdx
       e.g.  /ed create-project transformer-architectures 02
 
   /ed autodidact  <topic>               [--book <path>] [--dir <path>] [--yes]
@@ -61,11 +61,18 @@ ed — Build graduate-level, literature-grounded interactive textbooks as diffbo
       <!-- > --> (minor) / <!-- >> --> (major) annotations from any ed artifact.
       e.g.  /ed update transformer-architectures 02/01
 
+  /ed doctor  [path]                    [--book <name>] [--fix]        (alias: /ed fix, /ed repair)
+      Repair a mis-scaffolded book in place: move the diffbook project to the repo root,
+      flatten book/docs/ → book/, de-dupe .diffbook/, rewrite astro.config.mjs
+      (docs → contentPath: "book"). Dry-run by default; --fix applies. Never re-runs
+      author agents; preserves all authored MDX.
+      e.g.  /ed doctor ~/Projects/joy-of-odin --fix
+
   /ed help
       Show this reference
 
   Global flags:
-      --book <path>   diffbook book root (default: book/)
+      --book <path>   diffbook content dir (contentPath, default: book/)
       --dir  <path>   plan-artifact root (default: .codevoyant)
       --yes           skip gate pauses; log warnings and continue (used by autodidact)
 
@@ -75,12 +82,12 @@ ed — Build graduate-level, literature-grounded interactive textbooks as diffbo
         .codevoyant/ed/<course>/explore/sources.md, explore/modules/<NN-slug>.md
         .codevoyant/ed/<course>/modules/<NN-slug>/plan.md
       Published MDX (the diffbook book, default book/):
-        <book>/docs/index.md                        course landing page
-        <book>/docs/<NN-module-slug>/index.mdx      module overview (order:0)
-        <book>/docs/<NN-module-slug>/<MM-lesson>.mdx  lesson pages (order:MM)
-        <book>/docs/<NN-module-slug>/quiz.mdx        module quiz
-        <book>/docs/<NN-module-slug>/project.mdx     module project + solution guide
-        <book>/docs/<NN-module-slug>/references.md   module annotated references
+        <book>/index.md                        course landing page
+        <book>/<NN-module-slug>/index.mdx      module overview (order:0)
+        <book>/<NN-module-slug>/<MM-lesson>.mdx  lesson pages (order:MM)
+        <book>/<NN-module-slug>/quiz.mdx        module quiz
+        <book>/<NN-module-slug>/project.mdx     module project + solution guide
+        <book>/<NN-module-slug>/references.md   module annotated references
       NN / MM = two-digit zero-padded order (01-, 02-) reflecting syllabus / lesson order.
       Slugs are kebab-case (lowercase, spaces→hyphens, alphanumeric+hyphens, ≤50 chars).
       List courses with: ls .codevoyant/ed/

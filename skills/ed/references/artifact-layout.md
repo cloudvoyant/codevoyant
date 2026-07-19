@@ -15,10 +15,13 @@ ed separates **planning artifacts** (drafts — the working source of truth) fro
   modules/{NN-slug}/
     plan.md                      # lesson-level outline for the module (from plan-module)
 
-{BOOK_DIR}/                      # diffbook project (default book/), scaffolded via /diffbook init
-  astro.config.mjs
-  docs/
+{PROJECT_ROOT}/                  # diffbook PROJECT root = cwd/repo root, scaffolded via /diffbook init
+  astro.config.mjs               # diffbook({ ..., contentPath: './book' }) — written by /diffbook init
+  package.json
+  .diffbook/
+  {BOOK_DIR}/                     # the CONTENT dir (diffbook contentPath, default book/) — content directly here, no docs/ layer
     index.md                     # course landing page (derived from syllabus)
+    _animations/                 # Manim scene scripts (resolved by diffbook from the content dir)
     {NN-module-slug}/            # module = diffbook chapter (folder). NN = zero-padded order.
       index.mdx                  # module overview (order:0) — goal, outcomes, lesson map
       {MM-lesson-slug}.mdx       # lesson pages (order:MM)
@@ -27,9 +30,11 @@ ed separates **planning artifacts** (drafts — the working source of truth) fro
       references.md              # module annotated references
 ```
 
-## Resolving `ART_ROOT` and `BOOK_DIR`
+**Layout note (PL-29):** diffbook's convention is a project at the repo root with `book/` as the `contentPath` **content** dir — content sits directly under `book/`, nested folders are chapters. `ed` runs `/diffbook init` at `PROJECT_ROOT` (never inside `BOOK_DIR`) and writes content straight into `BOOK_DIR/` with no intervening `docs/` layer. To repair a book scaffolded the old (buried) way, use `/ed doctor`.
 
-Every workflow resolves both roots up front from `REMAINING_ARGS`:
+## Resolving `ART_ROOT`, `PROJECT_ROOT`, and `BOOK_DIR`
+
+Every workflow resolves these roots up front from `REMAINING_ARGS`:
 
 ```bash
 # Plan-artifact root: default .codevoyant, override with --dir <path>
@@ -37,7 +42,12 @@ ART_ROOT=".codevoyant"
 # if "--dir <path>" appears in REMAINING_ARGS: ART_ROOT="<path>"
 ED_ROOT="$ART_ROOT/ed"
 
-# diffbook book root: default book/, override with --book <path>
+# diffbook PROJECT root: where /diffbook init runs and astro.config.mjs/.diffbook/ live.
+# Default the cwd (repo root). (Content lives under BOOK_DIR below.)
+PROJECT_ROOT="."
+
+# diffbook CONTENT dir = diffbook `contentPath`: default book/, override with --book <path>.
+# This is a dir NAME/relative path under PROJECT_ROOT — NOT a separate project.
 BOOK_DIR="book"
 # if "--book <path>" appears in REMAINING_ARGS: BOOK_DIR="<path>"
 
@@ -70,7 +80,7 @@ MM=$(printf '%02d' "$LESSON_INDEX")
 LESSON_SLUG="$MM-$(slugify "$LESSON_TITLE")"      # 01-scaled-dot-product-attention
 ```
 
-A `<module>` argument may be given as the bare index (`2`, `02`) or the full slug (`02-attention`); resolve it against `syllabus.md` / the existing `modules/` and `docs/` dirs.
+A `<module>` argument may be given as the bare index (`2`, `02`) or the full slug (`02-attention`); resolve it against `syllabus.md` / the existing plan `modules/` and book `{BOOK_DIR}/` chapter dirs.
 
 ## Course discovery
 
@@ -79,7 +89,7 @@ List existing courses and inspect one:
 ```bash
 ls .codevoyant/ed/                            # all courses
 ls .codevoyant/ed/{course}/modules/           # planned modules
-ls {BOOK_DIR}/docs/                           # published chapters
+ls {BOOK_DIR}/                           # published chapters
 ```
 
 ## MDX vs MD
