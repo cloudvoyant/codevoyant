@@ -32,6 +32,7 @@ export default defineConfig({
     "skills/gh/**",
     "skills/git/**",
     "skills/glab/**",
+    "skills/hx/**",
     "skills/icons/**",
     "skills/linear/**",
     "skills/mise/**",
@@ -46,6 +47,7 @@ export default defineConfig({
     "skills/usage/**",
     "skills/ux/**",
     "skills/vim/**",
+    "skills/zellij/**",
     // Recipe skills: exclude non-recipe files
     "skills/*/SKILL.md",
     "skills/*/LICENSE.md",
@@ -213,6 +215,8 @@ export default defineConfig({
           { text: "terraform", link: "/skills/terraform" },
           { text: "usage", link: "/skills/usage" },
           { text: "vim", link: "/skills/vim" },
+          { text: "hx", link: "/skills/hx" },
+          { text: "zellij", link: "/skills/zellij" },
         ],
       },
       {
