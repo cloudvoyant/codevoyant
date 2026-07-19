@@ -29,6 +29,7 @@ out := strings.to_string(b)          // view into builder, no alloc
 n := strconv.atoi("123")             // string → int
 buf: [8]u8
 str := strconv.itoa(buf[:], 42)      // int → string (into buf)
+// atoi/itoa are being deprecated → prefer strconv.parse_int / strconv.append_int
 ```
 
 Allocating (delete/destroy): `split`, `concatenate`, `clone`, `builder_make`, `fmt.aprintf`. Non-allocating: `trim_space`, `to_string`, `contains`, `has_prefix`, `fmt.tprintf`.

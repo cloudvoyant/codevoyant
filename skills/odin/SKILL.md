@@ -18,25 +18,28 @@ QUERY="$*"   # everything after /odin
 
 ## Step 1: Route to one recipe and print it
 
-Find the **first** row whose keywords match `QUERY`, then `Read references/recipes/{slug}.md` and print its contents verbatim. Match on any listed keyword (case-insensitive, substring).
+Resolve in this order, then `Read references/recipes/{slug}.md` and print its contents verbatim:
 
-| Keywords in query | Recipe file (`references/recipes/…`) |
+1. **Exact topic name.** Lowercase `QUERY` and replace spaces with hyphens. If it equals a recipe slug (`procedures`, `returns`, `structs`, `conversions`, `defer`, `allocators`, `errors`, `unions`, `data-structures`, `math`, `strings`, `terminal`, `polymorphism`, `cli`, `resources`), use that file. (So `/odin defer`, `/odin cli`, `/odin data structures` route directly.)
+2. **Keyword match.** Otherwise pick the **first** row whose keyword appears in `QUERY` as a **whole word/phrase** (word-boundary, case-insensitive — never a bare substring, so `def` never matches `defer`).
+
+| Keywords in query (whole-word) | Recipe file (`references/recipes/…`) |
 |---|---|
-| procedure, proc, function, def, args, named return | `procedures.md` |
+| procedure, function, named return, default arg | `procedures.md` |
 | return, tuple, multiple result, destructure | `returns.md` |
 | struct, using, field, packed | `structs.md` |
 | convert, conversion, cast, transmute, distinct, coerce | `conversions.md` |
-| defer | `defer.md` |
+| defer, cleanup, scope exit | `defer.md` |
 | alloc, allocator, memory, free, delete, arena, context, temp, leak, tracking | `allocators.md` |
-| error, or_return, or_else, result, err | `errors.md` |
+| error, or_return, or_else, result | `errors.md` |
 | union, maybe, tagged, variant, type switch | `unions.md` |
-| dynamic array, slice, map, list, append, data structure | `data-structures.md` |
+| dynamic array, slice, map, append, data structure | `data-structures.md` |
 | vector, matrix, linalg, math, dot, cross, normalize, swizzle | `math.md` |
 | string, cstring, strconv, builder, rune, split, concat | `strings.md` |
 | print, printf, terminal, tui, board, ansi, fullscreen, screen, color, fmt, stdin, input | `terminal.md` |
-| polymorph, generic, parametric, where, proc group, any, overload | `polymorphism.md` |
-| cli, command line, os.args, flags, main, build | `cli.md` |
-| resource, learn, book, docs, link, tutorial, where | `resources.md` |
+| polymorph, generic, parametric, where clause, proc group, any, overload | `polymorphism.md` |
+| cli, command line, args, os.args, flags, main, build | `cli.md` |
+| resource, learn, book, tutorial, link | `resources.md` |
 
 **No query, or `list` / `index` / `help` / `topics`:** print the index below (do not read any recipe file).
 
