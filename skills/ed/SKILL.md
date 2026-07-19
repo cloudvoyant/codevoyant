@@ -3,7 +3,7 @@ name: ed
 description: 'Builds high-quality, literature-grounded, graduate-level interactive textbooks as diffbook MDX. Triggers on: "ed explore", "ed plan-syllabus", "ed plan-module", "ed create-lesson", "ed create-quiz", "ed create-project", "ed autodidact", "ed update", "ed doctor", "ed help", plus natural language like "build an interactive textbook", "create a course on", "study syllabus for", "graduate lesson on", "quiz me on", "course project for", "fix/repair a diffbook book", "unbork an ed book". Unified dispatcher — pass a subcommand as the first argument.'
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms. Requires the diffbook skill and `npx diffbook` for authoring MDX books.'
-argument-hint: '<explore|plan-syllabus|plan-module|create-lesson|create-quiz|create-project|autodidact|update|help> [course] [module] [lesson] [--book <path>] [--dir <path>] [--yes]'
+argument-hint: '<explore|plan-syllabus|plan-module|create-lesson|create-quiz|create-project|autodidact|update|doctor|help> [course] [module] [lesson] [--book <path>] [--dir <path>] [--yes] [--fix]'
 ---
 
 > **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.

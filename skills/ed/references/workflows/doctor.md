@@ -55,9 +55,10 @@ Identify the **content** currently under `BOOK`: everything else (`index.md`, `g
 Assemble an ordered, minimal plan from the diagnosis. Typical full repair (buried + nested):
 
 1. **Relocate project files** `BOOK/{astro.config.mjs,package.json,lockfiles,tsconfig.json,.gitignore,.diffbook/}` → `PROJECT_ROOT/`.
-   - `.diffbook/` and `.gitignore` de-dup: if `PROJECT_ROOT` already has one, keep the **buried project's** copy as authoritative — back up the stray root copy to `*.ed-doctor.bak` (or remove it if it is empty/cache-only), then move the buried copy up.
+   - `.diffbook/` de-dup: if `PROJECT_ROOT` already has one, keep the **buried project's** copy as authoritative — back up the stray root copy to `*.ed-doctor.bak` (or remove it if it is empty/cache-only), then move the buried copy up.
+   - `.gitignore` is different: a real repo root's `.gitignore` is usually authoritative (covers `node_modules/`, etc.). If `PROJECT_ROOT/.gitignore` already exists, **keep it** and instead **merge** any diffbook-specific lines from `BOOK/.gitignore` (e.g. `dist/`, `.astro/`, `.diffbook/.cache/`) that are missing — never demote the root `.gitignore` to a `.bak`. Only move `BOOK/.gitignore` up if the root has none.
 2. **Flatten content**: move `BOOK/docs/*` (and dotfiles) up into `BOOK/`, then remove the now-empty `BOOK/docs/`. This removes the doubled `docs/` layer so chapters live directly under `BOOK/` (`book/01-…/`, `book/02-…/`).
-3. **Rewrite `astro.config.mjs`** (now at `PROJECT_ROOT`): replace the `docs:` option inside `diffbook({ … })` with `contentPath: "./{BOOK_DIR}"`. If both are somehow present, drop `docs:` and keep a single `contentPath`.
+3. **Rewrite `astro.config.mjs`** (now at `PROJECT_ROOT`): inside the `diffbook({ … })` call **only**, replace the `docs:` option key with `contentPath: "./{BOOK_DIR}"`. Anchor the substitution to the `diffbook(` call (do not match a bare `docs:` elsewhere in the file, e.g. inside a comment or another object) and assert it replaced **exactly one** key — if zero or more than one candidate is found, do not guess: report it and leave the file for manual review. If a `contentPath` is already present, drop the stale `docs:` and keep the single `contentPath` (pointing at `./{BOOK_DIR}`).
 4. **De-duplicate** any remaining stray `.diffbook/` (keep one at `PROJECT_ROOT`).
 
 Partial cases: apply only the relevant subset (e.g. `NESTED` but not `BURIED` → just steps 2–3; `STALE_OPT` only → just step 3). Preserve every content file — content is **moved**, never edited.

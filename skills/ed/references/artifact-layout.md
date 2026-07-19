@@ -80,7 +80,7 @@ MM=$(printf '%02d' "$LESSON_INDEX")
 LESSON_SLUG="$MM-$(slugify "$LESSON_TITLE")"      # 01-scaled-dot-product-attention
 ```
 
-A `<module>` argument may be given as the bare index (`2`, `02`) or the full slug (`02-attention`); resolve it against `syllabus.md` / the existing `modules/` and `docs/` dirs.
+A `<module>` argument may be given as the bare index (`2`, `02`) or the full slug (`02-attention`); resolve it against `syllabus.md` / the existing plan `modules/` and book `{BOOK_DIR}/` chapter dirs.
 
 ## Course discovery
 
