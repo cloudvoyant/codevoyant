@@ -26,7 +26,7 @@ Pick the **first** rule that matches `QUERY`. If `QUERY` is empty, or is `cheats
 
 ### cheatsheet — full reference (no query, or `cheatsheet`/`all`)
 
-Print every table below (Modes → Panes → Resize & Move → Tabs → Sessions), then the **Links** block. Written to fit one screen.
+Print every table below (Modes → Panes → Resize & Move → Tabs → Sessions → Scroll/Search), then the **Links** block. Written to fit one screen.
 
 ---
 

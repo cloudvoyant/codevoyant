@@ -26,7 +26,7 @@ Pick the **first** rule that matches `QUERY`. If `QUERY` is empty, or is `cheats
 
 ### cheatsheet — full reference (no query, or `cheatsheet`/`all`)
 
-Print every table below (Modes → Navigation → Selection → Change/Copy/Paste/Delete → Edit/Undo → Search → Files & pickers → Splits → Command palette), then the **Docs** line. It is written to fit one screen.
+Print every table below (Modes → Navigation → Selection → Change/Copy/Paste/Delete → Edit/Undo → Search → Files & pickers → Splits → Command palette → vim differences), then the **Docs** line. It is written to fit one screen.
 
 ---
 
