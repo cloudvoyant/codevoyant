@@ -80,7 +80,14 @@ echo ""
 echo "$count skills checked, $failed failed."
 if [ "$failed" -gt 0 ]; then exit 1; fi
 echo "All skills passed validation."
+
+# Fail if the /tasks alias has drifted from the canonical /task package.
+"$MISE_PROJECT_ROOT/.mise-tasks/gen-task-alias" --check
 """
+
+[tasks."skills:sync-task-alias"]
+description = "Regenerate skills/tasks/ (the /tasks trigger alias) from canonical skills/task/"
+run = ".mise-tasks/gen-task-alias"
 
 [tasks."skills:install"]
 description = "Install/update all skills from remote (cloudvoyant/codevoyant)"
