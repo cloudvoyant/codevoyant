@@ -1,3 +1,11 @@
+## [1.67.0](https://github.com/cloudvoyant/codevoyant/compare/v1.66.1...v1.67.0) (2026-07-19)
+
+### Features
+
+* **odin:** fast per-recipe Odin language lookup skill ([#34](https://github.com/cloudvoyant/codevoyant/issues/34))
+
+A deterministic lookup skill packaged from the odin-guide exploration: SKILL.md routes a query to ONE small recipe file (exact-slug-first, then whole-word keyword match) and prints it verbatim — no synthesis, no churn. 15 self-contained recipes (procedures, returns, structs, conversions, defer, allocators, errors, unions, data-structures, math, strings, terminal, polymorphism, cli, resources) grounded in the official Odin docs. No-query prints a terse topic index. No public docs page (out of scope).
+
 ## [1.66.1](https://github.com/cloudvoyant/codevoyant/compare/v1.66.0...v1.66.1) (2026-07-19)
 
 ### Performance Improvements
