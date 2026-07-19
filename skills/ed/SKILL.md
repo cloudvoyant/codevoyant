@@ -1,6 +1,6 @@
 ---
 name: ed
-description: 'Builds high-quality, literature-grounded, graduate-level interactive textbooks as diffbook MDX. Triggers on: "ed explore", "ed plan-syllabus", "ed plan-module", "ed create-lesson", "ed create-quiz", "ed create-project", "ed autodidact", "ed update", "ed help", plus natural language like "build an interactive textbook", "create a course on", "study syllabus for", "graduate lesson on", "quiz me on", "course project for". Unified dispatcher — pass a subcommand as the first argument.'
+description: 'Builds high-quality, literature-grounded, graduate-level interactive textbooks as diffbook MDX. Triggers on: "ed explore", "ed plan-syllabus", "ed plan-module", "ed create-lesson", "ed create-quiz", "ed create-project", "ed autodidact", "ed update", "ed doctor", "ed help", plus natural language like "build an interactive textbook", "create a course on", "study syllabus for", "graduate lesson on", "quiz me on", "course project for", "fix/repair a diffbook book", "unbork an ed book". Unified dispatcher — pass a subcommand as the first argument.'
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms. Requires the diffbook skill and `npx diffbook` for authoring MDX books.'
 argument-hint: '<explore|plan-syllabus|plan-module|create-lesson|create-quiz|create-project|autodidact|update|help> [course] [module] [lesson] [--book <path>] [--dir <path>] [--yes]'
@@ -62,6 +62,8 @@ case "$VERB" in
   "lesson")   VERB="create-lesson" ;;   # /ed lesson   → /ed create-lesson
   "quiz")     VERB="create-quiz" ;;     # /ed quiz     → /ed create-quiz
   "project")  VERB="create-project" ;;  # /ed project  → /ed create-project
+  "fix")      VERB="doctor" ;;          # /ed fix      → /ed doctor
+  "repair")   VERB="doctor" ;;          # /ed repair   → /ed doctor
 esac
 ```
 
@@ -81,6 +83,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **create-project** (`references/workflows/create-project.md`) — author a module project + solution guide grounded in a real sourced assignment
 - **autodidact** (`references/workflows/autodidact.md`) — chain everything from a topic into a whole book, gated, with a `state.md` ledger
 - **update** (`references/workflows/update.md`) — re-run the minimal affected slice; consume `<!-- > -->` / `<!-- >> -->` annotations
+- **doctor** (`references/workflows/doctor.md`) — repair a mis-scaffolded book in place (project at root, `book/` as contentPath); dry-run by default, `--fix` to apply
 - **help** (`references/workflows/help.md`) — print command reference
 
 ## Agent Index

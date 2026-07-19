@@ -17,10 +17,10 @@ Autodidact ledger. Each stage records status, gate score, and timestamp. Statuse
 | explore | explore/sources.md | pending | — | — | — |
 | plan-syllabus | syllabus.md | pending | — | ≥85 | — |
 | plan-module 01 | modules/01-…/plan.md | pending | — | ≥80 | — |
-| create-lesson 01/01 | docs/01-…/01-….mdx | pending | — | checklist | — |
-| create-lesson 01/02 | docs/01-…/02-….mdx | pending | — | checklist | — |
-| create-quiz 01 | docs/01-…/quiz.mdx | pending | — | checklist | — |
-| create-project 01 | docs/01-…/project.mdx | pending | — | checklist | — |
+| create-lesson 01/01 | book/01-…/01-….mdx | pending | — | checklist | — |
+| create-lesson 01/02 | book/01-…/02-….mdx | pending | — | checklist | — |
+| create-quiz 01 | book/01-…/quiz.mdx | pending | — | checklist | — |
+| create-project 01 | book/01-…/project.mdx | pending | — | checklist | — |
 | plan-module 02 | modules/02-…/plan.md | pending | — | ≥80 | — |
 | … | … | pending | — | … | — |
 

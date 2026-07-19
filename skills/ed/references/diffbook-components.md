@@ -118,7 +118,7 @@ graph TD
 
 ### Manim — math animation
 
-`scene` (required — scene-script basename, no extension), optional `width` (default 800), `height` (default 450), `caption`. The scene script lives in an asset dir as a `*.{ts,js}` file exporting a default async function that receives a `Scene`; Manim scene scripts resolve from `<docsDir>/_animations/` (i.e. `{BOOK_DIR}/docs/_animations/`). Use for *dynamic* math intuition.
+`scene` (required — scene-script basename, no extension), optional `width` (default 800), `height` (default 450), `caption`. The scene script lives in an asset dir as a `*.{ts,js}` file exporting a default async function that receives a `Scene`; Manim scene scripts resolve from `<docsDir>/_animations/` (i.e. `{BOOK_DIR}/_animations/`). Use for *dynamic* math intuition.
 
 ```mdx
 <Manim scene="sine_wave" caption="A sine wave being drawn" />
@@ -251,7 +251,7 @@ Inline `\( … \)`, display `\[ … \]`. Never `$…$` or `$$…$$`.
 
 ### Assets (Figure images, Manim scene scripts)
 
-Drop images and Manim scene scripts (`*.{ts,js}`) in one of the asset dirs — `.diffbook/assets/`, `.diffbook/public/`, or `<docsRoot>/.assets/` — then reference by **bare filename** (`Figure src="diagram.png"`) or **basename without extension** (`Manim scene="sine_wave"`). Manim scene scripts also resolve from `<docsDir>/_animations/` (`{BOOK_DIR}/docs/_animations/`); a scene script exports a default async function that receives a `Scene`.
+Drop images and Manim scene scripts (`*.{ts,js}`) in one of the asset dirs — `.diffbook/assets/`, `.diffbook/public/`, or `<docsRoot>/.assets/` — then reference by **bare filename** (`Figure src="diagram.png"`) or **basename without extension** (`Manim scene="sine_wave"`). Manim scene scripts also resolve from `<docsDir>/_animations/` (`{BOOK_DIR}/_animations/`); a scene script exports a default async function that receives a `Scene`.
 
 ---
 
@@ -259,7 +259,7 @@ Drop images and Manim scene scripts (`*.{ts,js}`) in one of the asset dirs — `
 
 ed does not reimplement diffbook. It calls the diffbook skill.
 
-- **`/diffbook init`** — scaffolds the diffbook project (the `astro.config.mjs`, the `docs/` root, asset dirs). `autodidact` runs this once to create the book before authoring any pages.
+- **`/diffbook init`** — scaffolds the diffbook project at the repo root (the `astro.config.mjs` with `contentPath: './book'`, `package.json`, `.diffbook/`, and the `book/` content dir). `autodidact` runs this once to create the book before authoring any pages.
 - **`/diffbook author`** — places and **validates** component pages: checks that every tag is one of the twelve, that required props are present (e.g. `SingleChoiceQuestion` needs `id`, `prompt`, `choices`, `correct`), and that component-heavy pages use `.mdx`. `create-lesson` SHOULD call `/diffbook author` to validate component-heavy pages, but may also write MDX directly following this cheat-sheet.
 - Preview locally with `npx diffbook dev`.
 
