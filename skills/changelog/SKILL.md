@@ -21,6 +21,8 @@ If neither is available: warn the user but allow `changelog preview` to proceed 
 
 ## Critical Rules
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this skill writes a `.md` artifact (changelog entries, previews, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
+
 - **Never rebase on protected branches** — refuse if branch is main, master, develop, or matches `*-stable`
 - **Never force-push without --force-with-lease** — always protect against concurrent pushes
 - **retcon --apply requires a clean working tree** — refuse if `git status --porcelain` is non-empty

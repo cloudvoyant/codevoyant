@@ -94,3 +94,7 @@ In **--deep mode** additionally:
 **Flag uncertainty explicitly.** If you couldn't find good information on something, say so. A gap honestly reported is more useful than a confident guess.
 
 **Do not propose solutions.** Your job ends at "here is what exists and what is true." Evaluation and direction selection happen elsewhere.
+
+## Markdown output
+
+**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

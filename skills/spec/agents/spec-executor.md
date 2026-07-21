@@ -146,3 +146,7 @@ When you finish the phase (or stop due to an error), report:
 - Any gaps or issues encountered
 - Whether the phase is fully complete or stopped early (and why)
 - Checklist completion: {N}/10 items complete
+
+## Markdown output
+
+**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

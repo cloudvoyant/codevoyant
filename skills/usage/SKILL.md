@@ -12,6 +12,8 @@ Generate a responsible-AI usage and decision-attribution report for the current 
 
 ## Critical Rules
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this skill writes a `.md` artifact (usage report or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
+
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently

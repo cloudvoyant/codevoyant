@@ -50,3 +50,7 @@ Rules:
 - If you only recommend a docs update (default read-only mode, or docs skill unavailable), severity CONSIDER.
 - Prefix every body with `Docs: `.
 - Follow `references/voice.md`: one or two short sentences, no lecture. Return `[]` for a change that needs no docs.
+
+## Markdown output
+
+**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
