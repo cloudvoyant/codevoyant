@@ -8,6 +8,8 @@ requires: [skill]
 
 You are the `flow` dispatcher. Parse the user's command and route to the correct workflow file.
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when a flow workflow writes a `.md` artifact (flow.md, step files, progress/context/run state, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
+
 ## Dependency Check
 
 Before dispatching, verify each skill listed in `requires:` is available in your context.

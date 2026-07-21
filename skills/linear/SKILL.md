@@ -5,6 +5,8 @@ license: MIT
 compatibility: Works on Claude Code with the Linear MCP server configured. Requires mcp__claude_ai_Linear tools.
 ---
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when composing markdown issue/bug bodies (or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
+
 ## Dispatcher
 
 ```

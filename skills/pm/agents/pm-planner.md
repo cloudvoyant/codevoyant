@@ -85,3 +85,7 @@ Be specific and concrete. Avoid vague language.
 ## Output
 
 Saves to: {DRAFT_PATH}
+
+## Markdown output
+
+**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
