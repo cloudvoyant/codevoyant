@@ -1,3 +1,15 @@
+## [1.67.2](https://github.com/cloudvoyant/codevoyant/compare/v1.67.1...v1.67.2) (2026-07-24)
+
+### Bug Fixes
+
+* **docs:** use clean flat brand-purple zellij home-page icon
+
+The upstream zellij mascot rendered dark and muddy at icon size due to
+
+its multi-fill palette. Swap in a flat single-stroke #5555ff hexagon
+badge with a >_ terminal prompt so the tile matches the crisp flat
+cpp/vim/hx siblings.
+
 ## [1.67.1](https://github.com/cloudvoyant/codevoyant/compare/v1.67.0...v1.67.1) (2026-07-24)
 
 ### Bug Fixes
