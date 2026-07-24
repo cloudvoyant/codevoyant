@@ -1,3 +1,16 @@
+## [1.67.1](https://github.com/cloudvoyant/codevoyant/compare/v1.67.0...v1.67.1) (2026-07-24)
+
+### Bug Fixes
+
+* **docs:** recolor helix and zellij home-page logos to brand purple
+
+- replace the two off-brand home-page hero icons with purple
+  renderings of the official upstream logos: the helix ribbon is a
+  monotone `#5555ff` with its back-twirl outlined, and the zellij
+  hexagon badge is rendered in purple monochrome
+- square both icon viewBoxes so the logos sit on a consistent grid
+  and align with the surrounding hero tiles
+
 ## [1.67.0](https://github.com/cloudvoyant/codevoyant/compare/v1.66.1...v1.67.0) (2026-07-19)
 
 ### Features
