@@ -57,6 +57,8 @@
       "Bash(xargs:*)",
       "Bash(wc:*)",
       "Edit",
+      "Read(~/.claude/plugins/**/skills/**)",
+      "Read(~/.claude/skills/**)",
       "WebFetch",
       "WebSearch",
       "Write"

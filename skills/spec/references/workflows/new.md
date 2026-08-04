@@ -365,9 +365,17 @@ done
 
 **If any file is missing or empty:** write it immediately before proceeding. Missing user-guide.md is a blocking failure. Never create `phase-0.md`.
 
-## Step 5.6: Iterative Plan Validation and Auto-Fix (parallel with permissions analysis)
+## Step 5.6: Required Code-Completeness Gate, Validation, and Permissions Analysis
 
-Immediately after all files are verified, launch two agents concurrently:
+Immediately after all files are verified, run the code-completeness gate before permission analysis or optional full-plan validation. This gate is required for every non-blank plan; `--validate` only adds the broader multi-agent validation loop.
+
+**Code-completeness gate (required):** Launch one validation agent (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted.
+
+Collect its report with `TaskOutput(id: CODE_COMPLETENESS_TASK_ID, block: true)`. If its status is `NEEDS_IMPROVEMENT`, repair every reported implementation task by replacing the missing, abbreviated, placeholder, or prose-only block with the complete literal code. Rerun this gate after each repair pass until it returns `PASS`.
+
+Never continue to permission analysis, optional validation, or the completion report while this gate fails. If the planner cannot determine the literal code required to repair a task, stop and report that the plan is not ready; do not report a successful plan.
+
+After the required code-completeness gate passes, launch the permission analysis agent:
 
 **Agent P — Permissions analysis** (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
@@ -409,9 +417,18 @@ Store the Task ID as `PERMS_TASK_ID`.
 if [[ "$VALIDATE_MODE" == "true" ]]; then
 ```
 
-Run the loop mechanics in `references/validation-loop.md` (minimum 2 rounds, cap at 3, auto-fix every `NEEDS_IMPROVEMENT` result before next round). Execute all rounds autonomously — do NOT pause for the user.
+Run the loop mechanics in `references/validation-loop.md` (minimum 2 rounds, cap at 3, auto-fix every `NEEDS_IMPROVEMENT` result before next round). Capture its returned code-completeness result as `VALIDATION_CODE_COMPLETENESS_STATUS`. Execute all rounds autonomously — do NOT pause for the user.
 
 ```
+fi
+```
+
+Do not continue unless the validation loop returned `PASS` for code completeness:
+
+```
+if [[ "$VALIDATION_CODE_COMPLETENESS_STATUS" != "PASS" ]]; then
+  report "⛔ Plan is not ready: code-completeness validation did not pass. Resolve every reported code-completeness issue before completion."
+  stop
 fi
 ```
 

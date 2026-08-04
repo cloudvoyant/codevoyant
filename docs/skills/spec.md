@@ -6,7 +6,7 @@ Specification-driven development — create structured plans from requirements, 
 
 ### new — create a plan
 
-Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce — the planner runs a mandatory self-audit and a dedicated code-completeness validation agent scans every task, rejecting stubs, TODO placeholders, ellipses (`...`), and prose-only descriptions — so execution needs no further guidance.
+Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce. Before `new` reports a plan ready, a mandatory code-completeness gate scans every task and rejects stubs, placeholder markers, omitted code, and prose-only descriptions; it reruns after repairs and fails closed if literal code cannot be resolved. `--validate` still adds the broader multi-agent validation pass.
 
 Two ways to give the objective:
 
@@ -89,14 +89,14 @@ Split an existing plan into two independently executable plans at a chosen phase
 
 ### review — review plan quality
 
-Check a plan for ambiguous tasks, missing validation steps, unrealistic ordering, and dependency gaps before running `go`.
+Check a plan for complete ready-to-write code before any other review, then assess ambiguous tasks, missing validation steps, unrealistic ordering, and dependency gaps before running `go`.
 
 ```bash
 /spec review                            # auto-selects most recently updated plan
 /spec review my-feature                 # review specific plan
 ```
 
-Produces a `review.md` report and auto-fixes mechanical issues. Run this before `/spec go`.
+Produces a `review.md` report and auto-fixes mechanical issues. The code-completeness gate is blocking: review cannot report a ready verdict until every implementation task passes it. Run this before `/spec go`.
 
 ### refresh — sync checklist status
 

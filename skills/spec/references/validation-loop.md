@@ -55,7 +55,7 @@ Store all Task IDs: `[PLAN_LEVEL_TASK_ID, CODE_COMPLETENESS_TASK_ID, PHASE_1_TAS
 
 Wait for all agents: `TaskOutput(id: X, block: true)` for each Task ID.
 
-Parse each result — extract `### Status:`, issues, recommendations, missing details.
+Parse each result — extract `### Status:`, issues, recommendations, missing details. Store the code-completeness agent's result as `VALIDATION_CODE_COMPLETENESS_STATUS`.
 
 Merge into a single issue list tagged by source (`[plan-level]`, `[phase-1]`, `[phase-2]`, etc.).
 
@@ -72,7 +72,10 @@ Work through every issue and recommendation from all agents:
 ### e. Loop control
 
 - If `PASS` and round ≥ 2: break the loop
-- Cap at 3 rounds. After round 3, proceed regardless and note remaining issues in the final summary.
+- Cap at 3 rounds only after the code-completeness agent returns `PASS`. After round 3, general quality findings may proceed to the final summary as remaining issues.
+- If the code-completeness agent still returns `NEEDS_IMPROVEMENT` in round 3, stop the loop with `NEEDS_IMPROVEMENT`, list every unresolved code-completeness issue, and return `VALIDATION_CODE_COMPLETENESS_STATUS=NEEDS_IMPROVEMENT` to the caller. Do not report the plan ready or allow the caller to continue as if validation passed.
+
+After the final round, return `VALIDATION_CODE_COMPLETENESS_STATUS=PASS` only when the final code-completeness agent result is `PASS`.
 
 ## Final Summary
 
@@ -80,6 +83,7 @@ Work through every issue and recommendation from all agents:
 ✅ Plan validation complete ({N} rounds)
    Round 1: [PASS|NEEDS_IMPROVEMENT — X issues fixed across Y phases]
    Round 2: [PASS|NEEDS_IMPROVEMENT — X issues fixed across Y phases]
+   Code completeness: [PASS | NEEDS_IMPROVEMENT]
    Final status: [PASS | X issues remain (see below)]
    [If issues remain: list them]
 ```
