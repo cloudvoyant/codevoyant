@@ -1,6 +1,6 @@
 # review
 
-Review a spec plan for quality issues before running `/spec go`. Checks for ambiguous tasks, unrealistic phase ordering, missing validation, dependency gaps, and codebase misalignment.
+Review a spec plan for code completeness before running `/spec go`, then assess remaining quality issues. A plan cannot receive a ready verdict while any implementation task lacks complete, ready-to-write literal code.
 
 ## Variables
 
@@ -37,7 +37,13 @@ Additional checks:
 - If plan.md references a `TODOS.md` file, read it and flag any deferred work not covered by a phase file as CRITICAL
 - If any implementation file mentions modifying a `docs/` file, check whether that phase also updates the doc entry; if not, flag as INFORMATIONAL
 
-## Step 3: Parallel Review Agents (Pass 1 — CRITICAL)
+## Step 3: Code-Completeness Gate (Pass 1 — CRITICAL)
+
+Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model: claude-haiku-4-5-20251001`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. The agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block.
+
+Wait for the report. Add every `NEEDS_IMPROVEMENT` finding to the critical finding set. Classify a finding as `AUTO-FIX` only when the reviewer can determine and paste the complete literal code from the repository and plan context; otherwise classify it as `ASK`. Do not allow later review findings, AUTO-FIX work, or a report verdict to mark the plan ready until this gate returns `PASS` with no unresolved code-completeness findings.
+
+## Step 4: Parallel Review Agents (Pass 2 — CRITICAL)
 
 Run four review agents in parallel (`model: claude-haiku-4-5-20251001`, `run_in_background: true`). Each marks every finding as CRITICAL.
 
@@ -48,7 +54,7 @@ Run four review agents in parallel (`model: claude-haiku-4-5-20251001`, `run_in_
 - Structural issues: objective clarity, phase ordering, phase headers, meta-tasks, design decisions section.
 - "What Already Exists" callout: codebase mechanisms this plan should leverage.
 
-**Agent B — Implementation completeness:**
+**Agent B — Implementation completeness after the code gate:**
 For each phase-N.md, flag as CRITICAL if:
 - A task has no corresponding section in the implementation file
 - A task has no concrete validation/verification step
@@ -73,11 +79,11 @@ Classify affected tasks as one-way or two-way doors.
 
 Wait for all four agents to complete.
 
-## Step 3b: Pass 2 — INFORMATIONAL
+## Step 4b: Pass 3 — INFORMATIONAL
 
 Single agent (`model: claude-haiku-4-5-20251001`) reviews for quality and clarity issues that do not block execution: unclear task names, missing context in phase headers, phases that could be split, docs staleness. Tag all findings as INFORMATIONAL.
 
-## Step 4: Fix-First Classification
+## Step 5: Fix-First Classification
 
 Collect all findings. For each:
 
@@ -95,7 +101,9 @@ Collect all findings. For each:
    ```
    Wait for answer before moving to the next `ASK` item.
 
-## Step 5: Produce Review Report
+After applying every code-completeness `AUTO-FIX`, rerun the code-completeness gate. If it does not return `PASS`, retain each finding as blocking and do not report the plan ready.
+
+## Step 6: Produce Review Report
 
 Write to `{PLAN_DIR}/review.md`:
 
@@ -105,7 +113,10 @@ Write to `{PLAN_DIR}/review.md`:
 ### Verdict
 {Ready to execute | Needs minor fixes | Significant gaps — address before /spec go}
 
+A `Ready to execute` verdict is allowed only when the code-completeness gate passed and no code-completeness findings remain unresolved.
+
 ### Scope Challenge
+### Code-Completeness Gate
 ### One-Way Doors
 ### What Already Exists
 ### AUTO-FIXED
@@ -121,7 +132,7 @@ Write to `{PLAN_DIR}/review.md`:
 - [ ] Run /spec go when ready
 ```
 
-## Step 6: Display and Offer Next Steps
+## Step 7: Display and Offer Next Steps
 
 Display the review report inline.
 
