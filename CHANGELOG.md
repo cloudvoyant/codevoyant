@@ -1,3 +1,27 @@
+## [1.67.3](https://github.com/cloudvoyant/codevoyant/compare/v1.67.2...v1.67.3) (2026-08-04)
+
+### Bug Fixes
+
+* **spec:** require code-complete spec artifacts
+
+* fix(spec): require code-complete spec artifacts
+
+**Code completeness**
+- Require a passing code-completeness gate before a new plan can
+  advance to permissions analysis or completion.
+- Make validation fail closed when code-completeness findings remain
+  after the final repair round.
+- Block ready review verdicts until code-completeness findings are
+  resolved.
+
+**Documentation**
+- Explain the required gate and blocking behavior in the spec guide.
+
+* chore(claude): allow skill file reads
+
+**Permissions**
+- Permit reads from installed Claude skills and plugin skills.
+
 ## [1.67.2](https://github.com/cloudvoyant/codevoyant/compare/v1.67.1...v1.67.2) (2026-07-24)
 
 ### Bug Fixes
