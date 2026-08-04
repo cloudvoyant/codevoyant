@@ -2,6 +2,8 @@
 
 > **Autonomy constraint:** All rounds run autonomously — do not prompt the user at any point during this loop.
 
+> **Terminal outcome constraint:** A validation finding is not a completion state. Apply every deterministic repair before the next round. If one remaining blocker needs a user decision, return exactly `NEEDS_INPUT: {one concrete question}` to the caller; the caller must preserve completed safe edits and must not report the plan ready or update complete.
+
 Run a minimum of 2 validation rounds autonomously (no user prompts). After each round that surfaces issues, apply all fixes before running the next round.
 
 Within each round, launch one validation agent **per phase**, one plan-level agent, and one **code-completeness** agent — all in parallel. Merge results before applying fixes.
@@ -67,13 +69,15 @@ Work through every issue and recommendation from all agents:
 - Edit the relevant `implementation/phase-N.md` files directly
 - Rewrite vague plan.md tasks to be specific and actionable
 - **For every code-completeness failure, replace the placeholder/stub with the complete literal code** — resolve the unknown now (read the codebase, search the web) and paste the real lines; never carry a `...`/`TODO`/prose stub into the next round
+- Reconcile two-file inconsistencies from the plan, implementation files, and repository facts before asking a user to choose between alternatives
 - Report: `🔧 Round {round} — fixed {N} issues across {M} files: [brief summary]`
 
 ### e. Loop control
 
 - If `PASS` and round ≥ 2: break the loop
-- Cap at 3 rounds only after the code-completeness agent returns `PASS`. After round 3, general quality findings may proceed to the final summary as remaining issues.
-- If the code-completeness agent still returns `NEEDS_IMPROVEMENT` in round 3, stop the loop with `NEEDS_IMPROVEMENT`, list every unresolved code-completeness issue, and return `VALIDATION_CODE_COMPLETENESS_STATUS=NEEDS_IMPROVEMENT` to the caller. Do not report the plan ready or allow the caller to continue as if validation passed.
+- Cap at 3 rounds only after the code-completeness agent returns `PASS`. After round 3, do not present general quality findings as remaining issues; repair deterministic findings, then return `PASS` or the required `NEEDS_INPUT:` escalation.
+- If the code-completeness agent still returns `NEEDS_IMPROVEMENT` in round 3, repair and recheck every deterministic issue. If an unresolved issue needs a user decision, return the single `NEEDS_INPUT:` escalation naming its phase, task, and required implementation choice. Do not return `NEEDS_IMPROVEMENT` as a caller-visible terminal state or report the plan ready.
+- If any unresolved blocker requires a user decision after deterministic repairs, return one `NEEDS_INPUT:` line that names the affected file or task and asks the concrete decision. Do not return a generic refusal, a bare issue list, or a success summary with unresolved blockers.
 
 After the final round, return `VALIDATION_CODE_COMPLETENESS_STATUS=PASS` only when the final code-completeness agent result is `PASS`.
 
@@ -84,6 +88,5 @@ After the final round, return `VALIDATION_CODE_COMPLETENESS_STATUS=PASS` only wh
    Round 1: [PASS|NEEDS_IMPROVEMENT — X issues fixed across Y phases]
    Round 2: [PASS|NEEDS_IMPROVEMENT — X issues fixed across Y phases]
    Code completeness: [PASS | NEEDS_IMPROVEMENT]
-   Final status: [PASS | X issues remain (see below)]
-   [If issues remain: list them]
+   Final status: PASS
 ```

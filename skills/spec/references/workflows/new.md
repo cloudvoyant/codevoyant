@@ -2,9 +2,15 @@
 
 Create a structured multi-phase implementation plan. The goal is a tight, well-scoped plan that an autonomous execution agent can follow without further guidance.
 
+## Completion Contract
+
+This workflow must never end after analysis, validation, a tool failure, or an agent refusal without a terminal result. A non-blank inline-objective run succeeds only after it writes and verifies `plan.md`, `user-guide.md`, and every required `implementation/phase-N.md` file. Bare-name intent mode succeeds only after it writes the documented `intent.md` scaffold. If one essential decision cannot be resolved from the objective, repository, and research context, preserve all completed safe work, output exactly one `NEEDS_INPUT: {one concrete question}` line, and stop without reporting the plan ready.
+
+On OpenCode, OpenAI Terra, and any host without `AskUserQuestion`, use that `NEEDS_INPUT:` line instead of an interactive prompt. Do not rely on an unavailable prompt, subagent result, or model refusal as a completion path; continue with direct repository reads and safe writes until one of these terminal outcomes is reached.
+
 ## ⛔ HARD STOPS — read before every action
 
-This workflow's **only output** is plan files. If you are about to do anything else, stop.
+This workflow's **only output** is plan files, except for the single `NEEDS_INPUT:` escalation required by the Completion Contract. If you are about to do anything else, stop.
 
 | You are about to… | Correct action |
 |---|---|
@@ -365,6 +371,8 @@ done
 
 **If any file is missing or empty:** write it immediately before proceeding. Missing user-guide.md is a blocking failure. Never create `phase-0.md`.
 
+If a required file cannot be written because the objective still lacks one essential decision, do not report a partial plan, a refusal, or a successful completion. Preserve the files already written and emit exactly one `NEEDS_INPUT:` question naming the decision and the affected artifact.
+
 ## Step 5.6: Required Code-Completeness Gate, Validation, and Permissions Analysis
 
 Immediately after all files are verified, run the code-completeness gate before permission analysis or optional full-plan validation. This gate is required for every non-blank plan; `--validate` only adds the broader multi-agent validation loop.
@@ -373,7 +381,7 @@ Immediately after all files are verified, run the code-completeness gate before 
 
 Collect its report with `TaskOutput(id: CODE_COMPLETENESS_TASK_ID, block: true)`. If its status is `NEEDS_IMPROVEMENT`, repair every reported implementation task by replacing the missing, abbreviated, placeholder, or prose-only block with the complete literal code. Rerun this gate after each repair pass until it returns `PASS`.
 
-Never continue to permission analysis, optional validation, or the completion report while this gate fails. If the planner cannot determine the literal code required to repair a task, stop and report that the plan is not ready; do not report a successful plan.
+Never continue to permission analysis, optional validation, or the completion report while this gate fails. If the planner cannot determine the literal code required to repair a task, preserve the plan artifacts and emit exactly one `NEEDS_INPUT:` question that names the task, the unresolved design choice, and the decision needed to write the literal code. Do not report that the plan is ready, not ready, refused, or complete without that escalation.
 
 After the required code-completeness gate passes, launch the permission analysis agent:
 
@@ -423,11 +431,11 @@ Run the loop mechanics in `references/validation-loop.md` (minimum 2 rounds, cap
 fi
 ```
 
-Do not continue unless the validation loop returned `PASS` for code completeness:
+When validation was requested, do not continue unless the validation loop returned `PASS` for code completeness:
 
 ```
-if [[ "$VALIDATION_CODE_COMPLETENESS_STATUS" != "PASS" ]]; then
-  report "⛔ Plan is not ready: code-completeness validation did not pass. Resolve every reported code-completeness issue before completion."
+if [[ "$VALIDATE_MODE" == "true" && "$VALIDATION_CODE_COMPLETENESS_STATUS" != "PASS" ]]; then
+  report "NEEDS_INPUT: Which implementation should be used for the unresolved code-completeness issue in {affected phase/task}?"
   stop
 fi
 ```

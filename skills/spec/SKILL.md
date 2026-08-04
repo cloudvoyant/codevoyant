@@ -2,11 +2,11 @@
 description: 'Specification-driven development. Triggers on: "spec new", "spec go", "spec guide", "spec review", "spec refresh", "spec update", "spec clean", "spec allow", "spec help", and all legacy /spec:* trigger phrases. Unified dispatcher — pass a subcommand as the first argument.'
 name: spec
 license: MIT
-compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
+compatibility: 'Works on Claude Code, OpenCode, VS Code Copilot, and Codex. When interactive questions are unavailable, emit one NEEDS_INPUT line for the essential unresolved decision. New and update always finish by writing and verifying the requested artifact or escalating that question.'
 argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--worktree] [--usage] [--flags]'
 ---
 
-> **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.
+> **Compatibility**: On platforms without `AskUserQuestion`, emit one `NEEDS_INPUT:` line for the essential unresolved decision and wait for the caller to provide the answer. Do not replace an artifact write with an unsupported interactive prompt.
 
 ## Skill Requirements
 
@@ -34,6 +34,7 @@ command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Workflow files are authoritative** — do not duplicate workflow logic in this file
 - **Coding agents always receive a workflow checklist** — see `references/workflow-checklist.md`
+- **Terminal artifact outcome** — `/spec new` and `/spec update` must not end after analysis, a refusal, or a validation finding. They either write and verify the requested plan artifact, deliberately write the documented intent scaffold, or emit exactly one actionable `NEEDS_INPUT:` question.
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any spec workflow or agent writes a `.md` artifact (plan.md, phase files, user-guide.md, PR body, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 - See `references/workflows/` for per-verb behaviour; see `references/` for all templates
 

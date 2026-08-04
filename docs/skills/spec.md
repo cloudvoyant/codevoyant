@@ -6,7 +6,7 @@ Specification-driven development — create structured plans from requirements, 
 
 ### new — create a plan
 
-Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce. Before `new` reports a plan ready, a mandatory code-completeness gate scans every task and rejects stubs, placeholder markers, omitted code, and prose-only descriptions; it reruns after repairs and fails closed if literal code cannot be resolved. `--validate` still adds the broader multi-agent validation pass.
+Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce. Before `new` reports a plan ready, a mandatory code-completeness gate scans every task and rejects stubs, placeholder markers, omitted code, and prose-only descriptions; it reruns after repairs and fails closed if literal code cannot be resolved. A non-blank run cannot finish with analysis or a refusal: it writes and verifies `plan.md`, `user-guide.md`, and every phase file, or returns one `NEEDS_INPUT:` question for the essential unresolved decision. `--validate` still adds the broader multi-agent validation pass.
 
 Two ways to give the objective:
 
@@ -67,7 +67,7 @@ Pass `--vim` to inject editor key binding hints at each task step:
 
 ### update — apply annotations
 
-Process inline annotations written directly in plan files, or accept a conversational description of changes.
+Process inline annotations written directly in plan files, or accept a conversational description of changes. `update` applies every deterministic edit to both plan views and validates the result before reporting success. If an annotation or validation finding needs a user decision, it preserves the unresolved input and returns one `NEEDS_INPUT:` question instead of silently skipping it, refusing the update, or reporting unresolved issues as success. This is the portable fallback on OpenCode, OpenAI Terra, and other hosts without interactive questions.
 
 ```bash
 /spec update                            # auto-selects most recently updated plan

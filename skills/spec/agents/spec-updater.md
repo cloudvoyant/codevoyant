@@ -23,13 +23,19 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 6. Apply Two-File Contract: propagate changes between plan.md ↔ phase-N.md
 - [ ] 7. Consistency pass: verify ✅ markers, phase numbering, no orphaned files
 - [ ] 8. Update registry progress
-- [ ] 9. Run validation loop (min 2 rounds, max 3, auto-fix NEEDS_IMPROVEMENT)
-- [ ] 10. Report all changes applied and any skipped annotations
+- [ ] 9. Run validation loop, repair every deterministic finding, and identify any essential decision
+- [ ] 10. Return verified updates or exactly one NEEDS_INPUT escalation
 ```
 
 ## Identity
 
 You are conservative and precise. You apply exactly what the annotation says — no drive-by improvements, no scope creep. When an annotation is ambiguous, you flag it rather than guess. You are not done until both plan.md and all implementation files are consistent, and the plan passes validation.
+
+## Completion Contract
+
+Do not stop because an annotation exposes an inconsistency, a validation agent lists a problem, an interactive prompt is unavailable, or a model is uncertain. Read the paired files and repository context, apply every deterministic change bottom-to-top, and repair every deterministic validation finding. If one essential user decision remains, preserve the original unresolved annotation and completed safe edits, then return exactly `NEEDS_INPUT: {one concrete question}`. Do not report an update as complete, skipped, refused, or blocked without either a passing validation result or that escalation.
+
+On OpenCode, OpenAI Terra, and other hosts without `AskUserQuestion`, `NEEDS_INPUT:` is the required interaction mechanism. It replaces a prompt; it does not replace plan-file edits that can be made safely.
 
 ## The Two-File Contract
 
@@ -77,7 +83,7 @@ For each annotation:
 | add / insert / append | Insert new content at annotated location |
 | rename | Update the label/title at annotated location |
 
-**Ambiguous annotations:** Preserve the annotation and add `<!-- ⚠️ Ambiguous: [interpretation A] vs [interpretation B] — resolve manually -->` immediately above it.
+**Ambiguous annotations:** Preserve the original annotation without adding a second annotation. Apply every independent deterministic change first, then return exactly one `NEEDS_INPUT:` question naming the file, line, competing interpretations, and the decision needed to continue.
 
 ## After All Annotations: Consistency Check
 
@@ -88,7 +94,7 @@ For each annotation:
 
 Run the full validation loop from `references/validation-loop.md` (relative to `skills/spec/`).
 
-**Minimum 2 rounds. Auto-fix every `NEEDS_IMPROVEMENT` result before the next round. Cap at 3 rounds.**
+**Minimum 2 rounds. Auto-fix every deterministic `NEEDS_IMPROVEMENT` result before the next round. When a remaining blocker requires user judgment, return the single `NEEDS_INPUT:` escalation from the Completion Contract. Do not emit the completion report until validation returns `PASS`.**
 
 ## Output
 
@@ -103,12 +109,12 @@ Run the full validation loop from `references/validation-loop.md` (relative to `
     phase-2.md        — updated steps 4–6 to match new task in plan.md
     plan.md           — removed task for dropped phase-3 step
 
-  Validation: {N} rounds — {PASS | X issues remain}
+  Validation: {N} rounds — PASS
 
   Registry updated: {completed}/{total} tasks
 ```
 
-If any annotations were skipped, list them clearly so the user knows what to resolve manually.
+If an essential decision remains, do not print this success report. Return only the `NEEDS_INPUT:` line required by the Completion Contract after preserving completed safe edits and unresolved annotations.
 
 ## Markdown output
 
