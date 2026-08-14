@@ -26,7 +26,35 @@ Build the parameter map `PARAMS`:
 
 Resolve `FLOW_DIR` (the **definition** — read-only) per `references/flow-dir.md` (local-first, then global; `--global` forces global only). If not found in any scope, error: "Flow '{FLOW_NAME}' not found (looked in local and global). Run /flow new {FLOW_NAME} first."
 
-Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*. Run instances live **flat under `.codevoyant/flows/`** — beside the flow definitions — each named `{flow-slug}-{plan-slug}` (keyed by the run's resolved spec-plan slug). The slug does not exist yet at this point, so **bootstrap a provisional instance**: mint `RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"` and set `FLOW_STATE_ROOT=".codevoyant/flows"`. On a **fresh run**, `RUN_DIR="$FLOW_STATE_ROOT/{flow-slug}-_pending-$RUN_ID"` (the provisional is namespaced by `{flow-slug}` — the definition's directory name — so it never collides with another flow's provisional); on a **resume**, reattach `RUN_DIR` to this run's existing directory instead of minting a new one — the adopted `$FLOW_STATE_ROOT/{flow-slug}-{plan-slug}/` if present, else the newest non-`Complete` `$FLOW_STATE_ROOT/{flow-slug}-_pending-*/` whose `run.md` records `slug: {flow-slug}` (also recognize a legacy `.codevoyant/runs/{flow-slug}/progress.md` sitting directly under the legacy flow dir — reuse `.codevoyant/runs/{flow-slug}/` as `RUN_DIR` in that case). The run instance is **always local**, even when the definition is global. `mkdir -p "$RUN_DIR"`.
+Then resolve the **run instance** per `references/flow-dir.md` → *Run instance*. Run instances live **flat under `.codevoyant/flows/`** — beside the flow definitions — each named `{flow-slug}-{plan-slug}` (keyed by the run's resolved spec-plan slug). The slug does not exist yet at this point, so **bootstrap a provisional instance**: mint `RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"` and set `FLOW_STATE_ROOT=".codevoyant/flows"`. On a **fresh run**, `RUN_DIR="$FLOW_STATE_ROOT/{flow-slug}-_pending-$RUN_ID"` (the provisional is namespaced by `{flow-slug}` — the definition's directory name — so it never collides with another flow's provisional); on a **resume**, reattach `RUN_DIR` to this run's existing directory instead of minting a new one — the adopted `$FLOW_STATE_ROOT/{flow-slug}-{plan-slug}/` if present, else the newest non-`Complete` `$FLOW_STATE_ROOT/{flow-slug}-_pending-*/` whose `run.md` records `slug: {flow-slug}` (also recognize a legacy `.codevoyant/runs/{flow-slug}/progress.md` sitting directly under the legacy flow dir — reuse `.codevoyant/runs/{flow-slug}/` as `RUN_DIR` in that case). The run instance is **always local**, even when the definition is global. Because the run instance is the LOCAL `.codevoyant/flows/...` first-touch, initialize the shared store before creating it: `cv_init_store && mkdir -p "$RUN_DIR"`.
+
+`cv_init_store` ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`) **before** the `mkdir` — otherwise a fresh clone would create `.codevoyant` as a real directory instead of the shared symlink. It is idempotent, never migrates an existing real dir (that is `/migrate`'s job), and computes the identical `<project-slug>` as the `/migrate` skill. Define it in the same shell as the `mkdir`:
+
+```bash
+cv_init_store() {
+  local root; root="$(git rev-parse --show-toplevel 2>/dev/null)" || root=""; [ -n "$root" ] || root="$PWD"
+  local link="$root/.codevoyant"
+  [ -L "$link" ] && return 0          # already a symlink → initialized
+  [ -d "$link" ] && return 0          # old real dir → leave it; /migrate copies it in, never here
+  local common name slug
+  common="$(git rev-parse --git-common-dir 2>/dev/null)" || common=""
+  if [ -n "$common" ]; then
+    case "$common" in /*) : ;; *) common="$root/$common" ;; esac
+    name="$(basename "$(cd "$(dirname "$common")" >/dev/null 2>&1 && pwd -P)")"
+  else
+    name="$(basename "$root")"
+  fi
+  slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
+  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches the /migrate skill
+  local dest="$HOME/.codevoyant/$slug"
+  mkdir -p "$dest"; ln -s "$dest" "$link"
+  local gi="$root/.gitignore"
+  { [ -f "$gi" ] && grep -qxF '.codevoyant' "$gi"; } || \
+    printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
+}
+```
+
+Note: only the LOCAL `.codevoyant/...` first-touch is wrapped. The `--global` flow paths write to `$HOME/.codevoyant/flows` directly and must NOT be wrapped with `cv_init_store`.
 
 **Pre-adoption resume is best-effort by recency.** Once a run has adopted, its `{flow-slug}-{plan-slug}/` is unambiguous. But if **two** runs of this flow were both interrupted *before* adoption, there are multiple non-`Complete` `{flow-slug}-_pending-*/` dirs and no plan slug yet to tell them apart — reattaching to the newest by mtime may pick the wrong one. Disambiguate cheaply: if the current invocation carries identifying params (`--set`/`input`, or an explicit `--branch`), prefer the provisional whose `run.md`/`context.md` **matches** those (e.g. same `branch:` or objective); otherwise fall back to newest-mtime and note it — `ℹ Multiple interrupted runs of '{FLOW_NAME}' found; resuming the most recent ({flow-slug}-_pending-{RUN_ID}). Pass matching --set/--branch to target a specific one, or /flow status to inspect.` Do not silently guess when it's ambiguous.
 

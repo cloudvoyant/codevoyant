@@ -27,6 +27,10 @@ dist/
 docs/.vitepress/dist
 docs/.vitepress/cache
 
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Package manager files
 package-lock.json
 yarn.lock
@@ -87,7 +91,7 @@ test-results/
 .claude/skills/
 .agents/
 
-# Spec plugin - instance-specific plans
+# codevoyant context store — in-repo .codevoyant is a symlink to ~/.codevoyant/<project-slug>/; never commit it
 .codevoyant
 
 # Git worktrees
