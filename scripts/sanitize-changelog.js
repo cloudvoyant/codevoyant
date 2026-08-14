@@ -9,13 +9,20 @@ import { resolve } from 'path';
 const file = resolve('CHANGELOG.md');
 const content = fs.readFileSync(file, 'utf8');
 
-// Match <word> not already wrapped in backticks (lookbehind/lookahead).
-// Only targets lowercase identifiers — safe to skip real HTML tags (which
-// would have attributes or uppercase) and markdown code spans.
-const sanitized = content.replace(/(?<!`)<([a-z][a-z0-9_-]*)>(?!`)/g, '`<$1>`');
+// Wrap bare <word> angle-bracket patterns in backticks so Vue's template
+// compiler doesn't treat them as unclosed HTML elements in the docs build.
+// Match inline code spans FIRST and leave them untouched, so a token already
+// inside a span (e.g. `~/.codevoyant/<project-slug>/`) is never wrapped — doing
+// so would split the span and leave a permanently-broken bare tag behind.
+const tokenRe = /(`[^`\n]*`)|<[a-z][a-z0-9_-]*>/g;
+let escaped = 0;
+const sanitized = content.replace(tokenRe, (match, codeSpan) => {
+  if (codeSpan) return codeSpan; // inside inline code — leave as-is
+  escaped++;
+  return '`' + match + '`'; // bare <word> — wrap it
+});
 
 if (sanitized !== content) {
   fs.writeFileSync(file, sanitized);
-  const count = (content.match(/(?<!`)<([a-z][a-z0-9_-]*)>(?!`)/g) || []).length;
-  process.stdout.write(`sanitize-changelog: escaped ${count} bare tag(s) in CHANGELOG.md\n`);
+  process.stdout.write(`sanitize-changelog: escaped ${escaped} bare tag(s) in CHANGELOG.md\n`);
 }

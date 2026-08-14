@@ -9,7 +9,7 @@ into a shared, gitignored location so every git worktree of the same
 project reads and writes one store.
 
 **Shared store model**
-- The canonical store is `~/.codevoyant/`<project-slug>`/`; the in-repo
+- The canonical store is `~/.codevoyant/<project-slug>/`; the in-repo
   `.codevoyant` becomes a gitignored symlink to it, so all worktrees
   share a single store instead of each carrying its own.
 - `<project-slug>` derives from the git common dir's parent name via a
