@@ -1,3 +1,47 @@
+## [1.68.0](https://github.com/cloudvoyant/codevoyant/compare/v1.67.3...v1.68.0) (2026-08-14)
+
+### Features
+
+* **context:** share .codevoyant across worktrees via ~/.codevoyant store
+
+Move the per-project codevoyant context store out of the repo tree and
+into a shared, gitignored location so every git worktree of the same
+project reads and writes one store.
+
+**Shared store model**
+- The canonical store is `~/.codevoyant/`<project-slug>`/`; the in-repo
+  `.codevoyant` becomes a gitignored symlink to it, so all worktrees
+  share a single store instead of each carrying its own.
+- `<project-slug>` derives from the git common dir's parent name via a
+  locale-stable (`LC_ALL=C`) lowercase/slugify pass, with an `unnamed`
+  fallback, so the slug is byte-identical wherever it is computed.
+- `.gitignore` ignores `.codevoyant` (the symlink) and Python bytecode.
+
+**First-touch init in skills**
+- Add an idempotent inline `cv_init_store` helper to every skill that
+  first touches `.codevoyant` (spec, em, pm, qa, flow, skill, usage) so
+  the shared symlink is created before the first `mkdir`; on a fresh
+  clone this prevents `.codevoyant` from being materialized as a real
+  directory.
+- `cv_init_store` never migrates an existing real dir — that is the
+  `/migrate` skill's job — and computes the same `<project-slug>` as
+  `/migrate` so the symlink target and copy destination always agree.
+
+**migrate skill**
+- Add a text-based, agent-driven `/migrate` skill (stdlib only) that
+  creates the store and symlink, copies existing codevoyant data from
+  user-supplied source location(s) additively (never clobbering, never
+  descending into `worktrees/`), and unions the plan registry
+  `.codevoyant/README.md` row-by-row.
+- Track the store's codevoyant version in `.codevoyant/metadata.json`
+  and apply, in ascending semver order, any pending migration files
+  under `references/migrations/`; document the convention and template.
+
+**Removals and doc reconciliation**
+- Remove the deprecated `dev-docs` skill, superseded by `/docs`.
+- Purge the defunct agent-kit and CLI reference docs and reconcile the
+  architecture and user-guide docs with the shared-store model.
+
 ## [1.67.3](https://github.com/cloudvoyant/codevoyant/compare/v1.67.2...v1.67.3) (2026-08-04)
 
 ### Bug Fixes
