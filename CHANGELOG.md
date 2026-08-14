@@ -1,3 +1,38 @@
+## [1.69.0](https://github.com/cloudvoyant/codevoyant/compare/v1.68.1...v1.69.0) (2026-08-14)
+
+### Features
+
+* **snippets:** add Raycast snippets management skill
+
+Add a `snippets` skill for managing Raycast text snippets as
+topic-isolated markdown collections.
+
+**Skill**
+- Thin SKILL.md dispatcher exposing add/update/sync/get
+  subcommands, each backed by a workflow reference file.
+- Vendored md2snippets.py converts markdown collections into
+  Raycast-importable JSON, resolved via SKILL_DIR so it works
+  regardless of the caller's cwd.
+
+**Store**
+- Resolve the store path from ~/.codevoyant/meta.json
+  `snippetDir`, falling back to ~/.codevoyant/snippets when unset.
+- Gitignore the in-project ~/.codevoyant/snippets fallback so
+  generated snippets are never committed.
+
+**Scope**
+- Snippets live in per-topic .md collections so unrelated sets
+  stay isolated.
+- Not added to the docs site by design; this is a personal-use
+  workflow skill.
+
+
+### Code Refactoring
+
+* **skills:** migrate knowledgebase skills to diffwiki wiki ([#42](https://github.com/cloudvoyant/codevoyant/issues/42))
+
+Remove 15 knowledgebase skills (aws, compgeo, cpp, docker, gcp, hpc, llm, mle, odin, react, python, typescript, sveltekit, tanstack, terraform) now published as diffwiki collections in skapoor8/wiki. Includes docs site, README, icon, and pr-skill reference cleanup. vim/zellij/hx retained as dev tools.
+
 ## [1.68.1](https://github.com/cloudvoyant/codevoyant/compare/v1.68.0...v1.68.1) (2026-08-14)
 
 ### Bug Fixes
