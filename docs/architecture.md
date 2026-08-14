@@ -86,7 +86,6 @@ The store holds plain markdown artifacts — there are no JSON registries. Each 
 ├── explore/                          # research artifacts (dev explore, em plan, pm explore)
 ├── prds/                             # product requirement docs (pm prd)
 ├── qa/                               # debug reports (qa debug)
-├── usage/                            # responsible-AI usage reports (usage report)
 ├── feedback/                         # saved skill feedback (skill feedback)
 ├── flows/                            # flow definitions + run instances (flow new / flow go)
 └── worktrees/                        # in-repo git worktrees (never migrated by /migrate)

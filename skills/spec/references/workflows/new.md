@@ -35,9 +35,6 @@ Received from dispatcher:
 ```
 VALIDATE_MODE=false
 [[ "$*" =~ --validate|-v ]] && VALIDATE_MODE=true
-
-USAGE_MODE=false
-[[ "$*" =~ --usage ]] && USAGE_MODE=true
 ```
 
 ## Step 0.5: Detect Branch Context
@@ -287,26 +284,6 @@ If `RESEARCH_CONTEXT` is set, copy or link the explore artifacts into `$PLAN_DIR
 
 Report: `✓ Plan directory created at: $PLAN_DIR`
 
-### 5.2u: Start AI Usage Monitor (only if `--usage`)
-
-Runs **only when `USAGE_MODE=true`**. Skip this subsection entirely otherwise.
-
-```bash
-if [[ "$USAGE_MODE" == "true" ]]; then
-  USAGE_START_EPOCH=$(date +%s)
-  CWD=$(pwd)
-fi
-```
-
-Then launch the monitor as a background subagent (`subagent_type: general-purpose`,
-`run_in_background: true`) using the prompt in `references/usage-monitor.md` ("Subagent prompt"),
-substituting `{PLAN_DIR}`, `{PLAN_NAME}`, `{BRANCH}` (=`$TARGET_BRANCH` or `$CURRENT_BRANCH`), `{CWD}`,
-and `{USAGE_START_EPOCH}`. Store the Task id as `USAGE_TASK_ID`.
-
-If the subagent cannot be launched (no `TaskCreate` tool, or launch fails), set `USAGE_FALLBACK=true`
-and continue — the current agent will do the tally itself in Step 6. The monitor never blocks planning:
-you do not wait for it here.
-
 ### 5.3: Create Plan Files
 
 **a. plan.md** at `$PLAN_DIR/plan.md`
@@ -327,23 +304,6 @@ Format:
 - ✅ added to phase header only when all tasks complete
 - Keep task descriptions concise (one line each)
 - NO detailed implementation specs in plan.md
-
-**Decision Log (populate immediately after creating plan.md):**
-
-Scan OBJECTIVE, REMAINING_ARGS, and all AskUserQuestion answers for explicit user choices. For each user decision found, add to `### User Decisions`:
-
-```
-- `[user]` *planning* — {1-line title}
-  > {user's exact words or close paraphrase}
-```
-
-For each significant design choice made by the planner (architecture, technology, phasing), add to `### Agent Decisions`:
-
-```
-- `[agent]` *planning* — {1-line title}: {rationale}
-```
-
-Populate the Decision Log before moving to Step 5.4. Aim for 2-5 entries per section. Do not fabricate decisions — only log real choices that shaped the plan.
 
 **b. user-guide.md** at `$PLAN_DIR/user-guide.md`
 
@@ -477,15 +437,6 @@ If `SUGGESTED_ALLOW` is non-empty, present permission suggestions as information
 ```
 
 Then automatically apply them: read `.claude/settings.json` (start from `{}` if absent), union `permissions.allow` array with `SUGGESTED_ALLOW` (deduplicate, sort), write back. Report: `✓ Added {N} allow entries to .claude/settings.json`.
-
-**Finalize AI usage tracking (only if `USAGE_MODE=true`):** Skip entirely otherwise. If a monitor
-subagent was launched (`USAGE_TASK_ID` set), block on it: `TaskOutput(id: USAGE_TASK_ID, block: true)`.
-If it did not write the file, or `USAGE_FALLBACK=true`, or no subagent was launched, run
-`references/usage-monitor.md` Steps A–C yourself now (the plan files already exist) and write
-`{PLAN_DIR}/ai-usage.md` — including the "telemetry unavailable" variant if no session file is found.
-Confirm `test -s "$PLAN_DIR/ai-usage.md"`, then add one line to the completion report:
-`📊 AI usage recorded: {PLAN_DIR}/ai-usage.md`. This file is separate from plan.md and is written only
-in this mode.
 
 Do **not** ask whether the plan covers everything. Finish immediately:
 
