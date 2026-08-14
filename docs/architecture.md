@@ -37,7 +37,7 @@ codevoyant/
 │   ├── ux/                  # UX design dispatcher
 │   ├── spec/                # Specification-driven development dispatcher
 │   ├── migrate/             # Context-store initialize/copy/migrate dispatcher
-│   └── ...                  # (python, typescript, sveltekit, … — see the skills index)
+│   └── ...                  # (mise, vim, … — see the skills index)
 ├── docs/                    # Public VitePress documentation site
 ├── scripts/                 # Repo tooling (e.g. changelog sanitizer)
 └── .codevoyant/             # Symlink → ~/.codevoyant/<project-slug>/ (shared across worktrees; gitignored)

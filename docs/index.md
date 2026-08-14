@@ -119,11 +119,6 @@ features:
     details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
     link: /skills/task
   - icon:
-      src: /icons/terraform.svg
-    title: terraform
-    details: Directory layout, backend config, workspaces, and variable management for cloud.
-    link: /skills/terraform
-  - icon:
       src: /icons/usage.svg
     title: usage
     details: Responsible-AI usage reports — decision attribution, commit classification, and review tracking.
@@ -143,24 +138,4 @@ features:
     title: zellij
     details: Zellij terminal-multiplexer cheatsheet — panes, tabs, resizing, and sessions.
     link: /skills/zellij
-  - icon:
-      src: /icons/sveltekit.svg
-    title: sveltekit
-    details: Feature-slice architecture, shadcn-svelte, a11y, and Svelte form patterns.
-    link: /skills/sveltekit
-  - icon:
-      src: /icons/tanstack.svg
-    title: tanstack
-    details: File-based routing, Router v1, Query v5, Form, and server functions.
-    link: /skills/tanstack
-  - icon:
-      src: /icons/python.svg
-    title: python
-    details: uv workspaces, MLflow, Ray, Warp GPU, Pydantic, and Click CLI recipes.
-    link: /skills/python
-  - icon:
-      src: /icons/typescript.svg
-    title: typescript
-    details: Strict mode, pnpm monorepo, Vitest, ESLint/Prettier, and GitLab CI.
-    link: /skills/typescript
 ---

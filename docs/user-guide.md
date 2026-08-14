@@ -9,7 +9,7 @@ Skills are slash commands that load focused instructions into your AI agent's co
 - **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, flow, em, pm, ux).
 - **Skills** — discrete operations you invoke directly for a single, well-defined job (pr, qa, skill, task).
 - **Tools** — CLI and platform integrations (git, gh, glab, linear, and others).
-- **Context Skills** — activate automatically when relevant files are detected; no invocation needed (sveltekit, tanstack, typescript, python, mise, terraform).
+- **Context Skills** — activate automatically when relevant files are detected; no invocation needed (mise).
 
 For the best experience, install the full skill set — several skills compose with each other (`flow save` delegates to `skill new`, `qa report` delegates to `gh` or `glab`, `pr` calls `gh`/`glab` internally). If a required skill is missing when a command runs, you will be told which skill to install and how.
 
@@ -297,9 +297,4 @@ Context skills activate automatically when relevant files are detected — no in
 
 | Files detected | Skill |
 |---|---|
-| `*.svelte`, `*.svelte.ts` | [sveltekit](/skills/sveltekit) — feature-slice architecture, Svelte 5 runes, shadcn-svelte, auth sessions, remote functions |
-| `@tanstack/` in `package.json` | [tanstack](/skills/tanstack) — Router v1, Query v5, Form, server functions |
-| `*.ts`, `tsconfig.json` | [typescript](/skills/typescript) — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI |
-| `pyproject.toml`, `uv.lock` | [python](/skills/python) — uv workspace, MLflow, Ray, Warp GPU, Pydantic, Click |
 | `mise.toml`, `.mise.toml` | [mise](/skills/mise) — task conventions, tool pinning, language-specific setup |
-| `*.tf` (generic) | [terraform](/skills/terraform) — backends, workspaces, variable management |

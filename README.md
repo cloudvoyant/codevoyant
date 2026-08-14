@@ -123,38 +123,8 @@ Scaffold SvelteKit prototypes, create single-file wireframe explorations, and ex
 <td><strong>task</strong> — detect and run tasks across mise, just, task.dev, and npm scripts</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/terraform.svg" width="32"></td>
-<td><strong>terraform</strong> — directory structure, backend config, workspace-per-environment for GCP and AWS</td>
-</tr>
-<tr>
 <td align="center"><img src="docs/public/icons/vim.svg" width="32"></td>
 <td><strong>vim</strong> — Vim and Neovim key bindings for file navigation, search, and splits</td>
-</tr>
-</table>
-
-**Frameworks**
-
-<table>
-<tr>
-<td width="48" align="center"><img src="docs/public/icons/sveltekit.svg" width="32"></td>
-<td><strong>sveltekit</strong> — feature-slice architecture, Svelte 5 runes, shadcn-svelte, a11y, form patterns</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/tanstack.svg" width="32"></td>
-<td><strong>tanstack</strong> — TanStack Start file-based routing, Router v1, Query v5, Form, server functions</td>
-</tr>
-</table>
-
-**Languages**
-
-<table>
-<tr>
-<td width="48" align="center"><img src="docs/public/icons/python.svg" width="32"></td>
-<td><strong>python</strong> — uv workspace and publishing, MLflow tracking, Ray distributed training, Warp GPU kernels, Pydantic, Click CLIs</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/typescript.svg" width="32"></td>
-<td><strong>typescript</strong> — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI</td>
 </tr>
 </table>
 
