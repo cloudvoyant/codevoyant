@@ -1,26 +1,25 @@
 ---
 name: migrate
-description: "Initialize, repair, and migrate the codevoyant shared context store: create ~/.codevoyant/<project-slug>/ and the gitignored .codevoyant symlink shared across git worktrees, copy existing codevoyant data from user-supplied source location(s) into it, and record/upgrade the store's codevoyant version in .codevoyant/metadata.json. Triggers on: 'migrate', 'codevoyant migrate', 'migrate codevoyant', 'migrate .codevoyant', 'copy codevoyant data', 'migrate context store'."
+description: "Initialize, repair, and migrate the codevoyant shared context store: create ~/.codevoyant/<project-slug>/ and the gitignored .codevoyant symlink shared across git worktrees, then apply any store-layout migrations between the store's recorded codevoyant version and the current version (from version.txt), recording the result in .codevoyant/metadata.json. Triggers on: 'migrate', 'codevoyant migrate', 'migrate codevoyant', 'migrate .codevoyant', 'copy codevoyant data', 'migrate context store'."
 license: MIT
-compatibility: "Works on Claude Code and any agent runtime with Bash. Uses stdlib tools only (git, cp, mkdir, ln, awk, sed, tr, plus python3 for JSON read/write). No third-party dependencies."
+compatibility: "Works on Claude Code and any agent runtime with Bash. Uses stdlib tools only (git, cp, mkdir, ln, awk, sed, tr, plus python3 for JSON read/write and version comparison). No third-party dependencies."
 ---
 
 # migrate
 
-Initialize or repair the codevoyant shared context store and copy existing codevoyant data into it. The canonical per-project store is `~/.codevoyant/<project-slug>/`, and the in-repo `.codevoyant` is a gitignored symlink to it, so every git worktree of the same project shares one store. This skill is the ONLY place that knows about `.codevoyant` residency and migration — every other skill just uses ordinary relative `.codevoyant/...` paths that resolve transparently through the symlink.
+Initialize or repair the codevoyant shared context store, then apply any store-layout migrations between the version the store was last migrated to and the current codevoyant version. The canonical per-project store is `~/.codevoyant/<project-slug>/`, and the in-repo `.codevoyant` is a gitignored symlink to it, so every git worktree of the same project shares one store. This skill is the ONLY place that knows about `.codevoyant` residency and migration — every other skill just uses ordinary relative `.codevoyant/...` paths that resolve transparently through the symlink.
 
-This is an agent-driven skill: you (the agent) run the bash below interactively, prompting the user for the source location(s) to copy from. There is no bundled program.
+This is an agent-driven skill: you (the agent) run the bash below and apply the selected migration files' instructions in order. There is no bundled program. `SKILL.md` is a thin dispatcher — the actual per-transition procedures live in flat `references/migrate-v<A>-to-v<B>.md` files.
 
 ## Critical rules
 
-- **Never clobber.** Copy is additive: a plain file/dir is copied only if it is absent in the store; on a non-registry file conflict, keep the destination (store) copy and preserve the incoming one as `<name>.local-<UTC-timestamp>`.
-- **Never touch `worktrees/`.** Git worktrees are absolute checkouts; never copy, move, or descend into a `worktrees/` subtree.
-- **Union the registry, don't sideline it.** The plan registry `.codevoyant/README.md` is merged row-by-row (see Step 4), never preserved as a `.local-` copy.
-- **The slug must match `cv_init_store`.** The slug computation below is byte-identical to the inline `cv_init_store` used by the other skills so the symlink target agrees.
+- **The slug must match `cv_init_store`.** The slug computation in Step 1 is byte-identical to the inline `cv_init_store` used by the other skills so the symlink target agrees.
+- **Migrations are non-destructive.** Each migration file keeps its own "never clobber / never touch worktrees / union the registry" rules; the dispatcher only selects and orders them.
+- **Version compare is numeric, not string.** Versions are compared as integer tuples (`1.10.0 > 1.9.0`), never as plain strings.
 
 ## Step 1: Ensure the store + symlink exist
 
-Run this first. It creates `~/.codevoyant/<slug>/`, makes the in-repo `.codevoyant` a symlink to it (leaving an old real dir in place — this skill migrates it in later steps), and ensures a bare `.codevoyant` line in `.gitignore`.
+Run this first. It creates `~/.codevoyant/<slug>/`, makes the in-repo `.codevoyant` a symlink to it (leaving an old real dir in place — the migrations relocate it later), and ensures a bare `.codevoyant` line in `.gitignore`.
 
 ```bash
 cv_init_store() {
@@ -45,9 +44,9 @@ cv_init_store() {
     printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
   # Intentional divergence from the dispatcher-skill cv_init_store: those copies return
   # early on a real .codevoyant dir, whereas this migrate copy exports CV_STORE and leaves
-  # an OLD real dir in place so Step 3/4 can copy its data into the store. The slug-producing
-  # core (name resolution + LC_ALL=C tr/sed + `unnamed` fallback) stays byte-identical, so the
-  # symlink target and this skill's copy destination always agree.
+  # an OLD real dir in place so the v0→v1 migration can copy its data into the store. The
+  # slug-producing core (name resolution + LC_ALL=C tr/sed + `unnamed` fallback) stays
+  # byte-identical, so the symlink target and this skill's copy destination always agree.
   # Only create the symlink when there is nothing (or a symlink) at the path.
   if [ ! -e "$link" ]; then ln -s "$dest" "$link"; fi
 }
@@ -55,119 +54,145 @@ cv_init_store
 echo "store: $CV_STORE"
 ```
 
-`CV_STORE` now holds the canonical store path (`~/.codevoyant/<slug>/`). Use it as the copy DESTINATION in the steps below. If `.codevoyant` is currently an old real directory (not yet a symlink), treat that directory as one of the sources in Step 2.
+`CV_STORE` now holds the canonical store path (`~/.codevoyant/<slug>/`). The selected migration files use it as their working target. If `.codevoyant` is currently an old real directory (not yet a symlink), the v0→v1 migration treats that directory as one of its sources.
 
-## Step 2: Ask the user for the source location(s)
+## Step 2: Resolve versions and select migrations
 
-Prompt the user (interactively) for one or more source paths to copy existing codevoyant data FROM. Typical sources:
+Determine the current codevoyant version, read the store's recorded version, then select every migration file whose transition falls in `(recorded, current]`.
 
-- an old real `.codevoyant/` directory in this repo (if `.codevoyant` was a plain dir before this skill ran),
-- another checkout's store (e.g. `~/.codevoyant/<other-slug>/` or `/path/to/other-repo/.codevoyant/`).
+### 2a. Current version
 
-Collect the answers into `SOURCES` (a list of absolute paths). If the user has no existing data to import (fresh init), `SOURCES` is empty — skip Steps 3–4 and go straight to Step 5. If `.codevoyant` here is still an old real dir, include its resolved path in `SOURCES`.
-
-## Step 3: Copy data from each source (non-destructive)
-
-For each `SRC` in `SOURCES`, copy every entry into `CV_STORE`, additively, skipping `worktrees/` and the registry `README.md` (the registry is handled by Step 4). Never overwrite an existing store file; on a conflict, keep the store copy and preserve the incoming one as `<name>.local-<UTC-timestamp>`.
+Prefer the repo's canonical `version.txt` at the repo root, then fall back to the latest git tag, then to a safe default of `0.0.0` (an unknown environment should apply all migrations from the base rather than silently skip them).
 
 ```bash
-copy_tree() {  # copy_tree SRC DST
-  local src="$1" dst="$2" name rel
-  mkdir -p "$dst"
-  find "$src" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' path; do
-    name="$(basename "$path")"
-    [ "$name" = "worktrees" ] && continue          # never touch worktrees
-    if [ -d "$path" ]; then
-      copy_tree "$path" "$dst/$name"               # recurse
-    else
-      [ "$name" = "README.md" ] && [ "$dst" = "$CV_STORE" ] && continue   # top-level registry → Step 4
-      if [ ! -e "$dst/$name" ]; then
-        cp -p "$path" "$dst/$name"
-      elif ! cmp -s "$path" "$dst/$name"; then
-        cp -p "$path" "$dst/$name.local-$(date -u +%Y%m%dT%H%M%SZ)"   # conflict → preserve incoming
-      fi
-    fi
-  done
-}
-for SRC in "${SOURCES[@]}"; do
-  SRC="$(cd "$SRC" 2>/dev/null && pwd -P)" || { echo "skip missing source: $SRC"; continue; }
-  [ "$SRC" = "$CV_STORE" ] && continue
-  echo "copying from: $SRC"
-  copy_tree "$SRC" "$CV_STORE"
-done
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || ROOT="$PWD"
+CURRENT=""
+if [ -f "$ROOT/version.txt" ]; then
+  CURRENT="$(head -n1 "$ROOT/version.txt" | tr -d '[:space:]')"
+  printf '%s' "$CURRENT" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || CURRENT=""   # ignore garbage
+fi
+[ -n "$CURRENT" ] || CURRENT="$(git tag --sort=-v:refname 2>/dev/null | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -1 | sed 's/^v//')"
+[ -n "$CURRENT" ] || CURRENT="0.0.0"
 ```
 
-Note: `copy_tree`'s loop body runs in a subshell (the `find … | while` pipe), so a shell counter incremented inside it would be lost to the parent. Don't try to tally copied-vs-`.local-` counts with a loop variable. For the Step 6 report, gather the counts by inspecting the result instead — e.g. after copying, count new files under `CV_STORE` and `find "$CV_STORE" -name '*.local-*'` for the conflict-preserved ones.
-
-## Step 4: Union the plan registry (`.codevoyant/README.md`)
-
-The only top-level registry is `.codevoyant/README.md` — a markdown table with header `| Name | Status | Plugin | Description | Created | Branch |`. When both the store and a source have one, UNION the data rows keyed by the first column (plan Name): keep a single header, include every distinct plan row from both, and on a same-Name collision keep the store's (destination) row. For each `SRC` that has a `README.md`:
+### 2b. Recorded version
 
 ```bash
-union_registry() {  # union_registry SRC_README DST_README
-  local src="$1" dst="$2" tmp
-  [ -f "$src" ] || return 0
-  if [ ! -f "$dst" ]; then cp -p "$src" "$dst"; return 0; fi
-  tmp="$(mktemp)"
-  # Emit the destination header + intro verbatim (everything up to and incl. the separator row),
-  # then all destination data rows, then source data rows whose Name (col 1) is not already present.
-  awk '
-    function key(line,   a) { split(line, a, "|"); gsub(/^[ \t]+|[ \t]+$/, "", a[2]); return a[2] }
-    FNR==NR {                       # destination file
-      # Header test keys on the trimmed first column via key(), so a data row whose
-      # Description merely contains the substring "Name |" is not misread as the header.
-      if ($0 ~ /^\|/ && $0 !~ /^\|[ \t]*-+/ && key($0) != "Name") { seen[key($0)]=1; drows[++dn]=$0 }
-      else if ($0 ~ /^\|[ \t]*-+/) { hassep=1; head[++hn]=$0 }
-      else { head[++hn]=$0 }
-      next
-    }
-    {                               # source file
-      if ($0 ~ /^\|/ && $0 !~ /^\|[ \t]*-+/ && key($0) != "Name") {
-        k=key($0); if (!(k in seen) && k != "") { seen[k]=1; srows[++sn]=$0 }
-      }
-    }
-    END {
-      for (i=1;i<=hn;i++) print head[i]
-      for (i=1;i<=dn;i++) print drows[i]
-      for (i=1;i<=sn;i++) print srows[i]
-    }
-  ' "$dst" "$src" > "$tmp"
-  mv "$tmp" "$dst"
-}
-for SRC in "${SOURCES[@]}"; do
-  SRC="$(cd "$SRC" 2>/dev/null && pwd -P)" || continue
-  [ "$SRC" = "$CV_STORE" ] && continue
-  [ -f "$SRC/README.md" ] && union_registry "$SRC/README.md" "$CV_STORE/README.md"
-done
-```
-
-The header block is whatever the destination already has (title line, blank line, the `| Name | ... |` header, and the `|---|...|` separator). Only data rows are unioned. If the store had no `README.md` yet, the source's is copied wholesale.
-
-Note: `.codevoyant/README.md` is the only top-level registry codevoyant maintains. If a future skill introduces another top-level state file, migrate it the same way (union its records, don't sideline it).
-
-## Step 5: Version tracking + migrations
-
-Read the store's recorded codevoyant version from `.codevoyant/metadata.json` (`{"version": "..."}`), determine the current version, apply any migration steps between them, then write the current version back.
-
-```bash
-# Current codevoyant version — prefer the latest git tag, fall back to 1.67.2.
-CURRENT="$(git tag --sort=-v:refname 2>/dev/null | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -1 | sed 's/^v//')"
-[ -n "$CURRENT" ] || CURRENT="1.67.2"
-
-# Recorded version in the store (empty if metadata.json absent/unset).
 RECORDED="$(python3 - "$CV_STORE/metadata.json" <<'PY'
 import json,sys
 try:
-    with open(sys.argv[1]) as f: print(json.load(f).get("version",""))
+    with open(sys.argv[1]) as f:
+        v = json.load(f).get("version","")
+    # Coerce to string; a non-string version (e.g. 12345) is treated as unset
+    # so it falls back to the v0 baseline rather than mis-ranking.
+    print(v if isinstance(v, str) else "")
 except Exception: print("")
 PY
 )"
+[ -n "$RECORDED" ] || RECORDED="0.0.0"   # unversioned/unparseable store == v0 baseline
+
+# State-based v0 guard: don't trust a stamped version alone. If the in-repo
+# .codevoyant is not yet a symlink (still a real dir, or absent) OR the store's
+# metadata.json is missing, the store has NOT been through the v0→v1 relocation
+# yet — treat it as v0 regardless of any recorded version. This makes the
+# dispatcher robust to a mis-stamped or hand-edited metadata.json (e.g. a store
+# stamped 1.67.2 that never actually relocated).
+if [ ! -L "$ROOT/.codevoyant" ] || [ ! -f "$CV_STORE/metadata.json" ]; then
+  RECORDED="0.0.0"
+fi
 echo "recorded=$RECORDED current=$CURRENT"
 ```
 
-If `RECORDED` is empty or older than `CURRENT`, look in `skills/migrate/references/migrations/` for any migration instruction files whose target version is greater than `RECORDED` and up to `CURRENT`, and apply them **in ascending version order** (each file describes the steps to reach that version). No real historical migrations exist yet, so typically there is nothing to apply — this is the hook for future upgrades. Then write the current version:
+### 2c. Migration file naming + selector rules
 
-Note: version ordering here is agent-driven prose. When the first real migration file lands, compare and order versions with semver semantics (e.g. `sort -V` / a semver comparator), not a plain string compare — a naive string sort misorders e.g. `1.9.0` vs `1.10.0`.
+Migration files are flat, directly under `skills/migrate/references/`, named `migrate-v<A>-to-v<B>.md`. `<A>` is the `<from>` selector, `<B>` the `<to>` selector. Each file also declares `<from>...</from>` and `<to>...</to>` tags in its body; the tags are authoritative (the filename is a human-readable echo). A selector is a **version prefix** expanded to an inclusive `(lower, upper)` integer-tuple bound:
+
+| Selector | Meaning | Lower bound | Upper bound |
+|---|---|---|---|
+| `v0` | whole major 0 (unversioned / pre-v1) | `(0,0,0)` | `(0,MAX,MAX)` |
+| `v1` | whole major 1 | `(1,0,0)` | `(1,MAX,MAX)` |
+| `v1.minor` / `v1.x` | any minor within major 1 | `(1,0,0)` | `(1,MAX,MAX)` |
+| `v1.67` | pinned minor 1.67 | `(1,67,0)` | `(1,67,MAX)` |
+| `v1.67.2` | exact patch | `(1,67,2)` | `(1,67,2)` |
+
+`MAX` is a large sentinel (`999999`). A migration is **selected** when its `<to>` **lower** bound is `> recorded` and `<= current` (numeric tuple compare) — i.e. the current codevoyant version has reached (entered) the target series while the store has not. Keying on the lower bound (not the upper) is what lets an open-ended series selector like `v1.minor` (upper bound `(1,MAX,MAX)`) fire once `current` enters the v1 series, instead of never. Selected migrations are applied in **ascending `<to>` lower-bound order**. The `<from>` selector is documentary/legibility metadata (it tells a human where the migration starts); it is not a hard gate.
+
+### 2d. Enumerate, parse, select, order
+
+```bash
+SKILL_REF_DIR="$(dirname "$0")/references"     # if $0 is unavailable, use the migrate skill's references/ dir
+# Locate the references dir robustly: this SKILL.md lives at skills/migrate/SKILL.md.
+[ -d "$SKILL_REF_DIR" ] || SKILL_REF_DIR="$ROOT/skills/migrate/references"
+
+SELECTED="$(python3 - "$SKILL_REF_DIR" "$RECORDED" "$CURRENT" <<'PY'
+import os, re, sys
+ref_dir, recorded, current = sys.argv[1], sys.argv[2], sys.argv[3]
+MAX = 999999
+
+def parse_ver(s):
+    # Degrade gracefully: a malformed/hand-edited version (e.g. "1.x",
+    # "1.67.2-rc1") falls back to the v0 baseline instead of throwing.
+    try:
+        return tuple(int(x) for x in s.split("."))
+    except (ValueError, AttributeError):
+        return (0, 0, 0)
+
+def bounds(sel):
+    # sel like "v0", "v1", "v1.minor", "v1.x", "v1.67", "v1.67.2"
+    sel = sel.strip().lstrip("v")
+    parts = sel.split(".")
+    nums = []
+    for p in parts:
+        if re.fullmatch(r"\d+", p):
+            nums.append(int(p))
+        else:
+            break   # "minor"/"x" and anything non-numeric → open from here
+    if len(nums) == 1:      # major only
+        lo = (nums[0], 0, 0); hi = (nums[0], MAX, MAX)
+    elif len(nums) == 2:    # major.minor
+        lo = (nums[0], nums[1], 0); hi = (nums[0], nums[1], MAX)
+    elif len(nums) >= 3:    # exact
+        lo = (nums[0], nums[1], nums[2]); hi = lo
+    else:                   # no leading number → treat as base
+        lo = (0, 0, 0); hi = (0, MAX, MAX)
+    return lo, hi
+
+rec = parse_ver(recorded)
+cur = parse_ver(current)
+tag_re = re.compile(r"<(from|to)>\s*(.*?)\s*</\1>", re.S)
+picks = []
+for fn in os.listdir(ref_dir):
+    if not (fn.startswith("migrate-v") and fn.endswith(".md")):
+        continue
+    with open(os.path.join(ref_dir, fn)) as f:
+        text = f.read()
+    # First-match-wins: the authoritative tag is the first occurrence; any later
+    # repetition in prose (e.g. the "## Selector" section) can't override it.
+    tags = {}
+    for m in tag_re.finditer(text):
+        tags.setdefault(m.group(1), m.group(2))
+    if "from" not in tags or "to" not in tags:
+        continue
+    to_lo, _ = bounds(tags["to"])
+    # Selected when the migration's target series has been ENTERED: its <to> lower bound is
+    # newer than the recorded version and at/below the current version. Keying on the lower
+    # bound lets an open series selector (e.g. v1.minor, upper bound (1,MAX,MAX)) fire once
+    # current reaches the v1 series, rather than never.
+    if to_lo > rec and to_lo <= cur:
+        picks.append((to_lo, fn))
+picks.sort()
+for _, fn in picks:
+    print(fn)
+PY
+)"
+echo "selected migrations:"; printf '%s\n' "$SELECTED"
+```
+
+## Step 3: Apply the selected migrations, record the version, report
+
+For each filename in `SELECTED`, in the order printed, open `skills/migrate/references/<filename>` and follow its instructions against the resolved store (`$CV_STORE`). Each migration file is self-contained (it declares its own prerequisites, steps, and safety rules). If `SELECTED` is empty, there is nothing to migrate — proceed straight to recording the version.
+
+After all selected migrations have been applied, write the current version back to the store:
 
 ```bash
 python3 - "$CV_STORE/metadata.json" "$CURRENT" <<'PY'
@@ -179,12 +204,10 @@ PY
 cat "$CV_STORE/metadata.json"
 ```
 
-## Step 6: Report
-
-Summarize for the user:
+Then report to the user:
 
 - the resolved slug and store path (`CV_STORE`),
-- each source copied from, and how many files were copied vs. preserved as `.local-` conflicts,
-- the registry union result (how many rows came from each side, dedup collisions),
-- any migrations applied,
+- the resolved `current` version and its source (`version.txt`, git tag, or default), and the store's `recorded` version,
+- the migration files selected and applied, in order (or "none — store already current"),
+- for any relocation migration that ran: each source copied from, how many files were copied vs. preserved as `.local-` conflicts, and the registry union result (rows from each side, dedup collisions),
 - the version written to `.codevoyant/metadata.json`.
