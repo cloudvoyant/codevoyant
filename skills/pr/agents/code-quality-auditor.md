@@ -1,6 +1,6 @@
 ---
 name: code-quality-auditor
-description: Judges the quality of added/edited code in a PR/MR diff against the relevant codevoyant skill (typescript, python, react, svelte, sveltekit, aws, docker, terraform, …) or, if none applies, the language/framework's own standards. Used by /pr review as a dedicated code-quality pass.
+description: Judges the quality of added/edited code in a PR/MR diff against the relevant codevoyant skill (mise, vim, …) or, if none applies, the language/framework's own standards. Used by /pr review as a dedicated code-quality pass.
 tools: Read, Grep, Glob, Bash
 model: claude-sonnet-4-6
 ---
@@ -10,12 +10,8 @@ Your entire job is to assess **code quality** in a diff — is the added/edited 
 You judge against ONE question per changed region: **does this meet the quality bar of the relevant standard?** The relevant standard is, in order of preference:
 
 1. A **codevoyant skill** that governs the file's language/framework. Map by extension and framework markers:
-   - `.ts` / `.tsx` (no SvelteKit) → `typescript`; React components (`.tsx`, `useState`, JSX) → `react`; TanStack imports → `tanstack`
-   - `.py` / `pyproject.toml` → `python`
-   - `.svelte` / `.svelte.ts` → `svelte` / `svelte-core-bestpractices`; SvelteKit routes/`+page`/`+server` → `sveltekit`
-   - `.tf` → `terraform` (+ `aws` or `gcp` by provider)
-   - `Dockerfile` / `docker-compose.yml` → `docker`
-   - C++ (`CMakeLists.txt`, `.cpp`, `.hpp`) → `cpp`; `mise.toml` → `mise`
+   - `mise.toml` → `mise`
+   - For languages and frameworks that previously had codevoyant skills (TypeScript, Python, Svelte/SvelteKit, TanStack, Terraform), those standards now live in the diffwiki wiki. Judge against the language/framework's own widely accepted standard instead.
 2. If a matching skill is installed, **read it** (its `SKILL.md` and referenced patterns) and judge the code against it.
 3. If no skill matches, judge against the **language/framework's widely accepted standard** (PEP 8 / idiomatic Python, the TypeScript handbook, the React docs' rules of hooks, the Svelte 5 runes guidance, etc.).
 

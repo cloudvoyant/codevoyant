@@ -74,26 +74,6 @@ features:
     details: SvelteKit prototypes, wireframe explorations, and visual style synthesis.
     link: /skills/ux
   - icon:
-      src: /icons/compgeo.svg
-    title: compgeo · experimental
-    details: Meshes, voxels, point clouds, and SDFs — Python, C++, and TypeScript recipes.
-    link: /skills/compgeo
-  - icon:
-      src: /icons/hpc.svg
-    title: hpc · experimental
-    details: SIMD, CUDA/SYCL, MPI, and distributed Ray — high-performance C++ and Python.
-    link: /skills/hpc
-  - icon:
-      src: /icons/mle.svg
-    title: mle · experimental
-    details: Data pipelines, distributed training, MLflow tracking, and model publishing.
-    link: /skills/mle
-  - icon:
-      src: /icons/llm.svg
-    title: llm · experimental
-    details: Agent frameworks, open-weight model serving, RAG pipelines, and eval tooling.
-    link: /skills/llm
-  - icon:
       src: /icons/changelog.svg
     title: changelog
     details: Retcon PR/MR commit messages and preview the next changelog.
@@ -103,16 +83,6 @@ features:
     title: cz
     details: Show current and predicted next version using commitizen.
     link: /skills/cz
-  - icon:
-      src: /icons/docker.svg
-    title: docker
-    details: Multi-stage builds, Docker Compose, cross-platform networking, and registries.
-    link: /skills/docker
-  - icon:
-      src: /icons/gcp.svg
-    title: gcp
-    details: Artifact Registry, Cloud Run deploy, gcloud auth, and service account patterns.
-    link: /skills/gcp
   - icon:
       src: /icons/gh.svg
     title: gh
@@ -149,11 +119,6 @@ features:
     details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
     link: /skills/task
   - icon:
-      src: /icons/terraform.svg
-    title: terraform
-    details: Directory layout, backend config, workspaces, and variable management for cloud.
-    link: /skills/terraform
-  - icon:
       src: /icons/usage.svg
     title: usage
     details: Responsible-AI usage reports — decision attribution, commit classification, and review tracking.
@@ -173,34 +138,4 @@ features:
     title: zellij
     details: Zellij terminal-multiplexer cheatsheet — panes, tabs, resizing, and sessions.
     link: /skills/zellij
-  - icon:
-      src: /icons/react.svg
-    title: react
-    details: Zustand, shadcn/ui, Tailwind, React Three Fiber, folder structure, and data fetching.
-    link: /skills/react
-  - icon:
-      src: /icons/sveltekit.svg
-    title: sveltekit
-    details: Feature-slice architecture, shadcn-svelte, a11y, and Svelte form patterns.
-    link: /skills/sveltekit
-  - icon:
-      src: /icons/tanstack.svg
-    title: tanstack
-    details: File-based routing, Router v1, Query v5, Form, and server functions.
-    link: /skills/tanstack
-  - icon:
-      src: /icons/cpp.svg
-    title: cpp
-    details: CMake, Conan, gRPC, code standards, and release profile recipes.
-    link: /skills/cpp
-  - icon:
-      src: /icons/python.svg
-    title: python
-    details: uv workspaces, MLflow, Ray, Warp GPU, Pydantic, and Click CLI recipes.
-    link: /skills/python
-  - icon:
-      src: /icons/typescript.svg
-    title: typescript
-    details: Strict mode, pnpm monorepo, Vitest, ESLint/Prettier, and GitLab CI.
-    link: /skills/typescript
 ---

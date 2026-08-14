@@ -77,26 +77,6 @@ Phased roadmaps, per-feature PRDs, prioritization review, and Linear initiative 
 <td><strong>ux</strong> <sup>Experimental</sup> — prototyping and style research<br>
 Scaffold SvelteKit prototypes, create single-file wireframe explorations, and extract styles from live sites.</td>
 </tr>
-<tr>
-<td align="center"><img src="docs/public/icons/compgeo.svg" width="32"></td>
-<td><strong>compgeo</strong> <sup>Experimental</sup> — computational geometry<br>
-3D formats, bounding boxes, voxels, point clouds, feature extraction (CGAL), ray tracing, GLTF, SDFs, rotations/quaternions, OpenVDB ops — Python, C++, TypeScript.</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/hpc.svg" width="32"></td>
-<td><strong>hpc</strong> <sup>Experimental</sup> — high-performance computing<br>
-C++ threading, OpenMP, TBB, SIMD, CUDA, SYCL, MPI, Python parallelism, Ray, Thrust, Kokkos, and NVIDIA Warp GPU kernels.</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/mle.svg" width="32"></td>
-<td><strong>mle</strong> <sup>Experimental</sup> — ML engineering<br>
-Data pipelines (Ray Data), distributed training, model eval, TensorBoard, MLflow, model publishing, data curation, Label Studio, DVC versioning, data loaders.</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/llm.svg" width="32"></td>
-<td><strong>llm</strong> <sup>Experimental</sup> — LLM engineering<br>
-AI SDK and LangGraph agents, tool calling, document/image processing, open-weight model serving on AWS/GCP, RAG (AWS/GCP/OSS), and LLM eval tooling.</td>
-</tr>
 </table>
 
 **Tools**
@@ -109,14 +89,6 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 <tr>
 <td align="center"><img src="docs/public/icons/cz.svg" width="32"></td>
 <td><strong>cz</strong> — show current and predicted next version using commitizen</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/docker.svg" width="32"></td>
-<td><strong>docker</strong> — multi-stage builds, Compose, cross-platform networking, GCP registry</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/gcp.svg" width="32"></td>
-<td><strong>gcp</strong> — Artifact Registry, Cloud Run deploy, gcloud auth, service account patterns</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/gh.svg" width="32"></td>
@@ -151,46 +123,8 @@ AI SDK and LangGraph agents, tool calling, document/image processing, open-weigh
 <td><strong>task</strong> — detect and run tasks across mise, just, task.dev, and npm scripts</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/terraform.svg" width="32"></td>
-<td><strong>terraform</strong> — directory structure, backend config, workspace-per-environment for GCP and AWS</td>
-</tr>
-<tr>
 <td align="center"><img src="docs/public/icons/vim.svg" width="32"></td>
 <td><strong>vim</strong> — Vim and Neovim key bindings for file navigation, search, and splits</td>
-</tr>
-</table>
-
-**Frameworks**
-
-<table>
-<tr>
-<td width="48" align="center"><img src="docs/public/icons/react.svg" width="32"></td>
-<td><strong>react</strong> — Zustand state management, shadcn/ui and Tailwind, React Three Fiber and Drei, data fetching</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/sveltekit.svg" width="32"></td>
-<td><strong>sveltekit</strong> — feature-slice architecture, Svelte 5 runes, shadcn-svelte, a11y, form patterns</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/tanstack.svg" width="32"></td>
-<td><strong>tanstack</strong> — TanStack Start file-based routing, Router v1, Query v5, Form, server functions</td>
-</tr>
-</table>
-
-**Languages**
-
-<table>
-<tr>
-<td width="48" align="center"><img src="docs/public/icons/cpp.svg" width="32"></td>
-<td><strong>cpp</strong> — CMake project structure, Conan package management and publishing, gRPC service patterns, code standards, release profiles</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/python.svg" width="32"></td>
-<td><strong>python</strong> — uv workspace and publishing, MLflow tracking, Ray distributed training, Warp GPU kernels, Pydantic, Click CLIs</td>
-</tr>
-<tr>
-<td align="center"><img src="docs/public/icons/typescript.svg" width="32"></td>
-<td><strong>typescript</strong> — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI</td>
 </tr>
 </table>
 

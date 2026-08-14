@@ -189,7 +189,7 @@ Launch the **slop-detector** agent (`agents/slop-detector.md`) via the Agent too
 
 ### Dimension 3 — Code quality (Step 6c)
 
-Launch the **code-quality-auditor** agent (`agents/code-quality-auditor.md`) via the Agent tool with `subagent_type: code-quality-auditor` — in the **same message** as the other dimensions. Give it the same `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`. It maps each changed file to the relevant codevoyant skill (`typescript`, `python`, `react`, `svelte`, `sveltekit`, …) — reading that skill when available — or, failing a match, the language/framework's own standard, and returns a JSON array in the same schema. It returns `[]` for idiomatic, well-structured code.
+Launch the **code-quality-auditor** agent (`agents/code-quality-auditor.md`) via the Agent tool with `subagent_type: code-quality-auditor` — in the **same message** as the other dimensions. Give it the same `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`. It maps each changed file to the relevant codevoyant skill (e.g. `mise`) — reading that skill when available — or, failing a match, the language/framework's own standard, and returns a JSON array in the same schema. It returns `[]` for idiomatic, well-structured code.
 
 ### Dimension 4 — Docs freshness (Step 6d)
 
