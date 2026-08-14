@@ -1,6 +1,6 @@
 ---
 type: architecture
-tags: [skills, repository-structure, design-principles, agent-kit]
+tags: [skills, repository-structure, design-principles]
 description: High-level architecture of the codevoyant skills collection — skill layout, design principles, distribution model
 ---
 
@@ -35,32 +35,26 @@ codevoyant/
 │   ├── em/                  # Engineering management dispatcher
 │   ├── pm/                  # Product management dispatcher
 │   ├── ux/                  # UX design dispatcher
-│   ├── spec-new/            # Spec skills (individual, not yet unified)
-│   ├── spec-go/
-│   ├── spec-done/
-│   └── ...
-├── .claude/
-│   └── skills/              # Private skills (not distributed via npx skills)
-│       ├── skill-create/    # Internal skill scaffolding helper
-│       └── skill-review/    # Internal skill review and audit
-├── packages/
-│   ├── agent-kit/           # CLI toolkit (plans, settings, mem)
-│   └── claude-skill-converter/  # Skill format conversion utilities
+│   ├── spec/                # Specification-driven development dispatcher
+│   ├── migrate/             # Context-store initialize/copy/migrate dispatcher
+│   └── ...                  # (aws, docker, python, react, … — see the skills index)
 ├── docs/                    # Public VitePress documentation site
-├── e2e/                     # End-to-end tests
-└── .codevoyant/             # Project metadata (plans.json, worktrees.json, plans/)
+├── scripts/                 # Repo tooling (e.g. changelog sanitizer)
+└── .codevoyant/             # Symlink → ~/.codevoyant/<project-slug>/ (shared across worktrees; gitignored)
 ```
 
 Each unified skill package follows the dispatcher pattern:
 
 ```
 skills/{group}/
-├── SKILL.md              # Dispatcher: parses verb, routes to workflows/{verb}.md
-├── workflows/            # One .md file per subcommand
-│   ├── help.md
-│   └── {verb}.md
+├── SKILL.md              # Dispatcher: parses verb, routes to references/workflows/{verb}.md
+├── references/           # Supporting templates, docs, and workflow files
+│   ├── workflows/        # One .md file per subcommand
+│   │   ├── help.md
+│   │   └── {verb}.md
+│   └── ...               # Templates and reference docs
 ├── agents/               # Agent definitions (if needed)
-└── references/           # Supporting templates and docs
+└── scripts/              # Helper scripts (if needed)
 ```
 
 Skill names use space-separated format (`/dev plan`, `/git commit`) while directories use plain names (`skills/dev/`, `skills/git/`).
@@ -75,22 +69,27 @@ Skill names use space-separated format (`/dev plan`, `/git commit`) while direct
 
 ## Spec Plugin: Multi-Plan Architecture
 
-Plans are stored under `.codevoyant/plans/` with a registry at `.codevoyant/plans.json`:
+The canonical context store lives at `~/.codevoyant/<project-slug>/` (derived from the repo's top-level directory name), and the in-repo `.codevoyant` is a gitignored symlink to it so every git worktree of the project shares one store. Skills reference `.codevoyant/...` transparently and know nothing about this residency; the store and its symlink are created in-place at first touch by the skills that create `.codevoyant/` subdirectories, and the `/migrate` skill initializes/repairs the store, copies existing codevoyant data from user-supplied source location(s) into it, and tracks the store's codevoyant version in `.codevoyant/metadata.json`.
+
+The store holds plain markdown artifacts — there are no JSON registries. Each skill writes into its own subdirectory, and `spec` tracks its plans with a human-readable `README.md` table (not a registry file):
 
 ```
-.codevoyant/
-├── plans.json                       # Plan registry (active + archived)
-├── worktrees.json                   # Worktree registry
-├── settings.json                    # Project settings
-└── plans/
-    ├── {plan-name}/
-    │   ├── plan.md
-    │   ├── implementation/          # Per-phase specs
-    │   │   ├── phase-1.md
-    │   │   └── phase-N.md
-    │   └── execution-log.md
-    └── archive/
-        └── {plan-name}-{YYYYMMDD}/
+.codevoyant/                          # → ~/.codevoyant/<project-slug>/ (symlink)
+├── README.md                         # spec's Active Plans table (Name | Status | … )
+├── metadata.json                     # store's codevoyant version (managed by /migrate)
+├── plans/
+│   └── {plan-name}/
+│       ├── plan.md
+│       ├── intent.md                 # bare-name /spec new scaffold
+│       ├── implementation/           # per-phase specs
+│       └── execution-log.md
+├── explore/                          # research artifacts (dev explore, em plan, pm explore)
+├── prds/                             # product requirement docs (pm prd)
+├── qa/                               # debug reports (qa debug)
+├── usage/                            # responsible-AI usage reports (usage report)
+├── feedback/                         # saved skill feedback (skill feedback)
+├── flows/                            # flow definitions + run instances (flow new / flow go)
+└── worktrees/                        # in-repo git worktrees (never migrated by /migrate)
 ```
 
 ## Distribution

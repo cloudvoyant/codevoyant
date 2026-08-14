@@ -56,7 +56,7 @@ For long or routine tasks, run in the background:
 /spec done my-feature
 ```
 
-Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files. Multiple plans can be active at once.
+Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files. Multiple plans can be active at once. The in-repo `.codevoyant` is a gitignored symlink to the shared per-project store `~/.codevoyant/<project-slug>/`, so plans are visible from every git worktree of the project. Skills use `.codevoyant` transparently — the symlink to `~/.codevoyant/<project-slug>/` is created at first touch. Run the `/migrate` skill to initialize or repair the shared store, copy existing codevoyant data from another location (e.g. an older real `.codevoyant/` directory or another checkout's store) into it, and record the store's codevoyant version in `.codevoyant/metadata.json`.
 
 See the [spec reference](/skills/spec) for all commands.
 
@@ -93,7 +93,7 @@ Flow chains multiple skill invocations into a named pipeline that runs sequentia
 /flow status my-pipeline  # check checklist state
 ```
 
-Pipelines live in `.codevoyant/flows/{name}/flow.md`.
+Pipelines live in `.codevoyant/flows/{name}/flow.md` — under the shared per-project store `~/.codevoyant/<project-slug>/`, which `.codevoyant` symlinks to.
 
 See the [flow reference](/skills/flow) for all commands.
 

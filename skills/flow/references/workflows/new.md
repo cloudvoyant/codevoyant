@@ -37,7 +37,33 @@ If still no steps after prompting, error: "A flow must have at least one step."
 - `slug` = `FLOW_NAME` lowercased, spaces replaced with hyphens
 - **Naming-collision note (documented, not guarded).** Run instances live beside definitions in `.codevoyant/flows/`, named `{flow-slug}-{plan-slug}` (see `references/flow-dir.md` → *Run instance*). A flow definition literally named `{flow-slug}-{plan-slug}` could therefore *in theory* share a directory name with another flow's run instance — but definitions hold `flow.md` while instances hold `progress.md` + a `run.md` whose `slug:` is the flow's own slug, so discovery tells them apart by **content**, never by name (see the discovery filters in `status`/`doctor`). No reserved-name guard is needed here.
 - `FLOW_DIR = {FLOWS_DIR}/{slug}/` (global if `--global`, else local — from Step 0)
-- If `--global`, first `mkdir -p "$HOME/.codevoyant/flows"`.
+- If `--global`, first `mkdir -p "$HOME/.codevoyant/flows"`. (The `--global` path writes to `$HOME/.codevoyant/flows` directly — do **not** wrap it with `cv_init_store`.)
+- If **local** (not `--global`), this is the LOCAL `.codevoyant/flows/...` first-touch, so initialize the shared store first: run `cv_init_store` (defined below) before creating `FLOW_DIR`. `cv_init_store` ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`) before the `mkdir` — otherwise a fresh clone would create `.codevoyant` as a real directory instead of the shared symlink. It is idempotent, never migrates an existing real dir (that is `/migrate`'s job), and computes the identical `<project-slug>` as the `/migrate` skill:
+  ```bash
+  cv_init_store() {
+    local root; root="$(git rev-parse --show-toplevel 2>/dev/null)" || root=""; [ -n "$root" ] || root="$PWD"
+    local link="$root/.codevoyant"
+    [ -L "$link" ] && return 0          # already a symlink → initialized
+    [ -d "$link" ] && return 0          # old real dir → leave it; /migrate copies it in, never here
+    local common name slug
+    common="$(git rev-parse --git-common-dir 2>/dev/null)" || common=""
+    if [ -n "$common" ]; then
+      case "$common" in /*) : ;; *) common="$root/$common" ;; esac
+      name="$(basename "$(cd "$(dirname "$common")" >/dev/null 2>&1 && pwd -P)")"
+    else
+      name="$(basename "$root")"
+    fi
+    slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
+    [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches the /migrate skill
+    local dest="$HOME/.codevoyant/$slug"
+    mkdir -p "$dest"; ln -s "$dest" "$link"
+    local gi="$root/.gitignore"
+    { [ -f "$gi" ] && grep -qxF '.codevoyant' "$gi"; } || \
+      printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
+  }
+  # local scope only:
+  cv_init_store
+  ```
 - If `FLOW_DIR/flow.md` already exists: ask "Flow '{slug}' already exists in {scope}. Replace it or cancel? (replace/cancel)"
   - If cancel: exit without changes.
   - If replace: proceed (overwrite all files).

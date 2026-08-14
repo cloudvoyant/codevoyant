@@ -91,7 +91,32 @@ WAIT FOR USER decision before proceeding.
 
 ## Step 2: Initialize .codevoyant Structure
 
+`cv_init_store` ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`) **before** the first `mkdir` — on a fresh clone this is the first touch, so it must run here or `.codevoyant` would be created as a real directory instead of the shared symlink. It is idempotent, never migrates an existing real dir (that is `/migrate`'s job), and computes the identical `<project-slug>` as the `/migrate` skill so its symlink and `/migrate`'s copy target agree.
+
 ```bash
+cv_init_store() {
+  local root; root="$(git rev-parse --show-toplevel 2>/dev/null)" || root=""; [ -n "$root" ] || root="$PWD"
+  local link="$root/.codevoyant"
+  [ -L "$link" ] && return 0          # already a symlink → initialized
+  [ -d "$link" ] && return 0          # old real dir → leave it; /migrate copies it in, never here
+  local common name slug
+  common="$(git rev-parse --git-common-dir 2>/dev/null)" || common=""
+  if [ -n "$common" ]; then
+    case "$common" in /*) : ;; *) common="$root/$common" ;; esac
+    name="$(basename "$(cd "$(dirname "$common")" >/dev/null 2>&1 && pwd -P)")"
+  else
+    name="$(basename "$root")"
+  fi
+  slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
+  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches the /migrate skill
+  local dest="$HOME/.codevoyant/$slug"
+  mkdir -p "$dest"; ln -s "$dest" "$link"
+  local gi="$root/.gitignore"
+  { [ -f "$gi" ] && grep -qxF '.codevoyant' "$gi"; } || \
+    printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
+}
+
+cv_init_store
 mkdir -p .codevoyant/plans .codevoyant/explore
 if [ ! -f .codevoyant/README.md ]; then
   printf "# Active Plans\n\n| Name | Status | Plugin | Description | Created | Branch |\n|------|--------|--------|-------------|---------|--------|\n" > .codevoyant/README.md
@@ -115,7 +140,7 @@ In **bare-name mode**:
 2. `INTENT_FILE` = `.codevoyant/plans/{PLAN_NAME}/intent.md`.
 3. **If `INTENT_FILE` exists and is filled in** (content beyond the scaffold — the `## Objective` section is non-empty and not a `{…}` placeholder): read it. Set `OBJECTIVE` from `## Objective`; fold Context / Constraints / Out of scope / Open questions into `RESEARCH_CONTEXT`. Continue to **Step 3b** and plan normally (clarify only if something is still unclear). Do not recreate the file.
 4. **Otherwise** (missing, or only the empty scaffold) — scaffold it and **stop**:
-   a. `mkdir -p .codevoyant/plans/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
+   a. Ensure the store is initialized, then create the plan dir: run `cv_init_store` (defined in Step 2) before the `mkdir` so a bare-name `/spec new` reached without Step 2 still gets the shared symlink rather than a real `.codevoyant/`. Then `cv_init_store && mkdir -p .codevoyant/plans/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
    b. Print the clickable path:
       ```
       📝 Tell me what you want built — fill in:
