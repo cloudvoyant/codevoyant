@@ -27,7 +27,6 @@ Two ways to give the objective:
 /spec new --blank                               # empty template, no planning session
 /spec new my-feature --bg                       # create and immediately start background execution
 /spec new my-feature --validate                 # run a validation pass on the plan before finishing
-/spec new my-feature --usage                    # record planner decisions for /usage report
 ```
 
 `--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: `.codevoyant/worktrees/<branch>`; with a path: that path). Both delegate to the shared `/git worktree` routine.
@@ -44,8 +43,6 @@ Spawn an autonomous background agent that reads implementation files, updates pl
 /spec go my-feature --yes               # skip all confirmations
 /spec go my-feature --commit            # allow git commits during execution
 /spec go my-feature --silent            # suppress desktop notification on completion
-/spec go my-feature --usage             # record agent decisions for /usage report
-/spec go my-feature --commit --usage    # commits + usage tracking
 ```
 
 ### guide — interactive walkthrough
@@ -56,7 +53,6 @@ Walk through a plan phase by phase, task by task, with tutorial-style guidance. 
 /spec guide                             # auto-selects most recently updated plan
 /spec guide my-feature                  # guide specific plan
 /spec guide my-feature --phase 2        # start at phase 2
-/spec guide my-feature --usage          # record decisions for /usage report
 ```
 
 Pass `--vim` to inject editor key binding hints at each task step:
@@ -73,7 +69,6 @@ Process inline annotations written directly in plan files, or accept a conversat
 /spec update                            # auto-selects most recently updated plan
 /spec update my-feature                 # apply annotations in specific plan
 /spec update my-feature --bg            # apply in background, notify when done
-/spec update my-feature --usage         # log applied annotations as user decisions
 ```
 
 Two annotation forms, both written as HTML comments so they never collide with real markdown blockquotes: `<!-- > instruction -->` on a standalone line (minor) applies to the block below; `content <!-- >> instruction -->` inline (major) applies to that line only.
@@ -115,10 +110,7 @@ Stop running agents, triage remaining active plans, and optionally export sessio
 ```bash
 /spec clean                             # full session wrap-up across all plans
 /spec clean my-feature                  # clean up a specific plan only
-/spec clean --usage                     # export .codevoyant/ to .ai_usage/ before clearing
 ```
-
-With `--usage` (requires the `usage` skill): prompts whether to zip just `.codevoyant/plans/` or the entire `.codevoyant/` directory, writes a timestamped archive to `.ai_usage/`, then clears the exported content.
 
 ### polish — strip AI verbosity from execution outputs
 
@@ -145,52 +137,3 @@ Write the allow entries needed for `/spec go` to run without permission prompts.
 ```bash
 /spec help                              # list all spec commands with descriptions
 ```
-
-## Usage tracking
-
-Pass `--usage` to any spec command to record decision attribution data for `/usage report`. This requires the `usage` skill to be installed.
-
-When active, the planner and executor log every significant autonomous choice to `architecture.md`'s Decision Log — phasing strategy, architecture decisions, technology selections — making it possible to generate a report that distinguishes user-directed decisions from agent-autonomous ones.
-
-### Example: feature branch session with full tracking
-
-```bash
-# 1. Create plan — planner logs all design choices it makes autonomously
-/spec new auth-refactor --usage
-
-# 2. Review before executing
-/spec review auth-refactor
-
-# 3. Execute — executor logs mid-phase autonomous decisions in real time
-/spec go auth-refactor --commit --usage
-
-# 4. You annotate the plan with inline edits, then apply them
-#    Annotations are logged as [user] decisions
-/spec update auth-refactor --usage
-
-# 5. Generate the usage report
-#    On feature/auth-refactor branch → writes .codevoyant/usage/auth-refactor-2026-06-09.md
-/usage report
-
-# 6. Wrap up — zip session artifacts and clear .codevoyant/
-/spec clean --usage
-```
-
-### Example: mainline work with a named report
-
-```bash
-/spec new fix-login-race
-/spec go fix-login-race --usage
-/usage report login-race-fix   # → .codevoyant/usage/login-race-fix-2026-06-09.md
-/spec clean --usage
-```
-
-### What gets recorded
-
-| Command | What is logged |
-|---------|---------------|
-| `/spec new --usage` | Every significant autonomous planning choice: phasing strategy, architecture, scope decisions |
-| `/spec go --usage` | Autonomous mid-phase choices: implementation decisions the spec left open |
-| `/spec guide --usage` | Same as `go` for guided execution steps |
-| `/spec update --usage` | Every successfully applied `<!-- > -->` annotation — clear evidence of user direction |
-| `/spec clean --usage` | Session artifacts zipped to `.ai_usage/` before clearing |

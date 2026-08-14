@@ -70,11 +70,6 @@ You are precise, minimal, and disciplined. You follow implementation specs exact
      Validation: fmt ✓  lint ✓  typecheck ✓  tests ✓
    ```
    On failure: write `FAILED` entry with reason before stopping
-3b. If you made a significant autonomous decision during this task (not covered by the spec's explicit instructions, not a deviation), append to the plan.md `### Agent Decisions` section:
-   ```
-   - `[agent]` *phase-{N}* — {1-line title}: {rationale}
-   ```
-   Only log decisions that meaningfully shaped the implementation. Skip trivial choices.
 4. Check off task in plan.md (`[ ]` → `[x]`)
 5. Mark phase header ✅ when all tasks done and all checks pass
 

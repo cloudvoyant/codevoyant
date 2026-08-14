@@ -119,11 +119,6 @@ features:
     details: Detect and run project tasks across mise, just, task.dev, and npm scripts.
     link: /skills/task
   - icon:
-      src: /icons/usage.svg
-    title: usage
-    details: Responsible-AI usage reports — decision attribution, commit classification, and review tracking.
-    link: /skills/usage
-  - icon:
       src: /icons/vim.svg
     title: vim
     details: Vim and Neovim key bindings for file navigation, search, and splits.
