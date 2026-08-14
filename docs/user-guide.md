@@ -9,7 +9,7 @@ Skills are slash commands that load focused instructions into your AI agent's co
 - **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, flow, em, pm, ux).
 - **Skills** — discrete operations you invoke directly for a single, well-defined job (pr, qa, skill, task).
 - **Tools** — CLI and platform integrations (git, gh, glab, linear, and others).
-- **Context Skills** — activate automatically when relevant files are detected; no invocation needed (sveltekit, react, tanstack, typescript, python, cpp, docker, mise, gcp, aws, terraform).
+- **Context Skills** — activate automatically when relevant files are detected; no invocation needed (sveltekit, tanstack, typescript, python, mise, terraform).
 
 For the best experience, install the full skill set — several skills compose with each other (`flow save` delegates to `skill new`, `qa report` delegates to `gh` or `glab`, `pr` calls `gh`/`glab` internally). If a required skill is missing when a command runs, you will be told which skill to install and how.
 
@@ -237,9 +237,7 @@ See the [task reference](/skills/task) for all commands.
 
 ## Domains
 
-**Domains** are hyperspecialized skills for technical domains that don't fit neatly into the language or framework categories. Current domains: `compgeo` (computational geometry), `hpc` (high-performance computing), and `mle` (machine learning engineering). All are experimental.
-
-`compgeo` is the first domain skill with full recipe coverage — 11 recipes spanning Python (trimesh, open3d), C++ (CGAL, Embree, OpenVDB), and TypeScript (three.js, threlte) for meshes, voxels, point clouds, SDFs, and real-time visualization. See the [compgeo reference](/skills/compgeo) for the full recipe list.
+**Domains** — the specialized technical domains (`compgeo`, `hpc`, `mle`, `llm`) have moved to the diffwiki knowledgebase (`~/.diffwiki/collections/`). Query them with `diffwiki search query "<phrase>" -c <name>` or `/dw-recall`.
 
 ## Tools
 
@@ -301,12 +299,7 @@ Context skills activate automatically when relevant files are detected — no in
 |---|---|
 | `*.svelte`, `*.svelte.ts` | [sveltekit](/skills/sveltekit) — feature-slice architecture, Svelte 5 runes, shadcn-svelte, auth sessions, remote functions |
 | `@tanstack/` in `package.json` | [tanstack](/skills/tanstack) — Router v1, Query v5, Form, server functions |
-| `*.tsx`, React in `package.json` (non-SvelteKit) | [react](/skills/react) — Zustand, shadcn/ui, Tailwind CSS, React Three Fiber, data fetching |
 | `*.ts`, `tsconfig.json` | [typescript](/skills/typescript) — pnpm workspaces, publishing, Vitest, ESLint flat config, GitLab CI |
 | `pyproject.toml`, `uv.lock` | [python](/skills/python) — uv workspace, MLflow, Ray, Warp GPU, Pydantic, Click |
-| `CMakeLists.txt`, `conanfile.py` | [cpp](/skills/cpp) — CMake, Conan 2, gRPC, code standards, release profiles |
-| `Dockerfile`, `docker-compose.yml` | [docker](/skills/docker) — multi-stage builds, Compose, cross-platform, GCP registry |
 | `mise.toml`, `.mise.toml` | [mise](/skills/mise) — task conventions, tool pinning, language-specific setup |
-| `*.tf`, `GCP_` env vars | [gcp](/skills/gcp) — Cloud Run, Artifact Registry, gcloud auth |
-| `*.tf`, `AWS_` env vars | [aws](/skills/aws) — ECS, Lambda, S3 backend, Ray clusters, Firecracker |
 | `*.tf` (generic) | [terraform](/skills/terraform) — backends, workspaces, variable management |
