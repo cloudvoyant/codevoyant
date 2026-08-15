@@ -1,104 +1,75 @@
 # Language Guide
 
-Rules for writing junior-dev-friendly engineering documentation.
+Rules for writing engineering documentation. For sentence length, tense, voice, and vocabulary, follow the STE ruleset at `references/simple-english/ruleset.md` in pragmatic mode.
 
-## Core Principle
-
-Documentation is for the person joining the team tomorrow with two years of experience.
-Not for the person who built the system. Not for a computer science professor.
-
-## Rules
+## Docs-Specific Rules
 
 ### 1. Define every acronym on first use
 
-Bad: "The app uses OIDC via an M2M flow with RS256 JWT validation."
-Good: "The app uses OpenID Connect (OIDC) — an identity layer on top of OAuth 2.0 — to verify who you are. It validates the JSON Web Token (JWT) using the RS256 algorithm (a public-key signature scheme)."
+Define in parentheses after the first use. Not in a glossary at the bottom.
 
-Define once per document, in parentheses after the first use. Not in a glossary at the bottom — by the time the reader gets there, they're already confused.
+Bad: "The app uses OIDC via an M2M flow."
+Good: "The app uses OpenID Connect (OIDC) via a machine-to-machine (M2M) flow."
 
 ### 2. One idea per sentence
 
-Bad: "The session cookie, which is HttpOnly and therefore inaccessible to JavaScript running in the browser, contains a base64-encoded JSON object that includes the access token, refresh token, and expiry timestamp, and is validated on every request by re-verifying the JWT signature against Kinde's public JWKS endpoint."
+Split compound sentences. Each sentence carries one fact or one instruction.
 
-Good:
-"The session is stored in an HttpOnly cookie — JavaScript running in the browser cannot read it (this prevents XSS attacks from stealing sessions).
-The cookie contains a base64-encoded JSON object with the access token, refresh token, and expiry time.
-The server validates this cookie on every request by checking the JWT signature against Kinde's public key."
+### 3. Use "you" (second person)
 
-### 3. Explain the "why" before the "what"
+The reader is always "you". Not "the developer", "the user", "one", or passive voice.
 
-Bad: "Post text is stored in GCS."
-Good: "Firestore documents have a 1 MB size limit, which long-form posts would easily exceed. Post text is therefore stored in GCS (Google Cloud Storage), with Firestore holding only a path reference."
+### 4. Keep `## Overview` to 3 sentences
 
-### 4. Use "you" (second person) consistently
+1. What is this?
+2. Where does it live?
+3. Why does it exist?
 
-Bad: "The developer must add their email to `infra/shared/main.tf`."
-Good: "Add your email to `infra/shared/main.tf`."
+### 5. Tables for 3+ related properties
 
-The reader is always "you". Never "the developer", "the user", "one", or passive voice.
+Use a table instead of prose for lists of 3 or more related properties, flags, or env vars.
 
-### 5. Keep `## Overview` to 3 sentences max
+### 6. Diagrams replace prose
 
-The overview answers three questions:
-1. What is this? (one sentence)
-2. Where does it live in the codebase? (one sentence)
-3. Why does it exist / what problem does it solve? (one sentence)
+If a numbered list describes a multi-step flow, replace it with a Mermaid diagram (see `references/mermaid-guide.md`). Keep the list only if the diagram is harder to read.
 
-Everything else goes in Design or Implementation.
+### 7. Link, do not duplicate
 
-### 6. Use tables for lists of 3+ related properties
+If another doc already explains it, link to that doc. Do not repeat the content.
 
-Bad:
-"The cookie is set with HttpOnly=true to prevent XSS. It uses Secure=true in production to require HTTPS. SameSite=Lax is set for CSRF protection."
+### 8. Soft-wrap prose
 
-Good:
-| Property | Value | Purpose |
-|----------|-------|---------|
-| HttpOnly | true | Prevents JavaScript from reading the cookie (XSS protection) |
-| Secure | true in prod | Cookie only sent over HTTPS |
-| SameSite | Lax | Prevents CSRF attacks |
+Write each paragraph as one continuous line. Do not insert manual newlines to wrap at a fixed column width. Newlines separate paragraphs, list items, headings, and code fences only.
 
-### 7. Use diagrams to replace, not supplement, prose
+### 9. No impl-detail jargon in Overview and Requirements
 
-If you have a numbered list describing a multi-step flow, replace it with a `sequenceDiagram` or `flowchart`. Keep the numbered list only if the diagram would be harder to read (e.g. a list of 3 simple steps).
+No class names, function names, or file paths in `## Overview`. No TypeScript generics or internal abstractions in `## Requirements`. Save those for `## Design` and `## Implementation`.
 
-The goal is: can a new team member understand the flow in 30 seconds from the diagram alone?
+### 10. Brevity is the point
 
-### 8. Avoid impl-detail jargon in Overview and Requirements
+Docs load into reader (and LLM) context. Verbosity is a defect. If a sentence does not change what the reader does, cut it.
 
-- No class names, function names, or file paths in `## Overview`
-- No TypeScript generics or internal abstractions in `## Requirements`
-- Save those for `## Design` and `## Implementation`
+### 11. References required
 
-### 9. Code blocks for everything executable
+Every doc ends with a `## References` section (or carries inline links throughout) — never neither. References are real, verified sources, not placeholders.
 
-Any command, path, variable value, or snippet that the reader might copy-paste: put it in a code block.
+## Preserve Human Text
 
-Bad: "Run pnpm install then just dev."
-Good: Run `pnpm install` then `just dev`.
-Or:
-```bash
-pnpm install
-just dev
-```
+When updating existing docs, preserve human-authored text. Change only text that is inaccurate or structurally incomplete. Do not rephrase working prose for style.
 
-### 10. Link; don't duplicate
+## Review Checks
 
-If auth.md already explains the session format, link to it — don't repeat it. Use the `## References` section. Duplication creates maintenance debt.
+`review.md` Step 3c runs these checks. They are the executable subset of the rules above plus the vendored STE ruleset (`references/simple-english/ruleset.md`). Each violation is a `LANGUAGE` finding with a minimal rewrite.
 
-### 11. Soft-wrap prose — never hard-wrap
+1. **Acronyms** (rule 1): a known acronym (JWT, OIDC, OAuth, SSR, CDN, GCP, IAM, K8s, CI/CD, …) with no parenthetical definition on first use in the file.
+2. **Second person** (rule 3): "the developer", "the user", "one", or passive voice where "you" is the reader.
+3. **Overview length** (rule 4): `## Overview` with more than 3 sentences.
+4. **Sentence length** (STE 5.1 / 6.3): a sentence over 20 words in a procedural section, or over 25 in a descriptive section. Count quoted text/identifiers as one word (STE 8.6).
+5. **Contractions** (STE self-check): `'ll`, `'re`, `'s` — write out.
+6. **Semicolons** (STE 8.1): write two sentences instead.
+7. **Banned modals** (STE 3): "should", "would", "may", "might", "could" outside code blocks/quoted text. Requirement "should" → "must"; possibility → "can"; hypothetical → restructure.
+8. **Slop vocabulary** (STE slop table): leverage, utilize, ensure, in order to, functionality, enables you to, allows you to, is designed to, aims to, dive into, delve into, robust, powerful, comprehensive, seamlessly, facilitate, streamline, and/or, etc. → the plain replacement from the ruleset.
+9. **Condition-first** (STE 5.4): a sentence where `if`/`when` stands after the command ("Increase the timeout if the network is slow" → "If the network is slow, increase the timeout").
+10. **Procedural imperative** (STE 5.3): in a procedural section, an instruction written as a statement instead of an imperative.
 
-Write each paragraph as a single continuous line. Do not insert manual newlines to wrap prose at a fixed column width — on narrow screens and non-reflowing renderers, hard breaks wrap badly. Let the renderer handle wrapping.
-
-Bad (hard-wrapped at ~80 cols):
-```
-The session is stored in an HttpOnly cookie so JavaScript running in the
-browser cannot read it, which prevents XSS attacks from stealing sessions.
-```
-
-Good (one paragraph, one line):
-```
-The session is stored in an HttpOnly cookie so JavaScript running in the browser cannot read it, which prevents XSS attacks from stealing sessions.
-```
-
-Newlines still separate paragraphs, list items, headings, and code fences — only mid-paragraph line breaks are forbidden.
+For each violation, record `type: LANGUAGE`, `current_text` = the exact offending sentence, `replacement_text` = the minimal rewrite that fixes only that violation, `rationale` = the rule number/name. Never rephrase working prose for style.

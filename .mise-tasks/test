@@ -1,3 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "No tests configured yet"
+
+# Run every test file for code used by skills.
+# Discovered patterns:
+#   skills/**/test_*.py   -> run with python3 (stdlib unittest or direct-run)
+#   skills/**/*_test.py   -> run with python3
+#   skills/**/*.bats      -> run with bats (if present)
+cd "$MISE_PROJECT_ROOT"
+
+found=0
+failed=0
+
+while IFS= read -r t; do
+  found=$((found + 1))
+  echo "→ $t"
+  if ! python3 "$t"; then
+    echo "  FAIL: $t"
+    failed=$((failed + 1))
+  fi
+done < <(
+  find ./skills \
+    \( -name 'test_*.py' -o -name '*_test.py' \) \
+    -not -path '*/node_modules/*' \
+    -not -path '*/__pycache__/*' \
+    | sort
+)
+
+if command -v bats >/dev/null 2>&1; then
+  while IFS= read -r t; do
+    found=$((found + 1))
+    echo "→ $t"
+    if ! bats "$t"; then
+      echo "  FAIL: $t"
+      failed=$((failed + 1))
+    fi
+  done < <(
+    find ./skills \
+      -name '*.bats' \
+      -not -path '*/node_modules/*' \
+      | sort
+  )
+fi
+
+if [ "$found" -eq 0 ]; then
+  echo "No skill tests found."
+  exit 0
+fi
+
+echo ""
+if [ "$failed" -gt 0 ]; then
+  echo "$failed of $found test file(s) failed."
+  exit 1
+fi
+echo "$found test file(s) passed."
