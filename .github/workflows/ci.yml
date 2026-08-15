@@ -17,3 +17,5 @@ jobs:
         run: mise run install
       - name: Validate skills
         run: mise run skills:validate
+      - name: Run skill tests
+        run: mise run test

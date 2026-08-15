@@ -1,109 +1,97 @@
-# new — generate one or more documentation files
+# new — scaffold the docs skeleton (script-driven)
 
-Create doc files from templates. Accepts one or more component names, or special targets `readme` and `architecture`.
+Scan the repo, agree on the doc list, then run `scripts/scaffold.py` once per doc to lay down copy-ready skeletons. `new` does NO authoring — no prose, no code analysis, no template parsing. Each scaffolded doc is a template copy whose fill-in prompts are `<!-- @agent: … -->` markers. To author real content from the codebase, use `/docs retcon`.
 
 ## Variables
 
-- `TARGETS` — space-separated list of target names from REMAINING_ARGS (e.g. `auth storage`)
+- `TARGETS` — space-separated target names from REMAINING_ARGS (empty = scan and scaffold the base structure)
 - `TYPE_FLAG` — value of `--type` if provided, else `""` (auto-detect per target)
-- `DRY_RUN` — true if `--dry-run` present
+- `DRY_RUN` — true if `--dry-run` present (print the manifest, write nothing)
+- `OVERWRITE` — true if `--overwrite` present (pass through to the script)
+- `SKILL` — this skill's directory; the script is `$SKILL/scripts/scaffold.py`
 - `DOCS_DIR` — `docs/` relative to project root
 
-## Step 1: Load reference docs
+## Step 1: Load references
 
-Read before generating any content:
-1. `references/language-guide.md` — apply all 10 rules
-2. `references/mermaid-guide.md` — use prescribed diagram types
+Read `references/structure.md` (the mandated layout, path→template mapping, type detection) before building the manifest. Do NOT read the language/mermaid guides — `new` writes no prose. Do NOT read the templates — the script copies them.
 
-## Step 2: Parse targets
+## Step 2: Build the manifest
 
-If TARGETS is empty:
-- Check for `readme` or `architecture` in REMAINING_ARGS — handle as special targets
-- Otherwise ask (AskUserQuestion): "Which doc(s) do you want to create?" with free-text
+Each manifest entry is `{ out, template, name, path }`.
 
-Special target resolution:
-- `readme` → `$DOCS_DIR/README.md` using `templates/project-readme.md`
-- `architecture` (no component name) → `$DOCS_DIR/architecture/README.md` using `templates/architecture-readme.md`
-- `{name}` → `$DOCS_DIR/architecture/{name}.md` using component templates
+### 2a: No target (`/docs new`) — scan and scaffold the base structure
 
-Build `TARGET_LIST` — array of `{ name, output_path, template_base, type }` objects.
+Base set (always): `README.md` (project-readme), `docs/user-guide.md` (user-guide), `docs/development-guide.md` (development-guide), `docs/architecture/index.md` (architecture).
 
-## Step 3: Detect type (per target)
-
-For each target in TARGET_LIST where `type` is not yet set:
-
-If `--type` was given globally, apply to all targets.
-
-Otherwise, for each target, search the codebase:
+Add `docs/ci.md` (ci) only when the repo has CI or infra config (detect per the candidate globs in `templates/ci.md` frontmatter):
 ```bash
-find . -type d -name "{target}" 2>/dev/null | grep -v node_modules | head -5
+ls .github/workflows/* .github/actions/* .gitlab-ci.yml .circleci/config.yml .travis.yml Jenkinsfile* bitbucket-pipelines.yml azure-pipelines.yml 2>/dev/null | head
+find . \( -path "*/infra/*" -o -path "*/terraform/*" -o -name "*.tf" -o -name "Pulumi.yaml" -o -name "Dockerfile*" -o -name "docker-compose*" \) -not -path "*/node_modules/*" 2>/dev/null | head
 ```
 
-Apply type heuristics:
-| Path pattern | Type |
-|---|---|
-| `libs/*`, `packages/*` | `library` |
-| `apps/*/src/routes/api/*`, `*/api/*` | `api` |
-| `apps/*/src/routes/*` (not api), `libs/ui/*`, `libs/feature-*` | `frontend` |
-| `infra/modules/*`, `terraform/*` | `infra` |
-| Can't determine | ask (AskUserQuestion, 4 options) |
-
-## Step 4: Dry-run report (if --dry-run)
-
-Print:
-```
-Docs to generate:
-
-  docs/README.md                      project-readme template
-  docs/architecture/auth.md           library template  <- auto-detected from libs/auth
-  docs/architecture/storage.md        library template  <- auto-detected from libs/storage
-
-Run without --dry-run to generate.
-```
-Then stop.
-
-## Step 5: Generate docs (parallel when multiple targets)
-
-**Single target:** execute Steps 5a–5c inline.
-
-**Multiple targets (2+):** launch one background Agent per target simultaneously. Each agent receives:
-- The target's `{ name, output_path, type }` object
-- Paths to `references/templates/` and `references/language-guide.md`
-- Instruction to complete Steps 5a–5c and return `{ output_path, todos_count, status }`
-
-Collect all agent results before Step 6.
-
-### Step 5a: Read existing file
-
+**Monorepo detection.** Scan for workspace globs and package roots:
 ```bash
-test -f "{output_path}" && cat "{output_path}" || echo "FILE_NOT_FOUND"
+cat pnpm-workspace.yaml 2>/dev/null
+grep -A20 '"workspaces"' package.json 2>/dev/null
+grep -n "members\|\[workspace\]" Cargo.toml 2>/dev/null
+cat go.work 2>/dev/null
+find . -maxdepth 2 -type d \( -path "./apps/*" -o -path "./packages/*" -o -path "./libs/*" \) -not -path "*/node_modules/*" 2>/dev/null | sort
 ```
-If exists: note present sections — only generate MISSING sections.
-If not found: generate the full template.
+If it is a monorepo, add one component doc per app/lib under `docs/architecture/` — a leaf `docs/architecture/<name>.md`, or `docs/architecture/<name>/index.md` when it has sub-packages (per `references/structure.md`). Detect each component's type in Step 3. A single-package repo gets only the base structure.
 
-### Step 5b: Read templates and fill content
+### 2b: Named targets (`/docs new <name…>`)
 
-1. Read `references/templates/component-base.md` + `references/templates/component-{type}.md`
-2. Scan the component's directory in the codebase to pre-fill: package name, exports, env vars, file structure
-3. Apply all language-guide rules to written prose
-4. Leave `<!-- TODO: ... -->` for anything requiring human judgment
+Resolve each name per `references/structure.md`:
+- `readme` → `README.md`, template `project-readme`, name = project name (vars dict omits `path`)
+- `user-guide` → `$DOCS_DIR/user-guide.md`, template `user-guide`
+- `development-guide` → `$DOCS_DIR/development-guide.md`, template `development-guide`
+- `ci` → `$DOCS_DIR/ci.md`, template `ci`
+- `architecture` → `$DOCS_DIR/architecture/index.md`, template `architecture` (vars dict omits `path`)
+- `{name}` with NO sub-components → `$DOCS_DIR/architecture/{name}.md`, component template
+- `{name}` WITH sub-components → `$DOCS_DIR/architecture/{name}/index.md` plus each child, component template
 
-For `readme` / `architecture` index targets, read the single corresponding template.
+## Step 3: Detect type (per component target)
 
-### Step 5c: Write output file
+If `--type` given, apply it to all component targets. Otherwise locate each target's directory and apply the detection table in `references/structure.md` (the single source — check `auth` first, then `libs/*`/`packages/*` → library, `*/api/*` → api, `apps/*/routes/*` (not api)/`libs/ui/*`/`libs/feature-*` → frontend, infra-ish → generic). If the type is still not clear, ask (AskUserQuestion: api / library / frontend / auth / generic).
 
+The `path` var for a component = its code directory (e.g. `libs/auth`); the script fills the template's `{path}` token so the doc gets `globs: ["libs/auth/**"]`.
+
+## Step 4: Confirm the manifest
+
+Print it:
+```
+Docs to scaffold (skeletons only):
+
+  README.md                           project-readme  (repo root)
+  docs/user-guide.md                  user-guide
+  docs/development-guide.md           development-guide
+  docs/ci.md                          ci              (CI/infra detected)
+  docs/architecture/index.md          architecture
+  docs/architecture/auth.md           auth            <- libs/auth
+  docs/architecture/storage/index.md  library         <- libs/storage (has sub-components)
+
+Run without --dry-run to scaffold.
+```
+If `--dry-run`, stop here. If the layout — or which packages get their own docs — is ambiguous, ask via AskUserQuestion ("Proposed docs — look good, or adjust?": Yes / Edit / Cancel; on Edit, present the list as editable text via Other and re-parse). When the manifest is ambiguous about how the user would describe or name a system component (unclear boundaries, unclear doc naming), ask the user how they would describe it and use their wording as the doc `name`/`path`. If the layout is clear, proceed without asking.
+
+## Step 5: Run the script per doc
+
+For each manifest entry, run the scaffold command from `references/scaffold.md`:
 ```bash
-mkdir -p "$(dirname {output_path})"
-# Write filled template to output_path
+python3 "$SKILL/scripts/scaffold.py" --out {out} --template {template} --vars '{"name": "{name}", "path": "{path}"}' [--overwrite]
 ```
+For an index/top-level doc that has no code path (`readme`, `architecture`), omit `path` from the dict: `--vars '{"name": "{name}"}'`. Pass `--overwrite` when `OVERWRITE` is set. The script creates parent dirs, copies the template, replaces each `{key}` token from the `--vars` dict, and prints `wrote:` (exit 0) or `skip: exists` (exit 3). `new` never reads or parses a template.
 
-## Step 6: Summary
+## Step 6: Report
 
 ```
-Generated {N} doc(s):
+Scaffolded {N} skeleton(s), {M} skipped (already existed):
 
-  {output_path} — {type} template, {N} TODO sections remain
+  {out} — {template} template
   ...
 
-Fill in the TODO sections, then run /docs review to validate.
+Find every prompt:
+  grep -rn "@agent" docs/ README.md
+
+Fill each section in (delete its <!-- @agent: … --> marker when done; markers starting with "(optional)" mark deletable sections), or run /docs retcon to have them authored from the code.
 ```
