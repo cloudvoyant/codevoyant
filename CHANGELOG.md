@@ -1,3 +1,36 @@
+## [1.70.0](https://github.com/cloudvoyant/codevoyant/compare/v1.69.0...v1.70.0) (2026-08-15)
+
+### Features
+
+* **docs:** template-driven docs skill, STE, validate
+
+Adopt Simplified Technical English as the house style and make the docs
+skill's structure fully template-driven.
+
+**Language & structure**
+- Vendor the SimpleEnglish ASD-STE100 ruleset with MIT attribution; the
+  language guide and every template now write to constrained English
+- Add template-contract markers ([components]/[public-api]/optional) so
+  review, update, retcon, and validate derive required sections and
+  diagrams from templates instead of hard-coded names
+- Merge System Diagram + Key Components into one Components heading;
+  rename public API sections to API; trim project-readme to quick start
+
+**Workflows**
+- Add docs validate: code-reading check that globs are valid and
+  comprehensive and that component boundaries hold
+- Add scripts/scope.py for fast diff-to-glob matching; update and review
+  restrict their scope to the branch diff
+- Rework review into a verbatim replacement report consumed by update,
+  with minimal-audit and escalate-to-review fallbacks
+- Rewrite retcon: move existing docs to docs/legacy/, carry their facts
+  forward, and validate every glob against the real code tree
+- Add retcon/update --scaffold structure-only mode
+
+**Tooling**
+- Add scaffold.py and scope.py test suites; wire skill tests into the
+  mise test task and GitHub Actions
+
 ## [1.69.0](https://github.com/cloudvoyant/codevoyant/compare/v1.68.1...v1.69.0) (2026-08-14)
 
 ### Features
