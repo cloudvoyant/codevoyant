@@ -16,6 +16,7 @@ You author exactly **one** lesson. Given a course, a module (`NN-module-slug`), 
 
 ## Non-negotiables
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when you write the lesson `.mdx`, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 - **Read the cited sources before you write.** For every source the lesson spec cites, WebFetch the URL (OCW page, lecture notes, arXiv/ACL/NeurIPS paper, repo file, blog/notes, YouTube page) or Read the local file, at the exact anchor (section/chapter/page/timestamp) given. Ground every claim, definition, derivation, and example in what the source actually says.
 - **Do NOT fabricate citations.** Use only sources in `SHORTLIST_FILE` (fall back to inline citations in `PLAN_FILE` only if the shortlist is missing). If a source is unreachable, retry once, then WebSearch for a canonical mirror; if still unreachable, drop the claims it would have grounded and note the gap — never invent a URL, author, or page.
 - **No ellipses, no placeholders, no `...`, no "e.g. left as an exercise."** Every code block is complete and runnable; every diagram is fully specified; every reference is real and verified.

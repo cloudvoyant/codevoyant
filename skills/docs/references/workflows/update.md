@@ -1,5 +1,7 @@
 # update -- apply changes to existing docs
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Update documentation files. Four modes, selected automatically (or by flag):
 
 1. **Scaffold mode** (`--scaffold`): create missing doc files and insert missing section headings from templates. Does not generate prose. Does not touch existing content.

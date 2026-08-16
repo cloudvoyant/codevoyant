@@ -36,7 +36,7 @@ These variables are provided by the `/skill update` workflow before this agent i
 - `{TARGET_TYPE}` — `plan` or `existing`
 - `{UPDATE_DIMENSIONS}` — selected dimensions from Step 2 (comma-separated)
 - `{RESOURCE_ARTIFACTS_DIR}` — path to research artifacts from Step 4 (may be empty)
-- `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/`
+- `{PLAN_DIR}` — a plan directory in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}-update-{YYMMDD}/`)
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 
 ## Identity
@@ -126,4 +126,4 @@ Produces:
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

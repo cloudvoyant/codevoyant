@@ -2,6 +2,8 @@
 
 Scan the repo, agree on the doc list, then run `scripts/scaffold.py` once per doc to lay down copy-ready skeletons. `new` does NO authoring — no prose, no code analysis, no template parsing. Each scaffolded doc is a template copy whose fill-in prompts are `<!-- @agent: … -->` markers. To author real content from the codebase, use `/docs retcon`.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Variables
 
 - `TARGETS` — space-separated target names from REMAINING_ARGS (empty = scan and scaffold the base structure)

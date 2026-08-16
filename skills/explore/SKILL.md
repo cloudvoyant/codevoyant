@@ -27,6 +27,7 @@ Pass your intent directly on the invocation line — `new` proceeds immediately 
 - **Unknown verb → run `help.md`** — never error silently
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any explore workflow or agent writes a `.md` artifact (proposals, research notes, summaries, comparisons), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+- **Model tiers, never model IDs** — the `explore` agents declare `metadata: model-tier: light|standard|heavy` in frontmatter and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 
 ## Step 0: Parse Arguments
 

@@ -2,6 +2,8 @@
 
 Extract a skill from an artifact in front of you — a local path, a URL, or a PR/MR. The workflow reads the source, identifies discrete operations, and produces a SKILL.md with broken-down workflows and terse recipe steps.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `SKILL.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Variables
 
 Received from dispatcher:

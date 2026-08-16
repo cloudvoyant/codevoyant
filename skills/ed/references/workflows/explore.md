@@ -2,6 +2,8 @@
 
 Build a verified, annotated source catalog for a course. Search the six source classes, verify every online URL, and write a single course-wide catalog that later stages ground themselves in. This workflow does **research and cataloging only** — it never scaffolds the book or writes lessons.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only writes** are `brief.md` (scaffold, if missing) and `explore/sources.md`. If you are about to do anything else, stop.

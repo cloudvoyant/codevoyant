@@ -24,7 +24,7 @@ Report: "Refreshing plan: {plan-name}"
 
 ## Step 2: Read Current Plan
 
-Read `.codevoyant/plans/{plan-name}/plan.md` and analyze:
+Read `.codevoyant/spec/{plan-name}/plan.md` and analyze:
 
 - All phases and their tasks
 - Current completion status (checked vs unchecked tasks)
@@ -33,8 +33,8 @@ Read `.codevoyant/plans/{plan-name}/plan.md` and analyze:
 **Extract Branch Context:**
 
 ```bash
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/spec/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/spec/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ```
 
@@ -52,7 +52,7 @@ If status is inconsistent:
 
 - Add ✅ to phase headers where all tasks are complete
 - Remove ✅ from phase headers where tasks remain incomplete
-- Update `.codevoyant/plans/{plan-name}/plan.md` with corrections
+- Update `.codevoyant/spec/{plan-name}/plan.md` with corrections
 
 ## Step 5: Update Registry and Report
 

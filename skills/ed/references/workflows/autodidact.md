@@ -2,6 +2,8 @@
 
 The full chain. From a single topic, produce a complete graduate-level interactive textbook: brief → explore → plan-syllabus → (per module) plan-module → create-lesson → create-quiz → create-project → course landing page. This workflow **orchestrates** by invoking the other `ed` verbs and the `ed-lesson-author` agent — it does **not** re-implement their logic. Between stages it applies the quality gates and records progress in a state ledger.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 | You are about to… | Correct action |

@@ -12,6 +12,8 @@ Fast key reference for the [Helix](https://helix-editor.com) editor. Pass a natu
 
 Helix is **selection-first**: a motion *moves and selects*, then a verb (`d` `c` `y`) acts on the current selection — the reverse of vim's verb→motion. `g` is the goto prefix, `m` the match/surround prefix, `Space` the leader menu.
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse query
 
 ```bash

@@ -9,6 +9,8 @@ compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Cod
 
 Patterns for writing and maintaining `mise.toml` files based on the mise-lib-template and nv-gcp-template conventions used across projects.
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## When to load recipes
 
 | You are working on... | Load recipe |

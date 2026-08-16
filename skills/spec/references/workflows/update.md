@@ -45,7 +45,7 @@ If both present: process conversational change first, then apply any annotations
 
 If `PLAN_NAME` not provided, follow the same plan selection logic as `refresh.md` Step 1.
 
-Verify `.codevoyant/plans/{plan-name}/plan.md` exists.
+Verify `.codevoyant/spec/{plan-name}/plan.md` exists.
 
 ## Step 2.5: Doc-aware Preflight (--persistent only)
 
@@ -116,8 +116,8 @@ After applying, continue to Step 4.
 Scan all plan files:
 
 ```bash
-grep -rn "<!-- >>" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
-grep -rn "<!-- >" .codevoyant/plans/{plan-name}/plan.md .codevoyant/plans/{plan-name}/implementation/ 2>/dev/null
+grep -rn "<!-- >>" .codevoyant/spec/{plan-name}/plan.md .codevoyant/spec/{plan-name}/implementation/ 2>/dev/null
+grep -rn "<!-- >" .codevoyant/spec/{plan-name}/plan.md .codevoyant/spec/{plan-name}/implementation/ 2>/dev/null
 ```
 
 Apply the `spec-updater` agent (see `agents/spec-updater.md`) to process all annotations.

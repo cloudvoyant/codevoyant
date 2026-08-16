@@ -2,17 +2,17 @@
 
 ## Critical Rules
 
-- Draft plans in `.codevoyant/plans/` remain after promotion — they are the working source of truth
-- Research artifacts from `.codevoyant/explore/{slug}/` and `.codevoyant/plans/{slug}/research/` are copied flat into the promoted plan's research directory
+- Draft plans in `.codevoyant/plan/` remain after promotion — they are the working source of truth
+- Research artifacts from `.codevoyant/explore/{slug}/` and `.codevoyant/plan/{slug}/research/` are copied flat into the promoted plan's research directory
 - Linear sync is always optional and always last
 - Never force-overwrite an existing committed plan without user confirmation
 - Verify plan completeness before promoting
 
 ## Step 0: Parse arguments
 
-If SLUG provided: resolve to `.codevoyant/plans/{SLUG}/plan.md`.
+If SLUG provided: resolve to `.codevoyant/plan/{SLUG}/plan.md`.
 
-If no SLUG, list directories in `.codevoyant/plans/` that contain a `plan.md`, sorted by modification time.
+If no SLUG, list directories in `.codevoyant/plan/` that contain a `plan.md`, sorted by modification time.
 
 ```
 AskUserQuestion:
@@ -23,7 +23,7 @@ AskUserQuestion:
     - label: "I'll specify the slug below"
 ```
 
-Read `plan.md`. Set PLAN_DIR = `.codevoyant/plans/{SLUG}` and PLAN_NAME = slug.
+Read `plan.md`. Set PLAN_DIR = `.codevoyant/plan/{SLUG}` and PLAN_NAME = slug.
 
 ## Step 1: Detect plan level
 

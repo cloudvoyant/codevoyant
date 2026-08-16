@@ -1,6 +1,6 @@
 # linear-initiative-sync
 
-**Model:** claude-sonnet-4-6
+**Model tier:** standard
 **Background:** false
 **Purpose:** Reference documentation for the Linear initiative sync pattern used inline in pm approve Step 5. Not spawned as an agent — kept here for pattern documentation only.
 
@@ -76,4 +76,4 @@ Using `window.location.href` (not the navigate tool's click-through) bypasses th
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

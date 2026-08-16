@@ -21,7 +21,7 @@ Sort by last updated; auto-select the most recently updated active plan. Report:
 ## Step 2: Locate and Read Plan Files
 
 ```
-PLAN_DIR=".codevoyant/plans/{plan-name}"
+PLAN_DIR=".codevoyant/spec/{plan-name}"
 ```
 
 1. Read `{PLAN_DIR}/plan.md`

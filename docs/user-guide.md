@@ -56,7 +56,7 @@ For long or routine tasks, run in the background:
 /spec done my-feature
 ```
 
-Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-phase `implementation/` files. Multiple plans can be active at once. The in-repo `.codevoyant` is a gitignored symlink to the shared per-project store `~/.codevoyant/<project-slug>/`, so plans are visible from every git worktree of the project. Skills use `.codevoyant` transparently — the symlink to `~/.codevoyant/<project-slug>/` is created at first touch. Run the `/migrate` skill to initialize or repair the shared store, copy existing codevoyant data from another location (e.g. an older real `.codevoyant/` directory or another checkout's store) into it, and record the store's codevoyant version in `.codevoyant/metadata.json`.
+Spec plans live in `.codevoyant/spec/{name}/` (plan-created plans in `.codevoyant/plan/{name}/`) with a high-level `plan.md` and per-phase `implementation/` files. Multiple plans can be active at once. Until the v1→v2 store migration runs, a store may still keep legacy drafts under `.codevoyant/plans/{name}/`, which the skills read as a fallback. The in-repo `.codevoyant` is a gitignored symlink to the shared per-project store `~/.codevoyant/<project-slug>/`, so plans are visible from every git worktree of the project. Skills use `.codevoyant` transparently — the symlink to `~/.codevoyant/<project-slug>/` is created at first touch. Run the `/migrate` skill to initialize or repair the shared store, copy existing codevoyant data from another location (e.g. an older real `.codevoyant/` directory or another checkout's store) into it, and record the store's codevoyant version in `.codevoyant/metadata.json`.
 
 See the [spec reference](/skills/spec) for all commands.
 
@@ -80,7 +80,7 @@ Plan covers planning at every level: a single task, a project, an initiative, or
 **Project/initiative planning:**
 
 ```bash
-/plan plan "migrate auth to OAuth2"    # draft plan to .codevoyant/plans/
+/plan plan "migrate auth to OAuth2"    # draft plan to .codevoyant/plan/
 /plan review my-plan                   # review for capacity, risks, and dependency gaps
 /plan approve my-plan --push           # promote to docs/ and push to Linear
 ```

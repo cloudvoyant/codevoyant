@@ -73,7 +73,7 @@ AskUserQuestion:
         - label: "Unknown — research it"
 ```
 
-Then launch 2 Sonnet agents in parallel (both run_in_background: false, model: claude-sonnet-4-6):
+Then launch 2 standard-tier agents in parallel (both run_in_background: false, model-tier: standard):
 
 **Agent A — Market and user research:**
 

@@ -94,9 +94,9 @@ For each selected plan, copy only `plan.md` and `user-guide.md` (skip if either 
 mkdir -p docs/plan/{plan-name}
 
 # Locate the plan files (may be in active path or archive subdirectory)
-PLAN_DIR=".codevoyant/plans/{plan-name}"
+PLAN_DIR=".codevoyant/spec/{plan-name}"
 if [ ! -d "$PLAN_DIR" ]; then
-  PLAN_DIR=$(ls -d .codevoyant/plans/archive/{plan-name}-* 2>/dev/null | tail -1)
+  PLAN_DIR=$(ls -d .codevoyant/spec/archive/{plan-name}-* 2>/dev/null | tail -1)
 fi
 
 [ -f "$PLAN_DIR/plan.md" ] && cp "$PLAN_DIR/plan.md" "docs/plan/{plan-name}/plan.md"
@@ -126,7 +126,7 @@ options:
 ```bash
 sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Cancelled |/" .codevoyant/README.md
 ```
-Move the plan directory to `.codevoyant/plans/archive/{plan-name}-{YYYYMMDD}/`
+Move the plan directory to `.codevoyant/spec/archive/{plan-name}-{YYYYMMDD}/`
 
 **Skip** → continue to next plan
 

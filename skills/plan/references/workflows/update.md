@@ -35,12 +35,12 @@ If `BG_MODE=true`: skip the confirmation in Step 1 and send a desktop notificati
 ## Step 0: Select Plan
 
 Check for plan slug argument. If not provided:
-1. List `.codevoyant/plans/*/plan.md` sorted by modification time (most recent first)
+1. List `.codevoyant/plan/*/plan.md` sorted by modification time (most recent first)
 2. If only one plan, auto-select it
 3. If multiple, use AskUserQuestion to present the list and ask the user to choose
 4. If none exist, inform user to run `/plan plan` first
 
-Verify `.codevoyant/plans/{slug}/plan.md` exists. Set `PLAN_DIR=".codevoyant/plans/{slug}"`.
+Verify `.codevoyant/plan/{slug}/plan.md` exists. Set `PLAN_DIR=".codevoyant/plan/{slug}"`.
 
 ## Step 0.5: Determine Input Mode
 
@@ -142,7 +142,7 @@ After all changes:
 
 Run 2 validation rounds autonomously — no user prompts.
 
-For each round, launch parallel agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+For each round, launch parallel agents (`model-tier: light`, `run_in_background: true`):
 
 **Plan-level agent** -- checks `plan.md`: milestones have objectives/deliverables/risks, assumptions listed.
 

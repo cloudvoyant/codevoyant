@@ -2,6 +2,8 @@
 
 Execute all pending (unchecked) steps of a named flow sequentially. Each step runs as a blocking foreground subagent. Parameters (`{{placeholders}}`) are resolved from user input before running, and each step's key outputs are threaded forward into later steps as **flow context**. After each step completes, mark it `[x]` in `flow.md` before proceeding.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Steps run **non-interactively** — a subagent cannot prompt the user. When a step genuinely needs an answer it can't derive, it returns a `NEEDS_INPUT:` line and this orchestrator (on the main thread) asks the user and re-runs the step. This is how interactive skills chained in a flow still reach the human.
 
 ## Step 0: Parse arguments

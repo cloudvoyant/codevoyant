@@ -16,7 +16,7 @@ Set `ROADMAP_FILE`. Read the file. Parse flags: `--silent`.
 
 ## Step 1: Run parallel review agents
 
-Launch 3 review agents (model: claude-haiku-4-5-20251001, run_in_background: true) in a single message:
+Launch 3 review agents (model-tier: light, run_in_background: true) in a single message:
 
 - **Agent R1 — Prioritization**: Does the ordering across capability tiers reflect the stated strategic goal? Are any must-have outcomes deferred to Tier 2/3?
 - **Agent R2 — Capability quality**: For each capability in each tier, check:

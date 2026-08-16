@@ -32,7 +32,7 @@ When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKIL
 
 ## Inline Usage
 
-`/spec new` accepts **either** an inline objective (plans immediately, no opening question) **or** a bare plan name (scaffolds `.codevoyant/plans/{name}/intent.md` for you to fill in, then plans on re-run).
+`/spec new` accepts **either** an inline objective (plans immediately, no opening question) **or** a bare plan name (scaffolds `.codevoyant/spec/{name}/intent.md` for you to fill in, then plans on re-run).
 
 ```
 /spec new add OAuth login to the settings page   # inline objective → plans now
@@ -54,6 +54,7 @@ When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKIL
 - **Coding agents always receive a workflow checklist** — see `references/workflow-checklist.md`
 - **Model tiers, never model IDs** — agents declare `metadata: model-tier: light|standard|heavy` and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any spec workflow or agent writes a `.md` artifact (plan.md, phase files, user-guide.md, PR body, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+- **Plan store: `.codevoyant/spec/` with `.codevoyant/plans/` fallback** — new drafts are written under `.codevoyant/spec/{plan-name}/`. When reading existing drafts, resolve the store root as `.codevoyant/spec` if it exists, else `.codevoyant/plans` (a store not yet v2-migrated still keeps its drafts under `.codevoyant/plans/`). The v1→v2 store migration (`skills/migrate/references/migrate-v1-to-v2.minor.md`) relocates legacy drafts on run.
 - See `references/workflows/` for per-verb behaviour; see `references/` for all templates
 
 ## Step 0: Parse Arguments

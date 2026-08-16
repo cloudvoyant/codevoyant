@@ -2,9 +2,11 @@
 
 Review an engineering roadmap or epic plan for capacity realism, dependency gaps, missing risks, and phasing quality.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse Args
 
-Accept either a plan dir path (`.codevoyant/plans/{slug}`) or default to the most recently modified plan dir under `.codevoyant/plans/`.
+Accept either a plan dir path (`.codevoyant/plan/{slug}`) or default to the most recently modified plan dir under `.codevoyant/plan/`.
 
 Extract `--silent` flag.
 
@@ -21,7 +23,7 @@ Note the team size, time horizon, and total estimated effort from the roadmap.
 
 ## Step 2: Parallel Review Checks
 
-Run four review agents in parallel (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+Run four review agents in parallel (`model-tier: light`, `run_in_background: true`):
 
 ### Agent R1 — Capacity & Failure Modes
 

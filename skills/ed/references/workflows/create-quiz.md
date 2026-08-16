@@ -2,6 +2,8 @@
 
 Author a graduate-level module quiz as diffbook MDX at `{BOOK_DIR}/{NN-module-slug}/quiz.mdx`, using the diffbook `<Quiz>` group with `SingleChoiceQuestion` / `MultipleChoiceQuestion` / `NumericQuestion` items. Questions are Bloom-distributed for the module's syllabus position and must pass the quiz quality gate.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only output** is `quiz.mdx` for one module. If you are about to do anything else, stop.

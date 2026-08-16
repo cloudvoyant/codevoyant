@@ -2,6 +2,8 @@
 
 From the brief and the vetted source catalog, produce a dependency-ordered syllabus: each module has a goal, expected outcome, Bloom-tagged objectives, concept coverage, prerequisites, ≥1 primary text source, and a mini-project idea. Passes a scored gate before it is written. This workflow **only writes `syllabus.md`** — it does not read full texts (that is `plan-module`) or author any lesson.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only write** is `syllabus.md`. If you are about to do anything else, stop.

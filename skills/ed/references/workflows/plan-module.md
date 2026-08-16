@@ -2,6 +2,8 @@
 
 `plan-module <course> <module>` reads the **actual identified text sources** for a single module and turns them into a concrete lesson-level plan: lessons, per-lesson sections (each naming its cited source), Bloom-tagged learning goals, example Q&As, a quiz plan, and visualization specs naming specific diffbook components. The mandatory act here is **reading the real sources** — the outline is derived from what those sources actually contain, never invented.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only outputs** are the module plan and its source shortlist. If you are about to do anything else, stop.

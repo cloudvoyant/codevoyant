@@ -1,15 +1,15 @@
 ---
 name: plan
-description: 'Planning at every level: a single task, a project, an initiative, or a whole product. Drafts plans to .codevoyant/plans/, promotes them to docs/, and syncs to Linear (issues for task/architecture-level plans, milestones for project/initiative plans). Triggers on: "plan plan", "plan approve", "plan review", "plan update", "plan allow", "plan help", "plan an epic", "project planning", "initiative planning", "task planning", "architecture plan", "engineering roadmap", "eng plan".'
+description: 'Planning at every level: a single task, a project, an initiative, or a whole product. Drafts plans to .codevoyant/plan/, promotes them to docs/, and syncs to Linear (issues for task/architecture-level plans, milestones for project/initiative plans). Triggers on: "plan plan", "plan approve", "plan review", "plan update", "plan allow", "plan help", "plan an epic", "project planning", "initiative planning", "task planning", "architecture plan", "engineering roadmap", "eng plan".'
 license: MIT
 compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Codex. No platform-specific features used.
 ---
 
 # plan
 
-Planning skill dispatcher (renamed from `em`). Covers planning at the level of multiple tasks, projects, initiatives, or products — JIRA's issues, tasks, stories, and epics. Drafts land in `.codevoyant/plans/{slug}/`; approval promotes them to docs and optionally syncs to Linear.
+Planning skill dispatcher (renamed from `em`). Covers planning at the level of multiple tasks, projects, initiatives, or products — JIRA's issues, tasks, stories, and epics. Drafts land in `.codevoyant/plan/{slug}/`; approval promotes them to docs and optionally syncs to Linear.
 
-> **Location note:** this skill lives at `skills/plan/` and is invoked as `/plan`. Drafts land in `.codevoyant/plans/` (backward-compatible with the em store) until a migration MR moves spec plans to `.codevoyant/spec` and plan plans to `.codevoyant/plan`.
+> **Location note:** this skill lives at `skills/plan/` and is invoked as `/plan`. Drafts land in `.codevoyant/plan/{slug}/` (the v2 per-skill store; inherited from the `em` skill). The v1→v2 store migration (`skills/migrate/references/migrate-v1-to-v2.minor.md`) relocates legacy drafts from `.codevoyant/plans/` on run; until a store is migrated, reads fall back to `.codevoyant/plans/`.
 
 ## Inline Usage
 
@@ -29,6 +29,8 @@ Pass your intent directly on the invocation line — `plan` proceeds immediately
 - **Unknown verb → run `help.md`** — never error silently
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any plan workflow or agent writes a `.md` artifact (plans, roadmaps, research notes), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+- **Plan store: `.codevoyant/plan/` with `.codevoyant/plans/` fallback** — new drafts are written under `.codevoyant/plan/{slug}/`. When reading existing drafts, resolve the store root as `.codevoyant/plan` if it exists, else `.codevoyant/plans` (a store not yet v2-migrated still keeps its drafts under `.codevoyant/plans/`). The v1→v2 store migration (`skills/migrate/references/migrate-v1-to-v2.minor.md`) relocates legacy drafts on run.
+- **Model tiers, never model IDs** — the `plan` agents declare `**Model tier:** light|standard|heavy` and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 
 ## Step 0: Parse Arguments
 

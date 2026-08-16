@@ -15,6 +15,7 @@ Show the current project version and predicted next version using semantic-relea
 - **Read-only** — only run dry-run modes; never trigger an actual release
 - **Always fall back** — if neither tool is installed, use git tags + conventional commits
 - **One answer** — print current version and next version, then stop
+- **Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
 ## Step 0: Detect config and tool
 

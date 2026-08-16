@@ -2,6 +2,8 @@
 
 Evaluate Markdown files in docs/ against the docs skill's template standards and the simple-English language guide. Read-only -- no doc files are modified. Produces a terminal gap report AND a written replacement report at `.codevoyant/review/{slug}/docs-review.md`.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 **Preserve human text.** The review proposes replacements only for text that is inaccurate or violates a structural/language requirement. It does not rephrase working prose for style.
 
 **Template-driven.** Required sections, diagrams, the public API section, and the Components section are all derived from the resolved template via `references/template-contract.md` — never hard-coded. Editing a template changes what review requires.

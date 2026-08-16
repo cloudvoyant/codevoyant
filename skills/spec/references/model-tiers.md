@@ -29,4 +29,4 @@ Tiers are relative weights; the platform maps them to concrete models.
 
 ## Keep in sync
 
-This file is vendored per published skill package (`spec`, `pr`, `skill`), so it lives in three places. Edit all copies together: `skills/spec/references/model-tiers.md`, `skills/pr/references/model-tiers.md`, `skills/skill/references/model-tiers.md`.
+This file is mirrored per published skill package (`spec`, `pr`, `skill`, `plan`, `pm`, `explore`), so it lives in six places. Edit all copies together, keeping each skill's usage examples local.

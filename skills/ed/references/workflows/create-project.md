@@ -2,6 +2,8 @@
 
 Author a graduate-level module **project + solution guide** as diffbook MDX at `{BOOK_DIR}/{NN-module-slug}/project.mdx`. The project must be **adapted from a REAL, sourced assignment** (an MIT OCW problem set, another course's assignment, or a course-repo task) drawn from the module's vetted sources — located, cited, and never fabricated.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only output** is `project.mdx` for one module. If you are about to do anything else, stop.

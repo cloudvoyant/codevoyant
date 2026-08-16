@@ -12,6 +12,8 @@ Fast key reference for the [Zellij](https://zellij.dev) terminal multiplexer (**
 
 Zellij is **modal**: from Normal mode press `Ctrl-<key>` to enter a mode, then single keys act within it. `Enter` or `Esc` returns to Normal; `Ctrl-g` toggles Locked (passthrough). `Ctrl-<key> then n` means enter the mode first; `Alt-*` bindings work directly from Normal.
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse query
 
 ```bash

@@ -10,6 +10,8 @@ argument-hint: '[query]'
 
 Quick key reference for Vim/Neovim. Pass any natural-language query and get the relevant bindings. No query → 8-key spec workflow quick-ref.
 
+**Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse query
 
 ```bash

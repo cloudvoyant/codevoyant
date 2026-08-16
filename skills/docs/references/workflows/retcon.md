@@ -2,6 +2,8 @@
 
 retcon reads the code and writes the full mandated documentation. It fills every section of every resolved template with real prose, diagrams, and tables. It is the only docs command that produces real content. To lay down empty skeletons and stop, use `/docs new` (or `/docs retcon --scaffold` to scaffold the full tree retcon would author, without authoring content).
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 retcon scaffolds the same way `new` does. It runs `scripts/scaffold.py` to lay each skeleton. Then it reads each component's code and replaces every `<!-- @agent: … -->` marker with real content. retcon reads code. It never parses templates itself.
 
 ## Variables

@@ -2,6 +2,8 @@
 
 `create-lesson <course> <module> [lesson]` turns a module's `plan.md` into published, graduate-level, Feynman-style diffbook lessons. It resolves (and if needed scaffolds) the diffbook book, ensures the module's chapter directory and overview exist, then delegates the actual authoring of each `.mdx` to the **ed-lesson-author** agent. It never invents sources — it hands the agent the module's vetted source shortlist.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow writes **only** into the diffbook book (`{BOOK_DIR}/{NN-module-slug}/…`) and that chapter's `references.md`. If you are about to do anything else, stop.

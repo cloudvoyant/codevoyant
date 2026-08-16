@@ -1,6 +1,6 @@
 # internal-researcher
 
-**Model:** claude-sonnet-4-6
+**Model tier:** standard
 **Background:** true
 **Purpose:** Scans the project's existing research, plans, and PRDs for prior art relevant to the topic. Saves findings to `.codevoyant/explore/{SLUG}/research/internal.md`.
 
@@ -14,7 +14,7 @@ Your job is to find all existing internal context relevant to this topic — pre
 
 1. Scan for existing research artifacts:
    - List all files in `.codevoyant/research/` — note any that touch this topic
-   - List all files in `.codevoyant/plans/` — note any relevant plans
+   - List all files in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` — note any relevant plans
 
 2. Scan for product documentation:
    - Check `docs/product/`, `docs/prd/`, `docs/roadmap/` if they exist
@@ -66,4 +66,4 @@ Saves to: `.codevoyant/explore/{SLUG}/research/internal.md`
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

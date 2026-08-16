@@ -2,6 +2,8 @@
 
 Turn a saved flow into a reusable composite skill by scaffolding it with `/skill new`.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `SKILL.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse arguments
 
 ```

@@ -16,6 +16,26 @@ This is an agent-driven skill: you (the agent) run the bash below and apply the 
 - **The slug must match `cv_init_store`.** The slug computation in Step 1 is byte-identical to the inline `cv_init_store` used by the other skills so the symlink target agrees.
 - **Migrations are non-destructive.** Each migration file keeps its own "never clobber / never touch worktrees / union the registry" rules; the dispatcher only selects and orders them.
 - **Version compare is numeric, not string.** Versions are compared as integer tuples (`1.10.0 > 1.9.0`), never as plain strings.
+- **Apply in ascending numeric order, never string order.** Selected migrations are applied in strictly ascending numeric `<to>`-tuple order — the exact order `select_migrations.py` prints them (`migrate-v9-to-v10.md` sorts before `migrate-v10-to-v11.md` by version, not lexicographically).
+- **Confirmation gate before applying.** The dispatcher lists every selected migration (filename + `<from>` → `<to>`) and asks the author for confirmation before applying anything. `--yes` / `-y` (or `MIGRATE_YES=1`) skips the prompt for unattended runs. A declined confirmation aborts before any store change and no version is recorded.
+- **Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
+## Step 0: Parse invocation flags
+
+`/migrate` accepts `--yes` / `-y` to skip the confirmation prompt for unattended runs; `MIGRATE_YES=1` in the environment does the same. Capture the invocation arguments you received (the args after `/migrate`) into `INVOKE_ARGS` as a single space-separated string (empty if none), then parse:
+
+```bash
+INVOKE_ARGS="${INVOKE_ARGS:-$*}"     # set from the /migrate invocation args
+ASSUME_YES=0
+case " $INVOKE_ARGS " in
+  *" --yes "*) ASSUME_YES=1 ;;
+  *" -y "*) ASSUME_YES=1 ;;
+esac
+[ "${MIGRATE_YES:-0}" = "1" ] && ASSUME_YES=1
+echo "assume_yes=$ASSUME_YES"
+```
+
+`ASSUME_YES` is `1` when `--yes`/`-y` was passed or `MIGRATE_YES=1` is set; otherwise `0` (the default — always confirm before applying).
 
 ## Step 1: Ensure the store + symlink exist
 
@@ -119,73 +139,47 @@ Migration files are flat, directly under `skills/migrate/references/`, named `mi
 
 ### 2d. Enumerate, parse, select, order
 
+Selection and ordering live in `scripts/select_migrations.py` — a single, unit-tested source of truth. It enumerates the flat migration files under the references dir, parses the authoritative `<from>`/`<to>` tags from each file body, selects every migration whose `<to>` lower bound is `> recorded` and `<= current` (numeric tuple compare), and prints them one per line in **strictly ascending numeric `<to>`-tuple order** (never string order — `migrate-v9-to-v10.md` sorts before `migrate-v10-to-v11.md` by version, not lexicographically).
+
 ```bash
 SKILL_REF_DIR="$(dirname "$0")/references"     # if $0 is unavailable, use the migrate skill's references/ dir
 # Locate the references dir robustly: this SKILL.md lives at skills/migrate/SKILL.md.
 [ -d "$SKILL_REF_DIR" ] || SKILL_REF_DIR="$ROOT/skills/migrate/references"
+SKILL_SCRIPTS="$(dirname "$SKILL_REF_DIR")/scripts"   # skills/migrate/scripts
+[ -d "$SKILL_SCRIPTS" ] || SKILL_SCRIPTS="$ROOT/skills/migrate/scripts"
 
-SELECTED="$(python3 - "$SKILL_REF_DIR" "$RECORDED" "$CURRENT" <<'PY'
-import os, re, sys
-ref_dir, recorded, current = sys.argv[1], sys.argv[2], sys.argv[3]
-MAX = 999999
-
-def parse_ver(s):
-    # Degrade gracefully: a malformed/hand-edited version (e.g. "1.x",
-    # "1.67.2-rc1") falls back to the v0 baseline instead of throwing.
-    try:
-        return tuple(int(x) for x in s.split("."))
-    except (ValueError, AttributeError):
-        return (0, 0, 0)
-
-def bounds(sel):
-    # sel like "v0", "v1", "v1.minor", "v1.x", "v1.67", "v1.67.2"
-    sel = sel.strip().lstrip("v")
-    parts = sel.split(".")
-    nums = []
-    for p in parts:
-        if re.fullmatch(r"\d+", p):
-            nums.append(int(p))
-        else:
-            break   # "minor"/"x" and anything non-numeric → open from here
-    if len(nums) == 1:      # major only
-        lo = (nums[0], 0, 0); hi = (nums[0], MAX, MAX)
-    elif len(nums) == 2:    # major.minor
-        lo = (nums[0], nums[1], 0); hi = (nums[0], nums[1], MAX)
-    elif len(nums) >= 3:    # exact
-        lo = (nums[0], nums[1], nums[2]); hi = lo
-    else:                   # no leading number → treat as base
-        lo = (0, 0, 0); hi = (0, MAX, MAX)
-    return lo, hi
-
-rec = parse_ver(recorded)
-cur = parse_ver(current)
-tag_re = re.compile(r"<(from|to)>\s*(.*?)\s*</\1>", re.S)
-picks = []
-for fn in os.listdir(ref_dir):
-    if not (fn.startswith("migrate-v") and fn.endswith(".md")):
-        continue
-    with open(os.path.join(ref_dir, fn)) as f:
-        text = f.read()
-    # First-match-wins: the authoritative tag is the first occurrence; any later
-    # repetition in prose (e.g. the "## Selector" section) can't override it.
-    tags = {}
-    for m in tag_re.finditer(text):
-        tags.setdefault(m.group(1), m.group(2))
-    if "from" not in tags or "to" not in tags:
-        continue
-    to_lo, _ = bounds(tags["to"])
-    # Selected when the migration's target series has been ENTERED: its <to> lower bound is
-    # newer than the recorded version and at/below the current version. Keying on the lower
-    # bound lets an open series selector (e.g. v1.minor, upper bound (1,MAX,MAX)) fire once
-    # current reaches the v1 series, rather than never.
-    if to_lo > rec and to_lo <= cur:
-        picks.append((to_lo, fn))
-picks.sort()
-for _, fn in picks:
-    print(fn)
-PY
-)"
+SELECTED="$(python3 "$SKILL_SCRIPTS/select_migrations.py" "$SKILL_REF_DIR" "$RECORDED" "$CURRENT")"
 echo "selected migrations:"; printf '%s\n' "$SELECTED"
+```
+
+## Step 2.5: Confirmation gate — show the plan, get approval before applying
+
+Before touching the store, present the author exactly what will run and get explicit confirmation. Selected migrations are applied in the order printed (ascending numeric `<to>` tuple — see Step 2d); never reorder them as strings.
+
+For each selected migration, print `filename  (<from> → <to>)`, using the authoritative tags parsed from the file body. If `SELECTED` is empty, print "no migrations to apply — nothing to confirm" and proceed to Step 3 without asking.
+
+```bash
+if [ -n "$SELECTED" ]; then
+  echo "Migrations selected (in apply order):"
+  while IFS= read -r fn; do
+    frm="$(grep -o '<from>[^<]*</from>' "$SKILL_REF_DIR/$fn" | head -n1 | sed 's/<from>//;s/<\/from>//')"
+    to="$(grep -o '<to>[^<]*</to>' "$SKILL_REF_DIR/$fn" | head -n1 | sed 's/<to>//;s/<\/to>//')"
+    printf '  %s  (%s → %s)\n' "$fn" "$frm" "$to"
+  done <<< "$SELECTED"
+fi
+```
+
+Then, unless `ASSUME_YES=1` (set in Step 0 by `--yes`/`-y` on the invocation or `MIGRATE_YES=1` in the environment), ask the author: "Apply the N migration(s) above? (yes/no)". If the author declines, stop here — do **not** apply any migration and do **not** record a new version. If accepted (or `ASSUME_YES=1`), proceed to Step 3.
+
+```bash
+if [ "$ASSUME_YES" != "1" ]; then
+  printf 'Apply the %s migration(s) above? (yes/no) ' "$(wc -l <<<"$SELECTED" | tr -d ' ')"
+  CONFIRM=""; read -r CONFIRM || CONFIRM=""
+  case "$CONFIRM" in
+    y|Y|yes|YES) : ;;
+    *) echo "Declined — aborting before any store change."; exit 1 ;;
+  esac
+fi
 ```
 
 ## Step 3: Apply the selected migrations, record the version, report
