@@ -52,3 +52,24 @@ The checklist provides:
 - **spec-planner**: 12 items (steps 0–12)
 
 Keep checklists concise — if a step expands, move the detail to the step body, not the checklist item.
+
+## Doc-aware mode (`--persistent`)
+
+When a plan carries a `Doc Globs:` metadata line, agents additionally track (in doc-aware mode only):
+
+Executor:
+```
+- [ ] 3b. Confirm every Write/Edit target stays inside the phase's `## Doc Scope` globs (check via scripts/scope.py); log any permitted crossing as a DEVIATION
+```
+
+Planner:
+```
+- [ ] 8b. Doc-aware scoping: emit a `## Doc Scope` block per phase (write globs + boundary callouts), compute the `Doc Globs:` metadata union, and mark boundary crossings in the Decision Log with `[boundary]`
+```
+
+Updater:
+```
+- [ ] 4b. Doc-aware: preserve `## Doc Scope` blocks and keep the `Doc Globs:` metadata union in sync; verify rewrite targets against the globs
+```
+
+The doc-aware rules live in `references/doc-aware.md`. The **executor** enforces Rules 3–4 and logs Rule 6 deviations; the **planner** produces the Rule 3 scoping and Rule 6 boundary callouts while drafting; the **updater** preserves that scoping while applying plan updates. The executor checklist length becomes 11 items (steps 0–11) in doc-aware mode; planner and updater each gain one item.

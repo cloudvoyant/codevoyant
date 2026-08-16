@@ -42,7 +42,8 @@ Each entry is `{ name, path, type }` — resolve `type` with `references/structu
 
 For every doc under `TARGET_PATH` plus the repo-root `README.md`:
 - Read the leading frontmatter and extract `globs:` and `index:` (per `coverage-and-api.md` Step A).
-- Resolve each doc's template (Step 2 of `review.md`) and read its `[public-api]`-marked heading from the template (`template-contract.md`).
+- A doc with `exclude: true` in its frontmatter is **unmanaged** — skip it entirely for Steps 3a/3b (no glob-validity check, not an owner, not part of structure). It never produces a finding.
+- Resolve each managed doc's template (Step 2 of `review.md`) and read its `[public-api]`-marked heading from the template (`template-contract.md`).
 
 ## Step 3: Check each glob is valid and comprehensive
 
@@ -60,7 +61,7 @@ printf '%s\n' "$ALL_PATHS" | python3 "$SKILL/scripts/scope.py" --globs '<glob>' 
 
 ### 3b. Comprehensiveness — every discovered component is owned
 
-For each `COMPONENTS` entry, check that some non-index doc's globs cover its `path` (use `scope.py`). A discovered component with no owning doc is a documentation gap:
+For each `COMPONENTS` entry, check that some non-index, non-excluded doc's globs cover its `path` (use `scope.py`). A discovered component with no owning doc is a documentation gap:
 - `type: COVERAGE`, message `Component {name} ({path}, {type}) has no owning doc`, `replacement_text`: the scaffold command for that component (`python3 "$SKILL/scripts/scaffold.py" --out docs/architecture/{name}.md --template {type} --vars '{"name": "{name}", "path": "{path}"}'`), `rationale`: "validate Step 3b: every component needs a doc that owns its path."
 
 If the repo has CI or infra config (Step 1) but no `docs/ci.md`, flag it (present-if-applicable, per `references/structure.md`).

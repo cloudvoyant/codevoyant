@@ -33,7 +33,10 @@ Parse plan metadata:
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
 PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+DOC_GLOBS=$(grep "^- \*\*Doc Globs\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Doc Globs\*\*: //' | sed 's/ *$//')
 ```
+
+`DOC_GLOBS` is empty for non-doc-aware plans (no `Doc Globs:` line) — executors then run in their normal mode. When non-empty, each executor is spawned with doc-aware enforcement (see `references/doc-aware.md` Rules 3–4). The union is only the doc-aware activation signal; each executor enforces its own phase's write globs (extracted in Step 6).
 
 - **Worktree exists** → set `EXECUTION_DIR=$PLAN_WORKTREE`, report and continue
 - **Worktree specified but missing** → if `AUTO_APPROVE`, create it automatically; otherwise use AskUserQuestion (create / execute here anyway / cancel)
@@ -81,7 +84,14 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 
 **Orchestration loop** — starting at Phase 1, process phases in dependency order:
 
-1. **Batch independent phases.** Group the next set of phases that have no dependency on any unfinished phase. Spawn one `spec-executor` agent per phase in the batch **in a single message** (parallel), each on the tier declared in `agents/spec-executor.md` frontmatter (`metadata: model-tier: light`), with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, and `PLAN_NAME` substituted into the prompt. A batch of one is just a single spawn.
+1. **Batch independent phases.** Group the next set of phases that have no dependency on any unfinished phase. For each phase, extract its own write globs from the phase's `## Doc Scope` block (per-phase enforcement — the union in plan metadata is only the doc-aware activation signal):
+
+   ```bash
+   # N = the phase index; empty result = phase has no Doc Scope / non-doc-aware plan
+   PHASE_GLOBS=$(grep -m1 '^\*\*Write globs:\*\*' .codevoyant/plans/{plan-name}/implementation/phase-$N.md 2>/dev/null | grep -oE '\`[^`]+\`' | tr -d '`' | tr '\n' ' ')
+   ```
+
+   Spawn one `spec-executor` agent per phase in the batch **in a single message** (parallel), each on the tier declared in `agents/spec-executor.md` frontmatter (`metadata: model-tier: light`), with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, `PLAN_NAME`, `SPEC_SKILL` (the spec skill package root — exported by `SKILL.md`, fall back to `$HOME/.claude/skills/spec`), `DOC_GLOBS` (the plan-wide union, empty = normal mode), and `PHASE_GLOBS` (that phase's own write globs) substituted into the prompt. A batch of one is just a single spawn.
 2. Wait for the batch to finish (`TaskOutput` block=true for each).
 3. Write each phase summary to execution-log.md.
 4. **Escalation on trouble (code-strength walls only).** If an executor's report ends with an `ESCALATE:` line, re-spawn *that* phase on the next tier — `light` → `standard` → `heavy`. Log each escalation to execution-log.md as `[ESCALATE] Phase {N}: {tier} — {reason}`. Only after a heavy-tier attempt also fails do you treat the phase as failed. Do NOT re-spawn a phase reported `FAILED` for a red CI — a red CI stops execution; escalation is for code-strength walls, not a red CI (see `agent-prompt.md`).
