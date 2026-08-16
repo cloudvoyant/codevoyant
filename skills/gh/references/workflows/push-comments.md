@@ -43,7 +43,6 @@ Batch all comments into one review object via `gh api`:
 ```bash
 gh api "repos/${OWNER}/${NAME}/pulls/${PR_NUMBER}/reviews" \
   --method POST \
-  --field event=PENDING \
   --field body="" \
   --field "comments[][path]={file}" \
   --field "comments[][line]={line}" \

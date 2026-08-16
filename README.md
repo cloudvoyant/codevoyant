@@ -28,9 +28,9 @@
 Research requirements, generate proposals, create phase-by-phase implementation plans, and execute them step-by-step or hand off to a background agent.</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/dev.svg" width="32"></td>
-<td><strong>dev</strong> — architecture and exploration<br>
-Architecture planning, technical exploration, and repo/branch comparison.</td>
+<td align="center"><img src="docs/public/icons/explore.svg" width="32"></td>
+<td><strong>explore</strong> — pure technical exploration<br>
+Research problem spaces, compare technical approaches and repositories, and generate decision-oriented proposals. Never writes application code.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/docs.svg" width="32"></td>
@@ -63,9 +63,9 @@ Scaffold new skills, iterate on existing ones, audit quality, and report issues 
 
 <table>
 <tr>
-<td width="48" align="center"><img src="docs/public/icons/em.svg" width="32"></td>
-<td><strong>em</strong> <sup>Experimental</sup> — engineering project planning<br>
-Milestone-grouped task plans, capacity and dependency review, and sync with Linear.</td>
+<td width="48" align="center"><img src="docs/public/icons/plan.svg" width="32"></td>
+<td><strong>plan</strong> <sup>Experimental</sup> — planning at every level<br>
+Plan a single task, a project, an initiative, or a whole product — with milestone-grouped task plans, roadmap review, and Linear sync.</td>
 </tr>
 <tr>
 <td align="center"><img src="docs/public/icons/pm.svg" width="32"></td>
@@ -167,8 +167,8 @@ curl -fsSL https://raw.githubusercontent.com/cloudvoyant/codevoyant/main/scripts
 /pr address                   # pull reviewer feedback and propose fixes
 
 # Plan engineering work
-/em plan "migrate auth to OAuth2"    # milestone-grouped task plan
-/em review my-plan                   # capacity and risk review
+/plan plan "migrate auth to OAuth2"    # milestone-grouped task plan
+/plan review my-plan                   # capacity and risk review
 
 # Plan product work
 /pm plan quarter                     # draft quarterly roadmap

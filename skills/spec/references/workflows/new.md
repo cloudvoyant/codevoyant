@@ -362,7 +362,7 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 
 **Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
 
-**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** every phase-N.md MUST begin its Design section with a `## Doc Scope` block (per `references/doc-aware.md` Rules 3, 4, 6):
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** every phase-N.md MUST begin its Design section with a `## Doc Scope` block (per `references/doc-aware.md` Rules 3, 4, 6). The `**Write globs:**` list MUST contain at least one glob — a phase with no write globs is a planning error (per `references/doc-aware.md` Rule 3's no-globless-phases rule); when docs are incomplete, derive the phase globs from the repository layout (src/monorepo libs, CI, docs) instead of leaving the list empty:
 
 ```
 ## Doc Scope

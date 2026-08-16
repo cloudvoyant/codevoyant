@@ -31,6 +31,7 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 ## Implementation
 
 > **Gate (machine-checked in validation):** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files, exact old→new lines or a unified diff for edits. The block is REJECTED if it is missing or empty, contains a placeholder/stub marker from the blocklist (see `references/code-completeness-blocklist.md` — the canonical list), shows a bare signature/comment where a body belongs, or describes the code in prose instead of showing it. The blocklist is judged by intent, not blind substring matching, so a marker used as a legitimate token (not a stand-in for missing code) does not fail the block. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent. A dedicated validation agent scans for exactly these placeholders and will fail the plan until every code block is complete.
+The executor may still apply minor mechanical fixes to the specified code in-flight — obvious typos, missing imports, or trivial type corrections that do not change a module's contract or violate an invariant — per the permitted-minor-deviations policy in `agents/spec-executor.md`; these are logged as `[MINOR-DEVIATION]` entries, not treated as failures.
 
 {For each task in this phase:}
 

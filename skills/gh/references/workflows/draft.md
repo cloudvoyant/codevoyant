@@ -40,7 +40,6 @@ Otherwise, create a new pending review:
 ```bash
 REVIEW_ID=$(gh api "repos/${OWNER}/${NAME}/pulls/${PR_NUMBER}/reviews" \
   --method POST \
-  --field event=PENDING \
   --field body="${BODY}" \
   --jq '.id')
 ```

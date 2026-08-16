@@ -85,7 +85,7 @@ Rewrites via a soft reset (no interactive rebase) and force-pushes with `--force
 
 ### publish — Publish a draft PR/MR (and its review)
 
-The umbrella publish step. In one command it submits any **pending draft review** and marks the **draft PR/MR** ready for review — running whichever applies. Scope it with `--review-only` or `--ready-only`.
+The umbrella publish step. In one command it publishes whatever is pending — submitting any **pending draft review** (with a non-empty markdown summary), pushing+submitting an **unpublished local review doc** (from `--local`), and marking the **draft PR/MR** ready — running whichever applies. Scope it with `--review-only` or `--ready-only`.
 
 ```bash
 /pr publish                           # publish pending review + mark ready
@@ -98,6 +98,12 @@ The umbrella publish step. In one command it submits any **pending draft review*
 ```
 
 Alias: `/pr ready`. Warns (does not block) if commits are unpushed or CI isn't green. To publish only the pending draft **review** (the inline comments from `pr review`/`pr address`) and leave the PR/MR itself a draft, use `/pr publish --review-only`.
+
+Review submissions and top-level comments are **properly formatted markdown** and are never empty — a review with no summary gets a derived one (`Submitted via /pr publish.`), and `gh complete`/`glab complete` refuse to submit an empty body.
+
+### STE — terse generated prose
+
+PR/MR bodies and review comments follow the STE ruleset (`skills/docs/references/simple-english/ruleset.md`) in pragmatic mode, the same terse dialect the `docs` skill uses: short sentences, plain vocabulary, no filler. See `references/voice.md`.
 
 ### merge — Merge the PR/MR
 

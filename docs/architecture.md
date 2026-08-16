@@ -14,10 +14,10 @@ codevoyant is a collection of skills for AI coding agents (Claude Code, OpenCode
 
 ## Skill Groups
 
-- **dev** — Developer workflows (architecture planning, technical exploration, repo comparison, docs generation, PR review)
+- **explore** — Pure technical exploration (research, proposal generation, repo comparison)
 - **git** — Git version control (conventional commits, CI monitoring, interactive rebase)
 - **spec** — Specification-driven development (planning, execution, review)
-- **em** — Engineering management (roadmap planning, epic breakdowns)
+- **plan** — Planning at every level (tasks, projects, initiatives, products)
 - **pm** — Product management (PRDs, roadmaps, prioritization)
 - **ux** — UX design workflows (prototyping, wireframes, style synthesis)
 
@@ -26,13 +26,13 @@ codevoyant is a collection of skills for AI coding agents (Claude Code, OpenCode
 ```
 codevoyant/
 ├── skills/                  # Unified skill packages
-│   ├── dev/                 # Developer workflows dispatcher
+│   ├── explore/             # Pure technical exploration dispatcher
 │   │   ├── SKILL.md         # Dispatcher (parses verb → routes to workflow)
 │   │   ├── workflows/       # One file per subcommand
 │   │   ├── agents/          # Agent definitions
 │   │   └── references/      # Supporting templates and docs
 │   ├── git/                 # Git workflows dispatcher
-│   ├── em/                  # Engineering management dispatcher
+│   ├── plan/                # Planning dispatcher (tasks, projects, initiatives, products)
 │   ├── pm/                  # Product management dispatcher
 │   ├── ux/                  # UX design dispatcher
 │   ├── spec/                # Specification-driven development dispatcher
@@ -57,7 +57,7 @@ skills/{group}/
 └── scripts/              # Helper scripts (if needed)
 ```
 
-Skill names use space-separated format (`/dev plan`, `/git commit`) while directories use plain names (`skills/dev/`, `skills/git/`).
+Skill names use space-separated format (`/plan plan`, `/git commit`) while directories use plain names (`skills/plan/`, `skills/git/`).
 
 ## Design Principles
 
@@ -83,7 +83,7 @@ The store holds plain markdown artifacts — there are no JSON registries. Each 
 │       ├── intent.md                 # bare-name /spec new scaffold
 │       ├── implementation/           # per-phase specs
 │       └── execution-log.md
-├── explore/                          # research artifacts (dev explore, em plan, pm explore)
+├── explore/                          # research artifacts (explore new, plan, pm explore)
 ├── prds/                             # product requirement docs (pm prd)
 ├── qa/                               # debug reports (qa debug)
 ├── feedback/                         # saved skill feedback (skill feedback)

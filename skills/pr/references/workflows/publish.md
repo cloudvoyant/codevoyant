@@ -1,17 +1,18 @@
 # publish
 
-Publish what's in draft on a PR/MR — in one step:
+Publish whatever is pending on a PR/MR, in one step — what gets published depends on what is being done:
 
-1. Any **pending draft review** (the inline comments from `pr review` / `pr address`) → submitted.
-2. The **PR/MR itself**, if it's still a draft → marked ready for review.
+1. A **pending draft review** (the inline comments from `pr review` / `pr address`) → submitted with a non-empty markdown body.
+2. A **local review doc** (`.codevoyant/review/{slug}/new-review.md`) with no pending review yet → pushed to the platform as a pending review, then submitted.
+3. The **PR/MR itself**, if it is still a draft → marked ready for review.
 
-Runs whichever applies. (For review-only publishing, use `--review-only`; `publish` is the umbrella.)
+Runs whichever apply. Scope it with `--review-only` (submit the review but leave the PR/MR a draft) or `--ready-only` (mark ready but leave the review as a draft).
 
 ## Arguments
 
 - `PR_ID` (optional positional) — defaults to the PR/MR for the current branch
 - `--github` / `--gitlab` — override provider detection
-- `--event <APPROVE|REQUEST_CHANGES|COMMENT>` — event for the draft review, if one exists (default: `COMMENT`)
+- `--event <APPROVE|REQUEST_CHANGES|COMMENT>` — event for the review submission (default: `COMMENT`)
 - `--yes` / `-y` — skip the confirmation prompt
 - `--push` — push unpushed local commits before publishing
 - `--ready-only` — only mark the PR/MR ready; leave any pending review as a draft
@@ -50,29 +51,49 @@ Resolve `PR_NUMBER`, `PR_TITLE`, `PR_URL`, and:
   - GitLab: `glab mr view {PR_ID or branch}` — draft if the title is `Draft:`/`WIP:`-prefixed.
 - **Pending review** — is there a draft review to submit?
   - GitHub: `gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews" --jq '[.[] | select(.state=="PENDING")] | length'` → `PENDING_COUNT`.
-  - GitLab: no PENDING concept; treat as none.
+  - GitLab: pending draft notes — `glab api "projects/:id/merge_requests/${PR_NUMBER}/draft_notes" --jq 'length'` → `PENDING_COUNT`.
+- **Unpublished local review/address doc** — a `.codevoyant/review/*/new-review.md` (from `pr review --local`) or `.codevoyant/review/*/address.md` (from `pr address --local`) that matches this PR/MR (match by number, else by branch) and has not been pushed yet. Present only when `PENDING_COUNT == 0`.
 
 If no open PR/MR is found: `✗ No open PR/MR found for this branch. Open one with /pr open.` and exit.
 
 Compute what will happen (respecting `--ready-only` / `--review-only`):
-- `WILL_PUBLISH_REVIEW` = review exists AND not `--ready-only`
+- `WILL_SUBMIT_REVIEW` = (PENDING_COUNT > 0) AND not `--ready-only`
+- `WILL_PUSH_LOCAL_REVIEW` = (PENDING_COUNT == 0 AND a matching local review/address doc exists) AND not `--ready-only`
 - `WILL_MARK_READY` = PR/MR is a draft AND not `--review-only`
 
-If neither is true: `✓ Nothing to publish — PR/MR #{PR_NUMBER} is already ready and has no pending review.` and exit.
+If none of the three is true: `✓ Nothing to publish — PR/MR #{PR_NUMBER} is already ready and has no pending review or unpublished review doc.` and exit.
 
-## Step 3: Pre-flight checks (only relevant when marking ready)
+## Step 2.5: Resolve the review body
+
+Before any review submission, resolve a **non-empty markdown** `REVIEW_BODY`:
+
+1. If a matching local review doc exists, read its `## Summary` section and use that paragraph (trimmed) as the top-level review comment, formatted as markdown.
+2. Else if a pending review already carries a body, reuse it (GitHub: `gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews/{review_id}" --jq '.body'`).
+3. Else derive a one-line summary that matches the event: `Submitted via /pr publish.` (COMMENT), `Approved via /pr publish.` (APPROVE), or `Requesting changes via /pr publish.` (REQUEST_CHANGES).
+
+Never submit a review with an empty body — GitHub rejects it (`Review cannot be submitted with empty body and comments`), and an empty top-level comment renders as nothing.
+
+## Step 3: Push an unpublished local review doc
+
+If `WILL_PUSH_LOCAL_REVIEW`:
+- Locate the newest matching doc (`new-review.md`, else `address.md`) under `.codevoyant/review/*/`.
+- GitHub: `/gh push-comments {PR_NUMBER} --doc {REVIEW_DIR}/new-review.md` then `/gh draft {PR_NUMBER} --body "{REVIEW_BODY}"` — this creates the PENDING review with the summary as its body.
+- GitLab: `/glab push-comments {PR_NUMBER} --doc {REVIEW_DIR}/new-review.md` — this creates the pending draft notes.
+- Re-check `PENDING_COUNT` after pushing; if it is now > 0, set `WILL_SUBMIT_REVIEW=true`.
+
+## Step 4: Pre-flight checks (only relevant when marking ready)
 
 1. **Unpushed commits.** If the local branch is ahead of upstream (`git rev-list --count @{upstream}..HEAD`): if `--push`, run `git push`; else warn `⚠ {N} local commit(s) not pushed — the reviewer won't see them. Re-run with --push, or push first.` and continue.
 2. **CI status (informational).** Best-effort; warn, don't block:
    - GitHub: `gh pr checks {PR_NUMBER}`; GitLab: `glab ci status`.
    - If not green: note `⚠ CI is {failing|pending} — publishing anyway.`
 
-## Step 4: Confirm
+## Step 5: Confirm
 
 Unless `--yes`, use **AskUserQuestion**. Build the action line from what applies:
 
 ```
-question: "Publish PR/MR #{PR_NUMBER} '{PR_TITLE}'? This will {publish the pending review as {EVENT}}{ and }{mark it ready for review}."
+question: "Publish PR/MR #{PR_NUMBER} '{PR_TITLE}'? This will {submit the pending review as {EVENT}}{ and }{mark it ready for review}."
 header: "Publish"
 options:
   - label: "Publish"
@@ -83,20 +104,20 @@ options:
 
 Cancel → exit without changes.
 
-## Step 5: Execute
+## Step 6: Execute
 
-Do these in order (each only if its flag computed true in Step 2):
+Do these in order (each only if its flag computed true in Steps 2–3):
 
-1. **Publish the pending review** (`WILL_PUBLISH_REVIEW`): submit the pending draft review inline —
-   - GitHub: confirm a PENDING review still exists (`gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews" --jq '[.[] | select(.state=="PENDING")] | length'`); if none, note `⚠ No pending draft review found — run /gh push-comments first` and skip this sub-step. Otherwise call `/gh complete {PR_NUMBER} --event {EVENT}`.
-   - GitLab: no PENDING concept exists; call `/glab complete {PR_NUMBER}` (`--approve` if `EVENT == APPROVE`).
+1. **Submit the pending review** (`WILL_SUBMIT_REVIEW`):
+   - GitHub: re-confirm a PENDING review still exists (`gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews" --jq '[.[] | select(.state=="PENDING")] | length'`); if none, note `⚠ No pending draft review found — run /gh push-comments first` and skip this sub-step. Otherwise call `/gh complete {PR_NUMBER} --event {EVENT} --body "{REVIEW_BODY}"` — never with an empty body.
+   - GitLab: publish the pending draft notes — `glab api "projects/:id/merge_requests/${PR_NUMBER}/draft_notes/bulk_publish" --method POST` — then post the summary note — `glab mr note {PR_NUMBER} --message "{REVIEW_BODY}"` — and, if `EVENT == APPROVE`, `glab mr approve {PR_NUMBER}`.
 2. **Mark the PR/MR ready** (`WILL_MARK_READY`):
    - GitHub: `gh pr ready {PR_NUMBER}`
    - GitLab: `glab mr update {PR_NUMBER} --ready`
 
 If any step fails (auth, permissions, API): report `✗ Publish failed at {step}: {error}.`, state what did succeed, and exit.
 
-## Step 6: Report
+## Step 7: Report
 
 ```
 ✓ Published PR/MR #{PR_NUMBER}
