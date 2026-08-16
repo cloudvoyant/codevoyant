@@ -77,14 +77,14 @@ mkdir -p ".codevoyant/explore/{SLUG}/research"
 
 Tell the user: "Starting parallel research on '{TOPIC}' (modes: {MODES}) — this will take a few minutes."
 
-Spawn the following agents in **a single message** (`run_in_background: true`, model: `claude-sonnet-4-6`). Substitute all `{PLACEHOLDERS}` before spawning — agents receive no outer context.
+Spawn the following agents in **a single message** (`run_in_background: true`, model-tier: `standard`). Substitute all `{PLACEHOLDERS}` before spawning — agents receive no outer context.
 
 **Always spawn:**
 
 ```yaml
 Agent:
   subagent_type: general-purpose
-  model: claude-sonnet-4-6
+  model-tier: standard
   run_in_background: true
   description: 'pm/explore/internal: {SLUG}'
   prompt: |

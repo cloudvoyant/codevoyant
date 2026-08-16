@@ -5,7 +5,7 @@
 ```
 SOURCE        first non-flag arg — one of:
               - Linear issue URL (https://linear.app/...)
-              - Plan name (.codevoyant/plans/{name}/plan.md)
+              - Plan name (a plan in the plan stores `.codevoyant/spec/{name}/plan.md`, `.codevoyant/plan/{name}/plan.md`, or the legacy `.codevoyant/plans/{name}/plan.md`)
               - Free-text prompt (anything else)
 SLUG          --name slug  (optional; defaults to slugified source)
 ```
@@ -13,7 +13,7 @@ SLUG          --name slug  (optional; defaults to slugified source)
 ## Step 1: Resolve test objective
 
 - **Linear URL**: fetch issue via `mcp__claude_ai_Linear__get_issue`, extract title + description as the test objective
-- **Plan name**: read `.codevoyant/plans/{name}/plan.md` as the test objective
+- **Plan name**: read the plan at `.codevoyant/spec/{name}/plan.md`, `.codevoyant/plan/{name}/plan.md`, or the legacy `.codevoyant/plans/{name}/plan.md` as the test objective
 - **Free-text**: use as-is
 
 `REPORT_DIR = .codevoyant/qa/{slug}/`

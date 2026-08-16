@@ -2,6 +2,8 @@
 
 `ed doctor [path] [--fix]` diagnoses and repairs an ed-generated book **without regenerating it** (generating a book is expensive). It covers two failure classes:
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 - **Layout** (PL-29) — the diffbook **project buried inside `book/`** with content **doubly-nested at `book/docs/`**. Converts it to diffbook's real convention: **project at the repo root**, `book/` as the `contentPath` **content** dir; fixes the stale `docs` option and de-duplicates stray dirs.
 - **Manim scene health** (PL-30) — scene scripts written against a **fictional** `Scene` API (`scene.circle/line/label/moveTo`) that crash at runtime. Validates every scene against the real manim-web contract (`references/manim-scenes.md`) and mechanically repairs the known cases, surfacing the rest for manual fix.
 

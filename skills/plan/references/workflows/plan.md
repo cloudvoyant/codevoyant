@@ -1,5 +1,7 @@
 # plan
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Critical Principles
 
 - **Value first, descope ruthlessly.** — Ship the most value in the shortest time, even at the cost of product requirements. Every descoped item must be surfaced and confirmed, never silently dropped. The ideal plan balances short-term delivery speed with long-term investment in stability and continued engineering velocity.
@@ -19,7 +21,7 @@
 
 ---
 
-Plan at any level — a task, a project, an initiative, or a product — with Linear as tracker. Local-first: all artifacts land in `.codevoyant/plans/{slug}/`, then push to Linear on confirmation. Task/architecture-level planning (a single task or epic with a task breakdown) routes to `references/workflows/plan-task.md`; project/initiative/product planning runs the milestone-grouped flow below.
+Plan at any level — a task, a project, an initiative, or a product — with Linear as tracker. Local-first: all artifacts land in `.codevoyant/plan/{slug}/`, then push to Linear on confirmation. Task/architecture-level planning (a single task or epic with a task breakdown) routes to `references/workflows/plan-task.md`; project/initiative/product planning runs the milestone-grouped flow below.
 
 ## Step 0: Parse Args
 
@@ -35,9 +37,9 @@ LEVEL    = value after --level (task | arch | project | initiative | product; de
   - `/initiative/` URL → `initiative`
   - `/project/` URL → `project`
   - otherwise → `project` (use `product` when the description names a portfolio or product line)
-- Derive `SLUG` from description or SOURCE_ID; check `.codevoyant/plans/{slug}/` for collision (append `-2`, `-3`, etc.).
+- Derive `SLUG` from description or SOURCE_ID; check `.codevoyant/plan/{slug}/` for collision (append `-2`, `-3`, etc.).
 
-Set `PLAN_DIR=".codevoyant/plans/{SLUG}"`.
+Set `PLAN_DIR=".codevoyant/plan/{SLUG}"`.
 
 ## Step 0.5: Route by level
 
@@ -51,7 +53,7 @@ Run the following bash commands and store all findings as `AUDIT_CONTEXT`:
 
 ```bash
 git log --oneline -10
-ls .codevoyant/plans/*/plan.md 2>/dev/null || echo "(no existing plans)"
+ls .codevoyant/plan/*/plan.md 2>/dev/null || echo "(no existing plans)"
 ls docs/architecture/ 2>/dev/null && echo "arch docs present" || echo "no arch docs"
 ```
 
@@ -153,7 +155,7 @@ Check for existing research:
 
 **If no research found:** tell the user "No prior exploration found — running lightweight architecture research." Do not ask architecture or tech-constraint questions — the agent decides based on codebase context.
 
-Launch 2 Sonnet agents in parallel (`run_in_background: false`, `model: claude-sonnet-4-6`):
+Launch 2 standard-tier agents in parallel (`run_in_background: false`, `model-tier: standard`):
 
 **Agent A — Codebase architecture scan:**
 Scan the repository for patterns, conventions, and existing implementations relevant to "{project description}".
@@ -182,7 +184,7 @@ Proceed to Step 4 with PRIOR_RESEARCH set.
 
 ## Step 4: Parallel Research
 
-Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+Launch two background agents (`model-tier: light`, `run_in_background: true`):
 
 **Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/plan/references/research-standards.md`.
 
@@ -268,11 +270,11 @@ cv_init_store() {
 }
 
 cv_init_store
-mkdir -p .codevoyant/plans/{slug}/tasks
+mkdir -p .codevoyant/plan/{slug}/tasks
 mkdir -p .codevoyant/explore/{slug}
 ```
 
-Write `.codevoyant/plans/{slug}/plan.md` using the plan template at `references/plan-template.md`.
+Write `.codevoyant/plan/{slug}/plan.md` using the plan template at `references/plan-template.md`.
 
 After writing plan.md, scan the Objective bullets. If any bullet's primary verb is a delivery verb (ship / build / implement / deliver / release / complete):
   Insert an inline comment: `<!-- RIGOR: reframe as outcome — what changes for users/team? -->`
@@ -291,7 +293,7 @@ After generating the task files, proceed to Step 5.5 before writing the Gantt or
 
 ## Step 5.5: Parallel Milestone Estimation
 
-Launch one estimation agent per milestone in parallel (`model: claude-haiku-4-5-20251001`, `run_in_background: true`).
+Launch one estimation agent per milestone in parallel (`model-tier: light`, `run_in_background: true`).
 
 Each agent receives its milestone's task file and answers:
 
@@ -372,7 +374,7 @@ question: "Does this plan cover everything?"
 header: "Plan Review"
 options:
   - label: "Looks good — done"
-    description: "Save the plan to .codevoyant/plans/{slug}/ and register in .codevoyant/README.md"
+    description: "Save the plan to .codevoyant/plan/{slug}/ and register in .codevoyant/README.md"
   - label: "Adjust scope"
     description: "Change what's in the plan before saving"
 ```
@@ -381,4 +383,4 @@ Loop on adjustments until "Looks good — done".
 
 ## Step 7: Notification
 
-If `BG_MODE`, report completion to the user with a brief summary stating that plan `{slug}` was saved to `.codevoyant/plans/{slug}/` and instructing them to run `/plan approve` to promote it.
+If `BG_MODE`, report completion to the user with a brief summary stating that plan `{slug}` was saved to `.codevoyant/plan/{slug}/` and instructing them to run `/plan approve` to promote it.

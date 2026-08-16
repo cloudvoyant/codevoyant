@@ -2,6 +2,8 @@
 
 Create a structured multi-phase implementation plan. The goal is a tight, well-scoped plan that an autonomous execution agent can follow without further guidance.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 This workflow's **only output** is plan files. If you are about to do anything else, stop.
@@ -15,7 +17,7 @@ This workflow's **only output** is plan files. If you are about to do anything e
 | Write a task that says "research / investigate / explore / decide / figure out X" | Stop. Resolve it **now**, during planning — read the codebase (Glob/Grep/Read) and use WebSearch/WebFetch — then write the concrete answer and code. The written plan must be delta-free; the execution agent never researches or makes open design decisions. |
 | Keep going after "looks good" | Stop. Your job is done. Tell the user to run `/spec go`. |
 
-**Permitted file writes:** `.codevoyant/plans/{name}/intent.md`, `.codevoyant/plans/{name}/plan.md`, `.codevoyant/plans/{name}/user-guide.md`, `.codevoyant/plans/{name}/implementation/phase-N.md`, `.codevoyant/plans/{name}/research/*`, `.claude/settings.json` (permissions only).
+**Permitted file writes:** `.codevoyant/spec/{name}/intent.md`, `.codevoyant/spec/{name}/plan.md`, `.codevoyant/spec/{name}/user-guide.md`, `.codevoyant/spec/{name}/implementation/phase-N.md`, `.codevoyant/spec/{name}/research/*`, `.claude/settings.json` (permissions only).
 
 Everything else is off-limits until `/spec go` is run.
 
@@ -76,7 +78,7 @@ Store result as `EXTERNAL_CONTEXT`. Report: `✓ Fetched context from {SOURCE_TY
 
 ## Step 1: Check for Existing Plan
 
-If a specific plan name was provided, check if `.codevoyant/plans/{plan-name}/plan.md` already exists.
+If a specific plan name was provided, check if `.codevoyant/spec/{plan-name}/plan.md` already exists.
 If no plan name provided, check for active plans:
 
 ```bash
@@ -118,7 +120,7 @@ cv_init_store() {
 }
 
 cv_init_store
-mkdir -p .codevoyant/plans .codevoyant/explore
+mkdir -p .codevoyant/spec .codevoyant/explore
 if [ ! -f .codevoyant/README.md ]; then
   printf "# Active Plans\n\n| Name | Status | Plugin | Description | Created | Branch |\n|------|--------|--------|-------------|---------|--------|\n" > .codevoyant/README.md
 fi
@@ -138,18 +140,18 @@ Branch and worktree creation requires the plan slug (for bare `--branch` / `--wo
 In **bare-name mode**:
 
 1. `PLAN_NAME` = the name, slugged (lowercase, spaces→hyphens, alphanumeric+hyphens, ≤50 chars).
-2. `INTENT_FILE` = `.codevoyant/plans/{PLAN_NAME}/intent.md`.
+2. `INTENT_FILE` = `.codevoyant/spec/{PLAN_NAME}/intent.md`.
 3. **If `INTENT_FILE` exists and is filled in** (content beyond the scaffold — the `## Objective` section is non-empty and not a `{…}` placeholder): read it. Set `OBJECTIVE` from `## Objective`; fold Context / Constraints / Out of scope / Open questions into `RESEARCH_CONTEXT`. Continue to **Step 3b** and plan normally (clarify only if something is still unclear). Do not recreate the file.
 4. **Otherwise** (missing, or only the empty scaffold) — scaffold it and **stop**:
-   a. Ensure the store is initialized, then create the plan dir: run `cv_init_store` (defined in Step 2) before the `mkdir` so a bare-name `/spec new` reached without Step 2 still gets the shared symlink rather than a real `.codevoyant/`. Then `cv_init_store && mkdir -p .codevoyant/plans/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
+   a. Ensure the store is initialized, then create the plan dir: run `cv_init_store` (defined in Step 2) before the `mkdir` so a bare-name `/spec new` reached without Step 2 still gets the shared symlink rather than a real `.codevoyant/`. Then `cv_init_store && mkdir -p .codevoyant/spec/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
    b. Print the clickable path:
       ```
       📝 Tell me what you want built — fill in:
-         .codevoyant/plans/{PLAN_NAME}/intent.md
+         .codevoyant/spec/{PLAN_NAME}/intent.md
       ```
    c. Best-effort open + focus it in the user's editor. Never block, never fail the workflow if no editor is available:
       ```bash
-      f=".codevoyant/plans/{PLAN_NAME}/intent.md"
+      f=".codevoyant/spec/{PLAN_NAME}/intent.md"
       if command -v code >/dev/null 2>&1; then code -r -g "$f" 2>/dev/null
       elif command -v cursor >/dev/null 2>&1; then cursor -r -g "$f" 2>/dev/null
       elif command -v open >/dev/null 2>&1; then open "$f" 2>/dev/null       # macOS
@@ -312,7 +314,7 @@ Set `PLAN_WORKTREE=$WORKTREE_RESULT` (used in Step 5.2 and plan metadata). If ne
 
 ### 5.2: Create Plan Directory Structure
 
-`CHECK_DIR` = `$PLAN_WORKTREE/.codevoyant/plans` if worktree set, else `.codevoyant/plans`.
+`CHECK_DIR` = `$PLAN_WORKTREE/.codevoyant/spec` if worktree set, else `.codevoyant/spec`.
 
 `PLAN_DIR` = `$CHECK_DIR/{plan-name}`.
 

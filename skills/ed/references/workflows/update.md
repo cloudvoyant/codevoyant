@@ -2,6 +2,8 @@
 
 Smart re-application for a course: first consume inline annotations across the plan artifacts and book MDX, then translate conversational change requests into the **smallest correct** slice of the pipeline to re-run. Uses `state.md` to understand current progress. Never regenerates the whole book for a local edit.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md`/`.mdx` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## ⛔ HARD STOPS — read before every action
 
 | You are about to… | Correct action |

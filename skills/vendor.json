@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "assets": {
+    "simple-english": {
+      "source": "skills/shared/simple-english",
+      "destinations": [
+        "skills/docs/references/simple-english",
+        "skills/pr/references/simple-english"
+      ]
+    }
+  }
+}

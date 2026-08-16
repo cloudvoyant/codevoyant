@@ -90,8 +90,9 @@ A PR opened after `/spec go` should state the intent the plan set out to achieve
 
 ```bash
 PLAN_CONTEXT=""
-if [ -d .codevoyant/plans ]; then
-  for pf in .codevoyant/plans/*/plan.md; do
+for root in .codevoyant/spec .codevoyant/plan .codevoyant/plans; do   # v2 stores + legacy
+  [ -d "$root" ] || continue
+  for pf in "$root"/*/plan.md; do
     [ -f "$pf" ] || continue
     # Match the plan's Metadata "Branch" line against the current branch.
     PLAN_BRANCH=$(grep -m1 -E '^- \*\*Branch\*\*:' "$pf" | sed -E 's/^- \*\*Branch\*\*:[[:space:]]*//')
@@ -102,7 +103,7 @@ $(cat "$pf")
 "
     fi
   done
-fi
+done
 ```
 
 - If `PLAN_CONTEXT` is non-empty, it holds the objective, requirements, and design of every plan run on this branch — use it as the primary source of intent.

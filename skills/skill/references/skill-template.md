@@ -158,7 +158,7 @@ cat {template-path} | sed "s/{{PLACEHOLDER}}/{value}/g" > {destination-path}
 {One sentence describing what to do with the output.}
 ```
 
-**Precise cd paths (non-negotiable):** every `cd` in this skill resolves to a concrete path — the repo root (`$(git rev-parse --show-toplevel)`), an in-repo subdir (`.codevoyant/plans/<name>`, `skills/...`), or a specific managed location (`~/.codevoyant/<slug>`, `~/.claude`). Never `cd ~` / `cd $HOME` bare, and never `cd` outside the repo (`cd /`, `cd /tmp`, `..` escapes). A subshell `cd "$(dirname "$1")"` that only resolves a path is fine. Precise paths keep a coding agent's Bash-permission approvals scoped.
+**Precise cd paths (non-negotiable):** every `cd` in this skill resolves to a concrete path — the repo root (`$(git rev-parse --show-toplevel)`), an in-repo subdir (the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/`, or `skills/...`), or a specific managed location (`~/.codevoyant/<slug>`, `~/.claude`). Never `cd ~` / `cd $HOME` bare, and never `cd` outside the repo (`cd /`, `cd /tmp`, `..` escapes). A subshell `cd "$(dirname "$1")"` that only resolves a path is fine. Precise paths keep a coding agent's Bash-permission approvals scoped.
 
 ### Agent spawning
 

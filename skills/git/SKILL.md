@@ -15,6 +15,7 @@ Git workflow skill dispatcher.
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
+- **Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
 ## Step 0: Parse Arguments
 

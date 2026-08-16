@@ -1,13 +1,13 @@
 # linear-push-agent
 
-**Model:** claude-sonnet-4-6
+**Model tier:** standard
 **Background:** false
 **Purpose:** Syncs an approved project/initiative-level plan to Linear — creating projects and milestones. Does NOT create issues (that is the linear-tasks-agent's responsibility for task-level plans).
 
 ## Inputs
 
 - `{COMMIT_DIR}` — path to the promoted plan directory (e.g. `docs/engineering/plans/{slug}/`)
-- `{PLAN_DIR}` — path to the draft plan directory (`.codevoyant/plans/{slug}/`)
+- `{PLAN_DIR}` — path to the draft plan directory (`.codevoyant/plan/{slug}/`)
 - `{SLUG}` — plan slug
 - `{LINEAR_URL}` — optional existing Linear project URL (empty = create new)
 
@@ -153,4 +153,4 @@ Errors: {any failures or "None"}
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

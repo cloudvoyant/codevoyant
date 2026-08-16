@@ -26,7 +26,7 @@ If no active plans → ask if updating an existing skill (and which one).
 
 If the user provides SKILL_NAME, resolve to either:
 
-- `.codevoyant/plans/{skill-name}/plan.md` (in-progress plan)
+- `plan.md` in the plan stores `.codevoyant/spec/{skill-name}/plan.md`, `.codevoyant/plan/{skill-name}/plan.md`, or the legacy `.codevoyant/plans/{skill-name}/plan.md` (in-progress plan)
 - `skills/{skill-name}/SKILL.md` or `.claude/skills/{skill-name}/SKILL.md` (existing skill)
 
 If ambiguous between plan and existing skill, ask:
@@ -67,7 +67,7 @@ Store selected dimensions as UPDATE_DIMENSIONS.
 
 For each dimension in UPDATE_DIMENSIONS, articulate specifically what you intend to change — not vague intentions but concrete edits.
 
-If "Address requests in plan" is selected: read all plan files in `.codevoyant/plans/{skill-slug}/` (plan.md, implementation phases, proposed skill files, any inline comments or TODOs), then list each request or piece of feedback found and state exactly how you will address it.
+If "Address requests in plan" is selected: read all plan files in the plan stores `.codevoyant/spec/{skill-slug}/`, `.codevoyant/plan/{skill-slug}/`, and the legacy `.codevoyant/plans/{skill-slug}/` (plan.md, implementation phases, proposed skill files, any inline comments or TODOs), then list each request or piece of feedback found and state exactly how you will address it.
 
 For all other dimensions: describe the specific edit per dimension. Example: "For Prompt quality: I'll rewrite the trigger description to include three more trigger phrases and tighten Step 2 to name the exact tool used."
 
@@ -109,13 +109,13 @@ Use the Agent tool to launch all researchers in a **single message** (one tool c
 
 - `{RESOURCE_URL}` — the resource URL or path
 - `{SKILL_NAME}` — the skill being updated
-- `{OUTPUT_PATH}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/{slug}.md`
+- `{OUTPUT_PATH}` — a research output path in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}-update-{YYMMDD}/research/{slug}.md`)
 
 Each agent: model-tier: standard, run_in_background: true.
 
 Do not send agent calls across separate messages — all must be in one message to run in parallel. Wait for all to complete before continuing.
 
-Read all artifacts in `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/` and incorporate findings into the plan.
+Read all artifacts in the plan stores `.codevoyant/spec/{skill-slug}-update-{YYMMDD}/research/`, `.codevoyant/plan/{skill-slug}-update-{YYMMDD}/research/`, and the legacy `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/` and incorporate findings into the plan.
 
 ## Step 5: Launch skill-updater (heavy tier)
 
@@ -124,8 +124,8 @@ Substitute into `agents/skill-updater.md`:
 - `{TARGET_PATH}` — TARGET_PATH from Step 1
 - `{TARGET_TYPE}` — TARGET_TYPE from Step 1 (`plan` or `existing`)
 - `{UPDATE_DIMENSIONS}` — UPDATE_DIMENSIONS from Step 2 (comma-separated)
-- `{RESOURCE_ARTIFACTS_DIR}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/` (may be empty)
-- `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/`
+- `{RESOURCE_ARTIFACTS_DIR}` — research artifacts in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}-update-{YYMMDD}/research/`, may be empty)
+- `{PLAN_DIR}` — a plan directory in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}-update-{YYMMDD}/`)
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 
 Agent: model-tier: heavy, run_in_background: false.

@@ -14,7 +14,7 @@ grep "| Active \|| Complete \|| Executing " .codevoyant/README.md 2>/dev/null | 
 ```
 Auto-select if exactly one plan. If multiple, use AskUserQuestion to pick.
 
-Set `PLAN_DIR=.codevoyant/plans/{plan-name}`.
+Set `PLAN_DIR=.codevoyant/spec/{plan-name}`.
 
 Verify `$PLAN_DIR/execution-log.md` exists. If not: "No execution log found for '{plan-name}'. Run `/spec go` first."
 

@@ -26,7 +26,7 @@ Fields:
   - description = requirements + ACs from task-template (Markdown)
 
 ## 5. Record IDs
-Write `.codevoyant/plans/{slug}/linear-ids.json`:
+Write `.codevoyant/plan/{slug}/linear-ids.json`:
 ```json
 {
   "projectId": "...",

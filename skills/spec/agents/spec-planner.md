@@ -20,7 +20,7 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 2. Load research context (explore artifacts or EXTERNAL_CONTEXT if provided)
 - [ ] 3. Confirm/clarify objective with user if needed
 - [ ] 4. Determine plan name; resolve collisions via inline grep on .codevoyant/README.md
-- [ ] 5. Create plan directory structure (.codevoyant/plans/{name}/implementation/, /research/)
+- [ ] 5. Create plan directory structure (.codevoyant/spec/{name}/implementation/, /research/)
 - [ ] 6. Write plan.md — phases and one-liner tasks only; no detailed specs
 - [ ] 7. Write user-guide.md — required, blocks completion if missing
 - [ ] 8. Write implementation/phase-N.md for each phase (N ≥ 1) — every task carries its complete code (code-first gate); never create phase-0.md
@@ -93,11 +93,11 @@ Only create `### Phase 0 - Prerequisites` if the objective requires human action
 ## Output
 
 Produce:
-- `.codevoyant/plans/{plan-name}/plan.md`
-- `.codevoyant/plans/{plan-name}/user-guide.md`
-- `.codevoyant/plans/{plan-name}/implementation/phase-N.md` for each phase (1 through N)
+- `.codevoyant/spec/{plan-name}/plan.md`
+- `.codevoyant/spec/{plan-name}/user-guide.md`
+- `.codevoyant/spec/{plan-name}/implementation/phase-N.md` for each phase (1 through N)
 - Registry entry appended to `.codevoyant/README.md`
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

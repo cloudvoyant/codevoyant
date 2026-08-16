@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# vendor-assets — vendor shared assets declared in skills/vendor.json into each
+# skill directory so every skill stays self-contained.
+#
+#   vendor-assets          copy each asset source -> every destination
+#   vendor-assets --check  fail (exit 1) if any destination drifts from its source
+#
+# The Agent Skills standard scopes every skill to its own directory: file
+# references are relative and one level deep, and there is no cross-skill
+# import. Assets shared across skills therefore live once under skills/shared/
+# (the source of truth) and are copied into the skill directories that need
+# them, driven by skills/vendor.json. The vendored copies ARE committed,
+# because `npx skills` installs straight from the repo — a build step does not
+# run at install time. Edit skills/shared/, run `mise run skills:vendor`, and
+# commit. skills:validate (and CI) run --check and fail on drift.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+CONFIG="$ROOT/skills/vendor.json"
+CHECK=0
+[ "${1:-}" = "--check" ] && CHECK=1
+
+[ -f "$CONFIG" ] || { echo "vendor-assets: config not found at $CONFIG" >&2; exit 1; }
+
+python3 - "$CONFIG" "$ROOT" "$CHECK" <<'PY'
+import json, os, shutil, subprocess, sys
+
+config_path, root, check = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+with open(config_path) as f:
+    data = json.load(f)
+
+fail = 0
+for name, asset in data.get("assets", {}).items():
+    src = os.path.join(root, asset["source"])
+    for dst_rel in asset.get("destinations", []):
+        dst = os.path.join(root, dst_rel)
+        if check:
+            r = subprocess.run(["diff", "-r", src, dst], capture_output=True, text=True)
+            if r.returncode != 0:
+                print(f"DRIFT: {dst} differs from {asset['source']} (run 'mise run skills:vendor' and commit)")
+                fail = 1
+            continue
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        tmp = dst + ".vendor-tmp"
+        shutil.rmtree(tmp, ignore_errors=True)
+        if os.path.isdir(src):
+            shutil.copytree(src, tmp)
+            shutil.rmtree(dst, ignore_errors=True)
+            os.replace(tmp, dst)
+        else:
+            shutil.copy2(src, tmp)
+            os.replace(tmp, dst)
+        print(f"vendored: {asset['source']} -> {dst_rel}")
+
+sys.exit(fail)
+PY

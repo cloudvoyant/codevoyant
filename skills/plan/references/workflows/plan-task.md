@@ -1,12 +1,12 @@
 # plan-task
 
-Plan software architecture for a project or feature at the task level (a single task, epic, or architecture effort with a task breakdown). Writes drafts to `.codevoyant/plans/`. This is the task/architecture-level branch of the `plan` skill — `plan.md` Step 0.5 routes here when `--level task` (or `--level arch`) is given.
+Plan software architecture for a project or feature at the task level (a single task, epic, or architecture effort with a task breakdown). Writes drafts to `.codevoyant/plan/`. This is the task/architecture-level branch of the `plan` skill — `plan.md` Step 0.5 routes here when `--level task` (or `--level arch`) is given.
 
 ## Step 0.5: System Audit
 
 ```bash
 git log --oneline -10
-ls .codevoyant/plans/ 2>/dev/null || echo "(no existing plans)"
+ls .codevoyant/plan/ 2>/dev/null || echo "(no existing plans)"
 ls docs/architecture/ 2>/dev/null || echo "(no existing arch docs)"
 ```
 
@@ -37,7 +37,7 @@ Only ask follow-up clarifications ("what do you know already", "confidence level
 
 ## Step 2: Parallel Research
 
-Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+Launch two background agents (`model-tier: light`, `run_in_background: true`):
 
 **Agent R1 — Codebase Scan:** Glob/Grep for files, patterns, and systems relevant to this feature. Note existing architecture decisions, naming conventions, and test coverage. Return structured findings.
 
@@ -162,8 +162,8 @@ echo "✓ Registered plan: {FEATURE_SLUG}"
 
 Report:
 ```
-Plan written to .codevoyant/plans/{FEATURE_SLUG}/plan.md
+Plan written to .codevoyant/plan/{FEATURE_SLUG}/plan.md
 Run /plan approve to promote to docs/architecture/.
 ```
 
-If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating the architecture plan was saved to `.codevoyant/plans/{FEATURE_SLUG}/`.
+If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating the architecture plan was saved to `.codevoyant/plan/{FEATURE_SLUG}/`.

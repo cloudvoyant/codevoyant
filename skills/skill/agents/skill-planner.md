@@ -35,7 +35,7 @@ These variables are provided by the `/skill new` workflow before this agent is l
 - `{SKILL_SPEC}` — answers gathered in Steps 3 and 3.5 (agents, tech scope, knowledge type, destination, design direction)
 - `{RESEARCH_CONTEXT}` — content from `.codevoyant/explore/` (may be empty)
 - `{RESOURCE_ARTIFACTS_DIR}` — path to research artifacts from Step 4a (may be empty if no resources were provided)
-- `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}/`
+- `{PLAN_DIR}` — a plan directory in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}/`)
 - `{SKILL_TEMPLATE_PATH}` — `references/skill-template.md`
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 
@@ -123,4 +123,4 @@ Produces:
 
 ## Markdown output
 
-**Soft-wrap prose, never hard-wrap.** When this agent emits markdown — a `.md` artifact, or a markdown field in its returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.
+**Markdown output: soft-wrap prose, never hard-wrap** — when you emit markdown — a `.md` artifact or a markdown field in your returned output — write each paragraph as one continuous line. Do not insert manual newlines to wrap prose at a fixed column width; let the renderer wrap. Newlines still separate paragraphs, list items, headings, and code fences.

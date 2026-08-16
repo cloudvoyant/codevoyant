@@ -2,6 +2,8 @@
 
 Create a new named flow — a `{flows-dir}/{slug}/flow.md` checklist plus one `implementation/step-N.md` agent-prompt file per step. Stored locally by default, or under `~/.codevoyant/flows` with `--global`.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Step 0: Parse arguments
 
 ```

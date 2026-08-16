@@ -20,7 +20,7 @@ Sort by Last Updated (most recent first). Auto-select if only one active plan ex
 
 ## Step 2: Load and Orient
 
-Read `.codevoyant/plans/{plan-name}/plan.md` in full.
+Read `.codevoyant/spec/{plan-name}/plan.md` in full.
 
 Parse:
 - All phases (`### Phase N - Name`)

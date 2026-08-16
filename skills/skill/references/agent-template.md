@@ -28,6 +28,7 @@ Saves to: `{path/to/output/file.md}`
 
 - **model-tier** — relative weight: `light` | `standard` | `heavy`. Never a provider model ID — the platform maps the tier to a concrete model (see `references/model-tiers.md`); with no platform config, the session's current model is used.
 - **background** — `true` if the agent runs without blocking the main flow; `false` if the skill waits for it
+- **markdown output** — soft-wrap prose, never hard-wrap: write each paragraph as one continuous line; never insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 - **purpose** — one sentence: what the agent does, what artifact it saves
 - **prompt** — complete, self-contained prompt; all variables must be substituted before passing
 - **output** — file path(s) the agent writes

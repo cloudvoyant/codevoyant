@@ -4,7 +4,7 @@
 
 - Always run pm review before promoting — do not skip
 - The draft in `.codevoyant/roadmaps/` remains after promotion (source of truth for history)
-- Research artifacts from `.codevoyant/explore/{slug}/` and `.codevoyant/plans/{slug}/research/` are both copied flat into `docs/product/roadmaps/{slug}/research/`
+- Research artifacts from `.codevoyant/explore/{slug}/` and from the plan stores `.codevoyant/spec/{slug}/research/`, `.codevoyant/plan/{slug}/research/`, and the legacy `.codevoyant/plans/{slug}/research/` are copied flat into `docs/product/roadmaps/{slug}/research/`
 - Linear sync is always optional and always last
 - Never force-overwrite an existing committed roadmap without user confirmation
 - pm approve may create or update Linear **initiatives** only. Never create Linear projects — that is em approve's responsibility.
@@ -140,14 +140,20 @@ AskUserQuestion:
 mkdir -p "{COMMIT_DIR}"
 cp "$DRAFT_PATH" "{COMMIT_DIR}/roadmap.md"
 
-# Sources: .codevoyant/explore/{SLUG}/ and .codevoyant/plans/{SLUG}/research/ (if present)
+# Sources: .codevoyant/explore/{SLUG}/ and the plan stores' {SLUG}/research/ (if present)
 EXPLORE_DIR=".codevoyant/explore/{SLUG}"
-RESEARCH_DIR=".codevoyant/plans/{SLUG}/research"
-if { [ -d "$EXPLORE_DIR" ] && [ "$(ls -A $EXPLORE_DIR 2>/dev/null)" ]; } || \
-   { [ -d "$RESEARCH_DIR" ] && [ "$(ls -A $RESEARCH_DIR 2>/dev/null)" ]; }; then
+RESEARCH_DIRS=(.codevoyant/spec/{SLUG}/research .codevoyant/plan/{SLUG}/research .codevoyant/plans/{SLUG}/research)   # v2 stores + legacy
+any=false
+{ [ -d "$EXPLORE_DIR" ] && [ "$(ls -A "$EXPLORE_DIR" 2>/dev/null)" ]; } && any=true
+for RESEARCH_DIR in "${RESEARCH_DIRS[@]}"; do
+  { [ -d "$RESEARCH_DIR" ] && [ "$(ls -A "$RESEARCH_DIR" 2>/dev/null)" ]; } && any=true
+done
+if [ "$any" = true ]; then
   mkdir -p "{COMMIT_DIR}/research"
-  [ -d "$EXPLORE_DIR"  ] && cp "$EXPLORE_DIR/"*.md  "{COMMIT_DIR}/research/" 2>/dev/null
-  [ -d "$RESEARCH_DIR" ] && cp "$RESEARCH_DIR/"*.md "{COMMIT_DIR}/research/" 2>/dev/null
+  [ -d "$EXPLORE_DIR" ] && cp "$EXPLORE_DIR/"*.md "{COMMIT_DIR}/research/" 2>/dev/null
+  for RESEARCH_DIR in "${RESEARCH_DIRS[@]}"; do
+    [ -d "$RESEARCH_DIR" ] && cp "$RESEARCH_DIR/"*.md "{COMMIT_DIR}/research/" 2>/dev/null
+  done
 fi
 ```
 

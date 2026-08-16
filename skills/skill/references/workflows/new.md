@@ -1,5 +1,7 @@
 # new
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `SKILL.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Variables
 
 Received from dispatcher:
@@ -59,13 +61,13 @@ Use the Agent tool to launch all researchers in a **single message** (one tool c
 
 - `{RESOURCE_URL}` — the resource URL or path
 - `{SKILL_NAME}` — the skill being designed
-- `{OUTPUT_PATH}` — `.codevoyant/plans/{skill-slug}/research/{slug}.md`
+- `{OUTPUT_PATH}` — a research output path in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}/research/{slug}.md`)
 
 Each agent: model-tier: standard, run_in_background: true.
 
 Do not send agent calls across separate messages — all must be in one message to run in parallel. Wait for all to complete before continuing.
 
-Read all artifacts in `.codevoyant/plans/{skill-slug}/research/` and use them as input to 4b.
+Read all artifacts in the plan stores `.codevoyant/spec/{skill-slug}/research/`, `.codevoyant/plan/{skill-slug}/research/`, and the legacy `.codevoyant/plans/{skill-slug}/research/` and use them as input to 4b.
 
 **4b. Launch skill-planner (heavy tier)**
 
@@ -73,8 +75,8 @@ Substitute into `agents/skill-planner.md`:
 - `{SKILL_NAME}` — the skill slug
 - `{SKILL_SPEC}` — summary of derived spec from Step 2 (description) + Step 3 (resource list)
 - `{RESEARCH_CONTEXT}` — RESEARCH_CONTEXT (may be empty)
-- `{RESOURCE_ARTIFACTS_DIR}` — `.codevoyant/plans/{skill-slug}/research/` (may be empty)
-- `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}/`
+- `{RESOURCE_ARTIFACTS_DIR}` — research artifacts in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}/research/`, may be empty)
+- `{PLAN_DIR}` — a plan directory in the plan stores `.codevoyant/spec/`, `.codevoyant/plan/`, and the legacy `.codevoyant/plans/` (`{skill-slug}/`)
 - `{SKILL_TEMPLATE_PATH}` — `references/skill-template.md`
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 

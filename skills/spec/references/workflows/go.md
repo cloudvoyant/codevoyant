@@ -23,7 +23,7 @@ If `PLAN_NAME` not provided:
 
 ## Step 2: Analyze Plan Scope
 
-Read `.codevoyant/plans/{plan-name}/plan.md` and report total phases, total tasks, starting point, and estimated complexity.
+Read `.codevoyant/spec/{plan-name}/plan.md` and report total phases, total tasks, starting point, and estimated complexity.
 
 ## Step 2.5: Validate and Setup Worktree Context
 
@@ -31,9 +31,9 @@ Parse plan metadata:
 
 ```bash
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
-PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
-DOC_GLOBS=$(grep "^- \*\*Doc Globs\*\*:" .codevoyant/plans/{plan-name}/plan.md | sed 's/^- \*\*Doc Globs\*\*: //' | sed 's/ *$//')
+PLAN_BRANCH=$(grep "^- \*\*Branch\*\*:" .codevoyant/spec/{plan-name}/plan.md | sed 's/^- \*\*Branch\*\*: //' | sed 's/ *$//')
+PLAN_WORKTREE=$(grep "^- \*\*Worktree\*\*:" .codevoyant/spec/{plan-name}/plan.md | sed 's/^- \*\*Worktree\*\*: //' | sed 's/ *$//')
+DOC_GLOBS=$(grep "^- \*\*Doc Globs\*\*:" .codevoyant/spec/{plan-name}/plan.md | sed 's/^- \*\*Doc Globs\*\*: //' | sed 's/ *$//')
 ```
 
 `DOC_GLOBS` is empty for non-doc-aware plans (no `Doc Globs:` line) — executors then run in their normal mode. When non-empty, each executor is spawned with doc-aware enforcement (see `references/doc-aware.md` Rules 3–4). The union is only the doc-aware activation signal; each executor enforces its own phase's write globs (extracted in Step 6).
@@ -46,7 +46,7 @@ DOC_GLOBS=$(grep "^- \*\*Doc Globs\*\*:" .codevoyant/plans/{plan-name}/plan.md |
 
 Count phases in plan.md (lines matching `^### Phase (\d+)`). Store `HAS_PHASE_0`.
 
-For phases 1 through N, check `.codevoyant/plans/{plan-name}/implementation/phase-{N}.md` exists and is > 100 bytes. Phase 0 has no implementation file — skip it.
+For phases 1 through N, check `.codevoyant/spec/{plan-name}/implementation/phase-{N}.md` exists and is > 100 bytes. Phase 0 has no implementation file — skip it.
 
 If any files missing, report them and exit without launching.
 
@@ -66,7 +66,7 @@ options:
 
 ## Step 5: Initialize Execution Tracking
 
-Create or clear `.codevoyant/plans/{plan-name}/execution-log.md` with initial state (Status: RUNNING, timestamp, plan objective).
+Create or clear `.codevoyant/spec/{plan-name}/execution-log.md` with initial state (Status: RUNNING, timestamp, plan objective).
 
 ```bash
 sed -i '' "s/| $PLAN_NAME | [A-Za-z]* |/| $PLAN_NAME | Executing |/" .codevoyant/README.md
@@ -88,7 +88,7 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 
    ```bash
    # N = the phase index; empty result = phase has no Doc Scope / non-doc-aware plan
-   PHASE_GLOBS=$(grep -m1 '^\*\*Write globs:\*\*' .codevoyant/plans/{plan-name}/implementation/phase-$N.md 2>/dev/null | grep -oE '\`[^`]+\`' | tr -d '`' | tr '\n' ' ')
+   PHASE_GLOBS=$(grep -m1 '^\*\*Write globs:\*\*' .codevoyant/spec/{plan-name}/implementation/phase-$N.md 2>/dev/null | grep -oE '\`[^`]+\`' | tr -d '`' | tr '\n' ' ')
    ```
 
    Spawn one `spec-executor` agent per phase in the batch **in a single message** (parallel), each on the tier declared in `agents/spec-executor.md` frontmatter (`metadata: model-tier: light`), with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, `PLAN_NAME`, `SPEC_SKILL` (the spec skill package root — exported by `SKILL.md`, fall back to `$HOME/.claude/skills/spec`), `DOC_GLOBS` (the plan-wide union, empty = normal mode), and `PHASE_GLOBS` (that phase's own write globs) substituted into the prompt. A batch of one is just a single spawn. For a **non-doc-aware plan** (`DOC_GLOBS` empty), spawn every phase in normal mode as before. For a **doc-aware plan** (`DOC_GLOBS` non-empty), a phase whose `## Doc Scope` block is absent or whose `**Write globs:**` list is empty is a **plan defect** — it violates the no-globless-phases rule (`references/doc-aware.md` Rule 3). Do NOT spawn that phase in normal mode: stop the loop and report that the plan must be re-planned (`/spec update` or `/spec new --persistent`) before execution. A phase with a `## Doc Scope` block and a non-empty glob list spawns with doc-aware enforcement as normal.
@@ -105,7 +105,7 @@ After the loop completes, unless `SILENT=true`, report completion to the user wi
 After all phases complete, scan `{PLAN_DIR}/execution-log.md` for `[DEVIATION]` lines:
 
 ```bash
-grep "^\[DEVIATION\]" .codevoyant/plans/{plan-name}/execution-log.md 2>/dev/null
+grep "^\[DEVIATION\]" .codevoyant/spec/{plan-name}/execution-log.md 2>/dev/null
 ```
 
 If any deviations found, include in the final report:

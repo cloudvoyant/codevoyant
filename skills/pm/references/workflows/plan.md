@@ -40,7 +40,7 @@ If `EXPLORE_DIRS` is non-empty, automatically load `summary.md` and all `researc
 
 Tell the user: "No research context found — running lightweight web search to ground the roadmap." Do not ask for market/competitors/core-problem clarifications — the agents infer from `STRATEGIC_GOAL` and codebase context.
 
-Launch 3 Sonnet agents in parallel (run_in_background: false, model: claude-sonnet-4-6):
+Launch 3 standard-tier agents in parallel (run_in_background: false, model-tier: standard):
 
 **Agent A — Market signals:**
 Prompt: Derive a product category from "{STRATEGIC_GOAL}" (one-to-three-word category like "B2B SaaS analytics" or "consumer fintech"). Search for market trends and user needs in that category. Run WebSearch("{category} market trends {year}"), WebSearch("{category} user needs"), WebSearch("{category} industry report"). Fetch 2 relevant URLs. Write 5 key findings to `.codevoyant/explore/{SLUG}/research/market.md` with citations and Tier labels.

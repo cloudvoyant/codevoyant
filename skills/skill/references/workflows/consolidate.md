@@ -2,6 +2,8 @@
 
 Merge two skills (by local path or URL) into a single coherent skill. Deduplicates overlapping workflows, resolves naming conflicts, and produces one SKILL.md with a unified dispatcher and terse recipes.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `SKILL.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ## Variables
 
 Received from dispatcher:

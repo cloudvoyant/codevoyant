@@ -2,6 +2,8 @@
 
 Diagnose — and with `--fix`, repair — the health of one flow or every flow across both scopes. Dry-run by default: it reports and changes nothing unless `--fix` is passed.
 
+- **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 A flow has two parts (see `references/flow-dir.md`): a read-only **definition** (`flow.md` + `implementation/step-N.md`, local or global) and one or more local **run instances**. Run instances live **flat under `.codevoyant/flows/`**, beside the definitions: each is a directory `.codevoyant/flows/{flow-slug}-{plan-slug}/` (or a provisional `.codevoyant/flows/{flow-slug}-_pending-{run-id}/` before adoption; or, for pre-PR runs, a legacy `.codevoyant/runs/{flow-slug}/` with state files directly inside) holding `run.md` + `progress.md` + `context.md`. `run.md` records the run's resolved identity (flow slug, branch, spec-slug, worktree) and is the concrete anchor doctor uses both to tell a legitimately-interrupted `context.md` from a clobbered one **and** to confirm a discovered instance really belongs to this flow. Doctor checks the definition plus **every** run instance of each flow, and understands that a run instance whose definition is global is **normal**, not corruption.
 
 ## Step 0: Parse arguments
