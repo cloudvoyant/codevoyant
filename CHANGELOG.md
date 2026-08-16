@@ -1,3 +1,102 @@
+## [1.71.0](https://github.com/cloudvoyant/codevoyant/compare/v1.70.0...v1.71.0) (2026-08-16)
+
+### Features
+
+* **spec:** doc-aware --persistent flag ([#48](https://github.com/cloudvoyant/codevoyant/issues/48))
+
+* feat(spec): doc-aware --persistent flag (#46)
+
+* feat(spec): add doc-aware --persistent mode for new, update, and go
+
+**Doc-aware model**
+- Add references/doc-aware.md as the single source of truth: valid-docs
+  gate, docs-first write, glob-scoped phases, public-interface-only
+  cross-module interaction, graceful missing docs, boundary callouts
+- Vendor scripts/scope.py (from the docs skill) plus unit tests
+  (test_scope.py) so doc-aware planning/execution resolve doc globs
+  without depending on the docs skill at runtime
+
+**Planning (new)**
+- Parse --persistent into PERSISTENT_MODE; add Step 2.8 doc-aware
+  preflight: valid-docs gate (stops with graceful message when the repo
+  has no valid docs) and docs-first /docs update write
+- Emit Doc Globs: metadata in plan.md and require every phase to carry a
+  ## Doc Scope block (write globs, public-interfaces-only, boundary
+  callouts) with callouts summarized in the Decision Log
+
+**Updating (update)**
+- Parse --persistent; add Step 2.5 doc-aware preflight with the same
+  valid-docs gate and docs-first write
+- Reject updates to plans without Doc Globs metadata; glob-scope
+  conversational and annotation edits with boundary callouts surfaced in
+  the preview and report
+
+**Execution (go + spec-executor)**
+- Read plan-wide Doc Globs as the activation signal; extract each
+  phase's own write globs and pass SPEC_SKILL, DOC_GLOBS, and
+  PHASE_GLOBS to spawned executors (kept on their own line, unbroken)
+- Add Doc-Aware Enforcement to the executor: writes must land inside the
+  phase's globs (checked via scope.py), cross-module interaction is
+  public-interface-only, and permitted crossings are logged as
+  [DEVIATION] entries
+
+**Skill plumbing**
+- Resolve and export SPEC_SKILL (skill package root) in SKILL.md so
+  workflows and executors share the checker path regardless of checkout
+  vs installed copy
+- Update help.md usage, argument-hint, and the workflow checklist with
+  doc-aware mode
+
+* docs(spec): document the --persistent flag on new and update
+
+- Add usage examples for /spec new --persistent and /spec update
+  --persistent in docs/skills/spec.md
+- Explain the experimental doc-aware mode: docs written first, phases
+  scoped to doc globs, and cross-module interaction through documented
+  public interfaces
+- Note that new/update refuse to plan blind without valid docs and point
+  to references/doc-aware.md for the full model
+
+* feat(spec): make planner and updater agents doc-aware
+
+* feat(spec): gate doc-aware mode on docs validate; support exclude:true unmanaged docs
+
+* chore: improved scripting
+
+* fix(spec): pass phase globs unexpanded, skip doc-aware check on empty scope
+
+The scope.py checker ran with `--globs $PHASE_GLOBS` unquoted, so the shell
+glob-expanded the write globs (silently narrowing scope, or vanishing to an
+argparse error when nothing matched). Wrap the call in set -f/set +f to pass
+the glob strings literally, and skip the check entirely when a phase has no
+## Doc Scope block (empty PHASE_GLOBS) rather than erroring on zero globs.
+
+* fix(spec): gate doc-aware update before docs-first write
+
+Running --persistent against a plan created without --persistent mutated docs
+via /docs update and only then stopped. Check the plan's Doc Globs: metadata
+first and stop before running /docs update when the plan is not doc-aware.
+
+* fix(spec): skip root package.json, resolve --docs against --root
+
+A repo-root package.json registers as component path '.', which no component
+doc glob can own, emitting a permanent COVERAGE warning on every validate run.
+Skip it (the root is unclaimable) and point the coverage test at a real
+libs/api gap. Also resolve a relative --docs against --root instead of the
+CWD.
+
+* fix(docs): define SKILL resolver and mark legacy docs excluded
+
+Workflows referenced $SKILL/scripts/... without SKILL.md ever exporting it,
+so docs new/update/retcon/validate broke at their first script step. Add a
+resolver mirroring the spec skill's, and stamp docs moved to docs/legacy/ with
+exclude: true so review/validate/validate_docs.py skip them as unmanaged.
+
+* chore: remove unused Bash(rg:*) permission
+
+Nothing in the doc-aware flows this PR introduces calls rg; grep it away to
+avoid an unneeded permission widening.
+
 ## [1.70.0](https://github.com/cloudvoyant/codevoyant/compare/v1.69.0...v1.70.0) (2026-08-15)
 
 ### Features
