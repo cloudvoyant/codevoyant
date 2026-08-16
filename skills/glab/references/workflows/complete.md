@@ -55,9 +55,19 @@ Otherwise note `MR !{iid} is not a draft.` and continue.
 glab mr approve "${MR_IID}"
 ```
 
-## Step 6: Post Summary Note (if `--body`)
+## Step 6: Post Summary Note
+
+Never post an empty note — the summary is the top-level review comment and must be non-empty markdown. If `--body` is empty or absent, derive one:
 
 ```bash
+if [ -z "$BODY" ]; then
+  if [ -n "$APPROVE" ]; then
+    BODY="Approved."
+  else
+    BODY="Review submitted."
+  fi
+fi
+
 glab mr note "${MR_IID}" --message "${BODY}"
 ```
 

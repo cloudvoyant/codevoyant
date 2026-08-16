@@ -31,6 +31,8 @@ Pass the PR/MR number directly: `/pr review 42`, `/pr address 42`.
 
 - **Model tiers, never model IDs** — the `pr` agents declare `metadata: model-tier: standard`; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 
+- **Terse by default (STE).** Generated prose follows `references/voice.md` and, when drafting PR/MR bodies, review comments, and summaries, the vendored STE ruleset (`references/simple-english/ruleset.md`) in pragmatic mode — short sentences, plain vocabulary, no filler. See `references/voice.md` § STE.
+
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently
@@ -67,7 +69,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **address** (`references/workflows/address.md`) — pull review comments, propose and apply fixes, respond + resolve threads
 - **update** (`references/workflows/update.md`) — apply `<!-- > … -->` annotations or a chat edit to the last artifact (description/review/address)
 - **squash** (`references/workflows/squash.md`) — squash branch commits into one or more coherent, changelog-ready commits
-- **publish** (`references/workflows/publish.md`) — publish a draft PR/MR (mark ready) and/or its pending draft review; alias `ready`
+- **publish** (`references/workflows/publish.md`) — publish whatever is pending: mark a draft PR/MR ready, submit its pending review (with a non-empty markdown summary), and/or push+submit an unpublished local review doc; alias `ready`
 - **merge** (`references/workflows/merge.md`) — merge the PR/MR (squash by default, semantic-release aware), then best-effort watch post-merge CI on the base branch and notify on failure (opt out with `--no-watch-ci`); alias `land`
 - **help** (`references/workflows/help.md`) — print command reference
 

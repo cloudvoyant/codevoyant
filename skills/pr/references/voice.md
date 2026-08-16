@@ -49,6 +49,10 @@ Bugfix bodies (`pr-bug.md`, used by `/pr open --bug` or a `fix/`/`bug/` branch) 
 
 Keep Root Cause and Changes especially terse — short plain sentences, one idea per bullet. State the cause, then prove it. See `references/workflows/open.md` Step 3.6 for how to gather the snippet and evidence. (Feature descriptions are unaffected.)
 
+## Technical English (STE) — for generated prose
+
+When drafting PR/MR bodies, review comments, and any other generated prose, apply the vendored STE ruleset (`references/simple-english/ruleset.md` — a copy of the docs skill's, kept in-skill so this skill stays self-contained per the Agent Skills spec) in **pragmatic mode**: prefer the shortest plain word, split sentences over ~20 words, write in the imperative or active voice, and drop the slop vocabulary the ruleset bans (leverage, utilize, ensure, in order to, robust, seamlessly, …). The ruleset is the same one the `docs` skill uses, so PRs and docs speak the same terse dialect. When a draft could be shorter, make it shorter.
+
 ---
 
 Keep the structure the template provides. Apply this voice to the prose you fill in.
