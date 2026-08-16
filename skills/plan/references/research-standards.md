@@ -1,6 +1,6 @@
 # Research Standards
 
-Quality standards for research artifacts produced by em:plan and related em-workflow agents. Reference this file from agent instructions with: `Each finding must follow the format in 'skills/em/references/research-standards.md'.`
+Quality standards for research artifacts produced by the plan skill and related plan-workflow agents. Reference this file from agent instructions with: `Each finding must follow the format in 'skills/plan/references/research-standards.md'.`
 
 ---
 

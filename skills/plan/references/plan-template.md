@@ -1,6 +1,6 @@
-# Plan Template -- em:plan
+# Plan Template -- plan
 
-Use this template for `.codevoyant/em/plans/{slug}/plan.md`.
+Use this template for `.codevoyant/plans/{slug}/plan.md`.
 
 **Markdown output:** Soft-wrap prose — never hard-wrap. Write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 

@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** false
-**Purpose:** Creates Linear tasks from the task breakdown in a dev plan architecture plan. Each task includes enough context for autonomous execution via spec new/spec bg. Attaches the git repo to each task.
+**Purpose:** Creates Linear tasks/issues from the task breakdown in a task/architecture-level `plan` plan. Each issue includes enough context for autonomous execution via spec new/spec bg. Attaches the git repo to each issue.
 
 ## Inputs
 
@@ -13,7 +13,7 @@
 
 ## Prompt
 
-You are creating Linear tasks from an architecture plan's task breakdown.
+You are creating Linear issues from a task-level plan's task breakdown.
 
 ### Step 1: Read the plan
 
@@ -25,7 +25,7 @@ Extract the `## Task Breakdown` section. Parse each task entry:
 - Description
 - Blocks / Blocked by relationships
 
-If no Task Breakdown section exists, report "No task breakdown found — skipping Linear task creation." and stop.
+If no Task Breakdown section exists, report "No task breakdown found — skipping Linear issue creation." and stop.
 
 ### Step 2: Resolve the Linear team
 
@@ -100,13 +100,13 @@ For each task in the breakdown:
 
 ### Step 5: Report
 
-## Linear Tasks Report
+## Linear Issues Report
 
 ### Project
 {Created / Updated}: [{name}]({url})
 
-### Tasks created
-{list of task names with LOE and Linear URLs}
+### Issues created
+{list of issue names with LOE and Linear URLs}
 
 ### Git repo linked
 {repo URL or "not found"}

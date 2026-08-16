@@ -19,7 +19,7 @@
 
 ---
 
-Plan a project or initiative with Linear as tracker. Local-first: all artifacts land in `.codevoyant/plans/{slug}/`, then push to Linear on confirmation.
+Plan at any level — a task, a project, an initiative, or a product — with Linear as tracker. Local-first: all artifacts land in `.codevoyant/plans/{slug}/`, then push to Linear on confirmation. Task/architecture-level planning (a single task or epic with a task breakdown) routes to `references/workflows/plan-task.md`; project/initiative/product planning runs the milestone-grouped flow below.
 
 ## Step 0: Parse Args
 
@@ -27,12 +27,23 @@ Extract flags:
 ```
 BG_MODE  = true if --bg present
 SILENT   = true if --silent present
+LEVEL    = value after --level (task | arch | project | initiative | product; default: project)
 ```
 
-- Detect Linear URL or issue ID in remaining args -> `SOURCE_ID`.
+- Detect Linear URL or issue ID in remaining args -> `SOURCE_ID`. When `--level` is not given, infer `LEVEL` from the source:
+  - `/issue/` URL or a `{KEY}-{N}` issue ID → `task`
+  - `/initiative/` URL → `initiative`
+  - `/project/` URL → `project`
+  - otherwise → `project` (use `product` when the description names a portfolio or product line)
 - Derive `SLUG` from description or SOURCE_ID; check `.codevoyant/plans/{slug}/` for collision (append `-2`, `-3`, etc.).
 
 Set `PLAN_DIR=".codevoyant/plans/{SLUG}"`.
+
+## Step 0.5: Route by level
+
+If `LEVEL` is `task` or `arch`: this is task/architecture-level planning. Execute `references/workflows/plan-task.md` with the same `REMAINING_ARGS`, `SLUG`, `PLAN_DIR`, `BG_MODE`, and `SILENT`, then stop — do not continue the milestone-grouped flow below.
+
+Otherwise (`project`, `initiative`, or `product`), continue with Step 1.
 
 ## Step 1: System Audit
 
@@ -136,7 +147,7 @@ Write a `## Scope Decisions` section in `plan.md` with this table:
 ## Step 3.5: Research backfill (if no prior exploration found)
 
 Check for existing research:
-- Look in `.codevoyant/explore/` for a dev:explore or pm:explore run relevant to this project (pm:explore artifacts live at `.codevoyant/explore/{slug}/summary.md`)
+- Look in `.codevoyant/explore/` for an explore:new or pm:explore run relevant to this project (pm:explore artifacts live at `.codevoyant/explore/{slug}/summary.md`)
 
 **If relevant research found:** load it as `PRIOR_RESEARCH` and skip this step.
 
@@ -173,9 +184,9 @@ Proceed to Step 4 with PRIOR_RESEARCH set.
 
 Launch two background agents (`model: claude-haiku-4-5-20251001`, `run_in_background: true`):
 
-**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/em/references/research-standards.md`.
+**Agent R1 -- Codebase Scan:** Glob/Grep for files relevant to this project. Identify affected systems, existing patterns, test coverage. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Codebase Deep Scan` section. Each finding must follow the format in `skills/plan/references/research-standards.md`.
 
-**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Linear Context` section. Each finding must follow the format in `skills/em/references/research-standards.md`.
+**Agent R2 -- Linear Context:** Fetch related projects in the same team (`mcp__linear-server__list_projects`), any matching issues (`mcp__linear-server__list_issues` with text filter), existing labels. Append findings to `.codevoyant/explore/{slug}/architecture-research.md` under a `## Linear Context` section. Each finding must follow the format in `skills/plan/references/research-standards.md`.
 
 Wait for both. Synthesize: flag anything that already exists or overlaps with active projects.
 
@@ -257,7 +268,7 @@ cv_init_store() {
 }
 
 cv_init_store
-mkdir -p .codevoyant/plans/{slug}/task
+mkdir -p .codevoyant/plans/{slug}/tasks
 mkdir -p .codevoyant/explore/{slug}
 ```
 
@@ -330,7 +341,7 @@ Register the plan in `.codevoyant/README.md`:
 ```bash
 PLAN_DESCRIPTION="{OBJECTIVE first line}"
 grep -q "| {SLUG} |" .codevoyant/README.md 2>/dev/null || \
-  printf "| %s | Active | em | %s | %s | %s |\n" \
+  printf "| %s | Active | plan | %s | %s | %s |\n" \
     "{SLUG}" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
     >> .codevoyant/README.md
 ```
@@ -370,4 +381,4 @@ Loop on adjustments until "Looks good — done".
 
 ## Step 7: Notification
 
-If `BG_MODE`, report completion to the user with a brief summary stating that plan `{slug}` was saved to `.codevoyant/plans/{slug}/` and instructing them to run `/em approve` to promote it.
+If `BG_MODE`, report completion to the user with a brief summary stating that plan `{slug}` was saved to `.codevoyant/plans/{slug}/` and instructing them to run `/plan approve` to promote it.

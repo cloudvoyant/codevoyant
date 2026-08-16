@@ -1,4 +1,4 @@
-# Task Template -- em:plan
+# Task Template -- plan
 
 Use this structure for each task in `tasks/design.md`, `tasks/develop.md`, `tasks/deploy.md`.
 

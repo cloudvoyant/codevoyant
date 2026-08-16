@@ -157,7 +157,7 @@ AskUserQuestion:
   options:
     - label: "Looks good — no changes needed"
     - label: "Open the roadmap file to address issues"
-    - label: "Re-run em plan with adjustments"
+    - label: "Re-run /plan plan with adjustments"
 ```
 
 ## Step 5: Completion Report

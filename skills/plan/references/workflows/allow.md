@@ -19,7 +19,7 @@ mkdir -p "$(dirname "$SETTINGS_FILE")"
 
 ## Step 2: Compute required allow entries
 
-Scan the em skill's workflow files (`skills/em/references/workflows/*.md`) for bash commands used during execution. Map each to a Claude Code allow entry using the narrowest command prefix that covers actual usage. Typical em entries include:
+Scan the plan skill's workflow files (`skills/plan/references/workflows/*.md`) for bash commands used during execution. Map each to a Claude Code allow entry using the narrowest command prefix that covers actual usage. Typical plan entries include:
 
 - `Bash(git status:*)`, `Bash(git log:*)`, `Bash(git diff:*)`, `Bash(git rev-parse:*)`
 - `Bash(grep:*)`, `Bash(sed:*)`, `Bash(printf:*)`
@@ -34,16 +34,16 @@ Do NOT include the standard baseline (Write, Edit, Read, Glob, Grep, Bash(mkdir:
 - `Read(~/.claude/plugins/**/skills/**)`
 - `Read(.claude/skills/**)`
 
-Store these as `SKILL_READ_BASELINE` and union them into the allow set alongside `EM_ALLOW`.
+Store these as `SKILL_READ_BASELINE` and union them into the allow set alongside `PLAN_ALLOW`.
 
-Store the resulting list as `EM_ALLOW`.
+Store the resulting list as `PLAN_ALLOW`.
 
 ## Step 3: Merge into settings.json
 
-Read the existing settings (or start from `{}` if absent), union `EM_ALLOW` and `SKILL_READ_BASELINE` into `.permissions.allow` (deduplicate, sort), and write the file back. Use the Edit tool or `jq` for the merge.
+Read the existing settings (or start from `{}` if absent), union `PLAN_ALLOW` and `SKILL_READ_BASELINE` into `.permissions.allow` (deduplicate, sort), and write the file back. Use the Edit tool or `jq` for the merge.
 
 ## Step 4: Report
 
 ```
-✓ em permissions applied to $SETTINGS_FILE. /em plan can now run without interruption.
+✓ plan permissions applied to $SETTINGS_FILE. /plan plan can now run without interruption.
 ```

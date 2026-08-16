@@ -1,6 +1,6 @@
 # Linear Push Guide
 
-MCP call sequence for `em:plan` push step. Execute in order -- each step depends on IDs from previous.
+MCP call sequence for the `plan` skill's push step. Execute in order -- each step depends on IDs from previous.
 
 ## 1. Create Initiative (if initiative-scope)
 Tool: `mcp__linear-server__save_initiative`
@@ -26,7 +26,7 @@ Fields:
   - description = requirements + ACs from task-template (Markdown)
 
 ## 5. Record IDs
-Write `.codevoyant/em/plans/{slug}/linear-ids.json`:
+Write `.codevoyant/plans/{slug}/linear-ids.json`:
 ```json
 {
   "projectId": "...",

@@ -35,17 +35,17 @@ If `BG_MODE=true`: skip the confirmation in Step 1 and send a desktop notificati
 ## Step 0: Select Plan
 
 Check for plan slug argument. If not provided:
-1. List `.codevoyant/em/plans/*/plan.md` sorted by modification time (most recent first)
+1. List `.codevoyant/plans/*/plan.md` sorted by modification time (most recent first)
 2. If only one plan, auto-select it
 3. If multiple, use AskUserQuestion to present the list and ask the user to choose
-4. If none exist, inform user to run `/em plan` first
+4. If none exist, inform user to run `/plan plan` first
 
-Verify `.codevoyant/em/plans/{slug}/plan.md` exists. Set `PLAN_DIR=".codevoyant/em/plans/{slug}"`.
+Verify `.codevoyant/plans/{slug}/plan.md` exists. Set `PLAN_DIR=".codevoyant/plans/{slug}"`.
 
 ## Step 0.5: Determine Input Mode
 
 Check the argument string and triggering message for a change description:
-- If a non-slug argument is present (e.g., `/em update add observability to phase 3`), treat everything after the slug as `CHANGE_DESCRIPTION`
+- If a non-slug argument is present (e.g., `/plan update add observability to phase 3`), treat everything after the slug as `CHANGE_DESCRIPTION`
 - If neither: `CHANGE_DESCRIPTION` is empty -> annotation mode
 
 Set `INPUT_MODE`:
@@ -100,8 +100,8 @@ options:
 ## Step 2: Scan for Annotations
 
 ```bash
-grep -rn "<!-- >>" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
-grep -rn "<!-- >" {PLAN_DIR}/plan.md {PLAN_DIR}/task/ 2>/dev/null
+grep -rn "<!-- >>" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
+grep -rn "<!-- >" {PLAN_DIR}/plan.md {PLAN_DIR}/tasks/ 2>/dev/null
 ```
 
 Scan for `<!-- >>` (major) before `<!-- >` (minor). For each annotation, parse: FILE, LINE_NUM, CONTENT (the line text before the `<!-- >>` marker), INSTRUCTION (text between the marker and the closing `-->`, multi-line allowed).
@@ -134,7 +134,7 @@ Remove the entire `<!-- ... -->` annotation comment after applying. Log each cha
 ## Step 4: Consistency Pass
 
 After all changes:
-- Verify task milestone files still exist: `{PLAN_DIR}/task/design.md`, `tasks/develop.md`, `tasks/deploy.md`
+- Verify task milestone files still exist: `{PLAN_DIR}/tasks/design.md`, `tasks/develop.md`, `tasks/deploy.md`
 - Check milestone naming and task numbering is consistent throughout `plan.md`
 - Verify "NOT this period" section still accurately reflects deferrals
 

@@ -1,6 +1,6 @@
-# plan
+# plan-task
 
-Plan software architecture for a project or feature. Writes drafts to `.codevoyant/plans/`.
+Plan software architecture for a project or feature at the task level (a single task, epic, or architecture effort with a task breakdown). Writes drafts to `.codevoyant/plans/`. This is the task/architecture-level branch of the `plan` skill — `plan.md` Step 0.5 routes here when `--level task` (or `--level arch`) is given.
 
 ## Step 0.5: System Audit
 
@@ -23,15 +23,15 @@ If `docs/architecture/README.md` exists, read it — use as context so this plan
   question: "What kind of plan is this?"
   header: "Plan mode"
   options:
-    - label: "Architecture (--mode arch)"
+    - label: "Architecture"
       description: "System or component design — produces task breakdown with LOE and blocking relationships"
-    - label: "Feature implementation (--mode feat)"
+    - label: "Feature implementation"
       description: "A specific feature within a known architecture — produces a design doc only"
   ```
 
   Set `PLAN_MODE` from the answer before continuing, then ask for scope in free text.
 
-When args provided default `PLAN_MODE = arch` unless `--mode feat` is present, and infer scope (new feature, refactor, cross-cutting, greenfield) from the args text.
+When args are provided, default `PLAN_MODE = arch` unless `--mode feat` is present, and infer scope (new feature, refactor, cross-cutting, greenfield) from the args text.
 
 Only ask follow-up clarifications ("what do you know already", "confidence level") if the args are genuinely ambiguous; otherwise let Step 2 research agents discover the answers from the codebase.
 
@@ -120,9 +120,9 @@ Write `{PLAN_DIR}/plan.md` with all architecture doc sections:
 
 If "Mark as exploratory": prepend `> **Status: Proposal** — not yet decided`.
 
-### Task Breakdown (if PLAN_MODE is arch)
+### Task Breakdown
 
-If `PLAN_MODE` is `arch` (or scope chosen was "Refactor existing system" or "Greenfield project"), append a `## Task Breakdown` section to `plan.md`:
+Append a `## Task Breakdown` section to `plan.md` (unless `PLAN_MODE` is `feat`, which produces a design doc only):
 
 For each implementation task identified during design, write a self-contained entry rich enough for an autonomous agent to run `/spec new` and `/spec bg` without further human input:
 
@@ -154,7 +154,7 @@ Register the plan:
 ```bash
 PLAN_DESCRIPTION="{first line of Context section}"
 grep -q "| {FEATURE_SLUG} |" .codevoyant/README.md 2>/dev/null || \
-  printf "| %s | Active | dev | %s | %s | %s |\n" \
+  printf "| %s | Active | plan | %s | %s | %s |\n" \
     "{FEATURE_SLUG}" "$PLAN_DESCRIPTION" "$(date +%Y-%m-%d)" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(none)')" \
     >> .codevoyant/README.md
 echo "✓ Registered plan: {FEATURE_SLUG}"
@@ -163,7 +163,7 @@ echo "✓ Registered plan: {FEATURE_SLUG}"
 Report:
 ```
 Plan written to .codevoyant/plans/{FEATURE_SLUG}/plan.md
-Run /dev approve to promote to docs/architecture/.
+Run /plan approve to promote to docs/architecture/.
 ```
 
 If `BG_MODE=true` and `SILENT=false`, report completion to the user with a brief summary stating the architecture plan was saved to `.codevoyant/plans/{FEATURE_SLUG}/`.

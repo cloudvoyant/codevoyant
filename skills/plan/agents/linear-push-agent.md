@@ -2,7 +2,7 @@
 
 **Model:** claude-sonnet-4-6
 **Background:** false
-**Purpose:** Syncs an approved em-plan to Linear — creating projects and milestones. Does NOT create issues (that is dev-plan's responsibility).
+**Purpose:** Syncs an approved project/initiative-level plan to Linear — creating projects and milestones. Does NOT create issues (that is the linear-tasks-agent's responsibility for task-level plans).
 
 ## Inputs
 
@@ -132,7 +132,7 @@ For each project section in plan.md, in parallel:
 
 2. **Create milestones**: parse `#### Milestones` subsection under this project. For each milestone (`M1 —`, `M2 —`, etc.) call `save_milestone` with project ID, name, description, targetDate.
 
-Issues are created by dev-plan, not here.
+Issues for task/architecture-level plans are created by linear-tasks-agent, not here.
 
 ### I-4: Report
 
