@@ -202,10 +202,10 @@ Assess whether the scope is narrow enough for direct planning. A scope is **too 
 
 If scope is **clear**: proceed directly to Step 5.
 
-If scope is **too broad**: launch an Opus researcher to propose options:
+If scope is **too broad**: launch a heavy-tier researcher to propose options:
 
 ```
-Agent (model: claude-opus-4-8, run_in_background: false):
+Agent (model-tier: heavy, run_in_background: false):
 
 You are a technical advisor helping scope a software implementation plan.
 
@@ -226,7 +226,7 @@ Keep each proposal to 4–5 lines. Be concrete — reference actual files or pat
 
 Present the proposals to the user.
 
-If `BG_MODE=true`: instruct the Opus agent to also select the strongest approach and briefly justify it. Use that selection and continue — do not ask.
+If `BG_MODE=true`: instruct the heavy-tier agent to also select the strongest approach and briefly justify it. Use that selection and continue — do not ask.
 
 If `BG_MODE=false`: use **one** AskUserQuestion for approach selection.
 
@@ -354,7 +354,7 @@ done
 
 Immediately after all files are verified, run the code-completeness gate before permission analysis or optional full-plan validation. This gate is required for every non-blank plan; `--validate` only adds the broader multi-agent validation loop.
 
-**Code-completeness gate (required):** Launch one validation agent (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted.
+**Code-completeness gate (required):** Launch one validation agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted.
 
 Collect its report with `TaskOutput(id: CODE_COMPLETENESS_TASK_ID, block: true)`. If its status is `NEEDS_IMPROVEMENT`, repair every reported implementation task by replacing the missing, abbreviated, placeholder, or prose-only block with the complete literal code. Rerun this gate after each repair pass until it returns `PASS`.
 
@@ -362,7 +362,7 @@ Never continue to permission analysis, optional validation, or the completion re
 
 After the required code-completeness gate passes, launch the permission analysis agent:
 
-**Agent P — Permissions analysis** (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+**Agent P — Permissions analysis** (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
 
 ```md
 Analyze the spec plan at {PLAN_DIR} and identify every permission an autonomous execution agent will need.

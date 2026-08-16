@@ -39,13 +39,13 @@ Additional checks:
 
 ## Step 3: Code-Completeness Gate (Pass 1 — CRITICAL)
 
-Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model: claude-haiku-4-5-20251001`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. The agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block.
+Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. The agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block.
 
 Wait for the report. Add every `NEEDS_IMPROVEMENT` finding to the critical finding set. Classify a finding as `AUTO-FIX` only when the reviewer can determine and paste the complete literal code from the repository and plan context; otherwise classify it as `ASK`. Do not allow later review findings, AUTO-FIX work, or a report verdict to mark the plan ready until this gate returns `PASS` with no unresolved code-completeness findings.
 
 ## Step 4: Parallel Review Agents (Pass 2 — CRITICAL)
 
-Run four review agents in parallel (`model: claude-haiku-4-5-20251001`, `run_in_background: true`). Each marks every finding as CRITICAL.
+Run four review agents in parallel (`model-tier: light`, `run_in_background: true`). Each marks every finding as CRITICAL.
 
 **Agent A — Plan-level scope challenge:**
 - Complexity challenge: is this more complex than needed? Could a simpler mechanism work?
@@ -81,7 +81,7 @@ Wait for all four agents to complete.
 
 ## Step 4b: Pass 3 — INFORMATIONAL
 
-Single agent (`model: claude-haiku-4-5-20251001`) reviews for quality and clarity issues that do not block execution: unclear task names, missing context in phase headers, phases that could be split, docs staleness. Tag all findings as INFORMATIONAL.
+Single agent (`model-tier: light`) reviews for quality and clarity issues that do not block execution: unclear task names, missing context in phase headers, phases that could be split, docs staleness. Tag all findings as INFORMATIONAL.
 
 ## Step 5: Fix-First Classification
 
