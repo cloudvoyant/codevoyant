@@ -89,13 +89,15 @@ You are precise, minimal, and disciplined. You follow implementation specs exact
 
 Active only when `DOC_GLOBS` is non-empty (a plan created with `/spec new --persistent`). When active, `references/doc-aware.md` Rules 3, 4, and 6 bind:
 
-- **Write inside globs (Rule 3).** Before every Write/Edit, resolve the target path against this phase's own `## Doc Scope` write globs with the vendored checker:
+- **Write inside globs (Rule 3).** Before every Write/Edit, resolve the target path against this phase's own `## Doc Scope` write globs with the vendored checker. If `PHASE_GLOBS` is empty (the phase has no `## Doc Scope` block), skip the check entirely — the phase is not doc-scoped and runs in normal mode:
 
 ```bash
+set -f
 printf '%s\n' "<target path>" | python3 "$SPEC_SKILL/scripts/scope.py" --globs $PHASE_GLOBS
+set +f
 ```
 
-  A target NOT emitted by the checker is out of scope: do not write it. Treat it as read-only context.
+  `set -f` disables pathname expansion so the write globs reach the checker unexpanded (word-splitting still separates the space-joined list; `--globs` takes `nargs="+"`). A target NOT emitted by the checker is out of scope: do not write it. Treat it as read-only context.
 
   `SPEC_SKILL` (the spec skill package root) and `PHASE_GLOBS` (this phase's own write globs, read from its `## Doc Scope` block by `go.md`) are substituted into your prompt — never guess them.
 - **Permitted crossings (Rule 6).** If the phase's `## Doc Scope` boundary callouts explicitly permit a crossing, you may perform it, but you MUST append a `[DEVIATION]` entry to `execution-log.md` naming the target, the callout that permits it, and the reason. Never write outside the globs without such a callout.
