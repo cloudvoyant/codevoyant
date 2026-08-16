@@ -97,7 +97,7 @@ Escalate (stop and report `ESCALATE`) when:
 When escalating, end your report with a single line:
 
 ```
-ESCALATE: {one-sentence reason} — phase {N} needs a higher model tier
+ESCALATE: Phase {N} — {one-sentence reason} (needs a higher model tier)
 ```
 
 Do NOT escalate for routine work, formatting, or anything the spec already specifies. Responsiveness first; escalate only on real challenges.

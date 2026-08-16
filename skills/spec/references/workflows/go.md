@@ -84,8 +84,8 @@ Determine `EXECUTION_DIR` (worktree path or current directory).
 1. **Batch independent phases.** Group the next set of phases that have no dependency on any unfinished phase. Spawn one `spec-executor` agent per phase in the batch **in a single message** (parallel), each on the tier declared in `agents/spec-executor.md` frontmatter (`metadata: model-tier: light`), with `EXECUTION_DIR`, `PLAN_BRANCH`, `PLAN_WORKTREE`, `ALLOW_COMMITS`, `SILENT`, and `PLAN_NAME` substituted into the prompt. A batch of one is just a single spawn.
 2. Wait for the batch to finish (`TaskOutput` block=true for each).
 3. Write each phase summary to execution-log.md.
-4. **Escalation on trouble.** If an executor's report ends with an `ESCALATE:` line, or the phase otherwise failed, re-spawn *that* phase on the next tier — `light` → `standard` → `heavy`. Log each escalation to execution-log.md as `[ESCALATE] Phase {N}: tier {tier} — {reason}`. Only after a heavy-tier attempt also fails do you treat the phase as failed.
-5. If a phase is still failed after escalation to the heavy tier: stop the loop, send failure notification, report to user.
+4. **Escalation on trouble (code-strength walls only).** If an executor's report ends with an `ESCALATE:` line, re-spawn *that* phase on the next tier — `light` → `standard` → `heavy`. Log each escalation to execution-log.md as `[ESCALATE] Phase {N}: {tier} — {reason}`. Only after a heavy-tier attempt also fails do you treat the phase as failed. Do NOT re-spawn a phase reported `FAILED` for a red CI — a red CI stops execution; escalation is for code-strength walls, not a red CI (see `agent-prompt.md`).
+5. If a phase is still failed after escalation to the heavy tier, or a phase was reported `FAILED` for a red CI: stop the loop, send failure notification, report to user.
 6. If the batch succeeded: continue to the next dependency-ordered batch.
 
 After the loop completes, unless `SILENT=true`, report completion to the user with a brief summary stating either that plan `{plan-name}` is complete, or that plan `{plan-name}` stopped at Phase `{N}`. If any phase escalated, note which phases escalated and to which tier.

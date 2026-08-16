@@ -26,3 +26,7 @@ Tiers are relative weights; the platform maps them to concrete models.
 - Skills NEVER contain provider model IDs. A hardcoded `claude-*` / `gpt-*` / `deepseek-*` string is a portability bug.
 - Tiers are relative to each other (`light` < `standard` < `heavy`), never absolute.
 - Escalation moves up tiers (`light` → `standard` → `heavy`), never to a named model.
+
+## Keep in sync
+
+This file is vendored per published skill package (`spec`, `pr`, `skill`), so it lives in three places. Edit all copies together: `skills/spec/references/model-tiers.md`, `skills/pr/references/model-tiers.md`, `skills/skill/references/model-tiers.md`.
