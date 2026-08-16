@@ -24,10 +24,10 @@ features:
     details: Adaptive, deterministic, and controllable spec-driven development.
     link: /skills/spec
   - icon:
-      src: /icons/dev.svg
-    title: dev
-    details: Architecture planning, technical exploration, repo comparison, and docs generation.
-    link: /skills/dev
+      src: /icons/explore.svg
+    title: explore
+    details: Pure technical exploration — research problem spaces, compare approaches, and generate decision-oriented proposals.
+    link: /skills/explore
   - icon:
       src: /icons/docs.svg
     title: docs
@@ -54,10 +54,10 @@ features:
     details: Build, iterate, critique, and extract codevoyant-compatible skills.
     link: /skills/skill
   - icon:
-      src: /icons/em.svg
-    title: em · experimental
-    details: Engineering roadmaps, epic breakdowns, capacity review, and Linear sync.
-    link: /skills/em
+      src: /icons/plan.svg
+    title: plan · experimental
+    details: Planning at every level — a task, a project, an initiative, or a product — with roadmap review and Linear sync.
+    link: /skills/plan
   - icon:
       src: /icons/pm.svg
     title: pm · experimental

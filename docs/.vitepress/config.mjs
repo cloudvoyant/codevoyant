@@ -22,10 +22,10 @@ export default defineConfig({
     // Non-recipe skills (exclude entirely)
     "skills/changelog/**",
     "skills/cz/**",
-    "skills/dev/**",
+    "skills/explore/**",
     "skills/docs/**",
     "skills/ed/**",
-    "skills/em/**",
+    "skills/plan/**",
     "skills/flow/**",
     "skills/gh/**",
     "skills/git/**",
@@ -104,7 +104,7 @@ export default defineConfig({
         text: "Workflows",
         items: [
           { text: "spec", link: "/skills/spec" },
-          { text: "dev", link: "/skills/dev" },
+          { text: "explore", link: "/skills/explore" },
           { text: "docs", link: "/skills/docs" },
           { text: "flow", link: "/skills/flow" },
           { text: "pr", link: "/skills/pr" },
@@ -115,7 +115,7 @@ export default defineConfig({
       {
         text: "Domains",
         items: [
-          { text: "em · experimental", link: "/skills/em" },
+          { text: "plan · experimental", link: "/skills/plan" },
           { text: "pm · experimental", link: "/skills/pm" },
           { text: "ed · experimental", link: "/skills/ed" },
           { text: "ux · experimental", link: "/skills/ux" },

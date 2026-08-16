@@ -14,7 +14,7 @@ Create a named pipeline with an ordered list of skill invocations; generates `fl
 
 ```bash
 /flow new auth-refactor \
-  "/dev explore how the auth middleware works" \
+  "/explore new how the auth middleware works" \
   "/spec new refactor auth middleware" \
   "/spec go"
 
@@ -39,7 +39,7 @@ Put `{{placeholders}}` in any step and supply values when you run the flow:
 
 Each step's key outputs (PR numbers, plan names, file paths) are captured and threaded forward as **flow context**, so later steps can use them automatically — e.g. `/pr open` produces a PR number that a later `/pr address` step picks up without you re-typing it. Flow context is persisted, so an interrupted flow resumes with it intact.
 
-**Chaining interactive skills.** Steps run as subagents and can't prompt you directly, so write each step to run non-interactively — pass its input inline or as a `{{param}}` (give steps that need different values distinct params, not one shared `{{input}}`), and wire a consumer step to the artifact its producer wrote (e.g. `/dev explore` → `.codevoyant/explore/{slug}/` → `/spec new` plans from it). If a step still hits a decision it can't resolve, it escalates one question back to you (`NEEDS_INPUT`) and re-runs with your answer — a fallback, not the plan.
+**Chaining interactive skills.** Steps run as subagents and can't prompt you directly, so write each step to run non-interactively — pass its input inline or as a `{{param}}` (give steps that need different values distinct params, not one shared `{{input}}`), and wire a consumer step to the artifact its producer wrote (e.g. `/explore new` → `.codevoyant/explore/{slug}/` → `/spec new` plans from it). If a step still hits a decision it can't resolve, it escalates one question back to you (`NEEDS_INPUT`) and re-runs with your answer — a fallback, not the plan.
 
 ### go — execute a flow
 

@@ -6,7 +6,7 @@
 
 Skills are slash commands that load focused instructions into your AI agent's context before it acts. There are five kinds:
 
-- **Workflows** — multi-step planning and execution flows for engineering and product work (spec, dev, flow, em, pm, ux).
+- **Workflows** — multi-step planning and execution flows for engineering and product work (spec, explore, plan, flow, pm, ux).
 - **Skills** — discrete operations you invoke directly for a single, well-defined job (pr, qa, skill, task).
 - **Tools** — CLI and platform integrations (git, gh, glab, linear, and others).
 - **Context Skills** — activate automatically when relevant files are detected; no invocation needed (mise).
@@ -25,8 +25,8 @@ For the best experience, install the full skill set — several skills compose w
 
 ```bash
 /spec new add dark mode toggle to the settings page
-/em plan add webhook support to the notifications API
-/dev explore how the auth middleware works
+/plan plan add webhook support to the notifications API
+/explore new how the auth middleware works
 /pm explore pricing strategy for the enterprise tier
 /ux explore checkout flow
 ```
@@ -60,24 +60,45 @@ Plans live in `.codevoyant/plans/{name}/` with a high-level `plan.md` and per-ph
 
 See the [spec reference](/skills/spec) for all commands.
 
-### dev — architecture and exploration
+### explore — pure technical exploration
 
-Dev handles the higher-level parts of the development loop.
-
-**Architecture planning:**
-
-```bash
-/dev plan "auth system" --mode arch   # draft architecture plan with task breakdown + LOE
-/dev approve my-plan --push           # promote to docs/architecture/ and create Linear tasks
-```
+Explore researches problem spaces and generates decision-oriented proposals. It never writes application code.
 
 **Technical exploration:**
 
 ```bash
-/dev explore "caching strategy"       # research approaches, generate parallel proposals
+/explore new "caching strategy"       # research approaches, generate parallel proposals
+/explore diff feature/my-branch       # compare with a local branch
 ```
 
-See the [dev reference](/skills/dev) for all commands.
+See the [explore reference](/skills/explore) for all commands.
+
+### plan — planning at every level
+
+Plan covers planning at every level: a single task, a project, an initiative, or a whole product. Renamed from `em`; it also absorbed the old `/dev plan` architecture-planning flow.
+
+**Project/initiative planning:**
+
+```bash
+/plan plan "migrate auth to OAuth2"    # draft plan to .codevoyant/plans/
+/plan review my-plan                   # review for capacity, risks, and dependency gaps
+/plan approve my-plan --push           # promote to docs/ and push to Linear
+```
+
+**Task/architecture-level planning:**
+
+```bash
+/plan plan "auth system" --level task  # draft architecture plan with task breakdown + LOE
+/plan approve my-plan --push           # promote to docs/architecture/ and create Linear tasks
+```
+
+Seed from an existing Linear project or initiative:
+
+```bash
+/plan plan https://linear.app/team/project/PRJ-123
+```
+
+See the [plan reference](/skills/plan) for all commands.
 
 ### flow — end-to-end pipeline orchestration
 
@@ -85,7 +106,7 @@ Flow chains multiple skill invocations into a named pipeline that runs sequentia
 
 ```bash
 /flow new my-pipeline \
-  "/dev explore how the auth middleware works" \
+  "/explore new how the auth middleware works" \
   "/spec new refactor auth middleware" \
   "/spec go"
 
@@ -96,24 +117,6 @@ Flow chains multiple skill invocations into a named pipeline that runs sequentia
 Pipelines live in `.codevoyant/flows/{name}/flow.md` — under the shared per-project store `~/.codevoyant/<project-slug>/`, which `.codevoyant` symlinks to.
 
 See the [flow reference](/skills/flow) for all commands.
-
-### em — engineering project planning _(Experimental)_
-
-EM structures engineering planning: milestone-grouped task plans, capacity and dependency review, and sync with Linear.
-
-```bash
-/em plan "migrate auth to OAuth2"     # draft plan to .codevoyant/plans/
-/em review my-plan                    # review for capacity, risks, and dependency gaps
-/em approve my-plan --push            # promote to docs/ and push to Linear
-```
-
-Seed from an existing Linear project:
-
-```bash
-/em plan https://linear.app/team/project/PRJ-123
-```
-
-See the [em reference](/skills/em) for all commands.
 
 ### pm — product roadmaps and PRDs _(Experimental)_
 
