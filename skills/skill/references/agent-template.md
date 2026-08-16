@@ -9,7 +9,7 @@ Reference format for individual agent files in `agents/`. Each agent that a skil
 ```markdown
 # {agent-name}
 
-**Model:** claude-haiku-4-5-20251001
+**Model tier:** light
 **Background:** true | false
 **Purpose:** {one sentence: what it does and what artifact it produces}
 
@@ -26,7 +26,7 @@ Saves to: `{path/to/output/file.md}`
 
 ## Fields
 
-- **model** — full model ID (e.g. `claude-haiku-4-5-20251001`, `claude-sonnet-4-5-20251001`, `claude-opus-4-6`)
+- **model-tier** — relative weight: `light` | `standard` | `heavy`. Never a provider model ID — the platform maps the tier to a concrete model (see `references/model-tiers.md`); with no platform config, the session's current model is used.
 - **background** — `true` if the agent runs without blocking the main flow; `false` if the skill waits for it
 - **purpose** — one sentence: what the agent does, what artifact it saves
 - **prompt** — complete, self-contained prompt; all variables must be substituted before passing
@@ -49,7 +49,7 @@ Saves to: `{path/to/output/file.md}`
 ```markdown
 # research-agent
 
-**Model:** claude-haiku-4-5-20251001
+**Model tier:** light
 **Background:** true
 **Purpose:** Searches npm, GitHub, and official docs for prior art; saves findings to `.codevoyant/explore/{skill-slug}/research.md`.
 

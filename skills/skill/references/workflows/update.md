@@ -111,13 +111,13 @@ Use the Agent tool to launch all researchers in a **single message** (one tool c
 - `{SKILL_NAME}` — the skill being updated
 - `{OUTPUT_PATH}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/{slug}.md`
 
-Each agent: model: claude-sonnet-4-6, run_in_background: true.
+Each agent: model-tier: standard, run_in_background: true.
 
 Do not send agent calls across separate messages — all must be in one message to run in parallel. Wait for all to complete before continuing.
 
 Read all artifacts in `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/research/` and incorporate findings into the plan.
 
-## Step 5: Launch skill-updater (Opus)
+## Step 5: Launch skill-updater (heavy tier)
 
 Substitute into `agents/skill-updater.md`:
 - `{SKILL_NAME}` — the skill slug
@@ -128,7 +128,7 @@ Substitute into `agents/skill-updater.md`:
 - `{PLAN_DIR}` — `.codevoyant/plans/{skill-slug}-update-{YYMMDD}/`
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 
-Agent: model: claude-opus-4-6, run_in_background: false.
+Agent: model-tier: heavy, run_in_background: false.
 
 Wait for completion. The agent registers the plan (if TARGET_TYPE=existing) and sends a notify. Read `{PLAN_DIR}/plan.md` and present it to the user.
 
