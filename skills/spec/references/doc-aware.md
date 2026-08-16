@@ -39,6 +39,11 @@ When docs are entirely missing, the graceful path (Rule 5) takes precedence and 
 Every phase of a doc-aware plan declares the doc globs it may write. Mechanics:
 
 - The planner reads each component's `globs:` frontmatter from the docs and assigns every phase the globs of the components it touches.
+- **No globless phases (hard boundary).** Every phase MUST declare at least one write glob. A phase with an empty `**Write globs:**` list is a planning error — an executor never runs without glob boundaries. There is always a glob to declare: every project has at least one lib/app/executable distinct from its deployment/CI, so a code phase always has a source glob. Never emit a "pure research / decision / no-write" phase — fold it into a phase that writes a real glob, or give it a docs/CI phase with its own glob. Even for a brand-new repo, produce separate phases for src/monorepo libs, CI, and docs, each with its own glob:
+  - **src / monorepo libs**: `src/**`, or the monorepo package glob (`packages/*/src/**`, `libs/**`, `apps/*/src/**`) — required for any phase that writes code.
+  - **CI**: the CI/config glob (`**/.github/**`, `**/.gitlab-ci.yml`, `**/ci/**`, `mise.toml`, `justfile`) — for CI/config-only work.
+  - **docs**: `docs/**` — for documentation work.
+- **Repo-layout fallback.** When a component has no doc with `globs:` frontmatter (docs incomplete — Rule 5), derive its write glob from the repository layout instead of leaving the phase globless: scan for the app/lib/executable directory (`src/**`, `packages/*/src/**`, `lib/**`, `apps/*/**`), the CI config, and the docs directory. Never derive a code phase's only glob from deployment/CI config alone — a code phase must cover the src dir.
 - The phase file carries a `## Doc Scope` section listing those globs; plan.md metadata carries a `Doc Globs:` line (a space-separated union of the phases' globs).
 - A phase may Write/Edit ONLY files inside its declared globs. Paths outside the globs are read-only context, not write targets.
 - The executor checks writes mechanically with the vendored `scripts/scope.py`:
@@ -70,7 +75,7 @@ index, component docs with `globs:` frontmatter), then re-run this command
 with `--persistent`.
 ```
 
-- **Docs exist but are incomplete** (globs present but no public-interface section, or missing component docs): proceed, but flag every gap as a boundary callout (Rule 6). The user may run `/docs update` or `/docs new` to fill gaps.
+- **Docs exist but are incomplete** (globs present but no public-interface section, or missing component docs): proceed, but derive any missing phase write globs from the repository layout (Rule 3) — never leave a phase globless — and flag every gap as a boundary callout (Rule 6). The user may run `/docs update` or `/docs new` to fill gaps.
 - **Docs are stale relative to the branch**: `/docs update` (Rule 2) refreshes them; if it cannot, note the staleness in the plan's boundary callouts rather than blocking.
 
 ### Rule 6: Boundary callouts
@@ -92,7 +97,7 @@ Mechanics:
 - `update.md` — parse `--persistent`, run the Rule 1 gate (via `scripts/validate_docs.py`), run the Rule 2 docs-first write, apply Rule 3 scoping to the conversational/annotation edits.
 - `go.md` — read the plan's `Doc Globs:` metadata as the doc-aware activation signal, read each phase's own write globs from its `## Doc Scope` block, and pass them (as `PHASE_GLOBS`, plus `SPEC_SKILL` for the checker path) to that phase's executor; executors enforce Rules 3–4.
 - `agents/spec-executor.md` — enforce Rules 3–4 for every Write/Edit and log Rule 6 deviations.
-- `agents/spec-planner.md` — produce the Rule 3 scoping (per-phase `## Doc Scope` globs, plan.md `Doc Globs:` union) and the Rule 6 boundary callouts while drafting phases.
+- `agents/spec-planner.md` — produce the Rule 3 scoping (per-phase `## Doc Scope` globs with at least one write glob each — a globless phase is invalid, plan.md `Doc Globs:` union) and the Rule 6 boundary callouts while drafting phases.
 - `agents/spec-updater.md` — preserve the Rule 3 scoping and Rule 6 callouts while applying plan updates (keep `## Doc Scope` blocks and the `Doc Globs:` union in sync).
 
 ## Scripts

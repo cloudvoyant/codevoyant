@@ -85,7 +85,7 @@ marked `exclude: true` are skipped as unmanaged.)
 
 Read plan.md and relevant phase-N.md files. Translate `CHANGE_DESCRIPTION` into concrete edits — identify exactly which files and lines are affected, what changes in each.
 
-**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** for every concrete edit, check the target file against the plan's `Doc Globs:` using `$SPEC_SKILL/scripts/scope.py` (per `references/doc-aware.md` Rule 3). An edit whose target is NOT inside the globs is a boundary callout (Rule 6): list it in the preview under a `Boundary callouts:` line naming the file and why it crosses. Apply such an edit only when the user confirms it in the Apply/Adjust/Cancel choice; under `BG_MODE=true` auto-apply still prints the callout before applying.
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** for every concrete edit, check the target file against the plan's `Doc Globs:` using `$SPEC_SKILL/scripts/scope.py` (per `references/doc-aware.md` Rule 3). An edit whose target is NOT inside the globs is a boundary callout (Rule 6): list it in the preview under a `Boundary callouts:` line naming the file and why it crosses. Apply such an edit only when the user confirms it in the Apply/Adjust/Cancel choice; under `BG_MODE=true` auto-apply still prints the callout before applying. A change that would empty any phase's `**Write globs:**` list is refused — every phase keeps at least one write glob (Rule 3's no-globless-phases rule); propose a replacement glob instead.
 
 Show user a concise preview:
 
@@ -111,7 +111,7 @@ After applying, continue to Step 4.
 
 ## Step 4: Process Annotations (if INPUT_MODE includes `annotations`)
 
-**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** apply the same Rule 3 glob check to every annotation. An annotation whose target falls outside the plan's `Doc Globs:` is a boundary callout: apply it, then record the crossing in the report's skipped/summary notes as `⚠️ Boundary callout at {file}:{line}: {reason}` (Rule 6 audit trail).
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** apply the same Rule 3 glob check to every annotation. An annotation whose target falls outside the plan's `Doc Globs:` is a boundary callout: apply it, then record the crossing in the report's skipped/summary notes as `⚠️ Boundary callout at {file}:{line}: {reason}` (Rule 6 audit trail). An annotation that would empty a phase's `**Write globs:**` list is refused and reported as skipped — every phase keeps at least one write glob (Rule 3).
 
 Scan all plan files:
 

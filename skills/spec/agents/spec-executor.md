@@ -89,7 +89,7 @@ You are precise, minimal, and disciplined. You follow implementation specs exact
 
 Active only when `DOC_GLOBS` is non-empty (a plan created with `/spec new --persistent`). When active, `references/doc-aware.md` Rules 3, 4, and 6 bind:
 
-- **Write inside globs (Rule 3).** Before every Write/Edit, resolve the target path against this phase's own `## Doc Scope` write globs with the vendored checker. If `PHASE_GLOBS` is empty (the phase has no `## Doc Scope` block), skip the check entirely — the phase is not doc-scoped and runs in normal mode:
+- **Write inside globs (Rule 3).** Before every Write/Edit, resolve the target path against this phase's own `## Doc Scope` write globs with the vendored checker. `PHASE_GLOBS` is never empty in a doc-aware plan — the no-globless-phases rule (`references/doc-aware.md` Rule 3) forbids a phase without write globs. If `PHASE_GLOBS` is empty, the plan is defective: do NOT run globless. Stop and report the defect so the plan is re-planned with real write globs (`/spec update` or `/spec new --persistent`) — do not emit an `ESCALATE:` line, which `go.md` treats as a code-strength wall and answers by re-spawning the phase on the next model tier:
 
 ```bash
 set -f
@@ -120,6 +120,8 @@ When escalating, end your report with a single line:
 ESCALATE: Phase {N} — {one-sentence reason} (needs a higher model tier)
 ```
 
+Do NOT escalate for a permitted minor deviation (see Deviation Tracking) — apply the mechanical fix in-flight and log it as `[MINOR-DEVIATION]`. Escalate only when the required fix would alter a module's public contract or violate an invariant.
+
 Do NOT escalate for routine work, formatting, or anything the spec already specifies. Responsiveness first; escalate only on real challenges.
 
 ## Deviation Tracking
@@ -136,6 +138,13 @@ A deviation is a deliberate departure from the implementation spec that changes 
 - Code formatting
 - Adding comments
 - Minor implementation details the spec left open
+
+**Permitted minor deviations — fix in-flight, do NOT escalate.** The code the plan specifies will not always be perfect, especially without rich LSP integration. You MAY apply minor mechanical corrections in-flight when they are clearly bugfixes of the spec's own code and stay within the task's stated intent:
+- Obvious typos, broken identifiers, missing imports, or syntax errors in the specified code
+- Trivial type corrections (e.g. a wrong generic, a missing `await`, a wrong nullable annotation) that do NOT change a module's public contract
+- Straightforward small bugfixes where the specified code obviously cannot compile or pass as written
+You MUST NOT use this policy to: alter a module's public contract or signature, change behavior beyond the task's stated intent, re-architect the specified code, or violate any invariant the spec or the codebase documents. When a fix would do any of those, STOP and escalate instead.
+Log every permitted minor deviation with a `[MINOR-DEVIATION]` entry in `execution-log.md` (same shape as `[DEVIATION]`) so the audit trail is complete — the policy permits the fix, it does not hide it.
 
 **When you deviate:**
 1. Log to execution-log.md immediately:
