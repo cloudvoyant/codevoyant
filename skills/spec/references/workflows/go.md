@@ -6,7 +6,7 @@ Execute the plan in the background using an autonomous agent. The agent works th
 
 - `PLAN_NAME` — plan to execute (may be empty; will prompt if multiple plans exist)
 - `AUTO_APPROVE` — true if `--yes` or `-y` present
-- `ALLOW_COMMITS` — true if `--commit` or `-c` present. When true, each phase is committed (and pushed if a remote exists) and the executor runs the OPTIONAL per-phase CI-green check via `/gh ci` / `/glab ci` (silent skip when no remote / no CI / no CLI). When false, no commits, no push, and no CI check.
+- `ALLOW_COMMITS` — true if `--commit` or `-c` present. When true, the executor commits each completed phase through the git skill (`/git commit --yes [--no-push | --fix]` — never raw `git commit`), pushing when a remote exists. When CI exists (remote + workflows + matching `gh`/`glab` CLI), CI-green is a HARD per-phase gate: `/git commit --yes --fix` blocks until green (bounded) or the phase is reported FAILED. When no CI/CLI/remote exists, the commit still happens (locally, or pushed without a CI watch) and the gate is absent. When false, no commits, no push, and no CI check.
 - `SILENT` — true if `--silent` present
 
 ## Step 1: Select Plan

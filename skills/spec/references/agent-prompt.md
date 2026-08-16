@@ -66,15 +66,17 @@ At phase end, append:
 ## Git commit policy
 
 {if ALLOW_COMMITS=false}
-DO NOT run git commit, git add, or git push.
+Do NOT run git commit, git add, or git push — and do NOT invoke the git skill's commit workflow. Make no commits of any kind.
 {endif}
 {if ALLOW_COMMITS=true}
-Commit completed tasks with conventional commit messages. If a remote/upstream is configured, push the phase.
+Commit the completed phase through the git skill (`/git commit`). Never run raw `git commit`, `git add`, or `git push` yourself — the git skill owns staging, conventional commit messaging, the no-agent-self-attribution rule, and (when CI exists) the CI-green loop. Always pass `--yes` (you are an autonomous subagent and cannot prompt for confirmation).
 
-After committing (and pushing) the phase, run the OPTIONAL CI-green check — this is best-effort and must never block or fail the phase:
-- GitHub repo → `/gh ci --silent` for this branch; GitLab repo → `/glab ci --silent`.
-- Skip silently if there is no remote, no CI configured, or no `gh`/`glab` CLI installed.
-- If CI reports failure, note it in execution-log.md and report it in your summary, but do NOT auto-fix here — leave fixes to `/git commit --fix` or the user. A failing or absent CI does not mark the phase incomplete.
+Choose the invocation by environment:
+- **No remote/upstream configured** → `/git commit --yes --no-push`. Commit locally only; no push, no CI check.
+- **Remote configured, but no CI** (no `.github/workflows/` for GitHub, no `.gitlab-ci.yml` for GitLab) or **no matching CI CLI installed** (`gh` for GitHub, `glab` for GitLab) → `/git commit --yes`. The git skill pushes and reports "no CI to watch"; skip the CI check silently.
+- **Remote configured, CI exists, and the matching CI CLI is installed** → `/git commit --yes --fix`. The git skill pushes, then blocks in its bounded fix-until-green loop (max 3 fix attempts).
+
+**CI-green is a HARD per-phase gate** (only when CI exists): the phase is not complete while CI is red. If the git skill stops with CI still failing (its fix attempts exhausted), do NOT mark the phase complete and do NOT continue to the next task — stop, append a FAILED entry to execution-log.md, and report the phase as FAILED (not `ESCALATE`; escalation is for code-strength walls, not a red CI). A phase never fails for the absence of CI — it only fails when CI exists and stays red after the git skill's bounded attempts.
 {endif}
 
 Execute Phase {N} now. Report a summary when done.
