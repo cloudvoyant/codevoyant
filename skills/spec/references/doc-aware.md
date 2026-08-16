@@ -94,6 +94,8 @@ Mechanics:
 - `update.md` — parse `--persistent`, run the Rule 2 docs-first write, apply Rule 3 scoping to the conversational/annotation edits.
 - `go.md` — read the plan's `Doc Globs:` metadata as the doc-aware activation signal, read each phase's own write globs from its `## Doc Scope` block, and pass them (as `PHASE_GLOBS`, plus `SPEC_SKILL` for the checker path) to that phase's executor; executors enforce Rules 3–4.
 - `agents/spec-executor.md` — enforce Rules 3–4 for every Write/Edit and log Rule 6 deviations.
+- `agents/spec-planner.md` — produce the Rule 3 scoping (per-phase `## Doc Scope` globs, plan.md `Doc Globs:` union) and the Rule 6 boundary callouts while drafting phases.
+- `agents/spec-updater.md` — preserve the Rule 3 scoping and Rule 6 callouts while applying plan updates (keep `## Doc Scope` blocks and the `Doc Globs:` union in sync).
 
 ## Scripts
 
