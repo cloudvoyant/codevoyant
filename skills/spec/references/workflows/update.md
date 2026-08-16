@@ -73,13 +73,13 @@ with `--persistent`. (The validator above printed the specific reason; docs
 marked `exclude: true` are skipped as unmanaged.)
 ```
 
-**Rule 2 — docs-first write.** If `DOCS_OK=true`, run the docs skill to refresh the docs before applying plan changes:
+**Rule 2 — doc-aware gate before any write.** Before running the docs-first write, check the plan is actually doc-aware: read the plan's `Doc Globs:` metadata (plan.md). If the plan has no such line (it was created without `--persistent`), report that this plan is not doc-aware and stop with: `Plan {plan-name} is not doc-aware (no Doc Globs metadata). Re-run /spec new --persistent to recreate it.` Do not run `/docs update` against a plan that is not doc-aware.
+
+**Rule 2 — docs-first write.** If the plan IS doc-aware and `DOCS_OK=true`, run the docs skill to refresh the docs before applying plan changes:
 
 ```bash
 /docs update
 ```
-
-Then read the plan's `Doc Globs:` metadata (plan.md). If the plan has no such line (it was created without `--persistent`), report that this plan is not doc-aware and stop with: `Plan {plan-name} is not doc-aware (no Doc Globs metadata). Re-run /spec new --persistent to recreate it.`
 
 ## Step 3: Process Conversational Change (if INPUT_MODE includes `conversational`)
 
