@@ -3,7 +3,7 @@ description: 'Specification-driven development. Triggers on: "spec new", "spec g
 name: spec
 license: MIT
 compatibility: 'Designed for Claude Code. On OpenCode and VS Code Copilot, AskUserQuestion falls back to numbered list. Core functionality preserved on all platforms.'
-argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--worktree] [--flags]'
+argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-name] [--branch] [--worktree] [--persistent] [--flags]'
 ---
 
 > **Compatibility**: AskUserQuestion falls back to numbered list on non-Claude-Code platforms.
@@ -14,16 +14,35 @@ argument-hint: '<new|go|guide|update|review|refresh|clean|polish|help> [plan-nam
 command -v npx >/dev/null 2>&1 || echo "MISSING: npx"
 ```
 
+## Skill directory resolution
+
+Workflows and the spawned `spec-executor` agent invoke the vendored checker at `scripts/scope.py`. Resolve the skill package root once and export it so every workflow bash block and spawned executor uses the same path — this works both from the repo `skills/spec/` checkout and from an installed copy. Do NOT rely on `$0` (it is the invoking shell, not this file):
+
+```bash
+# Resolve the skill package root (the directory containing this SKILL.md).
+if [ -n "${BASH_SOURCE:-}" ]; then
+  SPEC_SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+else
+  SPEC_SKILL="${SPEC_SKILL:-$HOME/.claude/skills/spec}"
+fi
+export SPEC_SKILL
+```
+
+When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKILL.md` and export it so workflow bash blocks can invoke `python3 "$SPEC_SKILL/scripts/scope.py"`. Workflows that spawn the `spec-executor` agent (`go.md` — the `bg` alias dispatches here too) pass `SPEC_SKILL` into the executor's prompt so the executor can resolve the checker from any working directory.
+
 ## Inline Usage
 
 `/spec new` accepts **either** an inline objective (plans immediately, no opening question) **or** a bare plan name (scaffolds `.codevoyant/plans/{name}/intent.md` for you to fill in, then plans on re-run).
 
 ```
 /spec new add OAuth login to the settings page   # inline objective → plans now
+/spec new --persistent add OAuth login             # EXPERIMENTAL — doc-aware planning (docs-first, glob-scoped phases)
 /spec new auth-refactor                           # bare name → writes intent.md to fill in
 /spec new auth-refactor                           # re-run after filling it → plans
 /spec go my-plan
 ```
+
+`--persistent` is an experimental flag on `new` and `update` that makes the flow doc aware (docs written first, phases glob-scoped, cross-module interaction via documented public interfaces). See `references/doc-aware.md`.
 
 ## Critical Rules
 

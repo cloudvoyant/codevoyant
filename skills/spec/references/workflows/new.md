@@ -31,10 +31,14 @@ Received from dispatcher:
 - `BG_MODE` — true if `--bg` present
 - `SILENT` — true if `--silent` present
 - `SOURCE_URL`, `SOURCE_TYPE`, `SOURCE_ID` — populated if a URL was detected in arguments
+- `PERSISTENT_MODE` — true if `--persistent` present (experimental doc-aware mode)
 
 ```
 VALIDATE_MODE=false
 [[ "$*" =~ --validate|-v ]] && VALIDATE_MODE=true
+
+PERSISTENT_MODE=false
+[[ "$*" =~ --persistent ]] && PERSISTENT_MODE=true
 ```
 
 ## Step 0.5: Detect Branch Context
@@ -155,6 +159,40 @@ In **bare-name mode**:
    d. Stop with: `Fill it in, then run /spec new {PLAN_NAME} again — I'll read your intent and start planning (asking only what's still unclear).`
 
    Do NOT create plan.md or any other files in this mode. This is a deliberate pause point — the user writes their intent, then re-invokes.
+
+## Step 2.8: Doc-aware Preflight (--persistent only)
+
+Run only when `PERSISTENT_MODE=true`. Otherwise skip this step entirely.
+
+Load `references/doc-aware.md` — the doc-aware model (valid-docs gate, docs-first write, glob-scoped phases, public-interface-only interaction, graceful missing docs). All rules below are defined there; do not restate them.
+
+**Rule 1 — valid-docs gate.** Check the repo has usable docs. Both conditions must hold: (a) `docs/` contains at least one markdown doc with a non-empty `globs:` frontmatter, and (b) the docs include an architecture index at `docs/architecture/index.md` or a component doc documenting a public API/interface (the docs skill's `[public-api]` marker, or a `## Public API` / `## Public Interface` heading):
+
+```bash
+DOCS_OK=false
+if [ -d docs ]; then
+  if grep -rlE '^globs:' docs --include='*.md' 2>/dev/null | grep -q .; then
+    if [ -f docs/architecture/index.md ] || grep -rlE '@agent: \[public-api\]|^## (Public API|Public Interface)' docs --include='*.md' 2>/dev/null | grep -q .; then DOCS_OK=true; fi
+  fi
+fi
+```
+
+**Rule 5 — graceful missing docs.** If `DOCS_OK=false`, print the graceful message and STOP. Do not create plan files. Do not ask planning questions. Do not proceed.
+
+```
+⚠️ Doc-aware planning requires valid docs, and this repo has none.
+Run `/docs retcon` from the docs skill to author them (README, architecture
+index, component docs with `globs:` frontmatter), then re-run this command
+with `--persistent`.
+```
+
+**Rule 2 — docs-first write.** If `DOCS_OK=true`, run the docs skill to refresh the docs against the current branch before planning reads them:
+
+```bash
+/docs update
+```
+
+If `/docs update` cannot complete (e.g. the docs skill is unavailable), note the staleness in the plan's boundary callouts (Rule 6) and continue — do not block planning on it.
 
 ## Step 3: Understand Scope
 
@@ -288,9 +326,11 @@ Report: `✓ Plan directory created at: $PLAN_DIR`
 
 **a. plan.md** at `$PLAN_DIR/plan.md`
 
-Prepare metadata: `CREATED_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")`, `METADATA_BRANCH=$TARGET_BRANCH` (or `"(none)"`), `METADATA_BASE_BRANCH=$BASE_BRANCH` (or `"main"`), `METADATA_WORKTREE=$PLAN_WORKTREE` (or `"(none)"`).
+Prepare metadata: `CREATED_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")`, `METADATA_BRANCH=$TARGET_BRANCH` (or `"(none)"`), `METADATA_BASE_BRANCH=$BASE_BRANCH` (or `"main"`), `METADATA_WORKTREE=$PLAN_WORKTREE` (or `"(none)"`). When `PERSISTENT_MODE=true`, also prepare `METADATA_DOC_GLOBS` — the space-separated union of the globs the phases declare (see Step 5.3c), computed during drafting.
 
 Use the template in `references/plan-template.md`. If `SOURCE_URL` set, add `- **Source**: {SOURCE_URL}` in the Metadata section.
+
+**Doc-aware metadata (only when `PERSISTENT_MODE=true`):** add `- **Doc Globs**: {METADATA_DOC_GLOBS}` after the Worktree line. This line is what `go.md` reads to pass the glob set to executors (see `references/doc-aware.md` Rule 3).
 
 **Phase 0 — Human Prerequisites (include only if needed)**
 
@@ -321,6 +361,21 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 - Testing and validation steps — including the template's OPTIONAL `spec go --commit` CI-green check per phase (keep it optional; it must never gate a non-`--commit` run or a repo with no CI)
 
 **Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
+
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** every phase-N.md MUST begin its Design section with a `## Doc Scope` block (per `references/doc-aware.md` Rules 3, 4, 6):
+
+```
+## Doc Scope
+
+**Write globs:** `{glob1}` `{glob2}` — the docs-owned paths this phase may Write/Edit. Every task's output file must fall inside one of these globs (verify with `$SPEC_SKILL/scripts/scope.py`); paths outside are read-only context.
+
+**Public interfaces only:** cross-module interaction uses only the target module's documented public API/interface section — never its internals (Rule 4).
+
+**Boundary callouts:** one bullet per task whose spec would write outside the globs or use another module's internals:
+- `{task}` — {what crosses the boundary, why it is required, and the alternative considered}
+```
+
+While drafting each phase, compute the union of its write globs and carry it into `METADATA_DOC_GLOBS` (Step 5.3a). Summarize every boundary callout in the Decision Log under `### Agent Decisions` with a `[boundary]` marker so the crossing is explicitly called out during planning, never silent.
 
 ### 5.4: Register Plan
 
