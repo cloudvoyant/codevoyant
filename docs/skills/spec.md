@@ -27,9 +27,12 @@ Two ways to give the objective:
 /spec new --blank                               # empty template, no planning session
 /spec new my-feature --bg                       # create and immediately start background execution
 /spec new my-feature --validate                 # run a validation pass on the plan before finishing
+/spec new my-feature --persistent               # EXPERIMENTAL — doc-aware planning
 ```
 
 `--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: `.codevoyant/worktrees/<branch>`; with a path: that path). Both delegate to the shared `/git worktree` routine.
+
+`--persistent` is an **experimental** doc-aware mode: docs are written first, every phase is scoped to the doc globs it may write, and cross-module interaction happens only through documented public interfaces. It requires valid docs in the repo (`docs/` with `globs:` frontmatter plus an architecture index or a component doc with a public API/interface section); `new` refuses to plan blind otherwise. See the skill's `references/doc-aware.md` for the full model.
 
 Pass a Linear, GitHub, or GitLab issue URL as the first argument to pre-fill requirements from the issue title, description, and comments.
 
@@ -69,9 +72,12 @@ Process inline annotations written directly in plan files, or accept a conversat
 /spec update                            # auto-selects most recently updated plan
 /spec update my-feature                 # apply annotations in specific plan
 /spec update my-feature --bg            # apply in background, notify when done
+/spec update my-feature --persistent    # EXPERIMENTAL — doc-aware update
 ```
 
 Two annotation forms, both written as HTML comments so they never collide with real markdown blockquotes: `<!-- > instruction -->` on a standalone line (minor) applies to the block below; `content <!-- >> instruction -->` inline (major) applies to that line only.
+
+`--persistent` (experimental) applies the doc-aware model to plan edits: every change is checked against the plan's `Doc Globs:` scope, and edits that cross it are flagged as boundary callouts for explicit confirmation.
 
 ### split — split a large plan
 

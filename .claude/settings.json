@@ -52,6 +52,8 @@
       "Bash(npx:*)",
       "Bash(osascript:*)",
       "Bash(pnpm run docs:build:*)",
+      "Bash(printf:*)",
+      "Bash(python3:*)",
       "Bash(sed:*)",
       "Bash(sort:*)",
       "Bash(xargs:*)",

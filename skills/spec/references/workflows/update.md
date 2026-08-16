@@ -28,6 +28,12 @@ Both can appear in `plan.md` and any `implementation/phase-N.md`. When applying 
 - `CHANGE_DESCRIPTION` — everything after the plan name argument, if present
 - `BG_MODE` — true if `--bg` present (auto-approve confirmation, send notification after)
 - `SILENT` — true if `--silent` present
+- `PERSISTENT_MODE` — true if `--persistent` present (experimental doc-aware mode)
+
+```bash
+PERSISTENT_MODE=false
+[[ "$*" =~ --persistent ]] && PERSISTENT_MODE=true
+```
 
 ## Step 1: Determine Input Mode
 
@@ -41,9 +47,45 @@ If `PLAN_NAME` not provided, follow the same plan selection logic as `refresh.md
 
 Verify `.codevoyant/plans/{plan-name}/plan.md` exists.
 
+## Step 2.5: Doc-aware Preflight (--persistent only)
+
+Run only when `PERSISTENT_MODE=true`. Otherwise skip this step entirely.
+
+Load `references/doc-aware.md` — the doc-aware model. All rules below are defined there; do not restate them.
+
+**Rule 1 — valid-docs gate.** Check the repo has usable docs via the vendored validator (mirrors the docs skill's `validate` checks: structure + glob validity, with `exclude: true` for unmanaged docs). Exit 0 = valid:
+
+```bash
+if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs; then
+  DOCS_OK=true
+else
+  DOCS_OK=false
+fi
+```
+
+**Rule 5 — graceful missing docs.** If `DOCS_OK=false`, print the graceful message and STOP. Do not apply any plan changes.
+
+```
+⚠️ Doc-aware updating requires valid docs, and this repo has none.
+Run `/docs retcon` from the docs skill to author them (README, architecture
+index, component docs with `globs:` frontmatter), then re-run this command
+with `--persistent`. (The validator above printed the specific reason; docs
+marked `exclude: true` are skipped as unmanaged.)
+```
+
+**Rule 2 — doc-aware gate before any write.** Before running the docs-first write, check the plan is actually doc-aware: read the plan's `Doc Globs:` metadata (plan.md). If the plan has no such line (it was created without `--persistent`), report that this plan is not doc-aware and stop with: `Plan {plan-name} is not doc-aware (no Doc Globs metadata). Re-run /spec new --persistent to recreate it.` Do not run `/docs update` against a plan that is not doc-aware.
+
+**Rule 2 — docs-first write.** If the plan IS doc-aware and `DOCS_OK=true`, run the docs skill to refresh the docs before applying plan changes:
+
+```bash
+/docs update
+```
+
 ## Step 3: Process Conversational Change (if INPUT_MODE includes `conversational`)
 
 Read plan.md and relevant phase-N.md files. Translate `CHANGE_DESCRIPTION` into concrete edits — identify exactly which files and lines are affected, what changes in each.
+
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** for every concrete edit, check the target file against the plan's `Doc Globs:` using `$SPEC_SKILL/scripts/scope.py` (per `references/doc-aware.md` Rule 3). An edit whose target is NOT inside the globs is a boundary callout (Rule 6): list it in the preview under a `Boundary callouts:` line naming the file and why it crosses. Apply such an edit only when the user confirms it in the Apply/Adjust/Cancel choice; under `BG_MODE=true` auto-apply still prints the callout before applying.
 
 Show user a concise preview:
 
@@ -57,6 +99,9 @@ Proposed changes for: "{CHANGE_DESCRIPTION}"
     + Step 4: Implement retry wrapper using existing HttpClient pattern
               Add validation: {task runner test command}
 
+  Boundary callouts:
+    docs/architecture/phase-2.md — edit writes docs/architecture/; the plan's globs are libs/auth/**, docs/**. Confirm?
+
 Apply these changes?
 ```
 
@@ -65,6 +110,8 @@ If `BG_MODE=true`, auto-apply. Otherwise use **AskUserQuestion** (Apply / Adjust
 After applying, continue to Step 4.
 
 ## Step 4: Process Annotations (if INPUT_MODE includes `annotations`)
+
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** apply the same Rule 3 glob check to every annotation. An annotation whose target falls outside the plan's `Doc Globs:` is a boundary callout: apply it, then record the crossing in the report's skipped/summary notes as `⚠️ Boundary callout at {file}:{line}: {reason}` (Rule 6 audit trail).
 
 Scan all plan files:
 

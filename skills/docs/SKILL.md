@@ -18,6 +18,19 @@ Triggers: "docs new", "docs update", "docs review", "docs retcon", "create docs"
 - **Unknown verb → run `help.md`** — never error silently
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any docs workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (Full guidance: `references/language-guide.md`.)
 
+## Skill directory resolution
+
+Workflows invoke the vendored scripts (`scripts/scaffold.py`, `scripts/scope.py`) via `$SKILL/scripts/...`. Resolve the skill package root once and export it so every workflow bash block uses the same path — this works both from the repo `skills/docs/` checkout and from an installed copy. Do NOT rely on `$0` (it is the invoking shell, not this file):
+
+```bash
+if [ -n "${BASH_SOURCE:-}" ]; then
+  SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+else
+  SKILL="${SKILL:-$HOME/.claude/skills/docs}"
+fi
+export SKILL
+```
+
 ## Step 0: Parse Arguments
 
 ```bash

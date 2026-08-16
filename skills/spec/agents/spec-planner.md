@@ -24,6 +24,7 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 6. Write plan.md — phases and one-liner tasks only; no detailed specs
 - [ ] 7. Write user-guide.md — required, blocks completion if missing
 - [ ] 8. Write implementation/phase-N.md for each phase (N ≥ 1) — every task carries its complete code (code-first gate); never create phase-0.md
+- [ ] 8b. Doc-aware scoping: emit a `## Doc Scope` block per phase (write globs + boundary callouts), compute the `Doc Globs:` metadata union, and mark boundary crossings in the Decision Log with `[boundary]` (only when PERSISTENT_MODE is set)
 - [ ] 8.5. Self-audit every phase file — confirm each task's code block is complete and placeholder-free before moving on
 - [ ] 9. Verify all files exist and are non-empty (bash test -s checks)
 - [ ] 10. Register plan by appending row to .codevoyant/README.md
@@ -72,6 +73,17 @@ Every plan you create must include these as explicit constraints in implementati
 2. **Build system preservation**: Do not modify the build system unless the plan explicitly requires it. The project must build after every task.
 3. **Hygiene**: Run format → lint → typecheck → tests after every task using the project's task runners. Fix failures before moving on.
 4. **Validation phase**: Every plan must end with a phase that confirms the full suite passes and the user guide is complete.
+
+## Doc-Aware Planning (active only when `PERSISTENT_MODE` is set)
+
+When `PERSISTENT_MODE` is set (`/spec new --persistent`), the doc-aware model in `references/doc-aware.md` binds (Rules 3, 4, 6). `new.md` runs the Rule 1 valid-docs gate and the Rule 2 docs-first write BEFORE you start — read the refreshed docs as your primary context, never plan against a stale or assumed layout.
+
+- **Docs are the source of truth for module boundaries.** For every component a phase touches, read its doc (`docs/**/*.md`) and extract its `globs:` frontmatter. Assign each phase exactly the globs of the components it touches — no more, no less.
+- **Emit a `## Doc Scope` block** at the top of each `implementation/phase-N.md` Design section, per `new.md` Step 5.3c's format: `**Write globs:**` (space-separated), `**Public interfaces only:**`, and `**Boundary callouts:**` bullets.
+- **Compute the `Doc Globs:` metadata line** for plan.md — the space-separated union of all phases' write globs. `go.md` reads this line to pass the glob set to executors.
+- **Rule 4:** any cross-module interaction in a task must reference ONLY the target module's documented public API/interface section from its doc, never its internals. Consult the docs to determine what is public.
+- **Rule 6:** every task whose spec would write outside its globs, or use another module's internals, MUST be surfaced as a boundary callout: a bullet under the phase's `## Doc Scope` `**Boundary callouts:**` (naming the crossing, why it is required, and the alternative considered) AND a `[boundary]`-marked entry in the Decision Log under `### Agent Decisions`. A boundary crossing is never silent — if it is truly required, say so explicitly with the reason.
+- Verify any doubtful write path against the globs mechanically with `$SPEC_SKILL/scripts/scope.py` (the same check executors run) while drafting.
 
 ## Phase 0 Rule
 

@@ -20,6 +20,7 @@ Begin every invocation by printing and tracking this checklist. Mark each item `
 - [ ] 2. If conversational mode: translate CHANGE_DESCRIPTION to concrete edits, preview
 - [ ] 3. If annotation mode: scan for `<!-- >>` (major) then `<!-- >` (minor) HTML-comment markers in all plan files
 - [ ] 4. Apply each change bottom-to-top within each file
+- [ ] 4b. Doc-aware: preserve `## Doc Scope` blocks and keep the `Doc Globs:` metadata union in sync; verify rewrite targets against the globs (only when the plan carries `Doc Globs:`) 
 - [ ] 5. Remove the entire `<!-- ... -->` comment for each annotation after applying
 - [ ] 6. Apply Two-File Contract: propagate changes between plan.md ↔ phase-N.md
 - [ ] 7. Consistency pass: verify ✅ markers, phase numbering, no orphaned files
@@ -79,6 +80,15 @@ For each annotation:
 | rename | Update the label/title at annotated location |
 
 **Ambiguous annotations:** Preserve the annotation and add `<!-- ⚠️ Ambiguous: [interpretation A] vs [interpretation B] — resolve manually -->` immediately above it.
+
+## Doc-Aware Updates (active only when the plan carries `Doc Globs:` metadata)
+
+When the plan you are updating carries a `Doc Globs:` metadata line (it was created with `/spec new --persistent`), the doc-aware model in `references/doc-aware.md` binds (Rules 3, 4, 6). `update.md` runs the Rule 3 glob-check on the edits it applies; your job is to keep the plan's doc-aware structure intact as you apply annotations and propagate changes:
+
+- **Preserve `## Doc Scope` blocks.** Do not reorder, rename, or delete a phase's `## Doc Scope` block when editing its file. If an annotation rewrites a task, re-verify the task's write targets still fall inside the phase's declared globs (check with `$SPEC_SKILL/scripts/scope.py`); if a new write target falls outside, surface it as a boundary callout (Rule 6) rather than silently extending the globs.
+- **Keep `Doc Globs:` metadata in sync.** When an annotation adds/removes a phase or materially changes a phase's write scope, re-derive the affected phase's `## Doc Scope` globs and recompute the plan.md `Doc Globs:` union line so `go.md` keeps passing the correct set to executors.
+- **Rule 4 in rewrites:** any cross-module reference you write into a phase must use ONLY the target module's documented public API/interface section from its doc, never its internals.
+- Report every doc-scope change and boundary callout you made in the output's summary notes.
 
 ## After All Annotations: Consistency Check
 
