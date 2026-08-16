@@ -132,7 +132,7 @@ For each pending step in order:
    a. You are on the main thread — ask the user that `{question}` with **AskUserQuestion** (free-text via Other).
    b. Add the answer to `PARAMS` (so later steps can reuse it) and note it in `CONTEXT`, then **re-run this step** from sub-step 2 with the answer now available.
    c. Cap at 3 escalations per step; if the step still returns `NEEDS_INPUT` after that, treat it as a step failure (below).
-   This is what lets an interactive skill's mid-run question (e.g. `/dev explore` asking "generate proposals?", or `/spec new` needing to pick an exploration) reach the user even though the step ran in a subagent.
+   This is what lets an interactive skill's mid-run question (e.g. `/explore new` asking "generate proposals?", or `/spec new` needing to pick an exploration) reach the user even though the step ran in a subagent.
 
 5. **Capture the handoff.** Read the subagent's returned report. Extract the `HANDOFF:` line if present; otherwise summarize the key outputs (IDs, URLs, paths, names) in one line yourself. Append to `CONTEXT`:
    ```

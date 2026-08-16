@@ -22,10 +22,10 @@ If `STEPS` is empty, prompt the user:
 ```
 Enter each step as a skill command. One per line. Empty line = done.
 Example:
-  /dev explore "how to build X"
+  /explore new "how to build X"
   /spec new "plan it"
   /spec go
-  /dev explore "review the code"
+  /explore new "review the code"
 ```
 
 Collect lines until an empty line is entered. Each non-empty line is one step command.
@@ -80,9 +80,9 @@ Scan every step command for `{{placeholder}}` tokens (double-brace, e.g. `{{feat
 
 Steps run as subagents at `go` time and **cannot prompt the user**, so write each step to run without interaction:
 
-- **Pass each step's input inline or as a `{{param}}`.** A step that would otherwise ask (e.g. `/spec new` with no objective, or `/dev explore` with no topic) should carry its input in the command — give distinct steps distinct params (`/dev explore {{topic}}`, `/spec new {{objective}}`), not one shared `{{input}}`, when they need different values.
+- **Pass each step's input inline or as a `{{param}}`.** A step that would otherwise ask (e.g. `/spec new` with no objective, or `/explore new` with no topic) should carry its input in the command — give distinct steps distinct params (`/explore new {{topic}}`, `/spec new {{objective}}`), not one shared `{{input}}`, when they need different values.
 - **Avoid step forms that pause.** A bare-name `/spec new {{name}}` scaffolds an intent file and stops — use a descriptive objective (or an intent already filled) instead.
-- **Chain producer → consumer explicitly.** When one step produces an artifact the next consumes (e.g. `/dev explore` writes `.codevoyant/explore/{slug}/`, then `/spec new` should plan *from* it), write the consumer step to consume that artifact — don't rely on the consumer's interactive picker. The producer's artifact path is threaded forward in flow context so the consumer subagent can find it.
+- **Chain producer → consumer explicitly.** When one step produces an artifact the next consumes (e.g. `/explore new` writes `.codevoyant/explore/{slug}/`, then `/spec new` should plan *from* it), write the consumer step to consume that artifact — don't rely on the consumer's interactive picker. The producer's artifact path is threaded forward in flow context so the consumer subagent can find it.
 - Anything a step still can't resolve at run time surfaces to the user via `NEEDS_INPUT` (see `go.md`) — a fallback, not the plan. If you find yourself relying on it, add a `{{param}}` instead.
 
 ## Step 2: Write flow.md

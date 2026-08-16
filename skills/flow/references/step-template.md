@@ -24,7 +24,7 @@ You are executing step {N} of the "{flow-name}" flow, running as a **subagent**.
 
 Your task: {step-command}
 
-**Inputs — use what the flow already gave you.** Treat the **Parameters** and **Flow context so far** above as ground truth: a PR number, plan name, branch, or file path there was produced by an earlier step or supplied by the user. Prefer them over asking or guessing. If the Flow context names an **artifact** a prior step produced (an exploration directory, a plan, a doc), **consume it** — do not start that work over. (E.g. if a prior `/dev explore` wrote `.codevoyant/explore/{slug}/`, point this step's skill at that exploration instead of re-researching.)
+**Inputs — use what the flow already gave you.** Treat the **Parameters** and **Flow context so far** above as ground truth: a PR number, plan name, branch, or file path there was produced by an earlier step or supplied by the user. Prefer them over asking or guessing. If the Flow context names an **artifact** a prior step produced (an exploration directory, a plan, a doc), **consume it** — do not start that work over. (E.g. if a prior `/explore new` wrote `.codevoyant/explore/{slug}/`, point this step's skill at that exploration instead of re-researching.)
 
 **Run the skill non-interactively.** Follow all rules of the skill, but pass inputs inline so it never stops to ask. Do NOT call `AskUserQuestion` — it will not reach the user.
 

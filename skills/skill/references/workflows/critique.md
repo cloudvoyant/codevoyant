@@ -9,10 +9,10 @@ Received from dispatcher:
 
 Inspect `$REMAINING_ARGS`:
 
-- **Empty** — ask: "Which skill should I critique? Provide a path (e.g. `skills/dev-plan/SKILL.md`) or a skill name (e.g. `dev:plan`)."
+- **Empty** — ask: "Which skill should I critique? Provide a path (e.g. `skills/spec/SKILL.md`) or a skill name (e.g. `spec`)."
 - **Path to SKILL.md** — read it directly; if the file does not exist, report "Cannot find SKILL.md at that path" and stop
 - **Skill directory** — look for `SKILL.md` inside it
-- **Skill name** (e.g. `dev:plan`, `skill-review`) — search `skills/`, `.claude/skills/`, and `plugins/*/skills/` for a match; if multiple matches, list them and ask which one; if no match, report the unresolved name and stop
+- **Skill name** (e.g. `spec`, `skill-review`) — search `skills/`, `.claude/skills/`, and `plugins/*/skills/` for a match; if multiple matches, list them and ask which one; if no match, report the unresolved name and stop
 
 Once resolved, read the SKILL.md in full before proceeding.
 
