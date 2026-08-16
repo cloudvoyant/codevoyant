@@ -54,7 +54,6 @@
       "Bash(pnpm run docs:build:*)",
       "Bash(printf:*)",
       "Bash(python3:*)",
-      "Bash(rg:*)",
       "Bash(sed:*)",
       "Bash(sort:*)",
       "Bash(xargs:*)",
