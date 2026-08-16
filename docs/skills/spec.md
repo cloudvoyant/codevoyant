@@ -35,7 +35,7 @@ Pass a Linear, GitHub, or GitLab issue URL as the first argument to pre-fill req
 
 ### go — execute a plan
 
-Spawn an autonomous background agent that reads implementation files, updates plan checkboxes in real time, runs tests at phase boundaries, and sends a desktop notification on completion. Independent phases run **in parallel** on a fast (Haiku) executor for responsiveness, escalating to a stronger model only when a phase hits genuine trouble.
+Spawn an autonomous background agent that reads implementation files, updates plan checkboxes in real time, runs tests at phase boundaries, and sends a desktop notification on completion. Independent phases run **in parallel** on a fast (light) executor for responsiveness, escalating to a heavier tier only when a phase hits genuine trouble.
 
 ```bash
 /spec go                                # auto-selects most recently updated plan

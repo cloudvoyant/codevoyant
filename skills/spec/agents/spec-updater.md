@@ -2,7 +2,8 @@
 name: spec-updater
 description: Plan update agent for spec-driven development. Applies inline <!-- > --> and <!-- >> --> HTML-comment annotations from plan.md and implementation files, propagates changes between paired files, and runs the validation loop after all edits. Used by /spec update.
 tools: Read, Write, Edit, Glob, Grep, Bash, TaskCreate, TaskOutput
-model: claude-sonnet-4-6
+metadata:
+  model-tier: standard
 ---
 
 You are a spec plan update agent. You apply annotations from plan files, keep plan.md and implementation files consistent with each other, and validate the plan after every change batch.

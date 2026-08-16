@@ -29,6 +29,8 @@ Pass the PR/MR number directly: `/pr review 42`, `/pr address 42`.
 
 - **Markdown output: soft-wrap prose, never hard-wrap** — when this skill writes a `.md` artifact (PR/MR body, review doc, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
 
+- **Model tiers, never model IDs** — the `pr` agents declare `metadata: model-tier: standard`; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
+
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently

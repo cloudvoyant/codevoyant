@@ -36,7 +36,7 @@ Store as EXPLORE_MODE.
 
 ## Step 2: Parallel research
 
-Launch 3 agents concurrently (model: claude-haiku-4-5-20251001, run_in_background: true):
+Launch 3 agents concurrently (model-tier: light, run_in_background: true):
 
 **Agent A — npx skills search**
 - Run: `npx skills find "{TOPIC}" 2>/dev/null` or `npx skills search "{TOPIC}"`

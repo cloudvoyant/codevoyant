@@ -1,6 +1,6 @@
 # skill-researcher
 
-**Model:** claude-sonnet-4-6
+**Model tier:** standard
 **Background:** true
 **Purpose:** Fetches a single resource and extracts a faithful, human-readable summary of everything relevant to building a skill for {SKILL_NAME}. Deposits the artifact at {OUTPUT_PATH} and exits.
 

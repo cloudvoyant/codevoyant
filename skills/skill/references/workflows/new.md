@@ -61,13 +61,13 @@ Use the Agent tool to launch all researchers in a **single message** (one tool c
 - `{SKILL_NAME}` — the skill being designed
 - `{OUTPUT_PATH}` — `.codevoyant/plans/{skill-slug}/research/{slug}.md`
 
-Each agent: model: claude-sonnet-4-6, run_in_background: true.
+Each agent: model-tier: standard, run_in_background: true.
 
 Do not send agent calls across separate messages — all must be in one message to run in parallel. Wait for all to complete before continuing.
 
 Read all artifacts in `.codevoyant/plans/{skill-slug}/research/` and use them as input to 4b.
 
-**4b. Launch skill-planner (Opus)**
+**4b. Launch skill-planner (heavy tier)**
 
 Substitute into `agents/skill-planner.md`:
 - `{SKILL_NAME}` — the skill slug
@@ -78,7 +78,7 @@ Substitute into `agents/skill-planner.md`:
 - `{SKILL_TEMPLATE_PATH}` — `references/skill-template.md`
 - `{AGENT_TEMPLATE_PATH}` — `references/agent-template.md`
 
-Agent: model: claude-opus-4-6, run_in_background: false.
+Agent: model-tier: heavy, run_in_background: false.
 
 Wait for completion. The agent registers the plan and sends a notify. Read `{PLAN_DIR}/plan.md` and present it to the user.
 

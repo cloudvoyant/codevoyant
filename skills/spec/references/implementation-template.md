@@ -55,7 +55,7 @@ code block is incomplete and must not be emitted.}
 - [ ] `{fmt command}` — no formatting changes outstanding
 - [ ] `{lint command}` — zero warnings/errors
 - [ ] `{test command}` — all tests pass
-- [ ] *(optional, only under `spec go --commit`)* CI is green for this committed phase — verified via `/gh ci` (GitHub) or `/glab ci` (GitLab). Skip silently when any of: no `--commit`, no remote, no configured CI, no `gh`/`glab` CLI. Never fail a phase for the absence of CI.
+- [ ] *(only under `spec go --commit`, and only when CI exists)* CI is green for this committed phase — the executor invokes `/git commit --yes --fix` and the git skill blocks in its bounded fix-until-green loop. This is a HARD gate: the phase is not complete while CI is red, and if the git skill stops with CI still failing, the phase is reported FAILED. Skip silently when any of: no `--commit`, no remote, no configured CI, no `gh`/`glab` CLI. A phase never fails for the absence of CI — only for a CI that exists and stays red.
 
 ---
 

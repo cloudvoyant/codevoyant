@@ -14,7 +14,7 @@ Within each round, launch one validation agent **per phase**, one plan-level age
 
 ### b. Launch parallel validation agents
 
-**Plan-level agent** (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+**Plan-level agent** (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
 
 ```
 prompt: [contents of references/validation-prompt.md with SCOPE=plan-level]
@@ -27,7 +27,7 @@ Validate:
 - Inter-phase dependencies identified
 - A final validation phase exists
 
-**Per-phase agents** — for each phase N from 1 to total phases, launch one agent (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+**Per-phase agents** — for each phase N from 1 to total phases, launch one agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
 
 ```
 prompt: [contents of references/validation-prompt.md with SCOPE=phase, PHASE_N={N}]
@@ -41,7 +41,7 @@ Validate only `implementation/phase-{N}.md` against the plan.md tasks for that p
 - Test coverage and success criteria
 - user-guide.md update instructions per task
 
-**Code-completeness agent** — launch one agent (`subagent_type: general-purpose`, `model: claude-haiku-4-5-20251001`, `run_in_background: true`):
+**Code-completeness agent** — launch one agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
 
 ```
 prompt: [contents of references/validation-prompt.md with SCOPE=code-completeness]

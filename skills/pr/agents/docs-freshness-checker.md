@@ -2,7 +2,8 @@
 name: docs-freshness-checker
 description: Decides whether a PR/MR's changes should have updated documentation. By default it only reports stale docs as a finding (read-only); when the caller opts in (UPDATE_DOCS=true) it invokes the /docs skill to update them. Used by /pr review as a dedicated docs-freshness pass.
 tools: Read, Grep, Glob, Bash, Skill
-model: claude-sonnet-4-6
+metadata:
+  model-tier: standard
 ---
 
 Your entire job is to answer one question for a PR/MR: **should this change have updated the docs, and did it?**

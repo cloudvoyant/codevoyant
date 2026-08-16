@@ -28,6 +28,8 @@ Pass your intent directly on the invocation line — `new` and `explore` proceed
 
 - **Markdown output: soft-wrap prose, never hard-wrap** — when this skill writes a `.md` artifact (SKILL.md, skill docs, critique/review reports, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (If a markdown formatter is available, `prettier --prose-wrap never` enforces this deterministically.)
 
+- **Model tiers, never model IDs** — the `skill` agents declare `metadata: model-tier:` (or a `**Model tier:**` line) and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
+
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
 - **Unknown verb → run `help.md`** — never error silently
