@@ -23,7 +23,7 @@ Decide what to do with docs that already exist before authoring new ones.
 
 **Existing docs.** If any doc exists, do this:
 
-1. Move every existing doc under `docs/` (and the repo-root `README.md` if present) into `docs/legacy/`, keeping the same relative paths. For example `docs/user-guide.md` becomes `docs/legacy/user-guide.md`. Never delete them.
+1. Move every existing doc under `docs/` (and the repo-root `README.md` if present) into `docs/legacy/`, keeping the same relative paths. For example `docs/user-guide.md` becomes `docs/legacy/user-guide.md`. Never delete them. Stamp each moved doc with `exclude: true` in its frontmatter (the documented opt-out in `coverage-and-api.md` Step A and the spec skill's `validate_docs.py`) — otherwise it stays under `docs/**/*.md` and the next `review`/`validate` treats it as managed and flags it for missing/empty `globs:`.
 2. Read each legacy doc. Confirm which facts are still correct by checking them against the code.
 3. Add the legacy docs to context. An existing doc means the user judged it important. Carry its facts forward into the new docs: commands, endpoints, env vars, terminology, and structure.
 4. If a legacy doc looks machine-generated (no real identifiers, no `globs` frontmatter, boilerplate prose, invented commands), ask the user (AskUserQuestion): "This doc looks machine-generated. Include its facts or replace it entirely?" Do not silently carry machine-generated content.
