@@ -115,15 +115,21 @@ class ValidateDocs(unittest.TestCase):
             self.assertIn("architecture index", out)
 
     def test_coverage_gap_is_non_blocking(self):
-        """A component with no owning doc → warning only, exit 0."""
+        """A component with no owning doc → warning only, exit 0.
+
+        The root-level package.json is skipped (its path `.` is unclaimable),
+        so the gap is exercised by a real `libs/api` component.
+        """
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             make_repo(root)
             (root / "libs" / "api").mkdir(parents=True)
+            (root / "libs" / "api" / "package.json").write_text('{"name": "api-pkg"}\n')
             (root / "libs" / "api" / "index.ts").write_text("export const y = 1\n")
             rc, out, _ = self.run_validator(root)
             self.assertEqual(rc, 0, f"stdout={out!r}")
             self.assertIn("COVERAGE", out)
+            self.assertIn("api-pkg", out)
 
     def test_unmanaged_doc_does_not_count_as_owner(self):
         """exclude: true docs are not owners, so coverage can still gap."""

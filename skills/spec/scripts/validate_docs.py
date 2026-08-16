@@ -131,7 +131,10 @@ def discover_components(root: Path) -> list[dict]:
         except (OSError, json.JSONDecodeError):
             continue
         if data.get("name"):
-            add(data["name"], str(pkg.parent.relative_to(root)), "application")
+            parent = pkg.parent.relative_to(root)
+            if parent == Path("."):
+                continue  # repo-root package.json owns "." — no component-doc glob can claim it
+            add(data["name"], str(parent), "application")
 
     for mod in root.rglob("modules"):
         if not mod.is_dir():
@@ -156,7 +159,12 @@ def main() -> int:
     args = ap.parse_args()
 
     root = Path(args.root)
-    docs_dir = Path(args.docs) if args.docs else root / "docs"
+    if args.docs:
+        docs_dir = Path(args.docs)
+        if not docs_dir.is_absolute():
+            docs_dir = root / docs_dir
+    else:
+        docs_dir = root / "docs"
 
     all_paths = collect_paths(root)
     blocking: list[str] = []
