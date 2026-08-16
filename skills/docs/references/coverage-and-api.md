@@ -23,7 +23,7 @@ globs:
 - Only `globs:` — no title/status/tags. The `# Title` H1 stays immediately after the frontmatter.
 - The `# @agent:` marker is a YAML `#` comment INSIDE the block (an HTML comment above the `---` would stop tools from parsing the frontmatter). It is authoring guidance and is dropped once `globs` is filled.
 - List the subdirs and files this doc owns. A doc that documents `libs/auth` lists `"libs/auth/**"`.
-- Empty or missing `globs:` is a violation (see review Rule 1).
+- Empty or missing `globs:` is a violation (see review Rule 1). A doc with `exclude: true` in its frontmatter is unmanaged and exempt — it is dropped from all coverage/glob checks (see Step A).
 
 ### Rule 2: One owner per path
 
@@ -78,7 +78,7 @@ done
 
 Build `COVERAGE` — a map of `doc_path → [globs...]`. A doc with no frontmatter or an empty `globs:` list → **Rule 1 finding** (missing/empty globs).
 
-Also read the `index:` flag from each doc's frontmatter. A doc with `index: true` is an **index doc** (see Rule 2) — record it, but **exclude it from the pairwise overlap comparison in Step B**. Index docs still declare `globs` (so they do not trip Rule 1), and still run the API-boundary checks in Step C.
+Also read the `index:` and `exclude:` flags from each doc's frontmatter. A doc with `index: true` is an **index doc** (see Rule 2) — record it, but **exclude it from the pairwise overlap comparison in Step B**. Index docs still declare `globs` (so they do not trip Rule 1), and still run the API-boundary checks in Step C. A doc with `exclude: true` is **unmanaged** — drop it from `COVERAGE` entirely (it neither declares ownership nor trips Rule 1; it is skipped by review/validate/update glob checks). The spec skill's doc-aware gate (`skills/spec/scripts/validate_docs.py`) honors the same flag, so the two stay consistent.
 
 ### Step B: Compute overlaps (Rule 2 / Rule 3)
 

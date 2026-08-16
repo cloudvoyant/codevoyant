@@ -53,14 +53,13 @@ Run only when `PERSISTENT_MODE=true`. Otherwise skip this step entirely.
 
 Load `references/doc-aware.md` — the doc-aware model. All rules below are defined there; do not restate them.
 
-**Rule 1 — valid-docs gate.** Check the repo has usable docs. Both conditions must hold: (a) `docs/` contains at least one markdown doc with a non-empty `globs:` frontmatter, and (b) the docs include an architecture index at `docs/architecture/index.md` or a component doc documenting a public API/interface (the docs skill's `[public-api]` marker, or a `## Public API` / `## Public Interface` heading):
+**Rule 1 — valid-docs gate.** Check the repo has usable docs via the vendored validator (mirrors the docs skill's `validate` checks: structure + glob validity, with `exclude: true` for unmanaged docs). Exit 0 = valid:
 
 ```bash
-DOCS_OK=false
-if [ -d docs ]; then
-  if grep -rlE '^globs:' docs --include='*.md' 2>/dev/null | grep -q .; then
-    if [ -f docs/architecture/index.md ] || grep -rlE '@agent: \[public-api\]|^## (Public API|Public Interface)' docs --include='*.md' 2>/dev/null | grep -q .; then DOCS_OK=true; fi
-  fi
+if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs; then
+  DOCS_OK=true
+else
+  DOCS_OK=false
 fi
 ```
 
@@ -70,7 +69,8 @@ fi
 ⚠️ Doc-aware updating requires valid docs, and this repo has none.
 Run `/docs retcon` from the docs skill to author them (README, architecture
 index, component docs with `globs:` frontmatter), then re-run this command
-with `--persistent`.
+with `--persistent`. (The validator above printed the specific reason; docs
+marked `exclude: true` are skipped as unmanaged.)
 ```
 
 **Rule 2 — docs-first write.** If `DOCS_OK=true`, run the docs skill to refresh the docs before applying plan changes:
