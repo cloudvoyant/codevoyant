@@ -6,7 +6,7 @@ Planning at every level — a single task, a project, an initiative, or a whole 
 
 ### plan — plan at any level
 
-Produce a plan in `.codevoyant/plans/{slug}/`; use `/plan approve` to promote it to `docs/` (task/architecture-level plans to `docs/architecture/`, project/initiative-level plans to `docs/engineering/plans/`).
+Produce a plan in `.codevoyant/plan/{slug}/` (reads fall back to the legacy `.codevoyant/plans/{slug}/` until the v1→v2 store migration runs); use `/plan approve` to promote it to `docs/` (task/architecture-level plans to `docs/architecture/`, project/initiative-level plans to `docs/engineering/plans/`).
 
 ```bash
 /plan plan "migrate auth to OAuth2"                      # project-level plan (default)

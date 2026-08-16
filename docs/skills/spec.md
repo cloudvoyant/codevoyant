@@ -11,7 +11,7 @@ Explore requirements and produce a multi-phase implementation plan with objectiv
 Two ways to give the objective:
 
 - **Inline objective** — a description; planning starts immediately.
-- **Bare name** — just a name; `new` scaffolds `.codevoyant/plans/{name}/intent.md`, prints its path (and opens it in your editor when possible), and stops. Fill it in, then re-run `/spec new {name}` and it plans from your intent, asking only what's still unclear.
+- **Bare name** — just a name; `new` scaffolds `.codevoyant/spec/{name}/intent.md`, prints its path (and opens it in your editor when possible), and stops. Fill it in, then re-run `/spec new {name}` and it plans from your intent, asking only what's still unclear. (Legacy drafts stay under `.codevoyant/plans/{name}/` until the v1→v2 store migration runs; reads fall back to it.)
 
 ```bash
 /spec new add OAuth login to the settings page  # inline objective → plans now

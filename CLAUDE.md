@@ -8,7 +8,7 @@ Codevoyant is a CLI toolkit that ships AI-powered skills (slash commands) for en
 - `docs/` — VitePress public docs site
 - `docs/engineering/plans/` — committed engineering plans (promoted via `plan:approve`)
 - `docs/product/roadmaps/` — committed product roadmaps (promoted via `pm:approve`)
-- `.codevoyant/plans/` — draft plans (working source of truth, not committed)
+- `.codevoyant/spec/` and `.codevoyant/plan/` — draft plans by owning skill (working source of truth, not committed; `.codevoyant/plans/` is the legacy shared location until the v1→v2 store migration runs)
 - `.codevoyant/explore/` — research artifacts from `pm:explore` and `plan`
 
 ## Key Conventions
