@@ -66,6 +66,8 @@ Save a markdown summary to `.codevoyant/explore/{SKILL_SLUG}/research.md` with s
 - Patterns worth absorbing
 - Gaps the new skill should fill
 
+**Paths:** resolve every `cd` to a concrete path (repo root, an in-repo subdir, or a specific managed location like `~/.codevoyant/<slug>`). Never `cd ~` / `cd $HOME` bare or outside the repo — precise paths keep the Bash-permission surface scoped.
+
 ## Output
 
 Saves to: `.codevoyant/explore/{SKILL_SLUG}/research.md`
