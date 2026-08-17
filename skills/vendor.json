@@ -1,12 +1,22 @@
 {
-  "version": 1,
+  "version": 2,
   "assets": {
     "simple-english": {
       "source": "skills/shared/simple-english",
-      "destinations": [
-        "skills/docs/references/simple-english",
-        "skills/pr/references/simple-english"
-      ]
+      "skills": ["docs", "pr"],
+      "destination": "references/simple-english"
+    },
+    "scope-scripts": {
+      "source": "skills/shared/scope-scripts",
+      "files": ["scope.py", "test_scope.py"],
+      "skills": ["spec", "docs"],
+      "destination": "scripts"
+    },
+    "bug-report": {
+      "source": "skills/shared/bug-report",
+      "files": ["bug-report.md"],
+      "skills": ["gh", "glab", "linear"],
+      "destination": "references/templates"
     }
   }
 }
