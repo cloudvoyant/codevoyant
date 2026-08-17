@@ -1,0 +1,19 @@
+{
+  "skills/docs/scripts": [
+    "scope.py",
+    "test_scope.py"
+  ],
+  "skills/gh/references/templates": [
+    "bug-report.md"
+  ],
+  "skills/glab/references/templates": [
+    "bug-report.md"
+  ],
+  "skills/linear/references/templates": [
+    "bug-report.md"
+  ],
+  "skills/spec/scripts": [
+    "scope.py",
+    "test_scope.py"
+  ]
+}
