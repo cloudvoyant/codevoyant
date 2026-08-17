@@ -2,8 +2,32 @@
 # vendor-assets — vendor shared assets declared in skills/vendor.json into each
 # skill directory so every skill stays self-contained.
 #
-#   vendor-assets          copy each asset source -> every destination
-#   vendor-assets --check  fail (exit 1) if any destination drifts from its source
+#   vendor-assets            copy each asset source -> every destination
+#   vendor-assets --check    validate schema + fail (exit 1) on drift
+#   vendor-assets --validate validate schema only (exit 0/1)
+#
+# v2 schema (skills/vendor.json):
+#   {
+#     "version": 2,
+#     "assets": {
+#       "<name>": {
+#         "source": "skills/shared/<dir>",        // required; source of truth
+#         "files": ["a.py", "sub/b.md"],           // optional; copy only these (relative to source)
+#         "skills": ["docs", "pr"],                 // optional; target skills (each gets <skill>/<destination>)
+#         "destination": "references/<name>",       // optional with skills; relative to each skill dir
+#         "destinations": ["skills/docs/references/x"]  // optional; explicit repo-relative paths
+#       }
+#     }
+#   }
+# At least one of `skills` or `destinations` is required per asset (both may be
+# present; targets are unioned and deduplicated). When `skills` is used,
+# `destination` defaults to `references/<asset-name>`. When `files` is absent
+# the whole source dir is copied; when present the listed entries are the
+# minimum set that must be vendored — any other file under the source is also
+# vendored, so a file added to the shared source propagates automatically. The
+# vendored set for each target is recorded in skills/vendor.manifest.json so
+# --check can flag (and vendor can clean) a previously-vendored copy whose file
+# is no longer in the source or the allowlist.
 #
 # The Agent Skills standard scopes every skill to its own directory: file
 # references are relative and one level deep, and there is no cross-skill
@@ -15,42 +39,231 @@
 # commit. skills:validate (and CI) run --check and fail on drift.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="${VENDOR_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 CONFIG="$ROOT/skills/vendor.json"
-CHECK=0
-[ "${1:-}" = "--check" ] && CHECK=1
+MODE="copy"
+case "${1:-}" in
+  --check) MODE="check" ;;
+  --validate) MODE="validate" ;;
+esac
 
 [ -f "$CONFIG" ] || { echo "vendor-assets: config not found at $CONFIG" >&2; exit 1; }
 
-python3 - "$CONFIG" "$ROOT" "$CHECK" <<'PY'
+python3 - "$CONFIG" "$ROOT" "$MODE" <<'PY'
 import json, os, shutil, subprocess, sys
 
-config_path, root, check = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+config_path, root, mode = sys.argv[1], sys.argv[2], sys.argv[3]
+ALLOWED_KEYS = {"source", "files", "skills", "destination", "destinations"}
+SKILLS_DIR = os.path.join(root, "skills")
+
+fail = 0
+
+
+def err(msg):
+    global fail
+    fail = 1
+    print(f"vendor-assets: {msg}", file=sys.stderr)
+
+
+def resolve_targets(name, asset):
+    """Repo-relative target dirs for an asset (skills + destinations union, deduped)."""
+    targets = []
+    skills = asset.get("skills")
+    if skills:
+        dest = asset.get("destination") or f"references/{name}"
+        for s in skills:
+            targets.append(os.path.join("skills", s, dest))
+    for d in asset.get("destinations") or []:
+        targets.append(d)
+    return list(dict.fromkeys(targets))
+
+
+def validate_asset(name, asset):
+    """Schema errors for one asset (empty list = well-formed)."""
+    errors = []
+    unknown = set(asset) - ALLOWED_KEYS
+    if unknown:
+        errors.append(f"asset {name!r}: unknown key(s): {', '.join(sorted(unknown))}")
+    src = asset.get("source")
+    if not isinstance(src, str) or not src:
+        errors.append(f"asset {name!r}: missing 'source'")
+    elif not os.path.lexists(os.path.join(root, src)):
+        errors.append(f"asset {name!r}: source not found: {src}")
+    else:
+        if "files" in asset and not isinstance(asset.get("files"), list):
+            errors.append(f"asset {name!r}: 'files' must be an array")
+        for f in asset.get("files") or []:
+            if not isinstance(f, str):
+                errors.append(f"asset {name!r}: 'files' entries must be strings, got {f!r}")
+            elif not os.path.lexists(os.path.join(root, src, f)):
+                errors.append(f"asset {name!r}: files entry not under source: {src}/{f}")
+    skills = asset.get("skills")
+    destinations = asset.get("destinations")
+    if not skills and not destinations:
+        errors.append(f"asset {name!r}: needs 'skills' and/or 'destinations'")
+    if skills:
+        if not isinstance(skills, list) or not skills:
+            errors.append(f"asset {name!r}: 'skills' must be a non-empty array")
+        else:
+            for s in skills:
+                if not isinstance(s, str):
+                    errors.append(f"asset {name!r}: 'skills' entries must be strings, got {s!r}")
+                elif not os.path.isdir(os.path.join(SKILLS_DIR, s)):
+                    errors.append(f"asset {name!r}: unknown skill: {s}")
+        dest = asset.get("destination")
+        if dest is not None and not isinstance(dest, str):
+            errors.append(f"asset {name!r}: 'destination' must be a string, got {dest!r}")
+        elif dest and (dest.startswith("/") or ".." in dest.split("/")):
+            errors.append(f"asset {name!r}: 'destination' must stay inside the skill dir: {dest}")
+    if destinations is not None and not isinstance(destinations, list):
+        errors.append(f"asset {name!r}: 'destinations' must be an array")
+    else:
+        for d in destinations or []:
+            if not isinstance(d, str):
+                errors.append(f"asset {name!r}: 'destinations' entries must be strings, got {d!r}")
+    return errors
+
+
+def copy_one(src, dst):
+    """Copy src (repo-relative) to dst (repo-relative), replacing dst."""
+    s = os.path.join(root, src)
+    d = os.path.join(root, dst)
+    if os.path.isdir(s):
+        tmp = d + ".vendor-tmp"
+        shutil.rmtree(tmp, ignore_errors=True)
+        shutil.copytree(s, tmp)
+        shutil.rmtree(d, ignore_errors=True)
+        os.replace(tmp, d)
+    else:
+        os.makedirs(os.path.dirname(d), exist_ok=True)
+        tmp = d + ".vendor-tmp"
+        shutil.copy2(s, tmp)
+        os.replace(tmp, d)
+
+
+def check_one(src, dst):
+    s = os.path.join(root, src)
+    d = os.path.join(root, dst)
+    if not os.path.exists(d):
+        print(f"DRIFT: {dst} missing (run 'mise run skills:vendor' and commit)")
+        return 1
+    r = subprocess.run(["diff", "-r", s, d], capture_output=True, text=True)
+    if r.returncode != 0:
+        print(f"DRIFT: {dst} differs from {src} (run 'mise run skills:vendor' and commit)")
+        return 1
+    return 0
+
+
+def remove_path(p):
+    """Remove a file or dir (stale vendored copy) at a repo-relative path."""
+    abs_p = os.path.join(root, p)
+    if os.path.isdir(abs_p) and not os.path.islink(abs_p):
+        shutil.rmtree(abs_p, ignore_errors=True)
+    else:
+        try:
+            os.remove(abs_p)
+        except FileNotFoundError:
+            pass
+
+
+MANIFEST = os.path.join(root, "skills", "vendor.manifest.json")
+
+
+def load_manifest():
+    try:
+        with open(MANIFEST) as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def save_manifest(m):
+    os.makedirs(os.path.dirname(MANIFEST), exist_ok=True)
+    with open(MANIFEST, "w") as f:
+        json.dump(m, f, indent=2, sort_keys=True)
+        f.write("\n")
+
+
+def source_relfiles(src):
+    """Forward-slash relative paths of every regular file under the source dir."""
+    base = os.path.join(root, src)
+    out = []
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for fn in filenames:
+            rel = os.path.relpath(os.path.join(dirpath, fn), base)
+            out.append(rel.replace(os.sep, "/"))
+    return sorted(out)
+
+
 with open(config_path) as f:
     data = json.load(f)
 
-fail = 0
-for name, asset in data.get("assets", {}).items():
-    src = os.path.join(root, asset["source"])
-    for dst_rel in asset.get("destinations", []):
-        dst = os.path.join(root, dst_rel)
-        if check:
-            r = subprocess.run(["diff", "-r", src, dst], capture_output=True, text=True)
-            if r.returncode != 0:
-                print(f"DRIFT: {dst} differs from {asset['source']} (run 'mise run skills:vendor' and commit)")
-                fail = 1
-            continue
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        tmp = dst + ".vendor-tmp"
-        shutil.rmtree(tmp, ignore_errors=True)
-        if os.path.isdir(src):
-            shutil.copytree(src, tmp)
-            shutil.rmtree(dst, ignore_errors=True)
-            os.replace(tmp, dst)
-        else:
-            shutil.copy2(src, tmp)
-            os.replace(tmp, dst)
-        print(f"vendored: {asset['source']} -> {dst_rel}")
+if data.get("version") != 2:
+    err(f"config version must be 2, got {data.get('version')!r}")
+
+assets = data.get("assets") or {}
+if not isinstance(assets, dict):
+    err("'assets' must be an object")
+
+for name, asset in assets.items():
+    if not isinstance(asset, dict):
+        err(f"asset {name!r}: must be an object")
+        continue
+    for e in validate_asset(name, asset):
+        err(e)
+
+if fail:
+    sys.exit(1)
+if mode == "validate":
+    print("vendor-assets: schema OK")
+    sys.exit(0)
+
+manifest = load_manifest()
+files_targets = set()
+
+for name, asset in assets.items():
+    src = asset["source"]
+    targets = resolve_targets(name, asset)
+    files = asset.get("files")
+    if files:
+        managed = sorted(set(files) | set(source_relfiles(src)))
+        for t in targets:
+            files_targets.add(t)
+            prev = set(manifest.get(t, []))
+            stale = sorted(prev - set(managed))
+            if mode == "check":
+                for f in managed:
+                    fail |= check_one(os.path.join(src, f), os.path.join(t, f))
+                for f in stale:
+                    d = os.path.join(root, t, f)
+                    if os.path.lexists(d):
+                        print(f"DRIFT: {t}/{f} stale (removed from {src}; run 'mise run skills:vendor' and commit)")
+                        fail = 1
+            else:
+                for f in managed:
+                    s = os.path.join(src, f)
+                    d = os.path.join(t, f)
+                    copy_one(s, d)
+                    print(f"vendored: {s} -> {d}")
+                for f in stale:
+                    d = os.path.join(t, f)
+                    if os.path.lexists(os.path.join(root, d)):
+                        remove_path(d)
+                        print(f"removed stale: {d}")
+                manifest[t] = managed
+    else:
+        for t in targets:
+            if mode == "check":
+                fail |= check_one(src, t)
+            else:
+                copy_one(src, t)
+                print(f"vendored: {src} -> {t}")
+
+if mode != "check":
+    manifest = {t: v for t, v in manifest.items() if t in files_targets}
+    save_manifest(manifest)
 
 sys.exit(fail)
 PY

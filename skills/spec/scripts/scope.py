@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Evaluate whether a candidate write path falls inside a set of doc globs.
+"""Evaluate whether paths fall inside a set of doc globs.
 
-Used by the spec skill's doc-aware mode (`references/doc-aware.md` Rule 3) to
-enforce per-phase write scoping: given a phase's `## Doc Scope` write globs and
-a candidate write path, print the path if it falls inside the globs. A path
-that is NOT emitted is out of scope — the phase must not write it.
+Vendored into both the docs and spec skills from `skills/shared/scope-scripts`
+(see `skills/vendor.json`). The docs skill uses it for update/review diff
+scoping; the spec skill uses it for doc-aware write scoping (Rule 3 of
+`references/doc-aware.md`). Given a set of `globs` and a list of repo-relative
+paths, print the paths that fall inside the globs.
 
 The glob matching mirrors the docs skill's heuristic: a glob is normalized to
 its directory prefix (a trailing `/**`, `/*`, or extension glob is stripped)
@@ -12,14 +13,11 @@ and a path is in scope when its segments start with that prefix (whole-segment
 match — `libs/auth` contains `libs/auth/oidc` but not `libs/authz`).
 
 Usage:
-    printf '%s\n' "<candidate write path>" | \
-        python3 scripts/scope.py --globs 'libs/auth/**' 'docs/**'
+    printf '%s\n' "libs/auth/index.ts" | python3 scripts/scope.py --globs 'libs/auth/**' 'docs/**'
+    git diff --name-only "$(git merge-base "$BASE" HEAD)" HEAD | python3 scripts/scope.py --globs 'libs/auth/**'
 
-    # index-style globs (span everything) match any path
-    printf '%s\n' "any/path" | python3 scripts/scope.py --globs '**'
-
-Exit 0 when the invocation succeeds. Prints one owned path per line. No
-output = the path is outside the globs (out of scope).
+Exit 0 when the invocation succeeds. Prints one owned path per line. No output
+= the path is outside the globs (out of scope).
 """
 
 from __future__ import annotations

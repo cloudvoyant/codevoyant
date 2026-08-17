@@ -102,7 +102,7 @@ Mechanics:
 
 ## Scripts
 
-- `scripts/scope.py` — vendored from the docs skill; the mechanical glob-checker for Rule 3. `SPEC_SKILL` (the skill package root) is exported by `SKILL.md`; executors receive it via `go.md`. Usage:
+- `scripts/scope.py` — vendored from `skills/shared/scope-scripts` (shared with the docs skill); the mechanical glob-checker for Rule 3. `SPEC_SKILL` (the skill package root) is exported by `SKILL.md`; executors receive it via `go.md`. Usage:
 
 ```bash
 printf '%s\n' "$path" | python3 "$SPEC_SKILL/scripts/scope.py" --globs 'libs/auth/**' 'docs/**'
