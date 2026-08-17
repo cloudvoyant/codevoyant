@@ -1,3 +1,58 @@
+## [1.72.0](https://github.com/cloudvoyant/codevoyant/compare/v1.71.0...v1.72.0) (2026-08-17)
+
+### Features
+
+* **skills:** v2 vendor.json with selective vendoring
+
+* feat(skills): add shared scope-scripts and bug-report sources
+
+Create the canonical skills/shared/ scope-scripts (scope.py + test_scope.py,
+neutral docstring covering docs diff scoping and spec doc-aware write scoping)
+and bug-report issue template that the v2 vendor-assets plan will vendor into
+the spec/docs and gh/glab/linear skills.
+
+* feat(skills): v2 vendor.json and vendor-assets rewrite
+
+Redesign skills/vendor.json to the v2 schema: each asset declares source,
+optional selective files, optional skills array with a per-skill destination,
+and/or legacy explicit destinations. Rewrite .mise-tasks/vendor-assets to honor
+it (selective copying, skills scoping, --validate, strict schema validation that
+fails before any copy or drift check). Materialize all vendored copies and
+migrate the simple-english entry to the skills+destination form.
+
+* refactor(skills): drop duplicate ScopeFunction class from docs test_scaffold
+
+The scope tests are now vendored as skills/docs/scripts/test_scope.py from
+skills/shared/scope-scripts, so the embedded ScopeFunction class in
+test_scaffold.py would run the same six assertions twice. Remove it; the docs
+skill keeps its scaffold/template/CLI test classes.
+
+* docs(skills): document v2 vendor.json schema and shared-source scope.py
+
+Rewrite skills/README.md to describe the v2 manifest (source, files, skills,
+destination, destinations, --validate) and the three managed shared assets, and
+update doc-aware.md to name skills/shared/scope-scripts as scope.py's canonical
+source instead of the docs skill.
+
+* fix(skills): harden vendor-assets validation, dedup, and files propagation
+
+- validate_asset: isinstance(..., str) checks for source, files, skills,
+  destination, and destinations entries so malformed configs (e.g. skills:
+  [42]) fail with a clean schema error instead of a TypeError traceback
+- resolve_targets: deduplicate the skills + destinations union so an
+  overlapping target is copied/checked once
+- files mode: vendor the allowlist plus any other file under the source
+  dir (new shared files propagate automatically); record the vendored set
+  in skills/vendor.manifest.json so --check flags a previously-vendored
+  copy whose file is no longer in the source or allowlist, and vendor
+  cleans it
+
+* chore(skills): commit vendor manifest and vendor-assets regression tests
+
+The manifest records the vendored file set per target so --check can detect
+stale copies on a clean checkout; the tests cover new-file propagation,
+stale-copy flagging/cleaning, and non-string schema validation.
+
 ## [1.71.0](https://github.com/cloudvoyant/codevoyant/compare/v1.70.0...v1.71.0) (2026-08-16)
 
 ### Features
