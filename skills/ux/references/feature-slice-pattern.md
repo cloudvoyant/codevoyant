@@ -1,5 +1,7 @@
 # Feature-Slice Architecture Pattern
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when this pattern reference directs writing a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Canonical reference for the feature-slice directory layout, barrel files, naming rules, and layout lib conventions.
 
 ## Directory Structure

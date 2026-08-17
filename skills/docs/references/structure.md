@@ -1,5 +1,7 @@
 # structure — the mandated docs/ directory layout
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when a workflow writes a doc `.md` per this layout, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Single source of truth for where docs live, the path→template mapping, and component type detection. `new.md`, `review.md`, `retcon.md`, `update.md`, `scaffold.md`, and `validate.md` all reference this file. The coverage model in `references/coverage-and-api.md` maps directly onto this layout: each directory's `index.md` owns that subtree's `globs`; child docs own their sub-paths; a parent refers to a child only through the child's interface.
 
 Section headings inside each doc are NOT described here — templates are the single source of structure (see `references/template-contract.md`).

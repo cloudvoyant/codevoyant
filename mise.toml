@@ -95,10 +95,10 @@ check_soft_wrap() {
   fi
 }
 while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -name 'SKILL.md' -not -path '*/references/examples/*' | sort; find ./skills -path '*/agents/*.md' | sort)
-# Workflow files that generate markdown artifacts (.md/.mdx/SKILL.md output)
-# must carry the rule too; reference docs (help.md / run.md) are excluded because
-# they only describe commands, never generate artifacts.
-while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -path '*/references/workflows/*.md' -not -path '*/references/examples/*' -not -name 'help.md' -not -name 'run.md' -exec grep -lE '(write|create|generate|emit|author|produce|draft|save|scaffold)[^.;]{0,80}\\.(md|mdx|SKILL\\.md)' {} + | sort)
+# Reference files that generate markdown artifacts (.md/.mdx/SKILL.md output)
+# must carry the rule too; help.md / run.md (command reference only) and
+# templates/ (fill-in data) never generate prose artifacts and are excluded.
+while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -path '*/references/*.md' -not -path '*/references/examples/*' -not -path '*/references/templates/*' -not -name 'help.md' -not -name 'run.md' -exec grep -lE '(write|create|generate|emit|author|produce|draft|save|scaffold)[^.;]{0,80}\\.(md|mdx|SKILL\\.md)' {} + | sort)
 if [ "$soft_failed" -gt 0 ]; then
   echo "$soft_failed file(s) missing the soft-wrap rule"
   exit 1
@@ -118,11 +118,20 @@ while IFS= read -r hit; do
   echo "FAIL: hardcoded provider model ID: $hit"
   model_failed=$((model_failed + 1))
 done < <(rg -n '([*][*]Model:[*][*]|model:)[[:space:]]*(claude-|gpt-|deepseek-)' skills --glob '*.md' --glob '*.json' 2>/dev/null || true)
+# A bare "model:" field in an agent's frontmatter (e.g. "model: inherit") or a
+# bare "**Model:**" header line is a harness-specific declaration, not a model
+# tier; agents must use "metadata: model-tier:" or "**Model tier:**". Flag both
+# at line start so MCP tool names (which never begin a line with "model:") and
+# the legitimate "**Model tier:**" header stay untouched.
+while IFS= read -r hit; do
+  echo "FAIL: agent file uses bare 'model:' field or '**Model:**' header (use 'metadata: model-tier:' / '**Model tier:**'): $hit"
+  model_failed=$((model_failed + 1))
+done < <(rg -n '^(model:|[*][*]Model:[*][*])[[:space:]]+' skills --glob '**/agents/*.md' 2>/dev/null || true)
 if [ "$model_failed" -gt 0 ]; then
-  echo "$model_failed hardcoded provider model ID(s) found"
+  echo "$model_failed hardcoded provider model ID / bare model field(s) found"
   exit 1
 fi
-echo "No hardcoded provider model IDs in skills."
+echo "No hardcoded provider model IDs or bare model: fields in skills."
 
 # Fail if the /tasks alias has drifted from the canonical /task package.
 "$MISE_PROJECT_ROOT/.mise-tasks/gen-task-alias" --check

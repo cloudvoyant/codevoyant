@@ -1,5 +1,7 @@
 # Source tiers — the reference catalog spec
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when ed writes a `.md`/`.mdx` artifact per this reference, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ed produces *literature-grounded* textbooks. Every module must rest on real, verifiable, high-quality primary material — not on the model's parametric memory. This file defines the six source **classes** ed seeks, the **reliability hierarchy** that orders them, the **hard rules** every catalog must satisfy, and the exact schema of the `sources.md` catalog that `explore` writes and every downstream workflow reads.
 
 This verified-reference discipline is core to the intelligent-textbook lineage (dmccreary): an AI textbook is only trustworthy when its sources are real, reachable, and annotated with *what they cover and why they matter*.

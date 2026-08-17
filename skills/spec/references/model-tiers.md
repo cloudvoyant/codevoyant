@@ -29,4 +29,4 @@ Tiers are relative weights; the platform maps them to concrete models.
 
 ## Keep in sync
 
-This file is mirrored per published skill package (`spec`, `pr`, `skill`, `plan`, `pm`, `explore`), so it lives in six places. Edit all copies together, keeping each skill's usage examples local.
+This file is mirrored per published skill package (`spec`, `pr`, `skill`, `plan`, `pm`, `explore`, `ed`), so it lives in seven places. Edit all copies together, keeping each skill's usage examples local.

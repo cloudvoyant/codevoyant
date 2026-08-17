@@ -1,5 +1,7 @@
 # Pedagogy reference — how ed writes teaching material
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when ed writes a `.md`/`.mdx` artifact per this rubric, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Every lesson, quiz, and project ed produces must teach *well*, not merely correctly. This file is the operational rubric that `create-lesson`, `create-quiz`, `create-project`, and the `ed-lesson-author` agent read before writing a single line of MDX. It is not aspirational prose — each section ends in a checkable rule.
 
 The approach here is grounded in learning science (Mayer's cognitive theory of multimedia learning, Sweller's cognitive load theory, Bloom's revised taxonomy, the testing/retrieval-practice literature) and is directly descended from Dan McCreary's **"intelligent textbook"** patterns — the combination of *scored quality gates*, *Bloom-tagged learning objectives*, *define-before-display concept scaffolding*, and *verified references* that make an AI-generated textbook trustworthy rather than merely plausible. We adopt that lineage wholesale and target diffbook MDX components for the interactive layer. Credit: Dan McCreary, "Intelligent Textbooks" / "Generative AI for Intelligent Textbooks" pattern catalog (dmccreary).

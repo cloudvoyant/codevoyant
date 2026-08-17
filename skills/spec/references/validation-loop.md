@@ -1,5 +1,7 @@
 # Validation Loop
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when this loop writes a plan, validation report, or review `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 > **Autonomy constraint:** All rounds run autonomously — do not prompt the user at any point during this loop.
 
 Run a minimum of 2 validation rounds autonomously (no user prompts). After each round that surfaces issues, apply all fixes before running the next round.

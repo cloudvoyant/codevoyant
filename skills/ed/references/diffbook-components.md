@@ -1,5 +1,7 @@
 # diffbook components — an operational cheat-sheet
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when ed writes a `.md`/`.mdx` artifact per this reference, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 ed authors interactive textbooks as **diffbook MDX**. This file maps *pedagogical intent* to the correct diffbook component, gives the **exact syntax** (copied from the diffbook `author` workflow — the source of truth), and states the file-extension, frontmatter, LaTeX, and invocation rules. `create-lesson`, `create-quiz`, `create-project`, and the `ed-lesson-author` agent read this before writing any `.mdx`.
 
 **Ground rules (memorize these):**
