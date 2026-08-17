@@ -4,21 +4,25 @@ Semantic model tiers keep this skill model-agnostic. A skill never names a concr
 
 ## The tiers
 
-- **`light`** — fast and low-cost. For mechanical and validation agents: executors, gates, review passes.
-- **`standard`** — default reasoning. For most analysis agents: quality judges, slop detectors, docs freshness checkers.
-- **`heavy`** — deepest reasoning. For planning and design agents: planners, architecture authors, scope researchers.
+- **`light`** — fast and low-cost. For mechanical and validation agents: phase executors, code-completeness gates, permissions analysis, review agents.
+- **`standard`** — default reasoning. For most analysis agents: plan updaters, quality judges, freshness checkers.
+- **`heavy`** — deepest reasoning. For planning and design agents: planners, architecture authors, scope researchers, and content authors.
 
 ## How a tier is declared
 
-- In an agent file's frontmatter: `metadata: model-tier: standard` (never a `model:` field — the Agent Skills base spec has none).
+- In an agent file's frontmatter: `metadata: model-tier: heavy` (never a `model:` field — the Agent Skills base spec has none).
 - In workflow text that spawns an ad-hoc agent: a `model-tier: <tier>` token instead of `model: <id>`.
+
+## ed usage
+
+- `ed-lesson-author` declares `metadata: model-tier: heavy` — authoring graduate-level, Feynman-style lessons from primary sources is deep reasoning. The `ed` workflows (`create-lesson`, `autodidact`) fan this agent out per lesson; the fan-out cost is a platform scheduling decision, not a skill concern.
 
 ## How a tier resolves to a model
 
 Tiers are relative weights; the platform maps them to concrete models.
 
 - **opencode** — per-agent config in `opencode.json`: `agent.<name>.model` for `standard`/`heavy` and `agent.<name>.small_model` for `light` (or the top-level `model`/`small_model` keys). Unconfigured agents fall back to the session model.
-- **Claude Code** — the subagent model the platform operator assigns; when unset, the agent runs on the session's default model.
+- **Claude Code** — the subagent model the platform operator assigns (this is the field skills used to hardcode); when unset, the agent runs on the session's default model.
 - **Portable fallback (zero config)** — if no platform config exists, the agent runs on the currently selected session model. This is what makes DeepSeek/opencode and any other provider work with no setup.
 
 ## Rules

@@ -45,6 +45,7 @@ Bare-noun ergonomics: `/ed syllabus …`, `/ed module …`, `/ed lesson …`, `/
 - **Pass all remaining args through** — the workflow receives `$REMAINING_ARGS` unchanged (course, module, lesson, and all `--book`/`--dir`/`--yes` flags)
 - **MDX output goes to the diffbook book**, plan/draft artifacts go to `.codevoyant/ed/{course}/` — see `references/artifact-layout.md`
 - **Markdown/MDX output: soft-wrap prose, never hard-wrap** — every workflow and agent writes each paragraph as one continuous line; newlines separate paragraphs, list items, headings, and fences only. LaTeX uses `\( \)` / `\[ \]`, never `$…$`. (Full guidance: `references/pedagogy.md`.)
+- **Model tiers, never model IDs** — the `ed-lesson-author` agent declares `metadata: model-tier: heavy`; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 - **Gates before advancing** — every stage scores its output and refuses to advance a weak artifact; interactive runs STOP on repeated failure, `autodidact --yes` logs to `state.md` and continues best-effort (see `references/quality-gates.md`)
 - See `references/workflows/` for per-verb behaviour; see `references/` for shared references and templates
 
