@@ -1,5 +1,7 @@
 # doc-aware — the experimental `--persistent` model for the spec skill
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when this model directs writing a plan or report `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Single source of truth for the doc-aware mode enabled by `/spec new --persistent` and `/spec update --persistent`. `new.md`, `update.md`, `go.md`, and `agents/spec-executor.md` reference this file; do not restate these rules elsewhere. The model reuses the docs skill's ownership concepts (globs + public interfaces) but is owned by the spec skill and does not depend on the docs skill at runtime.
 
 ## The model

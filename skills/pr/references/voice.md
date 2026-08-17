@@ -1,5 +1,7 @@
 # PR voice & tone
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when drafting PR/MR bodies or review prose, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 How to write PR/MR descriptions (and any prose this skill generates). The reader is often a busy teammate or a **junior developer** seeing this change for the first time. Write for them.
 
 ## Principles

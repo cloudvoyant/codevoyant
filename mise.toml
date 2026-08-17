@@ -95,10 +95,10 @@ check_soft_wrap() {
   fi
 }
 while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -name 'SKILL.md' -not -path '*/references/examples/*' | sort; find ./skills -path '*/agents/*.md' | sort)
-# Workflow files that generate markdown artifacts (.md/.mdx/SKILL.md output)
-# must carry the rule too; reference docs (help.md / run.md) are excluded because
-# they only describe commands, never generate artifacts.
-while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -path '*/references/workflows/*.md' -not -path '*/references/examples/*' -not -name 'help.md' -not -name 'run.md' -exec grep -lE '(write|create|generate|emit|author|produce|draft|save|scaffold)[^.;]{0,80}\\.(md|mdx|SKILL\\.md)' {} + | sort)
+# Reference files that generate markdown artifacts (.md/.mdx/SKILL.md output)
+# must carry the rule too; help.md / run.md (command reference only) and
+# templates/ (fill-in data) never generate prose artifacts and are excluded.
+while IFS= read -r f; do check_soft_wrap "$f"; done < <(find ./skills -path '*/references/*.md' -not -path '*/references/examples/*' -not -path '*/references/templates/*' -not -name 'help.md' -not -name 'run.md' -exec grep -lE '(write|create|generate|emit|author|produce|draft|save|scaffold)[^.;]{0,80}\\.(md|mdx|SKILL\\.md)' {} + | sort)
 if [ "$soft_failed" -gt 0 ]; then
   echo "$soft_failed file(s) missing the soft-wrap rule"
   exit 1

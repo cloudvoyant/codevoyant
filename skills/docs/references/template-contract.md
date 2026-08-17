@@ -1,5 +1,7 @@
 # template-contract — how workflows derive structure from templates
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when a workflow writes a doc `.md` per this contract, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 The templates under `references/templates/` are the **single source of structure**. Workflows never hard-code section names, diagram types, or API-section names — they resolve a doc's template (see `references/scaffold.md`) and derive everything from the template itself. This is what lets you edit a template and have `review`, `update`, `retcon`, and `validate` pick up the change automatically, with no workflow edits.
 
 ## What a template must provide
