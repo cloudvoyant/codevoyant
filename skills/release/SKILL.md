@@ -19,6 +19,8 @@ Show the current project version and predicted next version using semantic-relea
 
 ## Step 0: Detect config and tool
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the `--tool` flag from the user's current message.
+
 ```bash
 TOOL=""
 CONFIG=""

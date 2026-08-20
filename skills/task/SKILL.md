@@ -20,6 +20,8 @@ Unified task runner skill dispatcher. Auto-detects the project's task runner and
 
 ## Step 0: Parse Arguments
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 ```bash
 VERB="[first non-flag token, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"

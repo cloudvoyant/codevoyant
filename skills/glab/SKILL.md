@@ -20,6 +20,8 @@ GitLab skill dispatcher.
 
 ## Step 0: Parse Arguments
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 ```bash
 VERB="[first non-flag argument, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"

@@ -19,6 +19,8 @@ Show the current project version and predicted next version using commitizen con
 
 ## Step 0: Detect config
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read any flags from the user's current message.
+
 ```bash
 # Priority order for commitizen config
 CZ_CONFIG=""

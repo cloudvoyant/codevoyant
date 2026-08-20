@@ -25,6 +25,8 @@ Note: the `skill` dependency is only needed for `flow save`. If the verb is not 
 
 ## Dispatch logic
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 ```
 VERB = first non-flag argument (default: "help")
 

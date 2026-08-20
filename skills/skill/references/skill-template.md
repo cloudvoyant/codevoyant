@@ -35,7 +35,7 @@ context: fork # optional — fork | inline | background
 
 ### Argument handling (cross-agent)
 
-Dispatcher skills (those with a Step 0 that extracts a verb from the invocation) MUST follow the contract in `skills/shared/arg-handling.md`: parse the verb and remaining args from the current request — never from a platform-specific magic variable, and NEVER by embedding `$ARGUMENTS`/`$N` substitution tokens in a SKILL.md body (Claude Code substitutes them natively; OpenCode does not, so the literal token reaches the model unexpanded). When no verb is parseable, ASK the user (AskUserQuestion, numbered-list fallback on non-Claude-Code platforms) instead of silently running help. Keep the dispatcher's "first non-flag argument = VERB" contract and the ask-when-missing rule.
+Dispatcher skills (those with a Step 0 that extracts a verb from the invocation) MUST follow the contract in `skills/shared/arg-handling.md`: embed `$ARGUMENTS` as the Step 0 capture point (substituted inline by Claude Code and OpenCode slash commands) and parse the verb and remaining args from it, falling back to the user's current message when `$ARGUMENTS` stays literal (skill loaded by name). Never use `$N` positional tokens — on OpenCode the highest-numbered `$N` greedily consumes the remaining tokens. When no verb is parseable, ASK the user (AskUserQuestion, numbered-list fallback on non-Claude-Code platforms) instead of silently running help. Keep the dispatcher's "first non-flag argument = VERB" contract and the ask-when-missing rule.
 
 ---
 
@@ -108,6 +108,8 @@ List only real runtime tool dependencies. Omit section if skill has no external 
 
 ```markdown
 ## Step 0: Parse arguments
+
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the args from the user's current message.
 
 \`\`\`bash
 ARG_ONE="[first non-flag argument, or empty]"
