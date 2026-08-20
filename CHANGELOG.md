@@ -1,3 +1,62 @@
+## [1.73.0](https://github.com/cloudvoyant/codevoyant/compare/v1.72.0...v1.73.0) (2026-08-20)
+
+### Features
+
+* **skills,docs:** cross-agent argument handling and docs grouping hierarchy
+
+* feat(skills): cross-agent dispatcher argument handling
+
+**Argument contract**
+- Add skills/shared/arg-handling.md as the canonical cross-agent
+  contract: dispatchers parse the verb and args from the current
+  request, never from a platform magic variable
+- Never embed $ARGUMENTS/$N substitution tokens in a SKILL.md body;
+  OpenCode does not substitute them inside skill content, so a
+  literal token reaches the model unexpanded
+- Missing verb asks the user (AskUserQuestion, numbered-list fallback
+  on non-Claude-Code platforms) instead of silently running help;
+  an explicit or unknown verb still runs help
+- Enforce the contract in the spec and docs dispatchers and in
+  skill-template.md, and drop the $ARGUMENTS token from the explore
+  diff workflow
+
+**OpenCode command wrappers**
+- Add a shared opencode-command wrapper template and vendor it to
+  every dispatcher skill's references/opencode-command/template.md
+- Add scripts/install-opencode.sh to optionally write $ARGUMENTS
+  command wrappers under ~/.config/opencode/command, with --list,
+  --uninstall, and named-skill targeting
+- Detect verb-dispatching skills only (Step 0: Parse Arguments plus a
+  references/workflows dir), so cheatsheet skills get no wrapper
+
+**Vendoring and docs**
+- Register the opencode-command asset in skills/vendor.json and
+  regenerate skills/vendor.manifest.json
+- Document wrapper install options in docs/installation.md and
+  README.md
+
+* feat(docs): grouping hierarchy and mermaid label rules
+
+**Grouping hierarchy**
+- Introduce a kind-bucket taxonomy (apps|services, libs, CI) with an
+  optional platform level for the docs/architecture tree
+- Add retcon Step 2.5 to group discovered components into the
+  hierarchy before building the manifest, confirming groupings with
+  the user
+- Update structure.md, coverage-and-api.md, and the architecture and
+  generic templates to the group/module/component grain: a group doc
+  owns a kind subtree, a module index owns its module subtree, a
+  leaf child only its own sub-path
+- Route new, update, review, and validate through the same taxonomy;
+  the architecture index now navigates by group, not by every
+  component
+
+**Mermaid labels**
+- Add a mermaid-guide rule: multiline node labels use <br/> inside
+  double-quoted labels, never a literal \n, across every diagram type
+- Update the architecture template's topology example to the new
+  grouped form
+
 ## [1.72.0](https://github.com/cloudvoyant/codevoyant/compare/v1.71.0...v1.72.0) (2026-08-17)
 
 ### Features
