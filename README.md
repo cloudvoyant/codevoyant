@@ -140,10 +140,9 @@ npx skills add cloudvoyant/codevoyant
 
 ```bash
 npx skills add cloudvoyant/codevoyant
-bash scripts/install-opencode.sh   # optional: opencode /command wrappers that forward args
 ```
 
-OpenCode's `skill` tool takes only a name, so args after `/skill` are dropped unless a `$ARGUMENTS` command wrapper exists. The `spec` and `docs` dispatchers degrade gracefully: with no parseable verb they ask the user what they want (numbered list on non-Claude-Code platforms). The other dispatcher skills show help when the verb is missing unless the optional installer above writes a wrapper that forwards the typed verb and args. See `docs/installation.md`.
+OpenCode's `skill` tool takes only a name, so args typed after `/skill` are dropped. Dispatcher skills degrade gracefully: with no parseable verb they ask the user what they want (numbered list on non-Claude-Code platforms) instead of silently running help. See `docs/installation.md`.
 
 ### VS Code Copilot
 

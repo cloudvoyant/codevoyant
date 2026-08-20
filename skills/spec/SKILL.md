@@ -59,7 +59,7 @@ When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKIL
 
 ## Step 0: Parse Arguments
 
-Read the invocation from the current request. VERB = first non-flag argument; REMAINING_ARGS = everything after VERB, preserving order and flags. The invocation may arrive inline (Claude Code), via an opencode `$ARGUMENTS` command wrapper, or as a plain message. If VERB is empty (nothing parseable was typed), ASK the user what they want (AskUserQuestion: new / go / guide / review / refresh / update / clean / polish / allow / help; numbered-list fallback on non-Claude-Code platforms) instead of silently running help. If the user explicitly typed `help` or an unrecognized verb, run help. Full contract: `skills/shared/arg-handling.md`.
+Read the invocation from the current request. VERB = first non-flag argument; REMAINING_ARGS = everything after VERB, preserving order and flags. The invocation may arrive inline (Claude Code) or as a plain message. If VERB is empty (nothing parseable was typed), ASK the user what they want (AskUserQuestion: new / go / guide / review / refresh / update / clean / polish / allow / help; numbered-list fallback on non-Claude-Code platforms) instead of silently running help. If the user explicitly typed `help` or an unrecognized verb, run help. Full contract: `skills/shared/arg-handling.md`.
 
 ```bash
 VERB="[first non-flag argument, or empty]"
