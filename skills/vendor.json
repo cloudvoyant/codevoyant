@@ -1,12 +1,6 @@
 {
   "version": 2,
   "assets": {
-    "opencode-command": {
-      "source": "skills/shared/opencode-command",
-      "files": ["template.md"],
-      "skills": ["changelog", "docs", "ed", "explore", "flow", "gh", "git", "glab", "icons", "linear", "plan", "pm", "pr", "qa", "skill", "snippets", "spec", "task", "tasks", "ux"],
-      "destination": "references/opencode-command"
-    },
     "simple-english": {
       "source": "skills/shared/simple-english",
       "skills": ["docs", "pr"],
