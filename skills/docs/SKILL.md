@@ -15,7 +15,7 @@ Triggers: "docs new", "docs update", "docs review", "docs retcon", "create docs"
 
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
-- **Unknown verb → run `help.md`** — never error silently
+- **Empty verb → ask the user what they want** (AskUserQuestion, numbered-list fallback on non-Claude-Code platforms) — never run help silently. **Unknown verb → run `help.md`** — never error silently.
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any docs workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences. (Full guidance: `references/language-guide.md`.)
 
 ## Skill directory resolution
@@ -33,12 +33,14 @@ export SKILL
 
 ## Step 0: Parse Arguments
 
+Read the invocation from the current request. VERB = first non-flag argument; REMAINING_ARGS = everything after VERB, preserving order and flags. The invocation may arrive inline (Claude Code), via an opencode `$ARGUMENTS` command wrapper, or as a plain message. If VERB is empty (nothing parseable was typed), ASK the user what they want (AskUserQuestion: new / update / review / retcon / validate / help; numbered-list fallback on non-Claude-Code platforms) instead of silently running help. If the user explicitly typed `help` or an unrecognized verb, run help. Full contract: `skills/shared/arg-handling.md`.
+
 ```bash
 VERB="[first non-flag argument, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 case "$VERB" in
-  "")              VERB="help" ;;
+  "")              ask the user what they want ;;   # empty invocation → ask, never silent help
   "generate")      VERB="new" ;;
   "create")        VERB="new" ;;
   "add")           VERB="new" ;;
