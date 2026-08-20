@@ -16,14 +16,24 @@ docs/
   ci.md                 # CI/CD + infrastructure: pipelines, release, infra layout, resources, environments (ci template)
   architecture/
     index.md            # THE architecture (system) doc — always here, never README.md
-    <component>.md       # a leaf component doc (no sub-components)
-    <component>/         # a component that HAS sub-components → becomes a directory
-      index.md           # that component's own doc
-      <subcomponent>.md   # a leaf sub-component
-      <subcomponent>/     # a sub-component that itself has children → recurse
+    apps/                # kind bucket: deployable applications / services
+      index.md           # group doc — Components name+link each module under it
+      <module>.md        # a leaf module doc (single-component module)
+      <module>/          # a multi-component module → becomes a directory
+        index.md         # the module doc — members are ## Implementation subsections
+        <sub>.md         # a leaf child doc — ONLY when the sub-component has an independent public API
+    libs/                # kind bucket: shared libraries / packages
+      index.md           # group doc
+      <lib>.md           # a leaf library doc
+      <lib>/             # a multi-component library → becomes a directory
         index.md
-        ...
+        <sub>.md
+    ci/                  # kind bucket: CI/CD + infra modules
+      index.md           # group doc
+      <ci-module>.md     # a leaf CI/infra module doc
 ```
+
+**Documentation grain.** A doc documents the system the way people think about it: grouped by KIND (apps|services, libs, CI), by PLATFORM when the repo has more than one deployable platform, then by MODULE within apps|services. `retcon` groups discovered components into this hierarchy before building its manifest (see `references/workflows/retcon.md` Step 2.5); `new` and `validate` follow the same grain. Simple infra artifacts (SSM parameters, S3 buckets, KMS keys) and Terraform modules belong in the owning module doc's `## Implementation`, never as their own docs.
 
 ## Mandated top-level docs
 
@@ -43,9 +53,34 @@ Four docs plus the architecture doc form the mandated top level of every managed
 ## Rules
 
 - The architecture doc is ALWAYS `docs/architecture/index.md`. Never a README in that directory.
-- A component is a single `<name>.md` file when it has no sub-components. When it has sub-components it is a directory `<name>/` containing `index.md` (the component's own doc) plus its child docs, recursively.
-- Promotion: when a leaf `<name>.md` gains a sub-component, promote it to `<name>/index.md` and add the child docs beside it.
+- A single-component module is a leaf `<module>.md` under its kind bucket. A multi-component module is a directory `<module>/` containing `index.md` (the module doc) with each member component as an `## Implementation` subsection; a child `{sub}.md` beside the `index.md` exists ONLY when that sub-component has a distinct public API other modules consume, or is too complex to summarise in a subsection.
+- A kind bucket with components gets a group doc `<kind>/index.md` whose Components name+link each module under it.
+- Promotion: when a leaf module gains a sub-component with an independent public API, promote it to `<module>/index.md` and add the child doc beside it.
 - Each directory's `index.md` owns that subtree's `globs`. Child docs own their sub-paths. This is the nested parent/child coverage in `references/coverage-and-api.md`: the parent (`index.md`) refers to a child only through the child's public API/interface section, never its internals.
+- The architecture index (`docs/architecture/index.md`) navigates by GROUP (apps|services, libs, CI — a handful of entries), not by every implementation component.
+
+## Grouping taxonomy
+
+Group discovered components into the hierarchy people think in, before authoring docs. First by KIND, then by MODULE within apps|services:
+
+- **apps** (a.k.a. services) — deployable applications/services. Within this bucket, cluster into modules using these signals (several components form ONE module):
+  - They share a name prefix or a clear ownership boundary
+  - They form a pipeline (producer → queue → consumer is one data flow)
+  - One module calls or depends on another (caller/callee = same subsystem)
+  - Removing any one of them breaks the others
+  - A pre-existing README already describes them as a unit
+- **libs** — shared libraries/packages
+- **ci** — CI/CD + infrastructure modules
+
+Add a PLATFORM level above the kind buckets when the repo has more than one deployable platform (web + mobile, backend + infra). A single-platform repo omits it.
+
+Signals a component deserves its own doc:
+
+- It has a stable public API that other modules consume independently
+- It is complex enough that its internals need explanation separate from its callers
+- It is deployed/versioned independently
+
+Simple infrastructure artifacts — an SSM parameter, an S3 bucket, a KMS key — rarely warrant a standalone doc. They belong in the `## Implementation` section of the module that owns them.
 
 ## Component type detection (single source of truth)
 

@@ -83,6 +83,26 @@ graph TD
 - Use edge labels for non-obvious connections: `-->|"reason"|`
 - Group related nodes with `subgraph` when the diagram has more than ~8 nodes
 
+**Multiline node labels — use `<br/>`, never `\n`.** Mermaid does not interpret a literal `\n` inside graph node syntax; it renders as the two characters `\n`. To break a label onto two lines, use `<br/>` inside a double-quoted label:
+
+````markdown
+```mermaid
+graph TD
+    A["Line one<br/>Line two"] --> B
+```
+````
+
+**Wrong** (renders the literal characters `\n`):
+
+````markdown
+```mermaid
+graph TD
+    A[Line one\nLine two] --> B
+```
+````
+
+Apply the same rule to every diagram type — `graph TD`, `graph LR`, `flowchart TD`, `flowchart LR`. A `<br/>` is valid inside any double-quoted node label.
+
 ### Library Dependency Graph
 
 ````markdown
@@ -105,6 +125,7 @@ graph LR
 - Left-to-right orientation for dependency graphs (consumers on the left, leaf packages on the right)
 - No arrow labels needed — direction implies "depends on"
 - Leaf nodes (no deps) need no special styling
+- Multiline node labels use `<br/>` inside double quotes — never a literal `\n` (see the System Flowchart rules above)
 
 ### Class Diagram (TypeScript types/interfaces)
 

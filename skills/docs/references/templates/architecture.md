@@ -33,18 +33,18 @@ globs:
 
 ### Components
 
-<!-- @agent: (optional) graph TD of the system topology — major components and their connections. No ASCII art. Delete if the Components list is clearer on its own. -->
+<!-- @agent: graph TD of the system topology — the groups (and platforms) and how they connect. Required for the architecture index. No ASCII art. -->
 
 ```mermaid
 graph TD
-    App["{App server}"] --> DB["{Database}"]
+    App["{App server}<br/>({tier})"] --> DB["{Database}"]
 ```
 
-<!-- @agent: [components] The system's major components. NAME every component and LINK its doc, referencing that doc's public API section: a leaf as `./{component}.md`, a component with sub-components as `./{component}/index.md`. Do not restate internals. -->
+<!-- @agent: [components] The system's GROUPS — apps|services, libs, CI (a handful of entries), plus platform dirs when present. NAME every group and LINK its index doc (`./{kind}/index.md`), referencing that doc's public API section. Do not restate internals. This index navigates by group — not by every implementation component. -->
 
-- [`{component}`]({component}.md) — {what it does}
-- [`{component}`]({component}/index.md) — {what component does}
-- {additional bullets explaining how the components wire together to create the whole}
+- [`{group}`]({group}/index.md) — {what the group does}
+- [`{group}`]({group}/index.md) — {what the group does}
+- {additional bullets explaining how the groups wire together to create the whole}
 
 ## Implementation
 

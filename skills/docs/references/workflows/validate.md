@@ -61,7 +61,7 @@ printf '%s\n' "$ALL_PATHS" | python3 "$SKILL/scripts/scope.py" --globs '<glob>' 
 
 ### 3b. Comprehensiveness — every discovered component is owned
 
-For each `COMPONENTS` entry, check that some non-index, non-excluded doc's globs cover its `path` (use `scope.py`). A discovered component with no owning doc is a documentation gap:
+Group `COMPONENTS` into the architecture hierarchy first (same taxonomy as `retcon.md` Step 2.5: kind buckets, optional platform, module clusters). For each `COMPONENTS` entry, check that some non-index, non-excluded doc's globs cover its `path` (use `scope.py`) — its group doc, its module doc, or a leaf doc counts as the owner. A discovered component with no owning doc is a documentation gap:
 - `type: COVERAGE`, message `Component {name} ({path}, {type}) has no owning doc`, `replacement_text`: the scaffold command for that component (`python3 "$SKILL/scripts/scaffold.py" --out docs/architecture/{name}.md --template {type} --vars '{"name": "{name}", "path": "{path}"}'`), `rationale`: "validate Step 3b: every component needs a doc that owns its path."
 
 If the repo has CI or infra config (Step 1) but no `docs/ci.md`, flag it (present-if-applicable, per `references/structure.md`).

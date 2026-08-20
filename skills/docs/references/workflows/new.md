@@ -39,7 +39,7 @@ grep -n "members\|\[workspace\]" Cargo.toml 2>/dev/null
 cat go.work 2>/dev/null
 find . -maxdepth 2 -type d \( -path "./apps/*" -o -path "./packages/*" -o -path "./libs/*" \) -not -path "*/node_modules/*" 2>/dev/null | sort
 ```
-If it is a monorepo, add one component doc per app/lib under `docs/architecture/` — a leaf `docs/architecture/<name>.md`, or `docs/architecture/<name>/index.md` when it has sub-packages (per `references/structure.md`). Detect each component's type in Step 3. A single-package repo gets only the base structure.
+If it is a monorepo, group the packages into the architecture hierarchy first (same taxonomy as `retcon.md` Step 2.5 / `structure.md` "Grouping taxonomy": kind buckets, optional platform, module clusters) and add one doc per group and module under `docs/architecture/` — a group doc `docs/architecture/{kind}/index.md`, a leaf `docs/architecture/{kind}/{module}.md` for a single-component module, or `docs/architecture/{kind}/{module}/index.md` for a multi-component module (member components become `## Implementation` subsection headings in the scaffold). Detect each module's type in Step 3. A single-package repo gets only the base structure.
 
 ### 2b: Named targets (`/docs new <name…>`)
 
@@ -69,8 +69,9 @@ Docs to scaffold (skeletons only):
   docs/development-guide.md           development-guide
   docs/ci.md                          ci              (CI/infra detected)
   docs/architecture/index.md          architecture
-  docs/architecture/auth.md           auth            <- libs/auth
-  docs/architecture/storage/index.md  library         <- libs/storage (has sub-components)
+  docs/architecture/apps/index.md     apps            <- group doc
+  docs/architecture/apps/auth/index.md  auth          <- module: libs/auth
+  docs/architecture/apps/storage/index.md  library    <- module: libs/storage (blob + queue + worker)
 
 Run without --dry-run to scaffold.
 ```

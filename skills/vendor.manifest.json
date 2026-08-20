@@ -1,19 +1,79 @@
 {
+  "skills/changelog/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/docs/references/opencode-command": [
+    "template.md"
+  ],
   "skills/docs/scripts": [
     "scope.py",
     "test_scope.py"
   ],
+  "skills/ed/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/explore/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/flow/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/gh/references/opencode-command": [
+    "template.md"
+  ],
   "skills/gh/references/templates": [
     "bug-report.md"
+  ],
+  "skills/git/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/glab/references/opencode-command": [
+    "template.md"
   ],
   "skills/glab/references/templates": [
     "bug-report.md"
   ],
+  "skills/icons/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/linear/references/opencode-command": [
+    "template.md"
+  ],
   "skills/linear/references/templates": [
     "bug-report.md"
+  ],
+  "skills/plan/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/pm/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/pr/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/qa/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/skill/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/snippets/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/spec/references/opencode-command": [
+    "template.md"
   ],
   "skills/spec/scripts": [
     "scope.py",
     "test_scope.py"
+  ],
+  "skills/task/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/tasks/references/opencode-command": [
+    "template.md"
+  ],
+  "skills/ux/references/opencode-command": [
+    "template.md"
   ]
 }

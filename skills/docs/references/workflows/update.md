@@ -31,7 +31,7 @@ Otherwise resolve (see `references/structure.md`):
 - `development-guide` -> `docs/development-guide.md`
 - `ci` -> `docs/ci.md` (CI/CD + infrastructure)
 - `architecture` -> `docs/architecture/index.md`
-- `{name}` -> `docs/architecture/{name}.md`, or `docs/architecture/{name}/index.md` if that component already exists as a directory (has sub-components). An `auth` component resolves the same way and uses the `auth` template.
+- `{name}` -> `docs/architecture/{kind}/{name}.md` for a single-component module, or `docs/architecture/{kind}/{name}/index.md` if that module already exists as a directory (multi-component). A kind name (`apps`, `libs`, `ci`) resolves to `docs/architecture/{kind}/index.md`. An `auth` module resolves the same way and uses the `auth` template.
 
 If the file does not exist AND `--scaffold` is NOT set: suggest `docs new {name}` instead and stop.
 

@@ -48,7 +48,7 @@ When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKIL
 
 - **Never execute workflow logic here** — this file only parses args and dispatches
 - **Step 0 always runs first** — no exceptions
-- **Unknown verb → run `help.md`** — never error silently
+- **Empty verb → ask the user what they want** (AskUserQuestion, numbered-list fallback on non-Claude-Code platforms) — never run help silently. **Unknown verb → run `help.md`** — never error silently.
 - **Pass all remaining args through** — workflow receives `$REMAINING_ARGS` unchanged
 - **Workflow files are authoritative** — do not duplicate workflow logic in this file
 - **Coding agents always receive a workflow checklist** — see `references/workflow-checklist.md`
@@ -59,13 +59,15 @@ When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKIL
 
 ## Step 0: Parse Arguments
 
+Read the invocation from the current request. VERB = first non-flag argument; REMAINING_ARGS = everything after VERB, preserving order and flags. The invocation may arrive inline (Claude Code), via an opencode `$ARGUMENTS` command wrapper, or as a plain message. If VERB is empty (nothing parseable was typed), ASK the user what they want (AskUserQuestion: new / go / guide / review / refresh / update / clean / polish / allow / help; numbered-list fallback on non-Claude-Code platforms) instead of silently running help. If the user explicitly typed `help` or an unrecognized verb, run help. Full contract: `skills/shared/arg-handling.md`.
+
 ```bash
 VERB="[first non-flag argument, or empty]"
 REMAINING_ARGS="[everything after VERB, preserving order and flags]"
 
 # Normalise aliases
 case "$VERB" in
-  "")          VERB="help" ;;
+  "")          ask the user what they want ;;   # empty invocation → ask, never silent help
   "status")    VERB="clean" ;;  # /spec status → /spec clean
   "list")      VERB="clean" ;;  # /spec list   → /spec clean
   "pause")     VERB="clean" ;;  # /spec pause  → /spec clean
