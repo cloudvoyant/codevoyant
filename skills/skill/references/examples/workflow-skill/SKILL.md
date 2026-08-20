@@ -30,6 +30,8 @@ compatibility: Works on Claude Code. Uses AskUserQuestion for interactive prompt
 
 ## Step 0: Parse Arguments
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 <!--
   Extract the verb (first non-flag argument) and everything else.
   Add aliases as needed.
