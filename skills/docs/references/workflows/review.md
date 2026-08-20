@@ -49,8 +49,8 @@ When auditing the whole tree (default `docs/`), also include the repo-root `READ
 | `docs/development-guide.md` | `development-guide.md` |
 | `docs/ci.md` | `ci.md` (CI/CD + infrastructure) |
 | `docs/architecture/index.md` | `architecture.md` (the system doc — always at this path) |
-| `docs/architecture/**/index.md` (nested) | component template — detect type from its code path (see `references/structure.md`); `generic.md` if unknown |
-| `docs/architecture/**/{leaf}.md` | component template — type-specific (detect from its code path, see `references/structure.md`); `generic.md` if type unknown |
+| `docs/architecture/**/index.md` (nested — a kind-bucket GROUP doc, or a MODULE/component with sub-components) | component template — detect type from its code path (see `references/structure.md`); `generic.md` if unknown |
+| `docs/architecture/**/{leaf}.md` (a leaf module doc, or a sub-component with its own public API) | component template — type-specific (detect from its code path, see `references/structure.md`); `generic.md` if type unknown |
 | Other `docs/**/*.md` | language-guide rules only (no template structure check) |
 
 A component that OWNS sub-components is a directory `<name>/` whose `index.md` is that component's doc (component template), NOT the architecture template. Only the single `docs/architecture/index.md` uses the architecture template.
@@ -62,7 +62,7 @@ A component that OWNS sub-components is a directory `<name>/` whose `index.md` i
   - `docs/ci.md` (CI/CD + infrastructure) is present-if-applicable — flag as missing only when the repo has CI config (any of the CI candidate globs in `templates/ci.md` frontmatter: `.github/workflows/**`, `.gitlab-ci.yml`, `.circleci/config.yml`, `Jenkinsfile*`, …) OR infra config (`infra/**`, `terraform/**`, `**/*.tf`, `Pulumi.yaml`, `Dockerfile*`, `docker-compose*`); do NOT flag a repo with neither CI nor managed infra. When `docs/ci.md` exists, also flag it (COVERAGE) if any of its `globs` matches no real path — the candidate set must be trimmed to what the repo actually has.
   - Record these as STRUCTURE findings with message `Recommended top-level doc missing: {path} (see structure.md)`. Use judgment: never hard-fail a repo that legitimately has no CI and no infra.
 - The architecture doc must exist at `docs/architecture/index.md` (never a README in that directory). Flag a missing or mis-located architecture doc.
-- A component that has child docs must be a directory containing `index.md`. Flag a bare `docs/architecture/<name>.md` that has siblings implying it should own sub-components (e.g. sibling files/dirs `<name>-*` or a `<name>/` dir already exists) — it should be promoted to `<name>/index.md`.
+- A module that has member docs must be a directory containing `index.md`. Flag a bare `docs/architecture/<kind>/<name>.md` that has siblings implying it should own sub-components — it should be promoted to `<kind>/<name>/index.md`. The architecture index (`docs/architecture/index.md`) navigates by group (apps|services, libs, CI); do not flag a module doc's `## Implementation` member subsections as missing component docs.
 - A parent `index.md` must reference its children through their interface (already covered by the coverage-and-api Rule 3 check in Step 3e).
 
 **Detect a component doc's type from its code path.** For a component doc (`docs/architecture/**/index.md` or `docs/architecture/**/{leaf}.md`), there is no stored type marker — read the doc's `globs` frontmatter (its first/primary glob is the code path) and resolve the type using the detection table in `references/structure.md`. If the type is still not clear, apply `generic.md` checks only (or fall back to the doc's own section set). For the fixed-path docs, the path IS the template (see the Step 2 table). Then compare the doc's headings against that resolved template.

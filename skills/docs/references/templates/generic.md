@@ -48,7 +48,7 @@ graph TD
 
 ### {Section Heading, Repeats}
 
-<!-- @agent: use sections with headings to explain key implementation details. Can be simple bullets instead if component is simple. -->
+<!-- @agent: use sections with headings to explain key implementation details. For a multi-component MODULE doc, use ONE `### {member}` subsection per member component — this is where Terraform modules, Lambda handlers, config files, and infra artifacts appear. Can be simple bullets instead if the module is simple. -->
 
 ## References
 

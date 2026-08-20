@@ -1,8 +1,12 @@
 # coverage-and-api — doc↔code coverage and API-boundary rules
 
+> **Markdown output: soft-wrap prose, never hard-wrap** — when a workflow writes a doc `.md` per this model, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+
 Single source of truth for the coverage and API-boundary model. `new.md`, `update.md`, and `review.md` all reference this file. Do not restate these rules elsewhere.
 
 The nested parent/child model below maps onto the mandated directory layout in `references/structure.md`: each directory's `index.md` is the parent (superset glob); the child docs beside it own their sub-paths (subset globs).
+
+The hierarchy is **kind bucket → module → component**. A group doc `docs/architecture/apps/index.md` owns the whole kind subtree (e.g. `apps/**`); a module doc `docs/architecture/apps/storage/index.md` owns its module subtree (e.g. `libs/storage/**`) — a strict-subset nested parent/child pair under the group. A single-component module is a plain leaf doc. `retcon` and `new` author at this grain (see `references/structure.md`).
 
 ## The model
 
@@ -23,6 +27,7 @@ globs:
 - Only `globs:` — no title/status/tags. The `# Title` H1 stays immediately after the frontmatter.
 - The `# @agent:` marker is a YAML `#` comment INSIDE the block (an HTML comment above the `---` would stop tools from parsing the frontmatter). It is authoring guidance and is dropped once `globs` is filled.
 - List the subdirs and files this doc owns. A doc that documents `libs/auth` lists `"libs/auth/**"`.
+- A kind-bucket group doc owns its whole subtree; a module `index.md` owns its module subtree; a leaf child owns only its own sub-path (nested Rule 3 pairs, not duplicate coverage).
 - Empty or missing `globs:` is a violation (see review Rule 1). A doc with `exclude: true` in its frontmatter is unmanaged and exempt — it is dropped from all coverage/glob checks (see Step A).
 
 ### Rule 2: One owner per path
@@ -48,6 +53,8 @@ A parent doc (superset glob, e.g. `libs/**`) may overlap a child doc (subset glo
 - **Never** restate the child's internals or depend on them.
 
 The child owns its subtree; the parent treats it as a black box with a documented surface: named + linked in Design's Components section, referencing the child's public API section, never its internals.
+
+This is exactly the module relationship: a multi-component module `index.md` is the parent; a leaf child `{sub}.md` beside it is the child. The module doc names + links each leaf child through its public API and never restates its internals. A kind-bucket group doc is the parent of every module under it.
 
 ### Rule 4: Module/component docs make their public API clear
 
