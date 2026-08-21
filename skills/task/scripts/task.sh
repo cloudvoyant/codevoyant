@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# task.sh — single-process task-runner dispatcher for the `task`/`tasks` skill.
+# task.sh — single-process task-runner dispatcher for the `task` skill.
 # One source of truth for detection, listing, running, and the no-match offer.
 # Usage:
 #   task.sh [list]            detect runner and list tasks (default)

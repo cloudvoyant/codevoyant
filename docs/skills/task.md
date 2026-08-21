@@ -1,6 +1,6 @@
 # task
 
-Unified task runner skill that auto-detects mise, just, task.dev, or package.json scripts and provides a consistent interface for listing and running tasks. All work runs in a single shell call, so it is fast even on hot paths. Invoke as `/task` (or the alias `/tasks`).
+Unified task runner skill that auto-detects mise, just, task.dev, or package.json scripts and provides a consistent interface for listing and running tasks. All work runs in a single shell call, so it is fast even on hot paths. Invoke as `/task`.
 
 ## Commands
 
