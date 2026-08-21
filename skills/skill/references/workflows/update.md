@@ -56,7 +56,7 @@ AskUserQuestion:
   options:
     - label: "Address requests in plan — act on feedback or TODOs left in plan files" (Only if TARGET_TYPE = plan)
     - label: "Prompt quality — improve instruction clarity, step specificity, trigger description"
-    - label: "Performance — parallelization, model selection (haiku vs sonnet vs opus), background flags"
+    - label: "Performance — parallelization, model selection (light vs standard vs heavy), background flags"
     - label: "Agent additions/improvements — add agents, refine existing agent prompts or models"
     - label: "Skill dependencies — add/update/remove required tools or npx packages"
 ```
