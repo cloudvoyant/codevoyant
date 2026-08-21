@@ -1,3 +1,18 @@
+## [1.74.1](https://github.com/cloudvoyant/codevoyant/compare/v1.74.0...v1.74.1) (2026-08-21)
+
+### Bug Fixes
+
+* **docs:** exclude skills/shared from VitePress build
+
+* fix(docs): exclude skills/shared from VitePress srcExclude
+
+* docs(pr): fix stale STE ruleset path and shared assets label
+
+Correct the STE ruleset path in docs/skills/pr.md to the shared
+source-of-truth location (skills/shared/simple-english/ruleset.md) and
+rename the VitePress srcExclude label from 'vendor assets' to 'shared
+skill assets' since only simple-english/ is third-party.
+
 ## [1.74.0](https://github.com/cloudvoyant/codevoyant/compare/v1.73.0...v1.74.0) (2026-08-21)
 
 ### Features
