@@ -18,7 +18,7 @@ Semantic model tiers keep this skill model-agnostic. A skill never names a concr
 
 Tiers are relative weights; the platform maps them to concrete models.
 
-- **opencode** — per-agent config in `opencode.json`: `agent.<name>.model` maps every tier to a concrete model (markdown agents can equivalently set a `model` frontmatter field). All three tiers map through this one `model` key — the operator assigns a cheaper model to `light` agents and a stronger model to `standard`/`heavy` agents. There is no per-agent `small_model` key; opencode's top-level `small_model` exists only for title/summary generation, not tier mapping. Unconfigured agents fall back to the session model.
+- **opencode** — per-agent config in `opencode.json`: each tier resolves to a concrete model via `agent.<name>.model`, a single model string per agent (markdown agents can equivalently set a `model` frontmatter field). The operator assigns a cheaper model to `light` agents and a stronger model to `standard`/`heavy` agents. There is no per-agent `small_model` key; opencode's top-level `small_model` exists only for title/summary generation, not tier mapping. Unconfigured agents fall back to the session model.
 - **Claude Code** — the subagent model the platform operator assigns; when unset, the agent runs on the session's default model.
 - **Portable fallback (zero config)** — if no platform config exists, the agent runs on the currently selected session model. This is what makes DeepSeek/opencode and any other provider work with no setup.
 
