@@ -19,7 +19,7 @@ export default defineConfig({
     ".claude/**",
     ".memsearch/**",
     ".codevoyant/**",
-    // Shared vendor assets (source of truth for vendored templates/scripts — not docs pages)
+    // Shared skill assets (source of truth for vendored templates/scripts — not docs pages)
     "skills/shared/**",
     // Non-recipe skills (exclude entirely)
     "skills/changelog/**",
