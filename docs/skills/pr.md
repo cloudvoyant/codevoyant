@@ -103,7 +103,7 @@ Review submissions and top-level comments are **properly formatted markdown** an
 
 ### STE — terse generated prose
 
-PR/MR bodies and review comments follow the STE ruleset (`skills/docs/references/simple-english/ruleset.md`) in pragmatic mode, the same terse dialect the `docs` skill uses: short sentences, plain vocabulary, no filler. See `references/voice.md`.
+PR/MR bodies and review comments follow the STE ruleset (`skills/shared/simple-english/ruleset.md`) in pragmatic mode, the same terse dialect the `docs` skill uses: short sentences, plain vocabulary, no filler. See `references/voice.md`.
 
 ### merge — Merge the PR/MR
 
