@@ -1,3 +1,9 @@
+## [1.74.2](https://github.com/cloudvoyant/codevoyant/compare/v1.74.1...v1.74.2) (2026-08-21)
+
+### Bug Fixes
+
+* **docs:** correct helix icon path in README
+
 ## [1.74.1](https://github.com/cloudvoyant/codevoyant/compare/v1.74.0...v1.74.1) (2026-08-21)
 
 ### Bug Fixes
