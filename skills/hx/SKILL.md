@@ -16,6 +16,8 @@ Helix is **selection-first**: a motion *moves and selects*, then a verb (`d` `c`
 
 ## Step 0: Parse query
 
+The raw query (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the query from the user's current message.
+
 ```bash
 QUERY="$*"   # everything after /hx
 ```

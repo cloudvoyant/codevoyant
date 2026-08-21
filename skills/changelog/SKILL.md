@@ -31,6 +31,8 @@ If neither is available: warn the user but allow `changelog preview` to proceed 
 
 ## Step 0: Parse Arguments
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 ```bash
 VERB="[first non-flag arg, default: help]"
 APPLY_MODE=false

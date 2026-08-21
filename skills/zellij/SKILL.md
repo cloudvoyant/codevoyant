@@ -16,6 +16,8 @@ Zellij is **modal**: from Normal mode press `Ctrl-<key>` to enter a mode, then s
 
 ## Step 0: Parse query
 
+The raw query (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the query from the user's current message.
+
 ```bash
 QUERY="$*"   # everything after /zellij
 ```

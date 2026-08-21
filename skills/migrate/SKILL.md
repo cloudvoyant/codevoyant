@@ -22,6 +22,8 @@ This is an agent-driven skill: you (the agent) run the bash below and apply the 
 
 ## Step 0: Parse invocation flags
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the args from the user's current message.
+
 `/migrate` accepts `--yes` / `-y` to skip the confirmation prompt for unattended runs; `MIGRATE_YES=1` in the environment does the same. Capture the invocation arguments you received (the args after `/migrate`) into `INVOKE_ARGS` as a single space-separated string (empty if none), then parse:
 
 ```bash

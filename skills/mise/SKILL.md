@@ -9,6 +9,8 @@ compatibility: Works on Claude Code, OpenCode, GitHub Copilot (VS Code), and Cod
 
 Patterns for writing and maintaining `mise.toml` files based on the mise-lib-template and nv-gcp-template conventions used across projects.
 
+The raw invocation args, if this skill was slash-invoked (e.g. `/mise <topic>`): `$ARGUMENTS`. If this line is not filled in, read any question from the user's current message and answer from the recipes below.
+
 **Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
 ## When to load recipes

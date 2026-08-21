@@ -9,6 +9,8 @@ compatibility: Works on Claude Code with the Linear MCP server configured. Requi
 
 ## Dispatcher
 
+The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+
 ```
 VERB = first non-flag arg
 case VERB:

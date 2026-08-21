@@ -12,7 +12,7 @@ The `/explore diff` skill enables comparison between the current repository and 
 /explore diff <repository-url>
 ```
 
-Target repository: read the repository URL from the invocation text (the argument after `diff`). Do not use an ARGUMENTS substitution token — OpenCode does not substitute it inside skill content.
+Target repository: read the repository URL from the invocation text (the argument after `diff`), which arrives inline (Claude Code, OpenCode slash path) or as a plain message. Do not use an ARGUMENTS substitution token — read the URL from the invocation text instead.
 
 **Parameters:**
 
