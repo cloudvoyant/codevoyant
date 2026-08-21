@@ -15,7 +15,7 @@ Unified task runner skill dispatcher. Auto-detects the project's task runner and
 - **Step 0 always runs first** — no exceptions.
 - **Unknown verb is a run query** — a first token that is not `detect`/`list`/`run` (or an alias) is treated as a task to run.
 - **Pass all remaining args through** — everything after the task name is forwarded to the runner unchanged.
-- **Before running raw build/test/lint/format commands** (`tsc`, `vitest`, `eslint`, `prettier`, etc.) in any other workflow, first call `/task list` (alias: `/tasks list`) to check whether a task wraps the command. If a task exists, use it. Never bypass the task runner.
+- **Before running raw build/test/lint/format commands** (`tsc`, `vitest`, `eslint`, `prettier`, etc.) in any other workflow, first call `/task list` to check whether a task wraps the command. If a task exists, use it. Never bypass the task runner.
 - **Markdown output: soft-wrap prose, never hard-wrap** — when writing markdown, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
 ## Step 0: Parse Arguments
@@ -118,4 +118,4 @@ Examples:
 
 ## Usage Note for Other Skills
 
-Other workflows should call `/task detect` at the start (or run `scripts/task.sh detect`) and use the resulting `RUNNER` / `LIST_CMD` variables instead of hard-coding shell commands. `/tasks …` is an accepted alias for `/task …` and resolves to the same script.
+Other workflows should call `/task detect` at the start (or run `scripts/task.sh detect`) and use the resulting `RUNNER` / `LIST_CMD` variables instead of hard-coding shell commands.
