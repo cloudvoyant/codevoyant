@@ -103,7 +103,7 @@ Scaffold SvelteKit prototypes, create single-file wireframe explorations, and ex
 <td><strong>glab</strong> — watch CI pipelines, fetch and post inline MR discussion notes, manage draft reviews</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/public/icons/helix.svg" width="32"></td>
+<td align="center"><img src="docs/public/icons/hx.svg" width="32"></td>
 <td><strong>helix</strong> — Helix editor key bindings for file navigation and selection-based workflows</td>
 </tr>
 <tr>
