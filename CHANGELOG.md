@@ -1,3 +1,28 @@
+## [1.74.0](https://github.com/cloudvoyant/codevoyant/compare/v1.73.0...v1.74.0) (2026-08-21)
+
+### Features
+
+* **skills:** accept opencode args via $ARGUMENTS capture points ([#55](https://github.com/cloudvoyant/codevoyant/issues/55))
+
+* feat(skills): accept opencode args via $ARGUMENTS capture points
+
+- Add a $ARGUMENTS capture line to every SKILL.md Step 0 so
+  opencode slash commands substitute the raw invocation inline
+- Correct arg-handling contract: opencode substitutes
+  $ARGUMENTS/$N like Claude Code (highest $N is greedy) and
+  appends raw args when no token exists
+- Keep read-from-message fallback for the by-name skill tool path
+- Update docs/installation.md command-args section to match
+
+* docs(skills): address autoreview comments — example capture line + version caveat
+
+
+### Code Refactoring
+
+* **skills:** remove duplicated tasks skill alias ([#56](https://github.com/cloudvoyant/codevoyant/issues/56))
+
+Delete skills/tasks/ and .mise-tasks/gen-task-alias; strip the alias drift-check and skills:sync-task-alias task from mise.toml; update skills/task/SKILL.md and docs/skills/task.md to reference only the single task skill.
+
 ## [1.73.0](https://github.com/cloudvoyant/codevoyant/compare/v1.72.0...v1.73.0) (2026-08-20)
 
 ### Features
