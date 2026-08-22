@@ -1,3 +1,15 @@
+## [1.76.0](https://github.com/cloudvoyant/codevoyant/compare/v1.75.0...v1.76.0) (2026-08-22)
+
+### Features
+
+* **pr,flow:** merge --cleanup, squash CI-watch, flow get/update ([#61](https://github.com/cloudvoyant/codevoyant/issues/61))
+
+(1) /pr merge --cleanup deletes the branch locally + remotely on clean merge.
+
+(2) /pr squash now watches CI after force-push, /pr address routes commits via /git commit, and /pr publish --push watches CI post-push.
+
+(3) /flow get and /flow update for inspecting/editing flow definitions.
+
 ## [1.75.0](https://github.com/cloudvoyant/codevoyant/compare/v1.74.2...v1.75.0) (2026-08-22)
 
 ### Features
