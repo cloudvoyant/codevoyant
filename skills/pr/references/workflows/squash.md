@@ -108,6 +108,8 @@ options:
 
 Interactive rebase is **not** used (no TTY). Rewrite via soft reset so the working tree is untouched:
 
+**Why raw `git commit` here.** The pr skill routes commit creation through the git commit skill (`/git commit`) per the pr skill's conventions, but squash is a deliberate exception: it commits from **predetermined message files** (`git commit -F /tmp/pr-squash-N.txt`) with **explicit per-group path staging**, neither of which `/git commit` can express (it composes messages itself and auto-detects `--atomic` groups from the tree). So squash calls `git commit` directly, but inherits the git commit skill's message rules from Step 3 — conventional-commit `type(scope)` subjects, imperative mood, no agent self-attribution — and squash's CI-watch is added separately in Step 6.5. Keep this note in sync if `/git commit` ever gains message-file or explicit-group support.
+
 ```bash
 git reset --soft "$MERGE_BASE"          # all branch changes now staged, tree unchanged
 ```
@@ -129,13 +131,31 @@ If `git status --porcelain` is non-empty after the last group, a file was missed
 
 ## Step 6: Push
 
-Unless `--no-push` / "Squash, no push":
+`PUSHED=false`. Unless `--no-push` / "Squash, no push":
 
 ```bash
 git push --force-with-lease origin "$BRANCH"
+PUSHED=true
 ```
 
 `--force-with-lease` refuses to overwrite if the remote advanced since you last fetched — safer than `--force`. If it is rejected, fetch and re-check with the user before retrying; do not use `--force`.
+
+## Step 6.5: Watch CI after the push (best-effort)
+
+The rewrite is pushed — nothing here can undo it; this step only watches and notifies. Skip silently (leave `CI_STATUS` unset) if the rewrite was **not pushed** — via `--no-push` or the "Squash, no push" confirm option, i.e. `PUSHED != true` — if there is no remote, if the repo has no CI configured, or if the needed CLI (`gh` for GitHub, `glab` for GitLab) is not installed. Key the skip on `PUSHED` (did we actually push?) rather than the `--no-push` flag alone, so the "Squash, no push" confirm path is skipped too.
+
+Watch the CI run that the force-push kicked off on the rewritten branch `{BRANCH}`, reusing the platform `ci` workflow — do NOT reimplement CI polling (this mirrors `merge.md` Step 7 and the git skill's `commit`/`rebase` behavior):
+
+- **GitHub:** `/gh ci --branch {BRANCH}` (no `--autofix` — `squash` only watches and notifies).
+- **GitLab:** `/glab ci --branch {BRANCH}`.
+
+Capture the outcome into `CI_STATUS`:
+
+- Watch completes green → `CI_STATUS = "green"`.
+- Watch reports failure → `CI_STATUS = "failing"` and record the failing check names and the logs pointer (the failing-run URL, or the `gh run view --log-failed` / `glab ci trace` hint the `ci` workflow surfaces).
+- No recent run found for `{BRANCH}`, or the check was skipped → leave `CI_STATUS` unset (treated as "not watched").
+
+CI_STATUS feeds the report in Step 7; a failing post-squash CI never rewinds the rewrite — the branch is pushed and the PR/MR is updated, so a red result means "do not merge until fixed".
 
 ## Step 7: Report
 
@@ -149,6 +169,17 @@ git push --force-with-lease origin "$BRANCH"
 ```
 
 Remind the user the backup tag is local-only and can be deleted once satisfied: `git tag -d pre-squash/{BRANCH}`.
+
+If `CI_STATUS == "failing"`, NOTIFY prominently at the end — this is the headline, not a footnote:
+
+```
+⚠ CI is FAILING on {BRANCH} after the squash
+  failing checks: {check names}
+  logs: {failing-run URL or `gh run view <id> --log-failed` / `glab ci trace <job-id>`}
+  The branch is rewritten and pushed. Fix on {BRANCH} (e.g. /git commit --fix) before merging the PR/MR.
+```
+
+If `CI_STATUS == "green"`, add a one-line `✓ CI is green on {BRANCH} after the squash`. If `CI_STATUS` is unset (not watched — rewrite not pushed, no remote, no CI, or no CLI), say nothing about CI.
 
 ## Error Handling
 

@@ -72,7 +72,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **update** (`references/workflows/update.md`) — apply `<!-- > … -->` annotations or a chat edit to the last artifact (description/review/address)
 - **squash** (`references/workflows/squash.md`) — squash branch commits into one or more coherent, changelog-ready commits
 - **publish** (`references/workflows/publish.md`) — publish whatever is pending: mark a draft PR/MR ready, submit its pending review (with a non-empty markdown summary), and/or push+submit an unpublished local review doc; alias `ready`
-- **merge** (`references/workflows/merge.md`) — merge the PR/MR (squash by default, semantic-release aware), then best-effort watch post-merge CI on the base branch and notify on failure (opt out with `--no-watch-ci`); alias `land`
+- **merge** (`references/workflows/merge.md`) — merge the PR/MR (squash by default, semantic-release aware), then best-effort watch post-merge CI on the base branch and notify on failure (opt out with `--no-watch-ci`); `--cleanup` deletes the merged source branch locally + remotely; alias `land`
 - **help** (`references/workflows/help.md`) — print command reference
 
 ## Agent Index
