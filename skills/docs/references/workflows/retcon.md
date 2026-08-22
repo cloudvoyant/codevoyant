@@ -112,7 +112,7 @@ find . -type f \( -name '*.ts' -o -name '*.py' -o -name '*.go' -o -name '*.rs' -
   sed -E 's#^\./##; s#/[^/]+$##' | sort | uniq -c | sort -rn | head -40
 ```
 
-2. Cluster the paths into a proposed map of `module/feature → dirs/files`, naming each module from the code's own vocabulary (package names, route prefixes, top-level dirs) and any docs already in the repo — never invented words. Note cross-cutting concerns (a model or pipeline being trained but not evident in the tree) as modules, per the taxonomy.
+2. Cluster the paths into a proposed map of `module/feature → dirs/files`, naming each module from the code's own vocabulary (package names, route prefixes, top-level dirs) and any docs already in the repo — never invented words. Note cross-cutting concerns (a model or pipeline being trained but not evident in the tree) as modules, per the taxonomy. If the clustering is inconclusive from directories and imports alone, read the repo's existing markdown docs (README, `docs/**`, ADRs, design notes) first — they usually already name the modules and features, which obviates reading all the code; use those names as the breakdown's seed.
 
 3. Present the breakdown and ask the user to agree (AskUserQuestion, free-text Other for edits). Print BOTH the inferred taxonomy kind (apps vs libs per module) and the directory tree the breakdown was derived from:
 

@@ -109,6 +109,8 @@ When `DOC_GLOBS` is empty, ignore this section entirely and execute in normal mo
 
 Active only when `LITE_MODE` is set (the plan carries `- **Lite**: true` in plan.md). A lite phase's tasks carry a `**Contract:**` block instead of literal `**Code:**`. Implement each contract: write the code that satisfies the stated signatures, boundaries, and acceptance condition, using the stated library choices. You are the code author in lite mode — the contract is the spec. Treat a contract the way you treat literal code in normal mode: follow it, do not re-architect it. Escalate only when the contract itself is contradictory or a library choice is unavailable.
 
+**Exploration budget.** In lite mode the contract leaves function internals open on purpose, so you explore and implement more than in normal mode (where the code is already specified and you apply it with minimal exploration). This is the intended trade: planning is faster, execution does more. Do not stop to ask what an unspecified internal should be — pick the smallest implementation that satisfies the contract and its acceptance condition.
+
 ## Escalation Signal
 
 You run on the light model tier — fast and low-cost. The spec is complete code — most phases need nothing more. But if you hit a genuine wall, do NOT thrash: stop cleanly and hand the phase back for escalation.

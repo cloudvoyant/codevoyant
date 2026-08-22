@@ -88,13 +88,20 @@ When `PERSISTENT_MODE` is set (`/spec new --persistent`), the doc-aware model in
 
 ## Lite Mode (active only when `LITE_MODE` is set)
 
-In lite mode the code-first gate is replaced by a contract-first gate. For each task, instead of a `**Code:**` block, write a `**Contract:**` block that states:
+In lite mode the code-first gate is replaced by a contract-first gate, and the point is speed: the planner states the contract and STOPS — it does not chase implementation detail. For each task, instead of a `**Code:**` block, write a `**Contract:**` block that states:
 
 - the public function signatures or interfaces the task introduces or changes, with one-line behavior per signature;
 - the module boundaries — what this module owns and what it depends on, and the library/package choices (name and version constraint, if known);
 - the invariant or acceptance condition that proves the task is done.
 
-Do NOT write literal implementation code, and do NOT write "research / investigate / decide" tasks. State the contract concretely from codebase reading and web search, exactly as you would resolve a code-first task. A task whose contract is vague, or that defers a boundary/choice decision, fails the contract-completeness check. The `## Contract` section in `references/implementation-template.md` holds the shape.
+Do NOT write literal implementation code. State signatures, boundaries, and choices you can pin down quickly; you may leave a function's internals unspecified — that is exactly the work lite mode defers to the executor. Do NOT write "research / investigate / decide" tasks, but DO stop at the contract instead of resolving every implementation question. A task whose contract is vague about its signature, boundary, or acceptance condition fails the contract-completeness check; a task whose contract leaves internals open is fine — that is the point.
+
+**Exploration budget.** The two modes deliberately trade planning effort for execution-time exploration:
+
+- **normal mode** — implementation is fully specified, so the executor explores minimally (it applies the code).
+- **lite mode** — implementation is deferred, so the executor explores more (it fills the internals the contract leaves open).
+
+This lets you compare the two methodologies head-to-head — full-upfront-spec vs contract-first — measuring planning cost against execution-time exploration. Do not smuggle the implementation work back into the plan under the guise of contracts: a lite contract that spells out every internal is just normal mode with extra steps. The `## Contract` section in `references/implementation-template.md` holds the shape.
 
 ## Phase 0 Rule
 
