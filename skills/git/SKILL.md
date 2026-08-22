@@ -39,6 +39,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 ## Workflow Index
 
 - **commit** (`references/workflows/commit.md`) — create a conventional commit with optional CI monitoring
+- **exclude** (`references/workflows/exclude.md`) — hide files/dirs from git via `.git/info/exclude` (no `.gitignore` change)
 - **hooks** (`references/workflows/hooks.md`) — install/manage the commit-msg hook that strips agent self-attribution
 - **help** (`references/workflows/help.md`) — print command reference
 - **rebase** (`references/workflows/rebase.md`) — interactive rebase helper

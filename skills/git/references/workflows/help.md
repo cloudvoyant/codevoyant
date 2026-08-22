@@ -5,6 +5,7 @@
 | Command | Description |
 |---|---|
 | `/git commit [flags]` | Create a conventional commit with CI monitoring |
+| `/git exclude <path>\|--list\|--undo <path>` | Hide files/dirs from git without editing `.gitignore` |
 | `/git hooks [install\|status\|uninstall]` | Manage the commit-msg hook that strips agent self-attribution |
 | `/git rebase` | Interactive rebase helper |
 | `/git worktree [--branch [name]] [--worktree [path]]` | Create/switch a branch and/or create a worktree under `.codevoyant/worktrees/` |
