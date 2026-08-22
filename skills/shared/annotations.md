@@ -8,7 +8,7 @@ The named forms are aliases on top of the legacy two-form system. The mapping is
 
 - `<!-- @edit: instruction -->` — a concrete change applied to the attached block. It maps to the **minor** `<!-- > … -->` mechanism: a standalone comment whose instruction applies to the block immediately below it.
 - `<!-- @agent: guidance -->` — guidance for the authoring agent. It has **no mechanical effect** and never produces a line-level edit; it constrains how the agent authors the block below (docs) or plans the phase (spec). It has no legacy equivalent.
-- `<!-- @user: hint -->` — a hint or open question left for the **human**, not the agent. No agent processes or deletes it; the user resolves it (a decision, a confirmation, a follow-up) and then removes the marker. Scaffolded docs and lite plans leave `@user` markers for decisions that genuinely need a human.
+- `<!-- @user: hint -->` — a hint or open question left for the **human**, not the agent. No agent processes or deletes it; the user resolves it (a decision, a confirmation, a follow-up) and then removes the marker. `@user` is the explicit human-facing form for decisions the scaffold/retcon currently leaves as `<!-- TODO: ... -->`; a workflow may leave `@user` in place of a TODO when it wants the human's decision called out explicitly.
 - `content <!-- >> instruction -->` — the **major** inline form is the line-level edit: an inline suffix applying to that specific line. It has no `@`-named alias; write it as the bare `<!-- >>` form.
 
 ## Where they work

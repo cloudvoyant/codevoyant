@@ -83,7 +83,7 @@ AskUserQuestion:
 **If `PLAN_LEVEL = task`** (architecture doc):
 
 ```bash
-mkdir -p $DOCS_DIR/architecture/
+mkdir -p "$DOCS_DIR/architecture/"
 cp "$PLAN_DIR/plan.md" "$DOCS_DIR/architecture/{SLUG}.md"
 
 # Copy all research artifacts flat into $DOCS_DIR/architecture/research/

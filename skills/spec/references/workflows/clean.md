@@ -80,7 +80,7 @@ If none, skip this step.
 Present the list and use **AskUserQuestion**:
 
 ```
-question: "Archive any completed plans to docs/plan/?"
+question: "Archive any completed plans to $DOCS_DIR/plan/?"
 options:
   - label: "Yes, select plans to archive"
   - label: "No, skip"
@@ -91,7 +91,7 @@ If "Yes, select plans to archive", use **AskUserQuestion** with checkboxes to le
 For each selected plan, copy only `plan.md` and `user-guide.md` (skip if either does not exist):
 
 ```bash
-mkdir -p docs/plan/{plan-name}
+mkdir -p "$DOCS_DIR/plan/{plan-name}"
 
 # Locate the plan files (may be in active path or archive subdirectory)
 PLAN_DIR=".codevoyant/spec/{plan-name}"
@@ -99,8 +99,8 @@ if [ ! -d "$PLAN_DIR" ]; then
   PLAN_DIR=$(ls -d .codevoyant/spec/archive/{plan-name}-* 2>/dev/null | tail -1)
 fi
 
-[ -f "$PLAN_DIR/plan.md" ] && cp "$PLAN_DIR/plan.md" "docs/plan/{plan-name}/plan.md"
-[ -f "$PLAN_DIR/user-guide.md" ] && cp "$PLAN_DIR/user-guide.md" "docs/plan/{plan-name}/user-guide.md"
+[ -f "$PLAN_DIR/plan.md" ] && cp "$PLAN_DIR/plan.md" "$DOCS_DIR/plan/{plan-name}/plan.md"
+[ -f "$PLAN_DIR/user-guide.md" ] && cp "$PLAN_DIR/user-guide.md" "$DOCS_DIR/plan/{plan-name}/user-guide.md"
 ```
 
 Report which files were copied. Skip silently if neither file exists.
@@ -139,7 +139,7 @@ Session clean-up complete.
 
 Stopped  : {list of stopped agents, or "none"}
 Completed: {list of plans marked complete, or "none"}
-Archived : {list of plans moved to docs/plan/, or "none"}
+Archived : {list of plans moved to $DOCS_DIR/plan/, or "none"}
 Cancelled: {list of cancelled plans, or "none"}
 Skipped  : {list of skipped plans, or "none"}
 

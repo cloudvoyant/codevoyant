@@ -72,7 +72,7 @@ A marker whose text starts with `(optional)` marks a section you may delete.
 
 Find all markers:
 ```bash
-grep -rn "@agent" docs/ README.md
+grep -rn "@agent" "$DOCS_DIR/" README.md
 ```
 
 Fill in each section, then delete its `<!-- @agent: … -->` marker.

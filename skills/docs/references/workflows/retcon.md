@@ -206,7 +206,7 @@ If `--dry-run`, stop here. Otherwise ask (AskUserQuestion): "Author all {N} docs
 **Scaffold-only (`--scaffold`).** If `SCAFFOLD_ONLY`, do NOT author content. Scaffold every mandated + group/module doc with the script (same per-doc command as Step 5a, using `--overwrite` when set), leaving each `@agent` marker in place for a human to fill. Report:
 ```
 Scaffolded {N} doc skeleton(s) across {M} file(s).
-Find all fill-in markers: grep -rn "@agent" docs/
+Find all fill-in markers: grep -rn "@agent" "$DOCS_DIR/"
 ```
 Then stop. Do NOT run Steps 5–7.
 

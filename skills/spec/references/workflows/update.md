@@ -110,7 +110,7 @@ Proposed changes for: "{CHANGE_DESCRIPTION}"
               Add validation: {task runner test command}
 
   Boundary callouts:
-    docs/architecture/phase-2.md — edit writes docs/architecture/; the plan's globs are libs/auth/**, docs/**. Confirm?
+    $DOCS_DIR/architecture/phase-2.md — edit writes $DOCS_DIR/architecture/; the plan's globs are libs/auth/**, $DOCS_DIR/**. Confirm?
 
 Apply these changes?
 ```
