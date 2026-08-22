@@ -17,12 +17,12 @@ Workflows read these markers from the template. Do not invent other marker token
 
 | Marker                              | Meaning                                                                                                                                                                              | Used by                                      |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `<!-- @agent: guidance … -->`       | The base annotation form — authoring guidance with no mechanical effect (never a line-level edit). Carries no token. The shared contract is `skills/shared/annotations.md`.           | retcon, update                               |
 | `<!-- @agent: (optional) … -->`     | Marks the **block it precedes** as optional: a section whose FIRST marker under the heading starts with `(optional)`, OR a diagram/table block inside a required section. Absence of an optional block is never flagged. | review 3a, update --scaffold, retcon |
 | `<!-- @agent: [components] … -->`   | This heading is Design's **Components** subsection — where a parent names+links its child docs (Rule 3). It may contain the `### Components` system diagram. Exactly one per component and architecture template. Always required. | review 3f, coverage-and-api Step C, validate |
 | `<!-- @agent: [public-api] … -->`   | This heading is the doc's **public API surface** (Rule 4). Exactly one per component template. Its heading is the API section other docs may reference. Always required.              | review 3e, coverage-and-api Rule 4, validate |
+| `<!-- @edit: instruction … -->`     | A concrete change applied to the attached line/block — the named alias of the minor `<!-- >` form. Requested by the user and applied by `/docs update`. The shared contract is `skills/shared/annotations.md`. | update                                       |
 | `index: true` (frontmatter)         | This doc is an **index doc** (spans `**`, exempt from Rule 2). Carried by `project-readme.md` and `architecture.md` only.                                                             | review 3e, coverage-and-api Step A, retcon   |
-
-- `<!-- @edit: … -->` — a user-requested rewrite of the attached line/block; applied by `/docs update`. The shared contract is `skills/shared/annotations.md`.
 
 ## Deriving the required structure
 

@@ -36,7 +36,14 @@ globs:
 
 ### Metric Set
 
-<!-- @agent: The metric(s) computed and the comparison logic — what "better" means. A graph TD is optional; prefer prose if the metric set is a short list. -->
+<!-- @agent: graph TD/LR of the metric(s) computed and the comparison logic — what "better" means. Required — always a diagram, never ASCII art. -->
+
+```mermaid
+graph TD
+    Data["{dataset}"] --> Metric["{metric}"]
+    Metric --> Compare["{comparison logic}"]
+    Compare --> Verdict["{better / worse}"]
+```
 
 ### API
 

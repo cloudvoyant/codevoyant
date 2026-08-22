@@ -126,6 +126,7 @@ After applying, continue to Step 4.
 Scan all plan files:
 
 ```bash
+grep -rn "<!-- @edit\|<!-- @agent" .codevoyant/spec/{plan-name}/plan.md .codevoyant/spec/{plan-name}/implementation/ 2>/dev/null
 grep -rn "<!-- >>" .codevoyant/spec/{plan-name}/plan.md .codevoyant/spec/{plan-name}/implementation/ 2>/dev/null
 grep -rn "<!-- >" .codevoyant/spec/{plan-name}/plan.md .codevoyant/spec/{plan-name}/implementation/ 2>/dev/null
 ```

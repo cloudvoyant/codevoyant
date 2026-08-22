@@ -20,10 +20,11 @@ Task runner commands:
 
 ## Annotations to apply first
 
-Before starting any task, scan plan.md and implementation/phase-{N}.md for inline HTML-comment annotations (scan `<!-- >>` before `<!-- >`). The named forms `<!-- @edit: … -->` and `<!-- @agent: … -->` map to these — see `skills/shared/annotations.md`:
+Before starting any task, scan plan.md and implementation/phase-{N}.md for inline HTML-comment annotations (scan `<!-- >>` before `<!-- >`). The named forms map to these — see `skills/shared/annotations.md`:
 
-- **`<!-- > instruction -->`** — minor annotation, standalone comment applying to the block below it
-- **`content <!-- >> instruction -->`** — major annotation, inline suffix applying to that specific line
+- **`<!-- > instruction -->`** — minor annotation, standalone comment applying to the block below it (the named alias is `<!-- @edit: … -->`)
+- **`content <!-- >> instruction -->`** — major annotation, inline suffix applying to that specific line (no `@`-named alias)
+- **`<!-- @agent: … -->`** — guidance only, no mechanical effect; it is never a line-level edit
 
 Apply each annotation (mark done, remove task, rewrite content, etc.) and delete the entire `<!-- ... -->` comment from the file. Log what you applied. If none found, continue silently.
 

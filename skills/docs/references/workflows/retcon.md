@@ -87,8 +87,10 @@ STRUCTURED=$(find . -maxdepth 3 \
   -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" 2>/dev/null | head -1)
 # A Cargo/pyproject file is structured only if it declares a workspace.
 if [ -z "$STRUCTURED" ]; then
-  grep -l '^\s*\[workspace\]' Cargo.toml 2>/dev/null && STRUCTURED="Cargo.toml"
-  grep -l '^\s*\[tool\.uv\.workspace\]' pyproject.toml 2>/dev/null && STRUCTURED="pyproject.toml"
+  find . -name Cargo.toml -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" \
+    -exec grep -lE '^[[:space:]]*\[workspace\]' {} + 2>/dev/null | head -1 | grep -q . && STRUCTURED="Cargo.toml"
+  find . -name pyproject.toml -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" \
+    -exec grep -lE '^[[:space:]]*\[tool\.uv\.workspace\]' {} + 2>/dev/null | head -1 | grep -q . && STRUCTURED="pyproject.toml"
 fi
 # Otherwise: a conventional module-dir layout, or multiple published packages.
 if [ -z "$STRUCTURED" ]; then

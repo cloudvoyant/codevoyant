@@ -28,9 +28,11 @@ spec — Specification-driven development commands for Claude Code
   /spec review  [plan-name] [--bg] [--silent]
       Review a spec plan before execution — checks for ambiguous tasks, missing validation, and dependency gaps
 
-  /spec update  [plan-name] [change description] [--bg] [--silent] [--persistent]
+  /spec update  [plan-name] [change description] [--bg] [--silent] [--persistent] [--lite] [--no-lite]
       Update a spec plan by applying inline annotations or describing changes conversationally
       --persistent  EXPERIMENTAL — doc-aware update: docs-first write, edits scoped to the plan's Doc Globs
+      --lite        flip a plan to lite (contract-first) mode
+      --no-lite     flip a lite plan back to normal mode
 
   /spec refresh  [plan-name] [--bg] [--silent]
       Sync checklist status and phase markers with actual task completion

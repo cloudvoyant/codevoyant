@@ -44,7 +44,7 @@ EXCLUDE_FILE="$ROOT/.git/info/exclude"
 
 ```bash
 if [ "$MODE" = "add" ]; then
-  if grep -qF -- "$TARGET" "$EXCLUDE_FILE"; then
+  if grep -qxF -- "$TARGET" "$EXCLUDE_FILE"; then
     echo "Already excluded: $TARGET"
   else
     printf '%s\n' "$TARGET" >> "$EXCLUDE_FILE"
@@ -66,8 +66,8 @@ fi
 
 ```bash
 if [ "$MODE" = "undo" ]; then
-  if grep -qF -- "$TARGET" "$EXCLUDE_FILE"; then
-    grep -vF -- "$TARGET" "$EXCLUDE_FILE" > "$EXCLUDE_FILE.tmp" && mv "$EXCLUDE_FILE.tmp" "$EXCLUDE_FILE"
+  if grep -qxF -- "$TARGET" "$EXCLUDE_FILE"; then
+    grep -vxF -- "$TARGET" "$EXCLUDE_FILE" > "$EXCLUDE_FILE.tmp" && mv "$EXCLUDE_FILE.tmp" "$EXCLUDE_FILE"
     echo "✓ Stopped excluding $TARGET"
   else
     echo "Not excluded: $TARGET"

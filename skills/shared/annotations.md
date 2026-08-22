@@ -4,12 +4,15 @@ One annotation syntax works across the spec and docs skills. An annotation is an
 
 ## Marker forms
 
-- `<!-- @agent: guidance -->` — guidance for the authoring agent. The agent follows it when filling the block below (docs) or planning the phase (spec). It does not demand a specific edit; it constrains how the agent authors.
-- `<!-- @edit: instruction -->` — a concrete change the update agent must apply to the line or block the comment is attached to (inline suffix) or the block immediately below (standalone).
+The named forms are aliases on top of the legacy two-form system. The mapping is:
+
+- `<!-- @edit: instruction -->` — a concrete change applied to the attached block. It maps to the **minor** `<!-- > … -->` mechanism: a standalone comment whose instruction applies to the block immediately below it.
+- `<!-- @agent: guidance -->` — guidance for the authoring agent. It has **no mechanical effect** and never produces a line-level edit; it constrains how the agent authors the block below (docs) or plans the phase (spec). It has no legacy equivalent.
+- `content <!-- >> instruction -->` — the **major** inline form is the line-level edit: an inline suffix applying to that specific line. It has no `@`-named alias; write it as the bare `<!-- >>` form.
 
 ## Where they work
 
-- **spec** — write annotations in `plan.md` and `implementation/phase-*.md`. Run `/spec update <plan>` to apply them. The `@edit` form is equivalent to the minor `<!-- > … -->` annotation; the `@agent` form is guidance the planner/updater must honour.
+- **spec** — write annotations in `plan.md` and `implementation/phase-*.md`. Run `/spec update <plan>` to apply them. `@edit` is the minor `<!-- > … -->` annotation; `@agent` is guidance with no mechanical effect.
 - **docs** — write annotations in any doc under `docs/` (or a scaffolded template). Run `/docs update` to apply them. `@agent` is the same marker retcon fills in templates; `@edit` requests a specific rewrite.
 
 ## Scanning order
