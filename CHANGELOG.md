@@ -1,3 +1,50 @@
+## [1.75.0](https://github.com/cloudvoyant/codevoyant/compare/v1.74.2...v1.75.0) (2026-08-22)
+
+### Features
+
+* **spec,docs,git:** spec --lite, annotations, git exclude, ML docs, configurable docs dir
+
+* feat(git): add exclude workflow for .git/info/exclude
+
+* docs(skills): unify @agent/@edit annotation contract across spec and docs
+
+* feat(spec): add --lite contract-first planning mode
+
+* feat(docs): flat-repo module breakdown in retcon with taxonomy reference
+
+* feat(docs): ML model, data-pipeline, and experiment templates
+
+* fix(skills): address review — exclude exact-match, @edit/@agent scan, portability, ML diagram
+
+Address PR review comments:
+- git exclude: exact whole-line match (-qxF / -vxF)
+- spec update: scan named @edit/@agent annotations
+- docs retcon: POSIX [[:space:]] and recursive workspace detection
+- annotations contract: pin @edit->minor, @agent->guidance mapping
+- template-contract: @edit as table row, clarify @agent base form
+- experiment template: required mermaid graph
+- spec help: document --no-lite override
+
+* fix(skills): address review — @user annotation form, lite exploration budget, retcon md-docs fallback
+
+* feat(docs,spec,plan,pm): configurable docs directory via .codevoyant/metadata.json
+
+* fix(docs,spec,plan): quote $DOCS_DIR and convert remaining docs/ literals
+
+
+### Documentation
+
+* **skills:** drop hardcoded model families, correct opencode model-tier mapping
+
+* docs(skills): correct opencode model-tier mapping + use tier names
+
+* docs(skills): clarify opencode model tier resolution wording
+
+The opencode bullet overstated that agent.`<name>`.model maps every tier to a
+concrete model when it is actually a single model string per agent. Reword to
+say each tier resolves to a concrete model via that key, and align the Claude
+Code sibling bullet across all seven model-tiers.md copies.
+
 ## [1.74.2](https://github.com/cloudvoyant/codevoyant/compare/v1.74.1...v1.74.2) (2026-08-21)
 
 ### Bug Fixes
