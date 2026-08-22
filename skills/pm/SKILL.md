@@ -28,6 +28,32 @@ Pass your intent directly on the invocation line — `explore` and `plan` procee
 - **Markdown output: soft-wrap prose, never hard-wrap** — when any pm workflow or agent writes a `.md` artifact (PRDs, roadmaps, research findings, plans), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 - **Model tiers, never model IDs** — the `pm` agents declare `**Model tier:** light|standard|heavy` and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 
+## Docs directory resolution
+
+`approve` promotes roadmaps into the docs tree. The docs directory is `docs/` by default; override it per project with a `"docs_dir"` field in `.codevoyant/metadata.json`. Resolve and export `DOCS_DIR` once:
+
+```bash
+resolve_docs_dir() {
+  local root cfg d
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
+  cfg="$root/.codevoyant/metadata.json"
+  d=""
+  if [ -f "$cfg" ]; then
+    d="$(python3 - "$cfg" <<'PY' 2>/dev/null
+import json, sys
+try:
+    print(json.load(open(sys.argv[1])).get("docs_dir", ""))
+except Exception:
+    pass
+PY
+)"
+  fi
+  DOCS_DIR="${d:-docs}"
+}
+resolve_docs_dir
+export DOCS_DIR
+```
+
 ## Step 0: Parse Arguments
 
 The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.

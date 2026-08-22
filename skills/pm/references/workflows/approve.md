@@ -4,7 +4,7 @@
 
 - Always run pm review before promoting — do not skip
 - The draft in `.codevoyant/roadmaps/` remains after promotion (source of truth for history)
-- Research artifacts from `.codevoyant/explore/{slug}/` and from the plan stores `.codevoyant/spec/{slug}/research/`, `.codevoyant/plan/{slug}/research/`, and the legacy `.codevoyant/plans/{slug}/research/` are copied flat into `docs/product/roadmaps/{slug}/research/`
+- Research artifacts from `.codevoyant/explore/{slug}/` and from the plan stores `.codevoyant/spec/{slug}/research/`, `.codevoyant/plan/{slug}/research/`, and the legacy `.codevoyant/plans/{slug}/research/` are copied flat into `$DOCS_DIR/product/roadmaps/{slug}/research/`
 - Linear sync is always optional and always last
 - Never force-overwrite an existing committed roadmap without user confirmation
 - pm approve may create or update Linear **initiatives** only. Never create Linear projects — that is em approve's responsibility.
@@ -88,7 +88,7 @@ else
   DATE=$(date +%y%m%d)
   TIMESCALE="roadmap"
 fi
-COMMIT_DIR="docs/product/${DATE}-${TIMESCALE}"
+COMMIT_DIR="$DOCS_DIR/product/${DATE}-${TIMESCALE}"
 ```
 
 ## Step 2: Run pm review
@@ -109,7 +109,7 @@ If fix or cancel, stop here.
 
 ## Step 3: Confirm promotion
 
-COMMIT_DIR was set in Step 0 (e.g. `docs/product/260322-half/`).
+COMMIT_DIR was set in Step 0 (e.g. `$DOCS_DIR/product/260322-half/`).
 
 Check if COMMIT_DIR already exists. If it does, warn:
 
@@ -262,7 +262,7 @@ PRDs use the pm prd quality checkpoint inline (Step 4 of pm prd). No separate re
 ## Step 3P: Confirm promotion
 
 ```bash
-COMMIT_DIR="docs/prd/${SLUG}"
+COMMIT_DIR="$DOCS_DIR/prd/${SLUG}"
 ```
 
 Check if COMMIT_DIR already exists. If it does, warn:
@@ -291,12 +291,12 @@ AskUserQuestion:
 ## Step 4P: Promote
 
 ```bash
-mkdir -p "docs/prd/${SLUG}/research"
-cp ".codevoyant/prds/${SLUG}/${SLUG}.md" "docs/prd/${SLUG}/${SLUG}.md"
+mkdir -p "$DOCS_DIR/prd/${SLUG}/research"
+cp ".codevoyant/prds/${SLUG}/${SLUG}.md" "$DOCS_DIR/prd/${SLUG}/${SLUG}.md"
 # Copy research from explore dir if present
 if [ -d ".codevoyant/explore/${SLUG}" ]; then
-  cp ".codevoyant/explore/${SLUG}/summary.md" "docs/prd/${SLUG}/research/" 2>/dev/null || true
-  cp ".codevoyant/explore/${SLUG}/research/"*.md "docs/prd/${SLUG}/research/" 2>/dev/null || true
+  cp ".codevoyant/explore/${SLUG}/summary.md" "$DOCS_DIR/prd/${SLUG}/research/" 2>/dev/null || true
+  cp ".codevoyant/explore/${SLUG}/research/"*.md "$DOCS_DIR/prd/${SLUG}/research/" 2>/dev/null || true
 fi
 ```
 
@@ -306,7 +306,7 @@ Update plan status in `.codevoyant/README.md`:
 sed -i '' "s/| ${SLUG}-prd | [A-Za-z]* |/| ${SLUG}-prd | Approved |/" .codevoyant/README.md
 ```
 
-Report: "PRD promoted to `docs/prd/{SLUG}/{SLUG}.md`."
+Report: "PRD promoted to `$DOCS_DIR/prd/{SLUG}/{SLUG}.md`."
 
 ## Step 5P: Linear sync (optional)
 
@@ -355,6 +355,6 @@ Report uploaded document title or failure.
 
 ## Step 6P: Notify
 
-If `SILENT` is not true, report completion to the user with a brief summary stating the PRD was committed to `docs/prd/${SLUG}/${SLUG}.md`.
+If `SILENT` is not true, report completion to the user with a brief summary stating the PRD was committed to `$DOCS_DIR/prd/${SLUG}/${SLUG}.md`.
 
-Report: "Done. PRD is at `docs/prd/{SLUG}/{SLUG}.md`. Research at `docs/prd/{SLUG}/research/`."
+Report: "Done. PRD is at `$DOCS_DIR/prd/{SLUG}/{SLUG}.md`. Research at `$DOCS_DIR/prd/{SLUG}/research/`."

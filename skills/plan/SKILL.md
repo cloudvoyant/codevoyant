@@ -32,6 +32,32 @@ Pass your intent directly on the invocation line — `plan` proceeds immediately
 - **Plan store: `.codevoyant/plan/` with `.codevoyant/plans/` fallback** — new drafts are written under `.codevoyant/plan/{slug}/`. When reading existing drafts, resolve the store root as `.codevoyant/plan` if it exists, else `.codevoyant/plans` (a store not yet v2-migrated still keeps its drafts under `.codevoyant/plans/`). The v1→v2 store migration (`skills/migrate/references/migrate-v1-to-v2.minor.md`) relocates legacy drafts on run.
 - **Model tiers, never model IDs** — the `plan` agents declare `**Model tier:** light|standard|heavy` and workflows use `model-tier:` tokens; the platform maps tiers to concrete models (see `references/model-tiers.md`). Never hardcode a provider model ID (such as `claude-*`) in this skill.
 
+## Docs directory resolution
+
+`approve` promotes plans into the docs tree. The docs directory is `docs/` by default; override it per project with a `"docs_dir"` field in `.codevoyant/metadata.json`. Resolve and export `DOCS_DIR` once:
+
+```bash
+resolve_docs_dir() {
+  local root cfg d
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
+  cfg="$root/.codevoyant/metadata.json"
+  d=""
+  if [ -f "$cfg" ]; then
+    d="$(python3 - "$cfg" <<'PY' 2>/dev/null
+import json, sys
+try:
+    print(json.load(open(sys.argv[1])).get("docs_dir", ""))
+except Exception:
+    pass
+PY
+)"
+  fi
+  DOCS_DIR="${d:-docs}"
+}
+resolve_docs_dir
+export DOCS_DIR
+```
+
 ## Step 0: Parse Arguments
 
 The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.

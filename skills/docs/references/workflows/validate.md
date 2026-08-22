@@ -6,7 +6,7 @@ Use when you changed code, added a package, or edited templates and want to know
 
 ## Variables
 
-- `TARGET_PATH` -- path to validate (default: `docs/`); the repo-root `README.md` is always included
+- `TARGET_PATH` -- path to validate (default: `$DOCS_DIR/`); the repo-root `README.md` is always included
 - `FORMAT` -- `--json` for machine-readable terminal output, default is human-readable
 - `--diff <base>` -- restrict boundary checks to paths changed on this branch (default: whole repo)
 

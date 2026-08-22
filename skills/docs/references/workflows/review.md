@@ -10,7 +10,7 @@ Evaluate Markdown files in docs/ against the docs skill's template standards and
 
 ## Variables
 
-- `TARGET_PATH` -- path to audit (default: `docs/`)
+- `TARGET_PATH` -- path to audit (default: `$DOCS_DIR/`)
 - `FORMAT` -- `--json` for machine-readable terminal output, default is human-readable
 - `DIFF_BASE` -- `--diff <base>` to restrict code-accuracy verification to files changed on this branch (default: no restriction, audit the whole tree)
 
@@ -31,7 +31,7 @@ mkdir -p "$REVIEW_DIR"
 ## Step 1: Discover files to audit
 
 ```bash
-find "${TARGET_PATH:-docs/}" -name "*.md" -not -path "*/node_modules/*" | sort
+find "${TARGET_PATH:-$DOCS_DIR/}" -name "*.md" -not -path "*/node_modules/*" | sort
 ```
 
 If TARGET_PATH is a single file, audit only that file.

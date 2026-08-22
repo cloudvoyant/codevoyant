@@ -16,7 +16,7 @@ On a flat (non-monorepo) repo, retcon first proposes a lib/module → feature br
 - `SKIP_EXISTING` — true by default; `--overwrite` to regenerate existing files
 - `TYPE_FLAG` — value of `--type` if provided, else `""` (auto-detect per component)
 - `SKILL` — this skill's directory; the scaffold script is `$SKILL/scripts/scaffold.py`
-- `DOCS_DIR` — `docs/` relative to project root
+- `DOCS_DIR` — the docs directory, resolved from `.codevoyant/metadata.json` (`docs_dir`) else `docs` (see SKILL.md "Docs directory resolution")
 
 ## Step 0: Handle existing docs
 

@@ -13,7 +13,7 @@ Doc-aware mode makes the repo's docs the source of truth for planning and execut
 A repo is doc-aware-ready when its docs are **valid** — not merely present. Use the vendored validator (`scripts/validate_docs.py`), which mirrors the docs skill's `validate` workflow mechanical checks (glob validity + comprehensiveness) via `scripts/scope.py`:
 
 ```bash
-python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs
+python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs "$DOCS_DIR"
 ```
 
 `DOCS_OK=true` when it exits 0; `false` when it exits 1. It checks:
@@ -44,7 +44,7 @@ Every phase of a doc-aware plan declares the doc globs it may write. Mechanics:
 - **No globless phases (hard boundary).** Every phase MUST declare at least one write glob. A phase with an empty `**Write globs:**` list is a planning error — an executor never runs without glob boundaries. There is always a glob to declare: every project has at least one lib/app/executable distinct from its deployment/CI, so a code phase always has a source glob. Never emit a "pure research / decision / no-write" phase — fold it into a phase that writes a real glob, or give it a docs/CI phase with its own glob. Even for a brand-new repo, produce separate phases for src/monorepo libs, CI, and docs, each with its own glob:
   - **src / monorepo libs**: `src/**`, or the monorepo package glob (`packages/*/src/**`, `libs/**`, `apps/*/src/**`) — required for any phase that writes code.
   - **CI**: the CI/config glob (`**/.github/**`, `**/.gitlab-ci.yml`, `**/ci/**`, `mise.toml`, `justfile`) — for CI/config-only work.
-  - **docs**: `docs/**` — for documentation work.
+  - **docs**: `$DOCS_DIR/**` — for documentation work.
 - **Repo-layout fallback.** When a component has no doc with `globs:` frontmatter (docs incomplete — Rule 5), derive its write glob from the repository layout instead of leaving the phase globless: scan for the app/lib/executable directory (`src/**`, `packages/*/src/**`, `lib/**`, `apps/*/**`), the CI config, and the docs directory. Never derive a code phase's only glob from deployment/CI config alone — a code phase must cover the src dir.
 - The phase file carries a `## Doc Scope` section listing those globs; plan.md metadata carries a `Doc Globs:` line (a space-separated union of the phases' globs).
 - A phase may Write/Edit ONLY files inside its declared globs. Paths outside the globs are read-only context, not write targets.
@@ -113,7 +113,7 @@ printf '%s\n' "$path" | python3 "$SPEC_SKILL/scripts/scope.py" --globs 'libs/aut
 - `scripts/validate_docs.py` — the Rule 1 gate; mirrors the docs skill's `validate` checks (glob validity + comprehensiveness) via `scope.py`, and honors `exclude: true` for unmanaged docs. Usage:
 
 ```bash
-python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs   # exit 0 = valid
+python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs "$DOCS_DIR"   # exit 0 = valid
 ```
 
 - `scripts/test_scope.py` and `scripts/test_validate_docs.py` — unit tests; run by `mise run test`.

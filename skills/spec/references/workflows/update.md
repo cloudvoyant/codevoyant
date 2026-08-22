@@ -66,7 +66,7 @@ Load `references/doc-aware.md` — the doc-aware model. All rules below are defi
 **Rule 1 — valid-docs gate.** Check the repo has usable docs via the vendored validator (mirrors the docs skill's `validate` checks: structure + glob validity, with `exclude: true` for unmanaged docs). Exit 0 = valid:
 
 ```bash
-if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs; then
+if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs "$DOCS_DIR"; then
   DOCS_OK=true
 else
   DOCS_OK=false

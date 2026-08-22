@@ -52,8 +52,8 @@ If complete: report "✓ Plan validated."
 
 ## Step 3: Confirm promotion
 
-- For a `task` plan: COMMIT_PATH = `docs/architecture/{SLUG}.md`.
-- For a `project` plan: COMMIT_DIR = `docs/engineering/plans/{SLUG}`.
+- For a `task` plan: COMMIT_PATH = `$DOCS_DIR/architecture/{SLUG}.md`.
+- For a `project` plan: COMMIT_DIR = `$DOCS_DIR/engineering/plans/{SLUG}`.
 
 If the target already exists:
 
@@ -83,38 +83,38 @@ AskUserQuestion:
 **If `PLAN_LEVEL = task`** (architecture doc):
 
 ```bash
-mkdir -p docs/architecture/
-cp "$PLAN_DIR/plan.md" "docs/architecture/{SLUG}.md"
+mkdir -p $DOCS_DIR/architecture/
+cp "$PLAN_DIR/plan.md" "$DOCS_DIR/architecture/{SLUG}.md"
 
-# Copy all research artifacts flat into docs/architecture/research/
+# Copy all research artifacts flat into $DOCS_DIR/architecture/research/
 RESEARCH_DIR="$PLAN_DIR/research"
 if [ -d "$RESEARCH_DIR" ] && [ "$(ls -A "$RESEARCH_DIR" 2>/dev/null)" ]; then
-  mkdir -p "docs/architecture/research"
-  cp "$RESEARCH_DIR/"*.md "docs/architecture/research/" 2>/dev/null
+  mkdir -p "$DOCS_DIR/architecture/research"
+  cp "$RESEARCH_DIR/"*.md "$DOCS_DIR/architecture/research/" 2>/dev/null
 fi
 ```
 
-Report: "Architecture doc promoted to `docs/architecture/{SLUG}.md`."
+Report: "Architecture doc promoted to `$DOCS_DIR/architecture/{SLUG}.md`."
 
 **If `PLAN_LEVEL = project`** (engineering plan):
 
 ```bash
-mkdir -p "docs/engineering/plans/{SLUG}/tasks"
-cp "$PLAN_DIR/plan.md" "docs/engineering/plans/{SLUG}/plan.md"
-cp "$PLAN_DIR/tasks/"*.md "docs/engineering/plans/{SLUG}/tasks/" 2>/dev/null
+mkdir -p "$DOCS_DIR/engineering/plans/{SLUG}/tasks"
+cp "$PLAN_DIR/plan.md" "$DOCS_DIR/engineering/plans/{SLUG}/plan.md"
+cp "$PLAN_DIR/tasks/"*.md "$DOCS_DIR/engineering/plans/{SLUG}/tasks/" 2>/dev/null
 
-# Copy all research artifacts flat into docs/engineering/plans/{SLUG}/research/
+# Copy all research artifacts flat into $DOCS_DIR/engineering/plans/{SLUG}/research/
 EXPLORE_DIR=".codevoyant/explore/{SLUG}"
 RESEARCH_DIR="$PLAN_DIR/research"
 if { [ -d "$EXPLORE_DIR" ] && [ "$(ls -A $EXPLORE_DIR 2>/dev/null)" ]; } || \
    { [ -d "$RESEARCH_DIR" ] && [ "$(ls -A $RESEARCH_DIR 2>/dev/null)" ]; }; then
-  mkdir -p "docs/engineering/plans/{SLUG}/research"
-  [ -d "$EXPLORE_DIR"  ] && cp "$EXPLORE_DIR/"*.md  "docs/engineering/plans/{SLUG}/research/" 2>/dev/null
-  [ -d "$RESEARCH_DIR" ] && cp "$RESEARCH_DIR/"*.md "docs/engineering/plans/{SLUG}/research/" 2>/dev/null
+  mkdir -p "$DOCS_DIR/engineering/plans/{SLUG}/research"
+  [ -d "$EXPLORE_DIR"  ] && cp "$EXPLORE_DIR/"*.md  "$DOCS_DIR/engineering/plans/{SLUG}/research/" 2>/dev/null
+  [ -d "$RESEARCH_DIR" ] && cp "$RESEARCH_DIR/"*.md "$DOCS_DIR/engineering/plans/{SLUG}/research/" 2>/dev/null
 fi
 ```
 
-Report: "Plan promoted to `docs/engineering/plans/{SLUG}/`." Include research artifact count if any were copied.
+Report: "Plan promoted to `$DOCS_DIR/engineering/plans/{SLUG}/`." Include research artifact count if any were copied.
 
 Update plan status in `.codevoyant/README.md`:
 

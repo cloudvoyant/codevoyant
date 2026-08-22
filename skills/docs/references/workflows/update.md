@@ -66,7 +66,7 @@ Scaffolded {N} section(s) across {M} file(s):
     (created -- all sections scaffolded)
 
 Find all scaffold hints:
-  grep -rn "@agent" docs/
+  grep -rn "@agent" "$DOCS_DIR/"
 
 Fill in each section, then delete its <!-- @agent: … --> marker (markers starting with "(optional)" mark deletable sections).
 ```

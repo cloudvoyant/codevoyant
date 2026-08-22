@@ -28,6 +28,34 @@ fi
 export SPEC_SKILL
 ```
 
+## Docs directory resolution
+
+The docs directory is `docs/` by default. Override it per project with a `"docs_dir"` field in the codevoyant store's `.codevoyant/metadata.json` (a repo-root-relative path). Resolve once and export so the doc-aware workflows and the spawned validator use the same path:
+
+```bash
+resolve_docs_dir() {
+  local root cfg d
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
+  cfg="$root/.codevoyant/metadata.json"
+  d=""
+  if [ -f "$cfg" ]; then
+    d="$(python3 - "$cfg" <<'PY' 2>/dev/null
+import json, sys
+try:
+    print(json.load(open(sys.argv[1])).get("docs_dir", ""))
+except Exception:
+    pass
+PY
+)"
+  fi
+  DOCS_DIR="${d:-docs}"
+}
+resolve_docs_dir
+export DOCS_DIR
+```
+
+`$DOCS_DIR` is the single source for where docs live; the doc-aware workflows pass it to `validate_docs.py` and read docs from it instead of the literal `docs/`.
+
 When dispatching, resolve `SPEC_SKILL` to the directory that contains this `SKILL.md` and export it so workflow bash blocks can invoke `python3 "$SPEC_SKILL/scripts/scope.py"`. Workflows that spawn the `spec-executor` agent (`go.md` — the `bg` alias dispatches here too) pass `SPEC_SKILL` into the executor's prompt so the executor can resolve the checker from any working directory.
 
 ## Inline Usage

@@ -11,7 +11,7 @@ Scan the repo, agree on the doc list, then run `scripts/scaffold.py` once per do
 - `DRY_RUN` — true if `--dry-run` present (print the manifest, write nothing)
 - `OVERWRITE` — true if `--overwrite` present (pass through to the script)
 - `SKILL` — this skill's directory; the script is `$SKILL/scripts/scaffold.py`
-- `DOCS_DIR` — `docs/` relative to project root
+- `DOCS_DIR` — the docs directory, resolved from `.codevoyant/metadata.json` (`docs_dir`) else `docs` (see SKILL.md "Docs directory resolution")
 
 ## Step 1: Load references
 
