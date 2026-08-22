@@ -140,6 +140,8 @@ Leave `SKIP` and `FAILED` threads **open** — they still need attention. Never 
 ✓ {applied} fix(es) applied. Responded to and resolved {resolved} thread(s){, {skipped} skipped, {failed} failed}.
 
   To publish your responses:  /pr publish   (or /pr publish --review-only)
+
+  Commit the applied fixes with the git commit skill before merging:  /git commit --yes
 ```
 
 If any were `FAILED`: list them with reasons and note their threads were left open.

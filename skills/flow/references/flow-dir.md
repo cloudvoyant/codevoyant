@@ -1,6 +1,6 @@
 # Flow directory resolution (local vs global)
 
-Shared logic for locating flows. Every flow workflow (`new`, `go`, `status`, `list`, `save`) resolves storage the same way.
+Shared logic for locating flows. Every flow workflow (`new`, `go`, `status`, `list`, `get`, `save`, `update`) resolves storage the same way.
 
 ## Scopes
 
@@ -15,7 +15,7 @@ A flow is a directory `{slug}/` containing `flow.md` and `implementation/step-N.
 
 Work from the **preserved argv** the dispatcher forwarded (each original argument is one array element — a multi-word step string like `/spec new {{objective}}` is a single element, and a quoted flag value like `feature="add OAuth"` stays attached to its flag). Never flatten argv into a string and re-split it: iterate `"$@"` directly.
 
-This minimal loop below sets `GLOBAL` only — it is enough for `status`/`list`/`save`, which do not forward flags. `new`/`go` need the fuller argv walker in [Pass-through flags](#pass-through-flags-branch-and-any-other-unrecognized-flag) below, which sets `GLOBAL` **and** buckets `PASSTHROUGH_FLAGS`/`POSITIONALS`. The two must agree on how `--global` is detected: **if you change the `--global`/`-g` handling in one, change it in the other.**
+This minimal loop below sets `GLOBAL` only — it is enough for `status`/`list`/`get`/`save`/`update`, which do not forward flags. `new`/`go` need the fuller argv walker in [Pass-through flags](#pass-through-flags-branch-and-any-other-unrecognized-flag) below, which sets `GLOBAL` **and** buckets `PASSTHROUGH_FLAGS`/`POSITIONALS`. The two must agree on how `--global` is detected: **if you change the `--global`/`-g` handling in one, change it in the other.**
 
 ```bash
 GLOBAL=false
@@ -37,7 +37,7 @@ While stripping the flow-control flags, collect all remaining flags (any element
 
 **Iterate the preserved argv, never a re-split string.** The block below walks `"$@"` — the array the dispatcher forwarded — so each element stays intact: a multi-word step command (`/spec new {{objective}}`) remains one `POSITIONALS` entry, and a flag value carried as one shell word (`feature="add OAuth"`) is not shredded. Do **not** write `set -- $ARGS` (or any unquoted re-split): that word-splits every step string and quoted value on whitespace and corrupts both `POSITIONALS` and `PASSTHROUGH_FLAGS`.
 
-This walker is the **superset** of the minimal `--global`-only loop under [The `--global` flag](#the-global-flag): it detects `--global`/`-g` identically and additionally buckets pass-through flags. `new`/`go` use this one; `status`/`list`/`save` use the minimal loop. Keep the `--global`/`-g` case in the two in sync.
+This walker is the **superset** of the minimal `--global`-only loop under [The `--global` flag](#the-global-flag): it detects `--global`/`-g` identically and additionally buckets pass-through flags. `new`/`go` use this one; `status`/`list`/`get`/`save`/`update` use the minimal loop. Keep the `--global`/`-g` case in the two in sync.
 
 ```bash
 # Walk argv "$@" left→right; peel flow-control flags, bucket the rest into PASSTHROUGH_FLAGS,
@@ -65,7 +65,7 @@ done
 - **Caveat — flag values starting with `-`.** The `[ "${2#-}" = "$2" ]` test treats any following element that starts with `-` as *not* this flag's value, so a legitimate value beginning with `-` (e.g. `--message "-n"`) is read as a value-less flag and the `-n` falls through to `POSITIONALS`. This is acceptable for the `--branch feature/x`-style forwarding flow actually uses; **flag values beginning with `-` are not supported** — pass them in `--flag=value` form (kept whole) if ever needed.
 - `PASSTHROUGH_FLAGS` is what `new` bakes into stored step commands (minus `--set`) and what `go` merges into each resolved step command at run time (see those workflows). At `go` time, run-time flags **override** any same-named flag baked into the step — the explicit run-time value wins, and a flag never appears twice (see go.md Step 2).
 
-## Resolving a flow by name (for `go`, `status`, `save`)
+## Resolving a flow by name (for `go`, `status`, `get`, `update`, `save`)
 
 When the user names an existing flow to run/inspect, resolve which scope holds it:
 

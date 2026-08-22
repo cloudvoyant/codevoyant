@@ -44,7 +44,7 @@ Same as `open.md` Step 1. Exit with `--github`/`--gitlab` guidance if undetectab
 
 ## Step 2: Resolve PR/MR and current state
 
-Resolve `PR_NUMBER`, `PR_TITLE`, `PR_URL`, and:
+Resolve `PR_NUMBER`, `PR_TITLE`, `PR_URL`, and `BRANCH = git rev-parse --abbrev-ref HEAD` (the branch whose PR/MR this is, and the branch a `--push` would push):
 
 - **Draft state** — is the PR/MR itself a draft?
   - GitHub: `gh pr view {PR_ID or branch} --json number,title,url,isDraft`
@@ -83,7 +83,7 @@ If `WILL_PUSH_LOCAL_REVIEW`:
 
 ## Step 4: Pre-flight checks (only relevant when marking ready)
 
-1. **Unpushed commits.** If the local branch is ahead of upstream (`git rev-list --count @{upstream}..HEAD`): if `--push`, run `git push`; else warn `⚠ {N} local commit(s) not pushed — the reviewer won't see them. Re-run with --push, or push first.` and continue.
+1. **Unpushed commits.** If the local branch is ahead of upstream (`git rev-list --count @{upstream}..HEAD`): if `--push`, run `git push` and set `PUSHED=true`; else warn `⚠ {N} local commit(s) not pushed — the reviewer won't see them. Re-run with --push, or push first.` and continue.
 2. **CI status (informational).** Best-effort; warn, don't block:
    - GitHub: `gh pr checks {PR_NUMBER}`; GitLab: `glab ci status`.
    - If not green: note `⚠ CI is {failing|pending} — publishing anyway.`
@@ -117,6 +117,21 @@ Do these in order (each only if its flag computed true in Steps 2–3):
 
 If any step fails (auth, permissions, API): report `✗ Publish failed at {step}: {error}.`, state what did succeed, and exit.
 
+## Step 6.5: Watch CI after the push (best-effort)
+
+Only when `--push` actually pushed commits (Step 4.1 set `PUSHED=true`). This closes the residual gap where a workflow commits+pushes without a CI-watch — e.g. commits made directly by a flow step outside `/git commit`, which would otherwise never be watched. Reuse the platform `ci` workflow — do NOT reimplement CI polling. Skip silently (leave `CI_STATUS` unset) if nothing was pushed (`PUSHED != true`), if there is no remote, if the repo has no CI configured, or if the needed CLI (`gh` for GitHub, `glab` for GitLab) is not installed.
+
+Watch the CI run the push kicked off on the PR/MR branch `{BRANCH}`:
+
+- **GitHub:** `/gh ci --branch {BRANCH}` (no `--autofix` — `publish` only watches and notifies).
+- **GitLab:** `/glab ci --branch {BRANCH}`.
+
+Capture the outcome into `CI_STATUS`:
+
+- Watch completes green → `CI_STATUS = "green"`.
+- Watch reports failure → `CI_STATUS = "failing"` and record the failing check names and the logs pointer (the failing-run URL, or the `gh run view --log-failed` / `glab ci trace` hint the `ci` workflow surfaces).
+- No recent run found for `{BRANCH}`, or the check was skipped → leave `CI_STATUS` unset (treated as "not watched").
+
 ## Step 7: Report
 
 ```
@@ -127,3 +142,5 @@ If any step fails (auth, permissions, API): report `✗ Publish failed at {step}
 ```
 
 If CI was not passing, remind: `Heads-up: CI is {failing|pending} — worth getting green before reviewers dig in.`
+
+If the post-push watch ran: add `✓ CI is green on {BRANCH} after the push` when `CI_STATUS == "green"`; when `CI_STATUS == "failing"`, NOTIFY prominently — `⚠ CI is FAILING on {BRANCH} after the push — fix before reviewers dig in.` If `CI_STATUS` is unset (not watched), say nothing.

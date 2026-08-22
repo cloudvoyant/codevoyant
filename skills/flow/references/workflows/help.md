@@ -12,16 +12,20 @@ flow — chain skill commands into a named, reusable pipeline
                                            — run pending steps sequentially
   /flow list [--global | --local]          — list all flows (local + global)
   /flow status <name> [--global]           — show checklist state
+  /flow get <name> [--global] [--steps]    — print a flow's definition (flow.md + step files)
   /flow doctor [name] [--fix] [--global]   — diagnose (or --fix repair) broken flows
   /flow save <name> --skill <s> [--global] — turn a flow into a reusable skill
+  /flow update <name> ["change"] [--target <file>] [--global] — edit a flow's definition (annotations or chat)
   /flow help                               — this message
 
 Verb aliases:
   run, exec, start   →  go
   ls                 →  list
   show, review       →  status
+  print              →  get
   fix, diagnose, check →  doctor
   export, publish    →  save
+  edit               →  update
 
 Storage:
   local  (default)   .codevoyant/flows/<slug>/       — this project only

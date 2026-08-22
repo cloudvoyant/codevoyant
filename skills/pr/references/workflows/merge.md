@@ -9,6 +9,7 @@ Squash by default, and **semantic-release aware**: a squash merge onto a release
 - `PR_ID` (optional positional) — defaults to the PR/MR for the current branch
 - `--squash` (default) / `--rebase` / `--merge` — merge method
 - `--delete-branch` — delete the source branch after merge
+- `--cleanup` — after a successful merge, delete the source branch locally (`git branch -d`/`-D`) and remotely (`git push origin --delete <branch>`); skips the remote delete when `--delete-branch` already removed it on the platform
 - `--yes` / `-y` — skip confirmation and the semantic-release subject prompt (use the best derived subject)
 - `--subject "..."` — the squash commit subject (overrides derivation)
 - `--body "..."` — the squash commit body
@@ -22,6 +23,7 @@ Squash by default, and **semantic-release aware**: a squash merge onto a release
 PR_ID=""; PROVIDER=""
 METHOD="squash"          # squash | rebase | merge
 DELETE_BRANCH=false
+CLEANUP=false
 ASSUME_YES=false
 DO_PUSH=false
 WATCH_CI=true            # watch post-merge CI on the base branch by default
@@ -33,6 +35,7 @@ while [ $# -gt 0 ]; do
     --rebase)        METHOD="rebase"; shift ;;
     --merge)         METHOD="merge";  shift ;;
     --delete-branch) DELETE_BRANCH=true; shift ;;
+    --cleanup)       CLEANUP=true; shift ;;
     --yes|-y)        ASSUME_YES=true; shift ;;
     --push)          DO_PUSH=true; shift ;;
     --watch-ci)      WATCH_CI=true; shift ;;
@@ -54,11 +57,13 @@ Same as `open.md` Step 1 (remote-URL sniff + `--github`/`--gitlab` override). Ex
 
 Resolve for `PR_ID` or the current branch, capturing `PR_NUMBER`, `PR_TITLE`, `PR_URL`, `IS_DRAFT`, `MERGEABLE`, and `BASE` (target branch):
 
-- **GitHub:** `gh pr view {PR_ID or branch} --json number,title,url,isDraft,mergeable,baseRefName`
-  - `IS_DRAFT` ← `isDraft`; `MERGEABLE` ← `mergeable` (`MERGEABLE`/`CONFLICTING`/`UNKNOWN`); `BASE` ← `baseRefName`.
-- **GitLab:** `glab mr view {PR_ID or branch}` — `IS_DRAFT` if the title is `Draft:`/`WIP:`-prefixed; `MERGEABLE` from the merge status; `BASE` from the target branch.
+- **GitHub:** `gh pr view {PR_ID or branch} --json number,title,url,isDraft,mergeable,baseRefName,headRefName`
+  - `IS_DRAFT` ← `isDraft`; `MERGEABLE` ← `mergeable` (`MERGEABLE`/`CONFLICTING`/`UNKNOWN`); `BASE` ← `baseRefName`; `HEAD_REF` ← `headRefName`.
+- **GitLab:** `glab mr view {PR_ID or branch}` — `IS_DRAFT` if the title is `Draft:`/`WIP:`-prefixed; `MERGEABLE` from the merge status; `BASE` from the target branch; `HEAD_REF` from the source branch.
 
 If no open PR/MR is found: `✗ No open PR/MR found for this branch. Open one with /pr open.` and exit.
+
+Default `HEAD_REF` to the current branch when it is still empty (the PR/MR resolves to the checked-out branch): `HEAD_REF="${HEAD_REF:-$(git rev-parse --abbrev-ref HEAD)}"`.
 
 ## Step 3: Pre-flight checks
 
@@ -104,11 +109,11 @@ Resolve the subject:
 Unless `--yes`, use **AskUserQuestion**:
 
 ```
-question: "Merge PR/MR #{PR_NUMBER} '{PR_TITLE}' into {BASE} via {METHOD}{, deleting the branch (if --delete-branch)}?"
+question: "Merge PR/MR #{PR_NUMBER} '{PR_TITLE}' into {BASE} via {METHOD}{, deleting the branch (if --delete-branch)}{, and clean up the branch locally + remotely (if --cleanup)}?"
 header: "Merge"
 options:
   - label: "Merge"
-    description: "{METHOD} merge{ · subject: {SUBJECT} (if set)}{ · CI {status} (if not green)}"
+    description: "{METHOD} merge{ · subject: {SUBJECT} (if set)}{ · CI {status} (if not green)}{ · cleanup: delete {HEAD_REF} local + remote (if --cleanup)}"
   - label: "Cancel"
     description: "Leave the PR/MR open"
 ```
@@ -140,6 +145,37 @@ Delegate to the platform CLI with the method, subject/body, and delete-branch fl
 
 If the merge fails (not mergeable, auth, permissions, protected-branch rules): report `✗ Merge failed: {error}.` and exit.
 
+## Step 6.5: Cleanup source branch (only when `--cleanup`)
+
+Only when `CLEANUP == true` **and** the merge succeeded. Skips silently (leaves the branch alone) if the merge did not land. Deletes the merged source branch `{HEAD_REF}` locally and remotely so the repo does not accumulate dead branches after a merged PR/MR.
+
+1. **Switch to the base branch** — you cannot delete the branch you are on:
+   ```bash
+   git switch {BASE}
+   ```
+   If the switch fails (dirty working tree, local conflicts): report `⚠ Could not switch to {BASE} — local branch cleanup skipped; delete {HEAD_REF} manually (git branch -D {HEAD_REF}).` and **stop the local delete** (do not delete a branch you are standing on). Continue to the remote delete below.
+2. **Delete the local branch** (best-effort, `-d` then `-D`):
+   ```bash
+   git branch -d {HEAD_REF} 2>/dev/null || git branch -D {HEAD_REF}
+   ```
+   A squash merge does not make `{BASE}` an ancestor of `{HEAD_REF}`, so `git branch -d` routinely refuses ("not fully merged"); that is expected — the `|| git branch -D` fallback handles it. If the branch does not exist locally (already deleted, or never checked out here): note `ℹ Local branch {HEAD_REF} does not exist — nothing to delete.` and continue.
+3. **Delete the remote branch**:
+   - If `DELETE_BRANCH == true`: the platform already deleted it via `gh pr merge --delete-branch` / `glab mr merge --remove-source-branch`. Note `— remote branch already deleted by the platform (--delete-branch).` and skip the push. Set `CLEANUP_STATUS` accordingly — `local-only (remote handled by --delete-branch)` if the local delete above happened, else `remote-only (remote handled by --delete-branch)`.
+   - Else:
+     ```bash
+     git push origin --delete {HEAD_REF}
+     ```
+     If it fails because the remote branch no longer exists (e.g. the repo's GitHub setting auto-deletes branches on merge): note `ℹ Remote branch {HEAD_REF} already gone (auto-deleted) — nothing to delete.` and continue. Any other failure: report `⚠ Remote cleanup failed for {HEAD_REF}: {error}.` and continue (the merge is done; cleanup is best-effort).
+
+Capture `CLEANUP_STATUS` for the Step 8 report — it must **always** be set when `--cleanup` ran so the report line never reads empty:
+
+- `local+remote` — local branch deleted, remote deleted via `git push origin --delete`
+- `local-only` — local deleted, remote deleted by the platform (no `--delete-branch`)
+- `local-only (remote handled by --delete-branch)` — `--delete-branch` also passed: the platform deleted the remote, cleanup deleted the local branch
+- `remote-only` — local delete skipped, remote deleted via `git push origin --delete`
+- `remote-only (remote handled by --delete-branch)` — `--delete-branch` also passed but the local delete was skipped
+- `none` — nothing deleted / cleanup skipped
+
 ## Step 7: Watch post-merge CI
 
 Best-effort. The merge already succeeded — nothing here can undo it; this step only watches and notifies. Skip silently (leave `CI_STATUS` unset) if `WATCH_CI == false`, if there is no remote, if the repo has no CI configured, or if the needed CLI (`gh` for GitHub, `glab` for GitLab) is not installed.
@@ -165,6 +201,7 @@ Capture the resulting merge commit SHA (`gh pr view {PR_NUMBER} --json mergeComm
 ✓ Merged PR/MR #{PR_NUMBER} into {BASE} ({METHOD})
   merge commit {SHA}
   {— source branch deleted (if done)}
+  {— source branch cleaned up: {CLEANUP_STATUS} (if --cleanup)}
   {PR_URL}
 ```
 

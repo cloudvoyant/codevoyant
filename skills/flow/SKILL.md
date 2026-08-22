@@ -1,6 +1,6 @@
 ---
 name: flow
-description: "End-to-end pipeline orchestration. Chain multiple skill workflows (dev explore, spec new, spec go, dev explore review) into a named flow that runs sequentially. Triggers on: 'flow new', 'flow go', 'create a flow', 'run flow'."
+description: "End-to-end pipeline orchestration. Chain multiple skill workflows (dev explore, spec new, spec go, dev explore review) into a named flow that runs sequentially. Triggers on: 'flow new', 'flow go', 'flow get', 'flow update', 'create a flow', 'run flow', 'inspect a flow', 'edit a flow'."
 license: MIT
 compatibility: Works on Claude Code. Uses Agent/subagent features.
 requires: [skill]
@@ -37,8 +37,10 @@ Aliases:
   "ls"        → list
   "show"      → status
   "review"    → status
+  "print"     → get
   "export"    → save
   "publish"   → save
+  "edit"      → update
   "fix"       → doctor
   "diagnose"  → doctor
   "check"     → doctor
@@ -60,14 +62,16 @@ The `--fix` flag (used by `doctor` to apply repairs instead of only diagnosing) 
 | go | `references/workflows/go.md` | Execute pending steps sequentially as blocking subagents |
 | list | `references/workflows/list.md` | List all flows (local and global) |
 | status | `references/workflows/status.md` | Print flow checklist state (from the local run instance if present) |
+| get | `references/workflows/get.md` | Print an existing flow's definition (flow.md + step files) |
 | doctor | `references/workflows/doctor.md` | Diagnose (and with `--fix` repair) broken flows across both scopes |
 | save | `references/workflows/save.md` | Turn a flow into a reusable composite skill via /skill new |
+| update | `references/workflows/update.md` | Edit an existing flow definition (annotations or chat; keeps flow.md ↔ step files consistent) |
 | help | `references/workflows/help.md` | Usage reference |
 
 ## Instructions
 
 1. Extract VERB from the user's message (first non-flag positional argument after "flow").
-2. Apply aliases (run/exec/start → go; ls → list; show/review → status; export/publish → save; fix/diagnose/check → doctor).
+2. Apply aliases (run/exec/start → go; ls → list; show/review → status; print → get; export/publish → save; edit → update; fix/diagnose/check → doctor).
 3. If VERB is empty or unrecognized, default to `help`.
 4. Read and execute the corresponding workflow file from `references/workflows/{VERB}.md`.
 5. Pass all remaining arguments (including any `--global`/`-g` flag and any other unrecognized flags such as `--branch`) to the workflow unchanged, **as a preserved argv array** — each original argument stays one element, so multi-word step strings (`/spec new {{objective}}`) and quoted flag values (`feature="add OAuth"`) survive intact. The workflow iterates this argv (`"$@"`) to parse flow-control flags and bucket the rest into `PASSTHROUGH_FLAGS` via `references/flow-dir.md`; it must never flatten the args into a single string and re-split them.
