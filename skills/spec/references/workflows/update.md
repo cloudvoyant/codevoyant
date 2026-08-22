@@ -8,6 +8,8 @@ Update a spec plan. Accepts two input modes:
 
 Annotations are HTML comments so they never collide with real markdown blockquotes. Scan for `<!-- >>` (major) BEFORE `<!-- >` (minor); the instruction is the text between the marker and the closing `-->`, and the comment may span multiple lines.
 
+Named forms: `<!-- @edit: … -->` is a minor annotation; `<!-- @agent: … -->` is guidance. The shared contract is `skills/shared/annotations.md`.
+
 **`<!-- > instruction -->`** — minor annotation, standalone comment applies to the block immediately below it:
 ```markdown
 <!-- > rewrite this phase for OAuth — drop all JWT references -->

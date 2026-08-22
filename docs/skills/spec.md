@@ -143,3 +143,7 @@ Write the allow entries needed for `/spec go` to run without permission prompts.
 ```bash
 /spec help                              # list all spec commands with descriptions
 ```
+
+## Annotations
+
+Annotate a plan file with `<!-- @agent: guidance -->` or `<!-- @edit: instruction -->`, then run `/spec update <plan>`. See `skills/shared/annotations.md`.

@@ -22,6 +22,8 @@ Workflows read these markers from the template. Do not invent other marker token
 | `<!-- @agent: [public-api] … -->`   | This heading is the doc's **public API surface** (Rule 4). Exactly one per component template. Its heading is the API section other docs may reference. Always required.              | review 3e, coverage-and-api Rule 4, validate |
 | `index: true` (frontmatter)         | This doc is an **index doc** (spans `**`, exempt from Rule 2). Carried by `project-readme.md` and `architecture.md` only.                                                             | review 3e, coverage-and-api Step A, retcon   |
 
+- `<!-- @edit: … -->` — a user-requested rewrite of the attached line/block; applied by `/docs update`. The shared contract is `skills/shared/annotations.md`.
+
 ## Deriving the required structure
 
 To check a doc, resolve its template (`references/scaffold.md`: `references/templates/{type}.md`), then:

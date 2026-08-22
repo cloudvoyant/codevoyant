@@ -42,3 +42,7 @@ spec — Specification-driven development commands for Claude Code
 
   /spec help
       Show this reference
+
+### Annotations
+
+Write notes for the agent in plan files: `<!-- @agent: guidance -->` or `<!-- @edit: instruction -->`. Run `/spec update <plan>` to apply them. See `skills/shared/annotations.md`.

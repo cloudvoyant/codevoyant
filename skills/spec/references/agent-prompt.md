@@ -20,7 +20,7 @@ Task runner commands:
 
 ## Annotations to apply first
 
-Before starting any task, scan plan.md and implementation/phase-{N}.md for inline HTML-comment annotations (scan `<!-- >>` before `<!-- >`):
+Before starting any task, scan plan.md and implementation/phase-{N}.md for inline HTML-comment annotations (scan `<!-- >>` before `<!-- >`). The named forms `<!-- @edit: … -->` and `<!-- @agent: … -->` map to these — see `skills/shared/annotations.md`:
 
 - **`<!-- > instruction -->`** — minor annotation, standalone comment applying to the block below it
 - **`content <!-- >> instruction -->`** — major annotation, inline suffix applying to that specific line

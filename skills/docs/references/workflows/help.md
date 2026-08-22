@@ -88,3 +88,7 @@ Every doc declares the repo paths it owns in a `globs:` frontmatter block. One o
 ## Component type detection
 
 See the table in `references/structure.md` (single source). At a glance: path/name contains `auth` → auth; `libs/`/`packages/` → library; `apps/*/routes/api/`/`*/api/*` → api; `apps/*/routes/*`/`libs/ui/*`/`libs/feature-*` → frontend; infra-ish (`infra/modules/*`, `terraform/*`) → generic.
+
+## Annotations
+
+Write notes for the agent in any doc: `<!-- @agent: guidance -->` or `<!-- @edit: instruction -->`. Run `/docs update` to apply them. See `skills/shared/annotations.md`.
