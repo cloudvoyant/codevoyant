@@ -84,7 +84,7 @@ Simple infrastructure artifacts — an SSM parameter, an S3 bucket, a KMS key �
 
 ## Component type detection (single source of truth)
 
-Used by `new.md` Step 3, `retcon.md` Step 2, `review.md` Step 2, `update.md` Step 1a, and `validate.md`. Resolve a component's template by its code path. Check `auth` first, then the rows below; a Terraform/infra module has no dedicated template and uses `generic.md`; if the type is still unclear, ask the user (api / library / frontend / auth / generic).
+Used by `new.md` Step 3, `retcon.md` Step 2, `review.md` Step 2, `update.md` Step 1a, and `validate.md`. Resolve a component's template by its code path. Check `auth` first, then the rows below; a Terraform/infra module has no dedicated template and uses `generic.md`; if the type is still unclear, ask the user (api / library / frontend / auth / ml-model / data-pipeline / experiment / generic).
 
 | Path pattern | Type | Template |
 |---|---|---|
@@ -93,7 +93,10 @@ Used by `new.md` Step 3, `retcon.md` Step 2, `review.md` Step 2, `update.md` Ste
 | `apps/*/routes/api/*`, `*/api/*` | `api` | `api.md` |
 | `apps/*/routes/*` (not api), `libs/ui/*`, `libs/feature-*` | `frontend` | `frontend.md` |
 | infra-ish (Terraform module, `infra/modules/*`, `terraform/*`) | `generic` | `generic.md` |
-| Can't determine | ask (api / library / frontend / auth / generic) | — |
+| `models/*`, `ml/*`, contains `train`/`predict`/`model` (`.pt`/`.onnx`/`.safetensors`/`.h5`) | `ml-model` | `ml-model.md` |
+| `pipelines/*`, `*/pipeline*`, orchestrates ETL stages | `data-pipeline` | `data-pipeline.md` |
+| `experiments/*`, `notebooks/*`, runs a metric comparison | `experiment` | `experiment.md` |
+| Can't determine | ask (api / library / frontend / auth / ml-model / data-pipeline / experiment / generic) | — |
 
 Repo-wide infra layout/resources/environments belong to `docs/ci.md`, not a component doc.
 
