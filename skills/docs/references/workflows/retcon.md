@@ -7,6 +7,7 @@ retcon reads the code and writes the full mandated documentation. It fills every
 retcon scaffolds the same way `new` does. It runs `scripts/scaffold.py` to lay each skeleton. Then it reads each component's code and replaces every `<!-- @agent: … -->` marker with real content. retcon reads code. It never parses templates itself.
 
 **Documentation grain.** retcon documents the system the way people think about it: grouped by kind (apps|services, libs, CI), by platform when the repo has more than one, then by module within apps|services. Correctness at the wrong grain is still a bad doc: a per-directory doc shaped like a service reads as a thin wrapper around a list of outputs and hides how the system works. retcon therefore groups discovered components (Step 2.5) before building the manifest (Step 3) and keeps the architecture index at the same grain.
+On a flat (non-monorepo) repo, retcon first proposes a lib/module → feature breakdown from `references/module-taxonomy.md` and asks the user to confirm it (Step 2.4) before grouping.
 
 ## Variables
 
@@ -72,6 +73,63 @@ ls .github/workflows/* .github/actions/* .gitlab-ci.yml .circleci/config.yml .tr
 Apply the type detection table from `references/structure.md` (the single source) to each discovered path. `--type` forces the type for all components.
 
 Build `MANIFEST` — array of `{ name, path, type }` entries. This is the raw component list; grouping happens in Step 2.5.
+
+## Step 2.4: Flat-repo feature breakdown (propose before grouping)
+
+Some repos are already split into monorepo/feature modules; others are flat — one package, or a tangle of top-level files. For a flat repo, grouping in Step 2.5 alone produces thin, wrong-grained docs. Detect the shape and, when flat, propose a breakdown first, using the taxonomy in `references/module-taxonomy.md`.
+
+**Detect the shape:**
+
+```bash
+# A workspace manifest is a strong structured signal (JS/Go/misc).
+STRUCTURED=$(find . -maxdepth 3 \
+  \( -name pnpm-workspace.yaml -o -name go.work -o -name lerna.json -o -name nx.json -o -name turbo.json -o -name workspace.yaml \) \
+  -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" 2>/dev/null | head -1)
+# A Cargo/pyproject file is structured only if it declares a workspace.
+if [ -z "$STRUCTURED" ]; then
+  grep -l '^\s*\[workspace\]' Cargo.toml 2>/dev/null && STRUCTURED="Cargo.toml"
+  grep -l '^\s*\[tool\.uv\.workspace\]' pyproject.toml 2>/dev/null && STRUCTURED="pyproject.toml"
+fi
+# Otherwise: a conventional module-dir layout, or multiple published packages.
+if [ -z "$STRUCTURED" ]; then
+  STRUCTURED=$(find . -maxdepth 2 -type d \
+    \( -name libs -o -name apps -o -name packages -o -name crates -o -name services -o -name features \) \
+    -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" 2>/dev/null | head -1)
+fi
+```
+
+**If `STRUCTURED` is non-empty** — the repo already has a module layout. Skip this step's breakdown; proceed to Step 2.5 (kind bucketing) as today.
+
+**If flat (`STRUCTURED` empty)** — derive a proposed `lib/module → feature` breakdown before bucketing, per `references/module-taxonomy.md`:
+
+1. Read the directory tree, import graph, and package/workspace metadata to find natural module boundaries:
+
+```bash
+find . -type f \( -name '*.ts' -o -name '*.py' -o -name '*.go' -o -name '*.rs' -o -name '*.js' \) \
+  -not -path "*/node_modules/*" -not -path "*/.codevoyant/*" -not -path "*/dist/*" -not -path "*/target/*" | \
+  sed -E 's#^\./##; s#/[^/]+$##' | sort | uniq -c | sort -rn | head -40
+```
+
+2. Cluster the paths into a proposed map of `module/feature → dirs/files`, naming each module from the code's own vocabulary (package names, route prefixes, top-level dirs) and any docs already in the repo — never invented words. Note cross-cutting concerns (a model or pipeline being trained but not evident in the tree) as modules, per the taxonomy.
+
+3. Present the breakdown and ask the user to agree (AskUserQuestion, free-text Other for edits). Print BOTH the inferred taxonomy kind (apps vs libs per module) and the directory tree the breakdown was derived from:
+
+```
+Proposed feature breakdown for this repo (taxonomy: apps|libs → modules|features):
+
+  <module>  [apps|libs]  → <dirs/files>
+  …
+
+Directory tree:
+  <top-level tree the breakdown was inferred from>
+
+Does this match how you think about the code? (Yes / Edit / Cancel)
+```
+
+4. On **Edit**, take the user's corrected breakdown via Other and re-present once. On **Cancel**, stop — do not author docs against a breakdown the user rejects.
+5. Feed the agreed map into Step 2.5 as the module-cluster candidates, so kind bucketing and module clustering use the confirmed boundaries instead of re-deriving them from raw paths.
+
+The agreed breakdown is the seed for `GROUPS`, not a replacement for Step 2.5's kind/platform/module logic — Step 2.5 still assigns each module to a kind bucket and platform level.
 
 ## Step 2.5: Group components into the architecture hierarchy
 
