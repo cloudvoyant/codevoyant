@@ -93,3 +93,7 @@ Docs follow a junior-dev-friendly Simplified Technical English standard:
 - Explain "why" before "what" for non-obvious decisions
 - Mermaid diagrams replace prose for all multi-step flows
 - Required sections and diagrams are derived from templates (`references/template-contract.md`)
+
+## Annotations
+
+Annotate any doc with `<!-- @agent: guidance -->` or `<!-- @edit: instruction -->`, then run `/docs update`. See `skills/shared/annotations.md`.

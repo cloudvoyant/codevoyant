@@ -78,13 +78,30 @@ Every plan you create must include these as explicit constraints in implementati
 
 When `PERSISTENT_MODE` is set (`/spec new --persistent`), the doc-aware model in `references/doc-aware.md` binds (Rules 3, 4, 6). `new.md` runs the Rule 1 valid-docs gate and the Rule 2 docs-first write BEFORE you start — read the refreshed docs as your primary context, never plan against a stale or assumed layout.
 
-- **Docs are the source of truth for module boundaries.** For every component a phase touches, read its doc (`docs/**/*.md`) and extract its `globs:` frontmatter. Assign each phase exactly the globs of the components it touches — no more, no less.
-- **At least one write glob per phase — non-negotiable.** A phase whose `**Write globs:**` list would be empty is invalid. If a component has no doc globs, derive its write glob from the repository layout (doc-aware.md Rule 3): the src/monorepo lib glob (`src/**`, `packages/*/src/**`, `libs/**`, `apps/*/src/**`), the CI glob (`**/.github/**`, `**/.gitlab-ci.yml`, `**/ci/**`, `mise.toml`, `justfile`), or the docs glob (`docs/**`). Even for a brand-new repo, emit separate src/monorepo libs, CI, and docs phases, each with its own glob. A code phase's globs must cover the src dir — deployment/CI config alone is never a code boundary.
+- **Docs are the source of truth for module boundaries.** For every component a phase touches, read its doc (`$DOCS_DIR/**/*.md`) and extract its `globs:` frontmatter. Assign each phase exactly the globs of the components it touches — no more, no less.
+- **At least one write glob per phase — non-negotiable.** A phase whose `**Write globs:**` list would be empty is invalid. If a component has no doc globs, derive its write glob from the repository layout (doc-aware.md Rule 3): the src/monorepo lib glob (`src/**`, `packages/*/src/**`, `libs/**`, `apps/*/src/**`), the CI glob (`**/.github/**`, `**/.gitlab-ci.yml`, `**/ci/**`, `mise.toml`, `justfile`), or the docs glob (`$DOCS_DIR/**`). Even for a brand-new repo, emit separate src/monorepo libs, CI, and docs phases, each with its own glob. A code phase's globs must cover the src dir — deployment/CI config alone is never a code boundary.
 - **Emit a `## Doc Scope` block** at the top of each `implementation/phase-N.md` Design section, per `new.md` Step 5.3c's format: `**Write globs:**` (space-separated, always non-empty), `**Public interfaces only:**`, and `**Boundary callouts:**` bullets.
 - **Compute the `Doc Globs:` metadata line** for plan.md — the space-separated union of all phases' write globs. `go.md` reads this line to pass the glob set to executors.
 - **Rule 4:** any cross-module interaction in a task must reference ONLY the target module's documented public API/interface section from its doc, never its internals. Consult the docs to determine what is public.
 - **Rule 6:** every task whose spec would write outside its globs, or use another module's internals, MUST be surfaced as a boundary callout: a bullet under the phase's `## Doc Scope` `**Boundary callouts:**` (naming the crossing, why it is required, and the alternative considered) AND a `[boundary]`-marked entry in the Decision Log under `### Agent Decisions`. A boundary crossing is never silent — if it is truly required, say so explicitly with the reason.
 - Verify any doubtful write path against the globs mechanically with `$SPEC_SKILL/scripts/scope.py` (the same check executors run) while drafting.
+
+## Lite Mode (active only when `LITE_MODE` is set)
+
+In lite mode the code-first gate is replaced by a contract-first gate, and the point is speed: the planner states the contract and STOPS — it does not chase implementation detail. For each task, instead of a `**Code:**` block, write a `**Contract:**` block that states:
+
+- the public function signatures or interfaces the task introduces or changes, with one-line behavior per signature;
+- the module boundaries — what this module owns and what it depends on, and the library/package choices (name and version constraint, if known);
+- the invariant or acceptance condition that proves the task is done.
+
+Do NOT write literal implementation code. State signatures, boundaries, and choices you can pin down quickly; you may leave a function's internals unspecified — that is exactly the work lite mode defers to the executor. Do NOT write "research / investigate / decide" tasks, but DO stop at the contract instead of resolving every implementation question. A task whose contract is vague about its signature, boundary, or acceptance condition fails the contract-completeness check; a task whose contract leaves internals open is fine — that is the point.
+
+**Exploration budget.** The two modes deliberately trade planning effort for execution-time exploration:
+
+- **normal mode** — implementation is fully specified, so the executor explores minimally (it applies the code).
+- **lite mode** — implementation is deferred, so the executor explores more (it fills the internals the contract leaves open).
+
+This lets you compare the two methodologies head-to-head — full-upfront-spec vs contract-first — measuring planning cost against execution-time exploration. Do not smuggle the implementation work back into the plan under the guise of contracts: a lite contract that spells out every internal is just normal mode with extra steps. The `## Contract` section in `references/implementation-template.md` holds the shape.
 
 ## Phase 0 Rule
 

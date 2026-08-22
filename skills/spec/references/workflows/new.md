@@ -39,6 +39,9 @@ Received from dispatcher:
 VALIDATE_MODE=false
 [[ "$*" =~ --validate|-v ]] && VALIDATE_MODE=true
 
+LITE_MODE=false
+[[ "$*" =~ --lite ]] && LITE_MODE=true
+
 PERSISTENT_MODE=false
 [[ "$*" =~ --persistent ]] && PERSISTENT_MODE=true
 ```
@@ -171,7 +174,7 @@ Load `references/doc-aware.md` — the doc-aware model (valid-docs gate, docs-fi
 **Rule 1 — valid-docs gate.** Check the repo has usable docs via the vendored validator (mirrors the docs skill's `validate` checks: structure + glob validity, with `exclude: true` for unmanaged docs). Exit 0 = valid:
 
 ```bash
-if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs docs; then
+if python3 "$SPEC_SKILL/scripts/validate_docs.py" --root . --docs "$DOCS_DIR"; then
   DOCS_OK=true
 else
   DOCS_OK=false
@@ -329,6 +332,8 @@ Report: `✓ Plan directory created at: $PLAN_DIR`
 **a. plan.md** at `$PLAN_DIR/plan.md`
 
 Prepare metadata: `CREATED_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")`, `METADATA_BRANCH=$TARGET_BRANCH` (or `"(none)"`), `METADATA_BASE_BRANCH=$BASE_BRANCH` (or `"main"`), `METADATA_WORKTREE=$PLAN_WORKTREE` (or `"(none)"`). When `PERSISTENT_MODE=true`, also prepare `METADATA_DOC_GLOBS` — the space-separated union of the globs the phases declare (see Step 5.3c), computed during drafting.
+
+When `LITE_MODE=true`, also write the line `- **Lite**: true` into plan.md's Metadata section (after Worktree). When false, omit it entirely.
 
 Use the template in `references/plan-template.md`. If `SOURCE_URL` set, add `- **Source**: {SOURCE_URL}` in the Metadata section.
 

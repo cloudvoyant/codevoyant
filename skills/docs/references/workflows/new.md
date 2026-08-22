@@ -11,7 +11,7 @@ Scan the repo, agree on the doc list, then run `scripts/scaffold.py` once per do
 - `DRY_RUN` — true if `--dry-run` present (print the manifest, write nothing)
 - `OVERWRITE` — true if `--overwrite` present (pass through to the script)
 - `SKILL` — this skill's directory; the script is `$SKILL/scripts/scaffold.py`
-- `DOCS_DIR` — `docs/` relative to project root
+- `DOCS_DIR` — the docs directory, resolved from `.codevoyant/metadata.json` (`docs_dir`) else `docs` (see SKILL.md "Docs directory resolution")
 
 ## Step 1: Load references
 
@@ -23,9 +23,9 @@ Each manifest entry is `{ out, template, name, path }`.
 
 ### 2a: No target (`/docs new`) — scan and scaffold the base structure
 
-Base set (always): `README.md` (project-readme), `docs/user-guide.md` (user-guide), `docs/development-guide.md` (development-guide), `docs/architecture/index.md` (architecture).
+Base set (always): `README.md` (project-readme), `$DOCS_DIR/user-guide.md` (user-guide), `$DOCS_DIR/development-guide.md` (development-guide), `$DOCS_DIR/architecture/index.md` (architecture).
 
-Add `docs/ci.md` (ci) only when the repo has CI or infra config (detect per the candidate globs in `templates/ci.md` frontmatter):
+Add `$DOCS_DIR/ci.md` (ci) only when the repo has CI or infra config (detect per the candidate globs in `templates/ci.md` frontmatter):
 ```bash
 ls .github/workflows/* .github/actions/* .gitlab-ci.yml .circleci/config.yml .travis.yml Jenkinsfile* bitbucket-pipelines.yml azure-pipelines.yml 2>/dev/null | head
 find . \( -path "*/infra/*" -o -path "*/terraform/*" -o -name "*.tf" -o -name "Pulumi.yaml" -o -name "Dockerfile*" -o -name "docker-compose*" \) -not -path "*/node_modules/*" 2>/dev/null | head
@@ -39,7 +39,7 @@ grep -n "members\|\[workspace\]" Cargo.toml 2>/dev/null
 cat go.work 2>/dev/null
 find . -maxdepth 2 -type d \( -path "./apps/*" -o -path "./packages/*" -o -path "./libs/*" \) -not -path "*/node_modules/*" 2>/dev/null | sort
 ```
-If it is a monorepo, group the packages into the architecture hierarchy first (same taxonomy as `retcon.md` Step 2.5 / `structure.md` "Grouping taxonomy": kind buckets, optional platform, module clusters) and add one doc per group and module under `docs/architecture/` — a group doc `docs/architecture/{kind}/index.md`, a leaf `docs/architecture/{kind}/{module}.md` for a single-component module, or `docs/architecture/{kind}/{module}/index.md` for a multi-component module (member components become `## Implementation` subsection headings in the scaffold). Detect each module's type in Step 3. A single-package repo gets only the base structure.
+If it is a monorepo, group the packages into the architecture hierarchy first (same taxonomy as `retcon.md` Step 2.5 / `structure.md` "Grouping taxonomy": kind buckets, optional platform, module clusters) and add one doc per group and module under `$DOCS_DIR/architecture/` — a group doc `$DOCS_DIR/architecture/{kind}/index.md`, a leaf `$DOCS_DIR/architecture/{kind}/{module}.md` for a single-component module, or `$DOCS_DIR/architecture/{kind}/{module}/index.md` for a multi-component module (member components become `## Implementation` subsection headings in the scaffold). Detect each module's type in Step 3. A single-package repo gets only the base structure.
 
 ### 2b: Named targets (`/docs new <name…>`)
 
@@ -65,13 +65,13 @@ Print it:
 Docs to scaffold (skeletons only):
 
   README.md                           project-readme  (repo root)
-  docs/user-guide.md                  user-guide
-  docs/development-guide.md           development-guide
-  docs/ci.md                          ci              (CI/infra detected)
-  docs/architecture/index.md          architecture
-  docs/architecture/apps/index.md     apps            <- group doc
-  docs/architecture/apps/auth/index.md  auth          <- module: libs/auth
-  docs/architecture/apps/storage/index.md  library    <- module: libs/storage (blob + queue + worker)
+  $DOCS_DIR/user-guide.md                  user-guide
+  $DOCS_DIR/development-guide.md           development-guide
+  $DOCS_DIR/ci.md                          ci              (CI/infra detected)
+  $DOCS_DIR/architecture/index.md          architecture
+  $DOCS_DIR/architecture/apps/index.md     apps            <- group doc
+  $DOCS_DIR/architecture/apps/auth/index.md  auth          <- module: libs/auth
+  $DOCS_DIR/architecture/apps/storage/index.md  library    <- module: libs/storage (blob + queue + worker)
 
 Run without --dry-run to scaffold.
 ```
@@ -94,7 +94,7 @@ Scaffolded {N} skeleton(s), {M} skipped (already existed):
   ...
 
 Find every prompt:
-  grep -rn "@agent" docs/ README.md
+  grep -rn "@agent" "$DOCS_DIR/" README.md
 
 Fill each section in (delete its <!-- @agent: … --> marker when done; markers starting with "(optional)" mark deletable sections), or run /docs retcon to have them authored from the code.
 ```

@@ -12,11 +12,12 @@ Print the following text exactly as written. Do not reformat, create tables, add
 
 spec — Specification-driven development commands for Claude Code
 
-  /spec new  [plan-name|url] [--branch [name]] [--worktree [path]] [--blank] [--bg] [--silent] [--persistent]
+  /spec new  [plan-name|url] [--branch [name]] [--worktree [path]] [--blank] [--bg] [--silent] [--persistent] [--lite]
       Create a new spec plan by exploring requirements and building a structured implementation plan
       --branch   create/switch branch (bare: derive from slug; with name: use that name)
       --worktree create worktree (bare: .codevoyant/worktrees/<branch>; with path: use that path)
       --persistent  EXPERIMENTAL — doc-aware planning: docs-first write, glob-scoped phases, public-interface-only cross-module interaction
+      --lite       contract-first planning (no per-file code); update/go inherit the mode from the plan; combinable with --persistent
 
   /spec go  [plan-name] [--yes|-y] [--commit|-c] [--silent]
       Execute a plan hands-free — the agent runs every task autonomously and updates progress in real-time
@@ -27,9 +28,11 @@ spec — Specification-driven development commands for Claude Code
   /spec review  [plan-name] [--bg] [--silent]
       Review a spec plan before execution — checks for ambiguous tasks, missing validation, and dependency gaps
 
-  /spec update  [plan-name] [change description] [--bg] [--silent] [--persistent]
+  /spec update  [plan-name] [change description] [--bg] [--silent] [--persistent] [--lite] [--no-lite]
       Update a spec plan by applying inline annotations or describing changes conversationally
       --persistent  EXPERIMENTAL — doc-aware update: docs-first write, edits scoped to the plan's Doc Globs
+      --lite        flip a plan to lite (contract-first) mode
+      --no-lite     flip a lite plan back to normal mode
 
   /spec refresh  [plan-name] [--bg] [--silent]
       Sync checklist status and phase markers with actual task completion
@@ -42,3 +45,7 @@ spec — Specification-driven development commands for Claude Code
 
   /spec help
       Show this reference
+
+### Annotations
+
+Write notes for the agent in plan files: `<!-- @agent: guidance -->` or `<!-- @edit: instruction -->`. Run `/spec update <plan>` to apply them. See `skills/shared/annotations.md`.

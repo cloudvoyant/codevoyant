@@ -9,6 +9,7 @@ Write this structure to `.codevoyant/spec/{plan-name}/plan.md` when creating a n
 - **Branch**: {METADATA_BRANCH}
 - **Base Branch**: {METADATA_BASE_BRANCH}
 - **Worktree**: {METADATA_WORKTREE}
+- **Lite**: true            # present only when the plan is lite; omit otherwise
 - **Created**: {CREATED_TIMESTAMP}
 
 ## Introduction
