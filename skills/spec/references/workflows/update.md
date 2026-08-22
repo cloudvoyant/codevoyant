@@ -35,6 +35,14 @@ Both can appear in `plan.md` and any `implementation/phase-N.md`. When applying 
 ```bash
 PERSISTENT_MODE=false
 [[ "$*" =~ --persistent ]] && PERSISTENT_MODE=true
+
+# Lite mode is persisted on the plan, not re-specified. Detect it from plan.md.
+LITE_MODE=false
+[ -f ".codevoyant/spec/{plan-name}/plan.md" ] && \
+  grep -q '^- \*\*Lite\*\*: true' ".codevoyant/spec/{plan-name}/plan.md" && LITE_MODE=true
+# Optional explicit override: --lite flips a plan to lite; --no-lite flips it back.
+[[ "$*" =~ --lite ]] && LITE_MODE=true
+[[ "$*" =~ --no-lite ]] && LITE_MODE=false
 ```
 
 ## Step 1: Determine Input Mode

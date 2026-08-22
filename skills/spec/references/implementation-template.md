@@ -49,6 +49,19 @@ here verbatim. No ellipses, no pseudocode, no "e.g." A task with a partial or pr
 code block is incomplete and must not be emitted.}
 ```
 
+**Contract (lite mode only — replaces `**Code:**`):**
+```text
+Signatures:
+  - func Name(in) (out, error) — one-line behavior
+Boundaries:
+  - owns: path/or module
+  - depends on: module (public interface only)
+Library choices:
+  - <name>@<version> — why
+Acceptance:
+  - <the invariant or test that proves the task is done>
+```
+
 **Files to modify / create:**
 - `path/to/file.ext` — {specific changes}
 

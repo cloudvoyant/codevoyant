@@ -86,6 +86,16 @@ When `PERSISTENT_MODE` is set (`/spec new --persistent`), the doc-aware model in
 - **Rule 6:** every task whose spec would write outside its globs, or use another module's internals, MUST be surfaced as a boundary callout: a bullet under the phase's `## Doc Scope` `**Boundary callouts:**` (naming the crossing, why it is required, and the alternative considered) AND a `[boundary]`-marked entry in the Decision Log under `### Agent Decisions`. A boundary crossing is never silent — if it is truly required, say so explicitly with the reason.
 - Verify any doubtful write path against the globs mechanically with `$SPEC_SKILL/scripts/scope.py` (the same check executors run) while drafting.
 
+## Lite Mode (active only when `LITE_MODE` is set)
+
+In lite mode the code-first gate is replaced by a contract-first gate. For each task, instead of a `**Code:**` block, write a `**Contract:**` block that states:
+
+- the public function signatures or interfaces the task introduces or changes, with one-line behavior per signature;
+- the module boundaries — what this module owns and what it depends on, and the library/package choices (name and version constraint, if known);
+- the invariant or acceptance condition that proves the task is done.
+
+Do NOT write literal implementation code, and do NOT write "research / investigate / decide" tasks. State the contract concretely from codebase reading and web search, exactly as you would resolve a code-first task. A task whose contract is vague, or that defers a boundary/choice decision, fails the contract-completeness check. The `## Contract` section in `references/implementation-template.md` holds the shape.
+
 ## Phase 0 Rule
 
 Only create `### Phase 0 - Prerequisites` if the objective requires human actions that cannot be automated (sign up for accounts, obtain API keys, provision infrastructure, accept terms of service, obtain secrets from colleagues). If no such prerequisites exist, omit Phase 0 entirely. Never create `phase-0.md`.
