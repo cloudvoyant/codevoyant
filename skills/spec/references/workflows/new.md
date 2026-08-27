@@ -364,7 +364,7 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 
 - Dependencies to add/remove
 - Files to create/modify/delete
-- **The complete code for every task** — full file contents for new files, exact old→new lines or a unified diff for edits. Not "code for non-trivial logic": all of it. No ellipses, pseudocode, or prose-only descriptions. If you can't show the code, resolve the unknown during planning rather than deferring it.
+- **The complete code for every task** — full file contents for new files; for edits, a diff (exact old→new lines or a unified diff) with context lines above and below the change, never a whole-file dump. A whole-file replacement appears only when the user explicitly asked for a full-file replacement. Not "code for non-trivial logic": all of it. No ellipses, pseudocode, or prose-only descriptions. If you can't show the code, resolve the unknown during planning rather than deferring it.
 - Testing and validation steps — including the `spec go --commit` CI-green check per phase. Under `--commit` with a remote, CI, and matching CI CLI, this is a HARD per-phase gate (the executor's `/git commit --yes --fix` blocks until green or stops); it must never gate a non-`--commit` run or a repo with no CI.
 
 **Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.

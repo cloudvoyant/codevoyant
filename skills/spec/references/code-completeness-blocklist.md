@@ -11,7 +11,11 @@ A code block is REJECTED if it contains any of:
 - Placeholders: `<placeholder>`, `// implement`, `# implement`, `pass  # stub`, `raise NotImplementedError`
 - Vague-reference phrases: "e.g.", "something like", "similar to", "same as above", "rest unchanged", "and so on"
 
-It is also rejected if it is missing or empty where the task writes or edits a file, shows only a signature/comment where a body belongs, or describes the code in prose instead of showing the literal lines.
+It is also rejected if it is missing or empty where the task writes or edits a file, shows only a signature/comment where a body belongs, describes the code in prose instead of showing the literal lines, or dumps the entire contents of an existing file where the task only edits part of it — an edit must be shown as a diff (exact old→new lines or a unified diff) with surrounding context, never a whole-file replacement, unless the task explicitly states that the user requested a full-file replacement.
+
+## Edits are diffs, not whole files
+
+For a task that edits an existing file, the `**Code:**` block must show the change as a diff — the exact old→new lines or a unified diff, with several unchanged context lines above and below so the executor sees where the change lands. Pasting the entire file is REJECTED for an edit. The only exception is a task that explicitly declares a whole-file replacement (the user asked for a full-file replacement); then the full new file is acceptable and the block must say so.
 
 ## Intent, not blind substring matching
 

@@ -133,9 +133,9 @@ The canonical list of placeholder/stub markers that make a code block incomplete
 - Contains a placeholder or elision from the blocklist (used as a stand-in for missing code, not as a legitimate token).
 - Shows only a signature, a comment, or a heading where a real body belongs.
 - Describes the code in prose instead of showing the literal lines.
-- For an edit, does not show the exact old→new lines or a unified diff (a vague "change X to Y" is a fail).
+- For an edit, does not show a diff with context — a whole-file dump of the existing file where only part changes, or a vague "change X to Y", is a fail. (A whole-file replacement passes only when the task explicitly declares a user-requested full-file replacement.)
 
-A task passes only if every line the execution agent will write appears verbatim in its code block. New files show full contents; edits show exact old→new lines or a unified diff.
+A task passes only if every line the execution agent will write appears verbatim in its code block. New files show full contents; edits show the exact old→new lines or a unified diff with context lines above and below, never a whole-file dump (unless the user explicitly asked for a full-file replacement).
 
 Respond ONLY in this exact format:
 

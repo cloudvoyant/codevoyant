@@ -30,7 +30,7 @@ If no task runner covers a needed operation, note: "Gap: no recipe for X — sug
 
 ## Implementation
 
-> **Gate (machine-checked in validation):** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files, exact old→new lines or a unified diff for edits. The block is REJECTED if it is missing or empty, contains a placeholder/stub marker from the blocklist (see `references/code-completeness-blocklist.md` — the canonical list), shows a bare signature/comment where a body belongs, or describes the code in prose instead of showing it. The blocklist is judged by intent, not blind substring matching, so a marker used as a legitimate token (not a stand-in for missing code) does not fail the block. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent. A dedicated validation agent scans for exactly these placeholders and will fail the plan until every code block is complete.
+> **Gate (machine-checked in validation):** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files; for edits to existing files, a **diff** (exact old→new lines or a unified diff) with context lines above and below the change, never a whole-file dump. A whole-file replacement appears only when the task explicitly states that the user asked for a full-file replacement. The block is REJECTED if it is missing or empty, contains a placeholder/stub marker from the blocklist (see `references/code-completeness-blocklist.md` — the canonical list), shows a bare signature/comment where a body belongs, describes the code in prose instead of showing it, or replaces an entire existing file with a whole-file dump where a diff was required. The blocklist is judged by intent, not blind substring matching, so a marker used as a legitimate token (not a stand-in for missing code) does not fail the block. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent. A dedicated validation agent scans for exactly these placeholders and will fail the plan until every code block is complete.
 The executor may still apply minor mechanical fixes to the specified code in-flight — obvious typos, missing imports, or trivial type corrections that do not change a module's contract or violate an invariant — per the permitted-minor-deviations policy in `agents/spec-executor.md`; these are logged as `[MINOR-DEVIATION]` entries, not treated as failures.
 
 {For each task in this phase:}
@@ -43,10 +43,13 @@ The executor may still apply minor mechanical fixes to the specified code in-fli
 
 **Code (required — complete, never omit, never abbreviate):**
 ```{lang}
-{The COMPLETE code this task produces — the entire contents for a new file, or the exact
-old→new lines / unified diff for an edit. Every line the execution agent will write appears
-here verbatim. No ellipses, no pseudocode, no "e.g." A task with a partial or prose-only
-code block is incomplete and must not be emitted.}
+{The COMPLETE code this task produces. New file: its entire contents. Edit to an existing
+file: a diff — the exact old→new lines or a unified diff with the changed lines plus context
+lines above and below, so the executor sees what changes and where. Never paste the whole
+file for an edit; a whole-file replacement is shown only when this task explicitly declares
+a user-requested full-file replacement. Every line the execution agent will write appears
+here verbatim. No ellipses, no pseudocode, no "e.g." A task with a partial, prose-only, or
+whole-file-dump code block is incomplete and must not be emitted.}
 ```
 
 **Contract (lite mode only — replaces `**Code:**`):**
