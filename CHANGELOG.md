@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/cloudvoyant/codevoyant/compare/v2.0.0...v2.0.1) (2026-08-27)
+
+### Bug Fixes
+
+* **spec:** generate implementation files as diffs with context, not whole-file dumps
+
 ## [2.0.0](https://github.com/cloudvoyant/codevoyant/compare/v1.76.0...v2.0.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES
