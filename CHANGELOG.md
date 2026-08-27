@@ -1,3 +1,46 @@
+## [2.0.0](https://github.com/cloudvoyant/codevoyant/compare/v1.76.0...v2.0.0) (2026-08-27)
+
+### ⚠ BREAKING CHANGES
+
+* **git:** authorization**
+- Forbid breaking labels unless the user passes --breaking-change, or
+  explicitly states the change is breaking.
+- Also accept opt-in via the "Mark as breaking" option in the Step 2
+  confirmation when a change looks breaking.
+- Never infer a breaking label from the diff; use a plain feat/fix and
+  describe the behavior change in the body instead.
+
+**Workflow and docs**
+- Add the --breaking-change flag to the commit workflow and its help
+  reference.
+- Surface a "Mark as breaking" option in the Step 2 confirmation when a
+  change looks breaking but is not yet authorized.
+- Mirror the opt-in note in docs/skills/git.md.
+
+### Bug Fixes
+
+* **git:** forbid breaking commit labels without explicit authorization
+
+**Why**
+- Breaking labels (feat!/fix! and BREAKING CHANGE: footers) signal a
+  major version bump; inferring them from the diff caused unintended
+  majors.
+
+**Breaking change authorization**
+- Forbid breaking labels unless the user passes --breaking-change, or
+  explicitly states the change is breaking.
+- Also accept opt-in via the "Mark as breaking" option in the Step 2
+  confirmation when a change looks breaking.
+- Never infer a breaking label from the diff; use a plain feat/fix and
+  describe the behavior change in the body instead.
+
+**Workflow and docs**
+- Add the --breaking-change flag to the commit workflow and its help
+  reference.
+- Surface a "Mark as breaking" option in the Step 2 confirmation when a
+  change looks breaking but is not yet authorized.
+- Mirror the opt-in note in docs/skills/git.md.
+
 ## [1.76.0](https://github.com/cloudvoyant/codevoyant/compare/v1.75.0...v1.76.0) (2026-08-22)
 
 ### Features
