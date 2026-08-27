@@ -19,9 +19,12 @@ Generate a conventional commit message from staged changes, review it, then comm
 /git commit --no-push         # commit only, do not push or monitor CI
 /git commit --autofix         # fix CI failures and re-push automatically (background)
 /git commit --fix             # blocking: fix and re-push until CI is green
+/git commit --breaking-change # mark the commit as breaking (major version bump)
 ```
 
 Commit messages **never carry agent self-attribution** — no `Co-Authored-By: Claude`, no "Generated with Claude Code", no 🤖 — on any commit, including `--fix`/`--autofix` follow-ups.
+
+Breaking conventional commit labels (`feat!`/`fix!` or a `BREAKING CHANGE:` footer) are only used when you explicitly pass `--breaking-change` or tell the agent the change is breaking — they are never inferred from the diff.
 
 ### hooks — enforce no self-attribution
 

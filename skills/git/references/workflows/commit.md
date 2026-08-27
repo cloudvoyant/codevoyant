@@ -22,13 +22,23 @@ Human co-authors are fine — only **agent** attribution is prohibited.
 
 1. Does it add new functionality users can use? → `feat`
 2. Does it fix broken behavior? → `fix`
-3. Does it change existing behavior (breaking)? → `feat!` or `fix!`
+3. Does it change existing behavior (breaking)? → `feat!` or `fix!` — **only when the user explicitly authorizes a breaking change** (see "Breaking change authorization" below). Otherwise use plain `feat`/`fix` and describe the behavior change in the body.
 4. Does it only improve code structure? → `refactor`
 5. Does it only update documentation? → `docs`
 6. Does it only affect tests? → `test`
 7. Does it only affect build/CI? → `chore`
 
 > Bump behavior is determined by your project's release config (`.releaserc.*`, `commitizen.config.*`, `[tool.commitizen]`). Do not predict version bumps — check those files if needed.
+
+### Breaking change authorization
+
+Breaking conventional commit labels — the `!` suffix on the type (`feat!`, `fix!`) and a `BREAKING CHANGE:` footer — signal a **major** version bump. They are **forbidden unless the user explicitly authorizes them** through any of:
+
+1. The user passes the `--breaking-change` flag to `/git commit`,
+2. The user verbally states that the change is breaking and should lead to a major version bump, or
+3. The user opts in via the "Mark as breaking" option in the Step 2 review.
+
+Never infer a breaking label from the diff. If the change looks breaking but the user has not authorized it, use the plain `feat`/`fix` label, describe the behavior change in the body, and surface the option during the Step 2 review so the user can opt in.
 
 ### Never commit secrets
 
@@ -58,6 +68,7 @@ Human co-authors are fine — only **agent** attribution is prohibited.
 
 - `--yes` or `-y`: Skip commit message confirmation (auto-approve message)
 - `--no-push`: Commit only — do not push or monitor CI
+- `--breaking-change`: Mark this commit as breaking — authorizes a breaking conventional commit label (`feat!`/`fix!` or a `BREAKING CHANGE:` footer) signaling a major version bump. Without this flag (or an explicit verbal request for a breaking change), breaking labels are forbidden (see "Breaking change authorization" above).
 - `--fix` (alias `--autofix`): After push, automatically loop — diagnose failures, fix them, and re-push **until CI is green** (bounded retries, cap `MAX_FIX_ATTEMPTS` default 3). Skips the ask-on-failure prompt. Use when you want a guaranteed-green commit before moving on. Implies push.
 - `--atomic`: Detect logical change groups and create one commit per group
 - `--single` (default): All staged changes in one commit
@@ -150,7 +161,7 @@ Proposed commit message:
 
 ```
 
-Then ask for confirmation using the AskUserQuestion tool:
+If the changes look breaking but the user has not authorized a breaking label (no `--breaking-change` flag, no verbal request), call this out in the confirmation question and add a "Mark as breaking" option to it:
 
 ```yaml
 questions:
@@ -160,11 +171,14 @@ questions:
     options:
       - label: 'Looks good — commit'
         description: '{first line of proposed message}'
+      - label: 'Mark as breaking — commit'
+        description: '{subject rewritten with ! label, major version bump}'
       - label: 'Cancel'
         description: "Don't commit"
 ```
 
 - If **"Looks good — commit"**: proceed to Step 3.
+- If **"Mark as breaking — commit"**: rewrite the subject with the `!` suffix (or add a `BREAKING CHANGE:` footer) and proceed to Step 3.
 - If **"Cancel"**: exit without committing.
 - If **Other** (user typed a custom message): use it as-is and proceed to Step 3.
 
