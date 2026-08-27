@@ -15,6 +15,7 @@
 
 - `--yes` / `-y` — skip commit message confirmation
 - `--no-push` — commit only, do not push
+- `--breaking-change` — mark the commit as breaking (authorizes `feat!`/`fix!` or a `BREAKING CHANGE:` footer, major version bump). Breaking labels are forbidden without this flag or an explicit verbal request.
 - `--fix` (alias `--autofix`) — after push, auto-loop fix and re-push until CI is green (bounded retries). Without it, the default is to watch CI and ask before fixing on failure.
 - `--atomic` — create one commit per logical change group
 
