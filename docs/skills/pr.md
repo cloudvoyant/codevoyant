@@ -83,7 +83,7 @@ Collapse a branch's noisy history (WIP / fixup / "fix CI" commits) into one or m
 /pr squash --no-push                  # rewrite locally, don't force-push
 ```
 
-Rewrites via a soft reset (no interactive rebase) and force-pushes with `--force-with-lease`. A `pre-squash/<branch>` backup tag is created first (`git reset --hard pre-squash/<branch>` to undo). Commit messages never include agent self-attribution.
+Rewrites via a soft reset (no interactive rebase) and force-pushes with `--force-with-lease`. A ``pre-squash/<branch>`` backup tag is created first (``git reset --hard pre-squash/<branch>`` to undo). Commit messages never include agent self-attribution.
 
 ### publish — Publish a draft PR/MR (and its review)
 

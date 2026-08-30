@@ -17,8 +17,8 @@ Repeat a task until its objective is met or a max iteration count is reached. A 
 - **task** (required) — what to repeat each iteration: a skill command, shell command, or agent instruction.
 - **--until** (required) — the objective: the verifiable condition that ends the loop, phrased as an outcome.
 - **--max N** (default 3) — the hard upper bound; the loop stops at N iterations even if the objective is not met.
-- **--check <command>** (optional) — a deterministic check that exits 0 when the objective is met; when present it overrides the agent's verdict.
-- **--resume <slug>** — continue an existing loop's tracking doc instead of starting a new one.
+- `--check <command>` (optional) — a deterministic check that exits 0 when the objective is met; when present it overrides the agent's verdict.
+- `--resume <slug>` — continue an existing loop's tracking doc instead of starting a new one.
 
 ## How a run works
 

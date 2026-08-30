@@ -32,7 +32,7 @@ Two ways to give the objective:
 /spec new my-feature --persistent               # EXPERIMENTAL — doc-aware planning
 ```
 
-`--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: `.codevoyant/worktrees/<branch>`; with a path: that path). Both delegate to the shared `/git worktree` routine.
+`--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: ``.codevoyant/worktrees/<branch>``; with a path: that path). Both delegate to the shared `/git worktree` routine.
 
 `--persistent` is an **experimental** doc-aware mode: docs are written first, every phase is scoped to the doc globs it may write, and cross-module interaction happens only through documented public interfaces. Cross-module changes are discouraged by default (Rule 7): a phase that must write across module boundaries has to call the crossing out with a reason and a rejected restructure, and the executor refuses uncalled-out crossings. It requires valid docs in the repo (`docs/` with `globs:` frontmatter plus an architecture index or a component doc with a public API/interface section); `new` refuses to plan blind otherwise. See the skill's `references/doc-aware.md` for the full model.
 
