@@ -1,3 +1,69 @@
+## [2.1.0](https://github.com/cloudvoyant/codevoyant/compare/v2.0.1...v2.1.0) (2026-08-30)
+
+### Features
+
+* spec & docs & review redux — contract-forward docs, adversarial review, loop skill
+
+* feat(skills): rebuild spec and review pipeline with validation gates
+
+**Store**
+- add shared store-init script with unit tests, vendored into nine
+  skills through the keyed vendor-assets manifest
+- replace inline bash copies and wire store init into the explore,
+  pr, docs, and qa workflows that touch .codevoyant
+
+**Spec**
+- tabulate enumerable sets with completeness gates: tabulation.md
+  contract, tables/ directory, SCOPE=tabulation validation
+- refuse uncalled-out cross-module writes in doc-aware mode via
+  boundary callouts, [BLOCKED] entries, and review audits
+- add constrained Requirements block with SCOPE=requirements
+  validation in the plan template and spec review
+
+**Review**
+- add adversarial review dimension: red-team-adversary (Dimension 5)
+  and claim-checker agents
+- add security gates, CI/commit/static-floor checks; restrict to
+  file-level comments with a fixed minimal publish fallback
+
+**Docs**
+- contract-forward prose-minimal policy: closed LLM text budget and
+  @human markers across twelve templates
+- CLI artifact validation gate with pinned mermaid renderer and
+  semantic caps; refresh pr, docs, and spec pages and add loop page
+
+**Requirements**
+- R1-R7 constrained requirements authoring with gate semantics,
+  enforced in docs review and spec validation
+
+**Loop**
+- new bounded repeat-until-objective loop skill with runner and
+  judge background agents and a max-iterations bound
+
+**Housekeeping**
+- replace CLAUDE.md with AGENTS.md, drop Claude Code config, and
+  move the changelog sanitizer to a mise task
+
+* fix(vendor): respect the files filter so shared tests stay in shared
+
+- vendor-assets treated `files` as a union with the whole source dir;
+  it is an exclusive filter per the documented contract
+- re-vendor: drop the 10 vendored test_cv_init_store.py copies; the
+  test lives only in skills/shared/store-init/ (still run by mise test)
+- update the vendor-assets tests to the new contract (unlisted files
+  stay put; assets without `files` still walk the whole source)
+
+* refactor(loop): collapse to a single-command run with a tracking doc
+
+- drop the flow-style definition model: no new/go/list/status workflows,
+  no saved loop definitions — loops are not flows
+- /loop `<task>` --until `<objective>` [--max N] [--check `<cmd>`] [--resume `<slug>`]
+  writes the tracking doc (.codevoyant/loops/{slug}/loop.md) and runs
+  immediately; the procedure lives inline in SKILL.md
+- merge loop-runner + loop-judge into one loop-agent that performs the
+  task and strictly judges the objective per iteration
+- update docs/skills/loop.md to match
+
 ## [2.0.1](https://github.com/cloudvoyant/codevoyant/compare/v2.0.0...v2.0.1) (2026-08-27)
 
 ### Bug Fixes
