@@ -57,7 +57,7 @@ cv_init_store() {
     name="$(basename "$root")"
   fi
   slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
-  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches cv_init_store
+  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches skills/shared/store-init/cv_init_store.py
   local dest="$HOME/.codevoyant/$slug"
   mkdir -p "$dest"
   export CV_STORE="$dest"

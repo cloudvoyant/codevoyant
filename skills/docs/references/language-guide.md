@@ -71,5 +71,12 @@ When updating existing docs, preserve human-authored text. Change only text that
 8. **Slop vocabulary** (STE slop table): leverage, utilize, ensure, in order to, functionality, enables you to, allows you to, is designed to, aims to, dive into, delve into, robust, powerful, comprehensive, seamlessly, facilitate, streamline, and/or, etc. → the plain replacement from the ruleset.
 9. **Condition-first** (STE 5.4): a sentence where `if`/`when` stands after the command ("Increase the timeout if the network is slow" → "If the network is slow, increase the timeout").
 10. **Procedural imperative** (STE 5.3): in a procedural section, an instruction written as a statement instead of an imperative.
+11. **R1 no-impl-terms** (requirements-guidance): a `## Requirements` bullet naming an endpoint, route, class, function, table, SQL, UI widget, or file path as if it were the requirement.
+12. **R2 survive-change** (requirements-guidance): a requirement whose wording would need to change if the implementation changed.
+13. **R3 fit-criterion** (requirements-guidance): a Functional requirement with no observable outcome or measurable success condition.
+14. **R4 smells** (requirements-guidance): subjective language, ambiguous adverbs/adjectives, superlatives, totality terms, baseline-less comparatives in a requirement.
+15. **R5 invariant** (requirements-guidance): an implementation invariant stated as a Functional requirement.
+16. **R6 source** (requirements-guidance): a domain claim with neither `Source:` nor `[ASSUMPTION — unvalidated]`.
+17. **R7 verbs** (requirements-guidance): a requirement using should/would/can instead of the template's prescribed verbs.
 
-For each violation, record `type: LANGUAGE`, `current_text` = the exact offending sentence, `replacement_text` = the minimal rewrite that fixes only that violation, `rationale` = the rule number/name. Never rephrase working prose for style.
+For each violation, record `type: LANGUAGE` (checks 1–10) or `type: REQUIREMENTS` (checks 11–17, applied only inside `## Requirements` sections), `current_text` = the exact offending sentence, `replacement_text` = the minimal rewrite that fixes only that violation, `rationale` = the rule number/name. Never rephrase working prose for style.

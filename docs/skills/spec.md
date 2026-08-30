@@ -8,6 +8,8 @@ Specification-driven development — create structured plans from requirements, 
 
 Explore requirements and produce a multi-phase implementation plan with objectives, design decisions, and per-phase specs. Every task carries the **complete, ready-to-write code** it will produce. Before `new` reports a plan ready, a mandatory code-completeness gate scans every task and rejects stubs, placeholder markers, omitted code, and prose-only descriptions; it reruns after repairs and fails closed if literal code cannot be resolved. `--validate` still adds the broader multi-agent validation pass.
 
+Enumerable sets in the objective or intent are **tabulated**: rote replacements, target sets to search or touch, and enumerated requirement lists each get a row-per-item table under `.codevoyant/spec/{plan}/tables/`, enumerated from the codebase (never from memory), with every requirement row carrying an Intent ref back to `intent.md`. A completeness gate re-runs each table's enumeration, checks every intent item appears in a row and every row is owned by exactly one task, and fails the plan on any dropped item, orphan row, or drift.
+
 Two ways to give the objective:
 
 - **Inline objective** — a description; planning starts immediately.
@@ -32,7 +34,7 @@ Two ways to give the objective:
 
 `--branch` and `--worktree` are independent — each does one thing, and neither implies the other. `--branch` creates or switches to a branch (bare: derived from the plan slug; with a name: that name). `--worktree` creates a worktree (bare: `.codevoyant/worktrees/<branch>`; with a path: that path). Both delegate to the shared `/git worktree` routine.
 
-`--persistent` is an **experimental** doc-aware mode: docs are written first, every phase is scoped to the doc globs it may write, and cross-module interaction happens only through documented public interfaces. It requires valid docs in the repo (`docs/` with `globs:` frontmatter plus an architecture index or a component doc with a public API/interface section); `new` refuses to plan blind otherwise. See the skill's `references/doc-aware.md` for the full model.
+`--persistent` is an **experimental** doc-aware mode: docs are written first, every phase is scoped to the doc globs it may write, and cross-module interaction happens only through documented public interfaces. Cross-module changes are discouraged by default (Rule 7): a phase that must write across module boundaries has to call the crossing out with a reason and a rejected restructure, and the executor refuses uncalled-out crossings. It requires valid docs in the repo (`docs/` with `globs:` frontmatter plus an architecture index or a component doc with a public API/interface section); `new` refuses to plan blind otherwise. See the skill's `references/doc-aware.md` for the full model.
 
 Pass a Linear, GitHub, or GitLab issue URL as the first argument to pre-fill requirements from the issue title, description, and comments.
 

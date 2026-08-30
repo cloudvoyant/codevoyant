@@ -34,7 +34,7 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What runs the pipeline and where does it deploy? What does it produce? When does it run (push, pull request, merge)? -->
+<!-- @human: 3 sentences max. What runs the pipeline and where does it deploy? What does it produce? When does it run (push, pull request, merge)? -->
 
 ```mermaid
 flowchart LR
@@ -77,7 +77,7 @@ flowchart LR
 
 #### {module-name}
 
-<!-- @agent: What this module provisions, the resource/interface it exposes, and which COMPONENT doc owns its details (link it here, referencing its API section). Delete if the module has no component doc. -->
+<!-- @human: What this module provisions, the resource/interface it exposes, and which COMPONENT doc owns its details (link it here, referencing its API section). Delete if the module has no component doc. -->
 
 ### Environments
 
@@ -89,7 +89,7 @@ flowchart LR
 
 ### Provisioning
 
-<!-- @agent: (optional) How infra is provisioned — Terraform (state backend, workspaces, plan/apply) and/or Kubernetes (manifests, Helm/Kustomize, rollout). Delete if none. -->
+<!-- @human: (optional) How infra is provisioned — Terraform (state backend, workspaces, plan/apply) and/or Kubernetes (manifests, Helm/Kustomize, rollout). Delete if none. -->
 
 ### Resources
 

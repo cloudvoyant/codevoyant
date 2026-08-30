@@ -7,19 +7,19 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What UI does this render? What user need does it address? Who sees it? Define acronyms on first use. -->
+<!-- @human: 3 sentences max. What UI does this render? What user need does it address? Who sees it? Define acronyms on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: What the feature must render and do — states it must handle: empty, loading, error. -->
+<!-- @agent: What the feature must render and do — states it must handle: empty, loading, error. Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (component names belong in Design), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. -->
 
 - {state requirements: empty, loading, error}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how it behaves — responsiveness, accessibility, performance. -->
+<!-- @agent: Constraints on how it behaves — responsiveness, accessibility, performance. Numbers where measurable. Follow R4, R7 in requirements-guidance.md. -->
 
 - {responsive/a11y requirement}
 - {performance requirement}
@@ -57,7 +57,7 @@ flowchart TD
 
 ### State Management
 
-<!-- @agent: How is state managed? What is local vs shared? WHY that choice. -->
+<!-- @human: How is state managed? What is local vs shared? WHY that choice. -->
 
 ### API
 
@@ -79,11 +79,11 @@ flowchart TD
 
 ### Data Loading
 
-<!-- @agent: How this feature loads data — loader, fetch, store. -->
+<!-- @human: How this feature loads data — loader, fetch, store. -->
 
 ### Accessibility
 
-<!-- @agent: Keyboard navigation and screen-reader support specifics. -->
+<!-- @human: Keyboard navigation and screen-reader support specifics. -->
 
 - {keyboard navigation}
 - {screen reader support}

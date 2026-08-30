@@ -1,6 +1,12 @@
 {
   "version": 2,
   "assets": {
+    "store-init": {
+      "source": "skills/shared/store-init",
+      "files": ["cv_init_store.py"],
+      "skills": ["docs", "explore", "flow", "loop", "plan", "pm", "pr", "qa", "skill", "spec"],
+      "destination": "scripts"
+    },
     "simple-english": {
       "source": "skills/shared/simple-english",
       "skills": ["docs", "pr"],

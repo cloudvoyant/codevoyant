@@ -109,6 +109,13 @@ After all phases complete, scan `{PLAN_DIR}/execution-log.md` for `[DEVIATION]` 
 ```bash
 grep "^\[DEVIATION\]" .codevoyant/spec/{plan-name}/execution-log.md 2>/dev/null
 ```
+and for blocked crossings:
+
+```bash
+grep "^\[BLOCKED\]" .codevoyant/spec/{plan-name}/execution-log.md 2>/dev/null
+```
+
+Report boundary deviations (deviations that name an out-of-glob target or another module) as a distinct list in the completion report — the run's cross-module footprint — and report any `[BLOCKED]` entry as a run failure that needs `/spec update` before continuing.
 
 If any deviations found, include in the final report:
 

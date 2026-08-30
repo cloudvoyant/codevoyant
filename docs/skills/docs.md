@@ -62,7 +62,7 @@ Checks for: required sections (per template order), prescribed Mermaid diagram t
 
 ### retcon -- author the whole docs/ tree from the codebase
 
-The only `docs` command that writes real content. `retcon` reads the code, scaffolds each doc the same way `new` does, then replaces every `@agent` marker with accurate prose, diagrams, and tables. It first handles existing docs: it moves them to `docs/legacy/`, confirms their facts against the code, and carries those facts forward (asking before carrying machine-generated content). It finishes by validating every doc's `globs` against the real code tree.
+The only `docs` command that writes real content. `retcon` reads the code, scaffolds each doc the same way `new` does, then fills the contract surface — tables, mermaid diagrams, runnable code samples, constrained `## Requirements`, and `## References` — replacing each `@agent` marker it consumes. It never writes prose elsewhere (see the prose policy, `references/prose-policy.md`): sections marked `<!-- @human: … -->` keep their marker untouched until a person writes them. It first handles existing docs: it moves them to `docs/legacy/`, confirms their facts against the code, and carries those facts forward (asking before carrying machine-generated content). It finishes by validating every doc's `globs` against the real code tree.
 
 ```bash
 /docs retcon                     # author the whole docs/ tree

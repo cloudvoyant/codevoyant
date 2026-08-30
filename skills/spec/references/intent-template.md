@@ -18,6 +18,10 @@ Delete any section you don't need.
 
 {Must-haves, tech choices to keep or avoid, performance/security/compatibility needs, deadlines.}
 
+## Enumerable sets (tabulated into the plan)
+
+{Rote replacements (X → Y), pages/files to search or touch, and checklist-style sets of things that must be done. List every item — the planner tabulates these into `tables/` and validation checks that every item survives into the plan. An item left out here can be dropped; an item listed here cannot.}
+
 ## Out of scope
 
 {What this should explicitly NOT touch or do — helps keep the plan tight.}

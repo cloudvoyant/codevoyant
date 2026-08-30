@@ -55,7 +55,7 @@ To re-review after manual edits:
   /docs review {path}         -- regenerates this report
 ```
 
-**Severity types:** `STRUCTURE` (missing/malformed section), `DIAGRAM` (missing/wrong diagram type), `LANGUAGE` (language-guide or STE violation), `REFERENCE` (missing References section or entries), `COVERAGE` (missing/duplicate `globs` coverage or API-boundary violation — see `references/coverage-and-api.md`), `GLOB` (a doc's `globs` matches no real paths, or a discovered component has no owning doc — from `validate`).
+**Severity types:** `STRUCTURE` (missing/malformed section), `DIAGRAM` (missing/wrong diagram type), `LANGUAGE` (language-guide or STE violation), `REQUIREMENTS` (a requirement in `## Requirements` violates R1–R7 of `references/requirements-guidance.md`), `REFERENCE` (missing References section or entries), `PROSE` (LLM prose outside the prose-policy allowance — not in a `<!-- -->` comment, not in `## Requirements`, not in `## References`, not a minimal artifact label; see `references/prose-policy.md`), `COVERAGE` (missing/duplicate `globs` coverage or API-boundary violation — see `references/coverage-and-api.md`), `GLOB` (a doc's `globs` matches no real paths, or a discovered component has no owning doc — from `validate`).
 
 **Principles:**
 - Each replacement preserves all surrounding human-authored text. The replacement block contains ONLY the text that changes, not the entire file.

@@ -7,20 +7,20 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What identities does this authenticate? What protocol does it use (OpenID Connect (OIDC), OAuth, session cookies)? What breaks without it? Define acronyms on first use. -->
+<!-- @human: 3 sentences max. What identities does this authenticate? What protocol does it use (OpenID Connect (OIDC), OAuth, session cookies)? What breaks without it? Define acronyms on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: What auth must do — which identities it accepts, which flows it supports (login, refresh, logout). Phrase as "must", "rejects". -->
+<!-- @agent: What auth must do — which identities it accepts, which flows it supports (login, refresh, logout). Phrase as "must", "rejects". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (they belong in Design/Implementation), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. -->
 
 - {e.g. Must issue a session on valid credentials}
 - {e.g. Must reject expired or tampered tokens}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how it behaves — token lifetime, storage, transport, revocation. -->
+<!-- @agent: Constraints on how it behaves — token lifetime, storage, transport, revocation. Numbers where measurable. Follow R4, R7 in requirements-guidance.md. -->
 
 - {e.g. Tokens must be signed and short-lived}
 - {e.g. Must not expose refresh tokens to client-side JavaScript}
@@ -113,7 +113,7 @@ sequenceDiagram
 
 ### Modules/Objects
 
-<!-- @agent: Internal module layout and how the public API is wired to the identity provider and session store. Internal detail only; never referenced by other docs. -->
+<!-- @human: Internal module layout and how the public API is wired to the identity provider and session store. Internal detail only; never referenced by other docs. -->
 
 ### Environment Variables
 

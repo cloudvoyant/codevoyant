@@ -97,32 +97,10 @@ WAIT FOR USER decision before proceeding.
 
 ## Step 2: Initialize .codevoyant Structure
 
-`cv_init_store` ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`) **before** the first `mkdir` — on a fresh clone this is the first touch, so it must run here or `.codevoyant` would be created as a real directory instead of the shared symlink. It is idempotent, never migrates an existing real dir (that is `/migrate`'s job), and computes the identical `<project-slug>` as the `/migrate` skill so its symlink and `/migrate`'s copy target agree.
+Before the first `mkdir`, run the vendored store initializer — it ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`), so worktrees and regular clones share one store. Idempotent; never migrates an existing real dir (that is `/migrate`'s job). (`$SPEC_SKILL` is already exported by this skill's SKILL.md.)
 
 ```bash
-cv_init_store() {
-  local root; root="$(git rev-parse --show-toplevel 2>/dev/null)" || root=""; [ -n "$root" ] || root="$PWD"
-  local link="$root/.codevoyant"
-  [ -L "$link" ] && return 0          # already a symlink → initialized
-  [ -d "$link" ] && return 0          # old real dir → leave it; /migrate copies it in, never here
-  local common name slug
-  common="$(git rev-parse --git-common-dir 2>/dev/null)" || common=""
-  if [ -n "$common" ]; then
-    case "$common" in /*) : ;; *) common="$root/$common" ;; esac
-    name="$(basename "$(cd "$(dirname "$common")" >/dev/null 2>&1 && pwd -P)")"
-  else
-    name="$(basename "$root")"
-  fi
-  slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
-  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches the /migrate skill
-  local dest="$HOME/.codevoyant/$slug"
-  mkdir -p "$dest"; ln -s "$dest" "$link"
-  local gi="$root/.gitignore"
-  { [ -f "$gi" ] && grep -qxF '.codevoyant' "$gi"; } || \
-    printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
-}
-
-cv_init_store
+python3 "$SPEC_SKILL/scripts/cv_init_store.py" >/dev/null
 mkdir -p .codevoyant/spec .codevoyant/explore
 if [ ! -f .codevoyant/README.md ]; then
   printf "# Active Plans\n\n| Name | Status | Plugin | Description | Created | Branch |\n|------|--------|--------|-------------|---------|--------|\n" > .codevoyant/README.md
@@ -146,7 +124,7 @@ In **bare-name mode**:
 2. `INTENT_FILE` = `.codevoyant/spec/{PLAN_NAME}/intent.md`.
 3. **If `INTENT_FILE` exists and is filled in** (content beyond the scaffold — the `## Objective` section is non-empty and not a `{…}` placeholder): read it. Set `OBJECTIVE` from `## Objective`; fold Context / Constraints / Out of scope / Open questions into `RESEARCH_CONTEXT`. Continue to **Step 3b** and plan normally (clarify only if something is still unclear). Do not recreate the file.
 4. **Otherwise** (missing, or only the empty scaffold) — scaffold it and **stop**:
-   a. Ensure the store is initialized, then create the plan dir: run `cv_init_store` (defined in Step 2) before the `mkdir` so a bare-name `/spec new` reached without Step 2 still gets the shared symlink rather than a real `.codevoyant/`. Then `cv_init_store && mkdir -p .codevoyant/spec/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
+   a. Ensure the store is initialized, then create the plan dir: run the vendored initializer (`python3 "$SPEC_SKILL/scripts/cv_init_store.py" >/dev/null`) before the `mkdir` so a bare-name `/spec new` reached without Step 2 still gets the shared symlink rather than a real `.codevoyant/`. Then `python3 "$SPEC_SKILL/scripts/cv_init_store.py" >/dev/null && mkdir -p .codevoyant/spec/{PLAN_NAME}` and write `INTENT_FILE` from `references/intent-template.md` (substitute `{PLAN_NAME}`).
    b. Print the clickable path:
       ```
       📝 Tell me what you want built — fill in:
@@ -321,7 +299,7 @@ Set `PLAN_WORKTREE=$WORKTREE_RESULT` (used in Step 5.2 and plan metadata). If ne
 
 `PLAN_DIR` = `$CHECK_DIR/{plan-name}`.
 
-Create: `$PLAN_DIR/`, `$PLAN_DIR/implementation/`, `$PLAN_DIR/research/`.
+Create: `$PLAN_DIR/`, `$PLAN_DIR/implementation/`, `$PLAN_DIR/research/`, `$PLAN_DIR/tables/`.
 
 If `RESEARCH_CONTEXT` is set, copy or link the explore artifacts into `$PLAN_DIR/research/` for the execution agent.
 
@@ -384,6 +362,19 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 
 While drafting each phase, compute the union of its write globs and carry it into `METADATA_DOC_GLOBS` (Step 5.3a). Summarize every boundary callout in the Decision Log under `### Agent Decisions` with a `[boundary]` marker so the crossing is explicitly called out during planning, never silent.
 
+**Cross-module changes are discouraged by default (doc-aware.md Rule 7).** Before writing any boundary callout, attempt to restructure: move the task into the phase that owns the target glob, split the work so each phase writes only its own module, or sequence two phases instead of one phase touching both. Only when restructuring is genuinely worse (duplicated logic, broken atomicity, circular dependency) does the crossing survive — and its callout must carry both the reason and the rejected restructure ("required because …; restructure rejected because …"). A cross-module task whose callout lacks a justification is a planning error: fix it before the plan is written.
+
+### 5.3d: Tabulate enumerable sets
+
+Per `references/tabulation.md`, scan `OBJECTIVE`, `RESEARCH_CONTEXT`, and (when present) the intent file for the three trigger classes: rote replacements, target sets to search or touch, and enumerated requirement sets. For each set found:
+
+1. Create `$PLAN_DIR/tables/{set-slug}.md` with the table shape from `references/tabulation.md`.
+2. For codebase-derived sets (rote replacements, target sets), enumerate with the real glob/grep and record the command in the table's `Source:` line — never enumerate from memory.
+3. For requirement sets, give every row an Intent ref back to the intent.md item it came from.
+4. Assign every row to exactly one phase task (the task references the table), and list every table in plan.md's `## Tables` section with its row count and owning phase.
+
+If no enumerable set exists, skip this step — do not create empty tables.
+
 ### 5.4: Register Plan
 
 ```bash
@@ -417,6 +408,10 @@ done
 Immediately after all files are verified, run the code-completeness gate before permission analysis or optional full-plan validation. This gate is required for every non-blank plan; `--validate` only adds the broader multi-agent validation loop.
 
 **Code-completeness gate (required):** Launch one validation agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted.
+
+**Requirements gate (required):** In the same message, launch one validation agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`) with the `SCOPE=requirements` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. Collect its report alongside the code-completeness report. If its status is `NEEDS_IMPROVEMENT`, repair plan.md's Requirements section — reframe deliverable bullets as outcomes (ask "What changes for users or the business if this ships successfully?" when the objective is a deliverable list), rewrite R1/R2 violations into domain phrasing, add missing fit criteria and Source/`[ASSUMPTION — unvalidated]` markers — then rerun the gate until it returns `PASS`. Never continue to permission analysis while this gate fails.
+
+**Tabulation gate (required):** In the same message, launch one validation agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`) with the `SCOPE=tabulation` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. If its status is `NEEDS_IMPROVEMENT`, repair the tables — add missing tables, re-enumerate drifted sets from the codebase, add Intent refs, assign orphan rows to tasks, update plan.md's `## Tables` — then rerun the gate until it returns `PASS`. Never continue to permission analysis while this gate fails.
 
 Collect its report with `TaskOutput(id: CODE_COMPLETENESS_TASK_ID, block: true)`. If its status is `NEEDS_IMPROVEMENT`, repair every reported implementation task by replacing the missing, abbreviated, placeholder, or prose-only block with the complete literal code. Rerun this gate after each repair pass until it returns `PASS`.
 

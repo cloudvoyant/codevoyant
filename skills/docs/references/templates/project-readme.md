@@ -8,7 +8,7 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What it is, what problem it solves, who uses it. -->
+<!-- @human: 3 sentences max. What it is, what problem it solves, who uses it. -->
 
 ## Quick Start
 

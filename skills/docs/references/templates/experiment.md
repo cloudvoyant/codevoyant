@@ -8,19 +8,19 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max: what this experiment evaluates, the hypothesis, and what decision its result informs. -->
+<!-- @human: 3 sentences max: what this experiment evaluates, the hypothesis, and what decision its result informs. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: Expected behavior: the metric(s) computed, the comparison the experiment performs, what "success" means for the stated hypothesis. Phrase as "must", "reports". -->
+<!-- @agent: Expected behavior: the metric(s) computed, the comparison the experiment performs, what "success" means for the stated hypothesis. Phrase as "must", "reports". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (they belong in Design/Implementation), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. Invariants are NOT expected behavior — keep them out of Functional (R5). -->
 
 - {requirement}
 
 ### Non-Functional
 
-<!-- @agent: Constraints — runtime, resource budget, seed/reproducibility, metric compute cost. Numbers. -->
+<!-- @agent: Constraints — runtime, resource budget, seed/reproducibility, metric compute cost. Numbers. Follow R4, R7 in requirements-guidance.md. -->
 
 - {requirement}
 
@@ -53,7 +53,7 @@ graph TD
 
 ### {Section Heading, Repeats}
 
-<!-- @agent: Runner lower-level detail and internal invariants — e.g. "the runner pins the random seed per run and must be deterministic given a seed". Invariants are NOT expected behavior; keep them out of Functional. -->
+<!-- @human: Runner lower-level detail and internal invariants — e.g. "the runner pins the random seed per run and must be deterministic given a seed". Invariants are NOT expected behavior; keep them out of Functional. -->
 
 ## References
 

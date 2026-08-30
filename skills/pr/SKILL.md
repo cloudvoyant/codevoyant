@@ -82,5 +82,7 @@ If `references/workflows/{VERB}.md` does not exist, fall back to `references/wor
 - **slop-detector** (`agents/slop-detector.md`) — Dimension 2: unnecessary/out-of-scope edits, stochastic churn, boilerplate, dead/debug leftovers, accidental reverts
 - **code-quality-auditor** (`agents/code-quality-auditor.md`) — Dimension 3: judges added/edited code against the relevant codevoyant skill or the language/framework standard
 - **docs-freshness-checker** (`agents/docs-freshness-checker.md`) — Dimension 4: decides whether docs need updating and invokes `/docs update` when they are stale
+- **red-team-adversary** (`agents/red-team-adversary.md`) — Dimension 5: adversarial hunt — failure modes, edge cases, mutation-mindset test review, STRIDE on security surfaces; BLOCKING requires a concrete failing scenario
+- **claim-checker** (`agents/claim-checker.md`) — verifies the PR/MR body's claims against the diff; unfulfilled claims are BLOCKING
 
-(Dimension 1, intent-match & correctness, runs as an inline reviewer agent defined in `references/workflows/review.md`.)
+(Dimension 1, intent-match & correctness, runs as an inline reviewer agent defined in `references/workflows/review.md`. Reviews post file-level comments only; the top-level comment is reserved for un-anchorable structural issues — see `references/new-review-template.md`.)

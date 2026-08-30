@@ -8,19 +8,19 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max: what is this, where does it live, why does it exist (what breaks without it). Define every acronym on first use. -->
+<!-- @human: 3 sentences max: what is this, where does it live, why does it exist (what breaks without it). Define every acronym on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: What the component must do — the behaviour callers depend on. Phrase as "must", "returns", "rejects". -->
+<!-- @agent: What the component must do — the behaviour callers depend on. Phrase as "must", "returns", "rejects". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (they belong in Design/Implementation), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. -->
 
 - {requirement}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how it behaves — performance, security, reliability, operability. -->
+<!-- @agent: Constraints on how it behaves — performance, security, reliability, operability. Numbers where measurable. Follow R4, R7 in requirements-guidance.md. -->
 
 - {requirement}
 
@@ -48,7 +48,7 @@ graph TD
 
 ### {Section Heading, Repeats}
 
-<!-- @agent: use sections with headings to explain key implementation details. For a multi-component MODULE doc, use ONE `### {member}` subsection per member component — this is where Terraform modules, Lambda handlers, config files, and infra artifacts appear. Can be simple bullets instead if the module is simple. -->
+<!-- @human: use sections with headings to explain key implementation details. For a multi-component MODULE doc, use ONE `### {member}` subsection per member component — this is where Terraform modules, Lambda handlers, config files, and infra artifacts appear. Can be simple bullets instead if the module is simple. -->
 
 ## References
 

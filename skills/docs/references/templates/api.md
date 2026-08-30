@@ -8,20 +8,20 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What endpoints does this group expose? What resource do they manage? Who calls them? Define acronyms on first use. -->
+<!-- @human: 3 sentences max. What endpoints does this group expose? What resource do they manage? Who calls them? Define acronyms on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: What the endpoints must do — auth/access rules, response shape, accepted inputs. Phrase as "must", "returns", "rejects". -->
+<!-- @agent: What the endpoints must do — auth/access rules, response shape, accepted inputs. Phrase as "must", "returns", "rejects". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (they belong in Design/Implementation), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. -->
 
 - {auth/access requirement}
 - {response-shape requirement}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how they behave — rate limits, latency, idempotency, security. -->
+<!-- @agent: Constraints on how they behave — rate limits, latency, idempotency, security. Numbers where measurable. Follow R4, R7 in requirements-guidance.md. -->
 
 - {rate-limit / latency requirement}
 
@@ -115,7 +115,7 @@ sequenceDiagram
 
 ### Query Patterns
 
-<!-- @agent: explain data user patterns and consequent query patterns/optimizations. This is nearly always necessary in api documentation. -->
+<!-- @human: explain data user patterns and consequent query patterns/optimizations. This is nearly always necessary in api documentation. -->
 
 ### Configuration / Environment Variables
 

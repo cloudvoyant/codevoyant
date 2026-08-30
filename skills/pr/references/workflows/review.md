@@ -76,6 +76,9 @@ Store: `PR_NUMBER`, `PR_TITLE`, `PR_URL`.
 If `--name` was given, use it. Otherwise derive from `PR_TITLE`: lowercase, replace non-alnum with `-`, collapse runs of `-`, trim to 50 chars.
 
 ```bash
+# {SKILL_ROOT} = the pr skill's package root (substitute the real path).
+# Initialize the shared store before first use.
+python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
 REVIEW_DIR=".codevoyant/review/${SLUG}"
 mkdir -p "$REVIEW_DIR"
 ```
@@ -114,12 +117,23 @@ HEAD_REF=$(echo "$META" | jq -r '.source_branch')
 
 ## Step 6: Assess the change with parallel subagents
 
-`/pr review` intentionally assesses the branch/PR across **four dimensions**, each handled by a focused subagent. Launch all four **in the same message** so they run concurrently, then merge their findings (Step 6e) before writing the review. The four dimensions:
+### Step 5.5: Deterministic pre-checks (non-blocking)
+
+Before the agent fan-out, run the deterministic checks from `references/security-gates.md` and record each result for the review's Verification section:
+
+1. **CI status (best-effort warning).** GitHub: `gh pr checks "$PR_NUMBER"`; GitLab: `glab ci status`. Not green → record `⚠ CI is {failing|pending}` — review proceeds (merge/publish gate CI later). No CLI or no CI configured → skip, recorded.
+2. **Commit consistency.** Fetch the commits (GitHub: `gh pr view "$PR_NUMBER" --json commits --jq '.commits[] | .messageHeadline'`; GitLab: `glab mr view "$PR_NUMBER" --output json | jq -r '.commits[].title'`). A non-conventional subject or a message that contradicts its diff becomes a NOTE finding (prefix `Commits: `).
+3. **Static floor + project tooling.** Per `references/security-gates.md`: the project's format/lint/typecheck recipes first, then semgrep/bandit/trufflehog where applicable. Save raw findings as `STATIC_RAW`; every skip is recorded.
+
+`/pr review` intentionally assesses the branch/PR across **five dimensions**, each handled by a focused subagent. Launch all five **in the same message** so they run concurrently, then merge their findings (Step 6e) before writing the review. The five dimensions:
 
 1. **Intent-match** (Dimension 1, below) — does the diff deliver the stated intent end-to-end?
 2. **Unnecessary changes** (Dimension 2 / Step 6b) — scope creep, stray edits, dead/commented code, accidental reverts, unrelated churn from a poorly-harnessed agentic run.
 3. **Code quality** (Dimension 3 / Step 6c) — is the added/edited code high quality per the relevant codevoyant skill or the language/framework standard?
 4. **Docs freshness** (Dimension 4 / Step 6d) — were docs updated? If not, report a `Docs:` finding recommending `/docs update` (default, read-only), or — only when `--update-docs` is set — invoke `/docs` to update them.
+5. **Adversarial hunt** (Dimension 5 / Step 6e-launch) — the `red-team-adversary` agent tries to break the change: failure modes, edge cases, negative paths, mutation-mindset test review, STRIDE on security surfaces.
+
+In the same message, also launch the **claim-checker** agent (`agents/claim-checker.md`) with `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}` — it verifies the body's claims against the diff (Step 6f).
 
 ### Dimension 1 — Intent-match & correctness
 
@@ -197,20 +211,35 @@ Launch the **docs-freshness-checker** agent (`agents/docs-freshness-checker.md`)
 
 **By default (`UPDATE_DOCS=false`), review stays read-only:** if docs are stale and not updated in the diff, the agent returns a `Docs:` CONSIDER finding recommending the author run `/docs update` — it does **not** mutate the working tree. Only when `UPDATE_DOCS=true` (the caller passed `--update-docs`) does it invoke `/docs update` to bring docs current and return a NOTE recording what it did. If docs are fine (or the change needs none) it returns `[]`.
 
-### Step 6e — Merge all dimensions
+### Dimension 5 — Adversarial hunt (Step 6e-launch)
 
-Merge every dimension's findings into a single comment array before Step 7:
-- Concatenate the four arrays: reviewer (Dimension 1), slop-detector (Dimension 2), code-quality-auditor (Dimension 3), docs-freshness-checker (Dimension 4).
-- De-duplicate by `file:line` + overlapping intent (keep the more specific/severe of a pair).
-- Prefix bodies by source so the author sees which pass raised each: slop findings with `Slop: `, code-quality findings with `Quality: `, docs findings with `Docs: ` (the reviewer's intent/correctness findings are unprefixed).
+Launch the **red-team-adversary** agent (`agents/red-team-adversary.md`) via the Agent tool with `subagent_type: red-team-adversary` — in the **same message** as Dimensions 2–4 and the claim-checker. Give it `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`. It returns `{"findings": [...], "what_was_not_verified": [...]}` per its schema. Store the not-verified list for the template's disclosure section. Do NOT feed it prior review comments or anchor metadata — the prompt stays skeptical and unanchored by design.
 
-Extend the overall summary: after the intent verdict, add one line each for any non-empty dimension — how many unnecessary-change findings, code-quality findings, and whether docs were refreshed (or need refreshing) — so the reader sees the full assessment at a glance.
+### Claim check (Step 6f)
+
+The **claim-checker** agent (`agents/claim-checker.md`) is launched in the same message as the five dimensions. Give it `{TITLE}`, `{BODY}`, and `{DIFF_CONTENT}`. It parses the body into individual claims — each `Changes` bullet, each `Validation` checkbox, each behavioral statement — and proves or disproves each one against the diff, classifying every claim as proven, unfulfilled, or unverifiable. It returns a JSON array in the same schema (`file`, `line`, `candidate_severity`, `body`, `reference`): unfulfilled claims carry `candidate_severity: BLOCKING`, unverifiable ones `CONSIDER`; proven claims produce no finding. An empty `[]` means every claim in the body checks out.
+
+### Step 6e — Merge and assign severity (the decision layer)
+
+Agents detect; this step decides. Merge every source into one comment array and assign each finding's final severity here — severity never comes from an agent's prompt:
+
+1. **Concatenate:** reviewer (Dimension 1), slop-detector (2), code-quality-auditor (3), docs-freshness-checker (4), red-team-adversary findings (5), claim-checker (6f), and curated `STATIC_RAW` findings (Step 5.5).
+2. **Prefix bodies by source:** `Slop: `, `Quality: `, `Docs: `, `Adversarial: `, `Claim: `, `Static: ` — Dimension 1 findings stay unprefixed. Adversarial findings append their scenario (`Input: … expected: … observed: …`), and security findings their STRIDE/CWE tags.
+3. **Assign severity:**
+   - Adversarial findings: **BLOCKING iff** `scenario.input/expected/observed` are all concrete and consistent with the diff; any vague or missing leg → downgrade to CONSIDER. No scenario at all → CONSIDER.
+   - Claim findings: unfulfilled claim → BLOCKING; unverifiable → CONSIDER.
+   - Static findings the curator could not verify → NOTE (transparent, not dropped). Docs findings stay capped at CONSIDER/NOTE.
+   - All others keep their agent-assigned severity.
+4. **De-duplicate** by `file:line` + overlapping intent (keep the more specific/severe of a pair).
+5. **Classify anchorability:** a finding is *un-anchorable* when it is structural/PR-wide and has no specific file:line (e.g. the change's architecture contradicts its stated approach; a one-way door with no rollback). Un-anchorable BLOCKING findings go to the review doc's `## Overall issues` section — everything else stays a file-level comment.
+
+Do NOT write an overall summary of what the review did — the review speaks through its findings.
 
 ## Step 7: Write Review Document
 
 Read `references/new-review-template.md`. Replace all `{placeholder}` tokens via direct string substitution using the resolved values (`$TITLE`, `$AUTHOR`, `$BASE_REF`, `$HEAD_REF`, `$ADDITIONS`, `$DELETIONS`, `$CHANGED_FILES`, `$PR_NUMBER`, `$PR_URL`, current timestamp, and the summary paragraph).
 
-For the inline comments section, iterate over the JSON array and render each entry using the template's `### {file}:{line} — {severity}` block.
+For the inline comments section, render every ANCHORED finding (all findings except the un-anchorable BLOCKING ones classified in Step 6e) using the template's `### {file}:{line} — {severity}` block. Render the un-anchorable BLOCKING findings into `## Overall issues`; if there are none, delete that section from the doc. Fill `## Verification` from the Step 5.5 records and `## What was NOT verified` from the adversary's list. The doc carries no summary of what the review did.
 
 Write the populated content to `${REVIEW_DIR}/new-review.md`.
 
@@ -233,6 +262,8 @@ Do not push anything.
 
 - GitHub: `/gh push-comments {PR_NUMBER} --doc {REVIEW_DIR}/new-review.md` then `/gh draft {PR_NUMBER}`
 - GitLab: `/glab push-comments {PR_NUMBER} --doc {REVIEW_DIR}/new-review.md` then `/glab draft {PR_NUMBER} --draft`
+
+Only file-level comments are pushed here. The top-level review body is resolved at publish time (publish.md Step 2.5) from `## Overall issues` — when that section is absent, publish uses a fixed minimal body and posts no review prose at all.
 
 Report:
 

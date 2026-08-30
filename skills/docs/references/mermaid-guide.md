@@ -171,6 +171,17 @@ stateDiagram-v2
 - Use `[*]` for entry/exit states
 - Avoid showing error states unless they have transitions back to valid states
 
+## Artifact quality gate
+
+`scripts/validate_artifacts.py` enforces these rules on every generated doc (retcon blocks on failures; review and validate report them). One pinned renderer decides what "valid" means: `mmdc` at mermaid-cli 11.16.0 (PATH, else `npx -y @mermaid-js/mermaid-cli@11.16.0`).
+
+- Every mermaid fence must render (parse failures are blocking).
+- Sequence diagrams: ≤8 participants. Graphs/flowcharts: ≤12 nodes. Split larger diagrams.
+- Node labels break lines with `<br/>`, never a literal `\n`.
+- Tables carry a separator row and no unfilled `{placeholder}`-only rows.
+
+The semantic caps come from the C4 review checklist: large diagrams carry too much cognitive load to be read; split by focus instead.
+
 ## When NOT to Use a Diagram
 
 - Simple 2-step flows (just use prose or a bullet list)

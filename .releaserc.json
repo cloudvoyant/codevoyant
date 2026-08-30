@@ -32,7 +32,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "echo ${nextRelease.version} > version.txt && node scripts/sanitize-changelog.js"
+        "prepareCmd": "echo ${nextRelease.version} > version.txt && mise run changelog:sanitize"
       }
     ],
     [

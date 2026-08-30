@@ -58,7 +58,7 @@ A candidate path that is NOT emitted is out of scope — the executor must not w
 
 ### Rule 4: Public-interface-only cross-module interaction
 
-When a phase must interact with a module owned by a different doc/phase:
+Cross-module interaction is the exception, not the norm (see Rule 7). When a phase must interact with a module owned by a different doc/phase:
 
 - Read that module's doc and use ONLY its documented public API/interface section.
 - Never call into, import from, or reference another module's internals (functions/types/files absent from its documented API).
@@ -93,13 +93,22 @@ Mechanics:
 - If a boundary crossing is truly required, the planner must say so explicitly and give the reason; it is never silent.
 - The executor re-checks at execution time. A residual crossing (one the plan permits) is still logged as a `[DEVIATION]` entry in `execution-log.md` with the reason, per the spec skill's existing deviation mechanism — the deviation is the audit trail that the crossing was called out, not hidden.
 
+### Rule 7: Cross-module changes are discouraged by default
+
+A cross-module change — a task that writes outside its phase's declared globs, edits a module another phase owns, or reaches another module's internals — is a smell before it is a solution. The default answer is to restructure, not to call out:
+
+1. **Restructure first.** Before permitting any crossing, the planner tries: moving the task into the phase that owns the target glob; splitting the work so each phase writes only its own module; sequencing two phases (A changes its own surface, B adapts to it) instead of one phase touching both.
+2. **Permit only with justification.** A crossing survives only when restructuring is genuinely worse (it would duplicate logic, break an atomic change, or create a circular dependency). The `## Doc Scope` boundary callout then carries the reason and the rejected alternative — "required because …; restructure rejected because …".
+3. **Uncalled-out crossings are defects.** At planning time, review flags a cross-module task with no callout as CRITICAL (re-plan or add the callout). At execution time, the executor refuses to write it: it stops the task and reports the defect rather than logging-and-continuing.
+4. **Every crossing stays visible.** go.md's completion report lists all `[DEVIATION]` entries that are boundary crossings, so a run's cross-module footprint is one grep away.
+
 ## How workflows use this file
 
-- `new.md` — parse `--persistent`, run the Rule 1 gate (via `scripts/validate_docs.py`), run the Rule 2 docs-first write, apply Rule 3 scoping and Rule 6 callouts while drafting phases.
+- `new.md` — parse `--persistent`, run the Rule 1 gate (via `scripts/validate_docs.py`), run the Rule 2 docs-first write, apply Rule 3 scoping, Rule 6 callouts, and Rule 7 restructure-first while drafting phases.
 - `update.md` — parse `--persistent`, run the Rule 1 gate (via `scripts/validate_docs.py`), run the Rule 2 docs-first write, apply Rule 3 scoping to the conversational/annotation edits.
 - `go.md` — read the plan's `Doc Globs:` metadata as the doc-aware activation signal, read each phase's own write globs from its `## Doc Scope` block, and pass them (as `PHASE_GLOBS`, plus `SPEC_SKILL` for the checker path) to that phase's executor; executors enforce Rules 3–4.
-- `agents/spec-executor.md` — enforce Rules 3–4 for every Write/Edit and log Rule 6 deviations.
-- `agents/spec-planner.md` — produce the Rule 3 scoping (per-phase `## Doc Scope` globs with at least one write glob each — a globless phase is invalid, plan.md `Doc Globs:` union) and the Rule 6 boundary callouts while drafting phases.
+- `agents/spec-executor.md` — enforce Rules 3–4 for every Write/Edit, log Rule 6 deviations, and refuse uncalled-out crossings per Rule 7.
+- `agents/spec-planner.md` — produce the Rule 3 scoping (per-phase `## Doc Scope` globs with at least one write glob each — a globless phase is invalid, plan.md `Doc Globs:` union), the Rule 6 boundary callouts, and the Rule 7 restructure-first justification while drafting phases.
 - `agents/spec-updater.md` — preserve the Rule 3 scoping and Rule 6 callouts while applying plan updates (keep `## Doc Scope` blocks and the `Doc Globs:` union in sync).
 
 ## Scripts

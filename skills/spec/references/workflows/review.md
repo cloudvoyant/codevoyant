@@ -39,9 +39,11 @@ Additional checks:
 
 ## Step 3: Code-Completeness Gate (Pass 1 — CRITICAL)
 
-Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted. The agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block.
+Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted, and — in the same message — one requirements agent with the `SCOPE=requirements` prompt. The code-completeness agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block; the requirements agent judges plan.md's Requirements section against R1–R7 (see `references/validation-prompt.md`).
 
-Wait for the report. Add every `NEEDS_IMPROVEMENT` finding to the critical finding set. Classify a finding as `AUTO-FIX` only when the reviewer can determine and paste the complete literal code from the repository and plan context; otherwise classify it as `ASK`. Do not allow later review findings, AUTO-FIX work, or a report verdict to mark the plan ready until this gate returns `PASS` with no unresolved code-completeness findings.
+Wait for both reports. Add every `NEEDS_IMPROVEMENT` finding to the critical finding set. Classify a finding as `AUTO-FIX` only when the reviewer can determine and paste the complete literal code (code-completeness) or the domain-phrased requirement rewrite (requirements) from the repository and plan context; otherwise classify it as `ASK`. Do not allow later review findings, AUTO-FIX work, or a report verdict to mark the plan ready until both gates return `PASS` with no unresolved findings.
+
+Launch the tabulation gate in the same message as the other two (`SCOPE=tabulation` prompt from `references/validation-prompt.md`). Treat its failures like code-completeness failures: `AUTO-FIX` when the reviewer can enumerate the missing rows from the codebase (re-run the table's Source command, add the rows, assign them to tasks, update plan.md `## Tables`), otherwise `ASK`. The plan is not ready while the tabulation gate has unresolved findings.
 
 ## Step 4: Parallel Review Agents (Pass 2 — CRITICAL)
 
@@ -53,6 +55,7 @@ Run four review agents in parallel (`model-tier: light`, `run_in_background: tru
 - Hero systems: flag if plan reaches for new technology when existing utility would do.
 - Structural issues: objective clarity, phase ordering, phase headers, meta-tasks, design decisions section.
 - "What Already Exists" callout: codebase mechanisms this plan should leverage.
+- Boundary audit (doc-aware plans — the plan.md carries a `Doc Globs:` line): for every task that writes outside its phase's declared globs or touches a module another phase owns, verify a `## Doc Scope` boundary callout exists with a justification and a rejected restructure. A crossing with no callout, or a callout with no justification, is CRITICAL (doc-aware.md Rule 7). Also flag crossings that a phase restructure could have avoided — move the task, split the phases, or sequence them.
 
 **Agent B — Implementation completeness after the code gate:**
 For each phase-N.md, flag as CRITICAL if:

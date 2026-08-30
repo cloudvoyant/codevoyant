@@ -101,6 +101,7 @@ set +f
 
   `SPEC_SKILL` (the spec skill package root) and `PHASE_GLOBS` (this phase's own write globs, read from its `## Doc Scope` block by `go.md`) are substituted into your prompt — never guess them.
 - **Permitted crossings (Rule 6).** If the phase's `## Doc Scope` boundary callouts explicitly permit a crossing, you may perform it, but you MUST append a `[DEVIATION]` entry to `execution-log.md` naming the target, the callout that permits it, and the reason. Never write outside the globs without such a callout.
+- **Uncalled-out crossings are refused (Rule 7).** Cross-module changes are discouraged by default. If a task would write outside this phase's globs and no boundary callout permits it, do NOT write it and do NOT log-and-continue: stop the task, leave the out-of-scope target untouched, write a `[BLOCKED]` entry to `execution-log.md` naming the target, the task, and the missing callout, and report the defect so the plan is re-planned or the callout is added via `/spec update`. A silent crossing is exactly what doc-aware mode exists to prevent.
 - **Public interfaces only (Rule 4).** Cross-module interaction (reading or calling into a module owned by another doc/phase) uses only that module's documented public API/interface section — never its internals. If the needed surface is not documented, do not reach for it; log a deviation and continue with the documented surface.
 
 When `DOC_GLOBS` is empty, ignore this section entirely and execute in normal mode.

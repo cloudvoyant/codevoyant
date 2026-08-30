@@ -66,6 +66,16 @@ Group `COMPONENTS` into the architecture hierarchy first (same taxonomy as `retc
 
 If the repo has CI or infra config (Step 1) but no `docs/ci.md`, flag it (present-if-applicable, per `references/structure.md`).
 
+### 3c. Artifact gate — every diagram and table validates
+
+Run the artifact gate over every managed doc:
+
+```bash
+python3 "$SKILL/scripts/validate_artifacts.py" {managed doc paths...}
+```
+
+Blocking findings become `type: DIAGRAM` (fence/table issues) with the gate message; NOTEs are reported but do not fail validation.
+
 ## Step 4: Check boundaries (reuse coverage-and-api)
 
 Run the detection procedure from `references/coverage-and-api.md` Steps A–C over the docs — the pairwise overlap check (Rules 1–3) and the API-boundary checks (Rules 3–5), where the API section is each doc's template's `[public-api]` heading. Under `--diff`, restrict the pairwise comparison to docs whose globs intersect the changed set (Steps D–F), flagging only boundaries affected by the change.
@@ -86,6 +96,6 @@ docs/ci.md -- clean
 Summary: {N} findings across {M} files ({C} components discovered, {D} docs validated)
 ```
 
-With `--json`, emit the same structure as JSON. Optionally write a copy of the findings to `.codevoyant/review/{slug}/validate.md` in the same format as `docs-review-template.md` so they can be applied via `docs update --scaffold` (component gaps) or manually.
+With `--json`, emit the same structure as JSON. Optionally write a copy of the findings to `.codevoyant/review/{slug}/validate.md` in the same format as `docs-review-template.md` so they can be applied via `docs update --scaffold` (component gaps) or manually. Initialize the shared store before that write: `python3 "$SKILL/scripts/cv_init_store.py" >/dev/null` (`$SKILL` is exported by SKILL.md).
 
 Exit 0 when clean; exit 1 when any finding is reported.

@@ -6,7 +6,7 @@
 
 Run a minimum of 2 validation rounds autonomously (no user prompts). After each round that surfaces issues, apply all fixes before running the next round.
 
-Within each round, launch one validation agent **per phase**, one plan-level agent, and one **code-completeness** agent — all in parallel. Merge results before applying fixes.
+Within each round, launch one validation agent **per phase**, one plan-level agent, one **code-completeness** agent, and one **tabulation** agent — all in parallel. Merge results before applying fixes.
 
 ## Per-Round Execution
 
@@ -51,7 +51,15 @@ prompt: [contents of references/validation-prompt.md with SCOPE=code-completenes
 
 It scans every `implementation/phase-*.md` and fails any task whose code block is missing, empty, elided (`...`), a stub, a TODO/placeholder, or a prose-only description instead of the literal code. This is the gate that stops planners from shipping partial snippets.
 
-Store all Task IDs: `[PLAN_LEVEL_TASK_ID, CODE_COMPLETENESS_TASK_ID, PHASE_1_TASK_ID, PHASE_2_TASK_ID, ...]`
+**Tabulation agent** — launch one agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
+
+```
+prompt: [contents of references/validation-prompt.md with SCOPE=tabulation]
+```
+
+It checks every enumerable set in the objective/intent against `tables/` per `references/tabulation.md` — missing tables, intent items in no table, drifted codebase recounts, orphan rows. This is the gate that stops planners from silently dropping items the user enumerated.
+
+Store all Task IDs: `[PLAN_LEVEL_TASK_ID, CODE_COMPLETENESS_TASK_ID, TABULATION_TASK_ID, PHASE_1_TASK_ID, PHASE_2_TASK_ID, ...]`
 
 ### c. Collect results
 
@@ -69,6 +77,7 @@ Work through every issue and recommendation from all agents:
 - Edit the relevant `implementation/phase-N.md` files directly
 - Rewrite vague plan.md tasks to be specific and actionable
 - **For every code-completeness failure, replace the placeholder/stub with the complete literal code** — resolve the unknown now (read the codebase, search the web) and paste the real lines; never carry a `...`/`TODO`/prose stub into the next round
+- For every tabulation failure, repair the tables — add the missing table or rows, re-enumerate drifted sets from the codebase, add Intent refs, assign orphan rows to tasks, and update plan.md's `## Tables`
 - Report: `🔧 Round {round} — fixed {N} issues across {M} files: [brief summary]`
 
 ### e. Loop control

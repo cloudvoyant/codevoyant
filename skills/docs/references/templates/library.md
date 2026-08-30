@@ -8,19 +8,19 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What does this library do, who imports it, what does it abstract away? Define acronyms on first use. -->
+<!-- @human: 3 sentences max. What does this library do, who imports it, what does it abstract away? Define acronyms on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: What the library must do, as measurable obligations. Phrase as "must", "returns". -->
+<!-- @agent: What the library must do, as measurable obligations. Phrase as "must", "returns". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (they belong in Design/Implementation), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. -->
 
 - {e.g. Must work in both browser and server environments}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how it behaves — API surface, error handling, performance. -->
+<!-- @agent: Constraints on how it behaves — API surface, error handling, performance. Numbers where measurable. Follow R4, R7 in requirements-guidance.md. -->
 
 - {e.g. Must not expose internal Firestore types in the public API}
 
@@ -74,7 +74,7 @@ const result = await {functionName}({example args})
 
 ### Modules/Objects
 
-<!-- @agent: Internal module/object layout and how the public API is wired together. Internal detail only. Other sections may follow for other important implementation details for maintainers. -->
+<!-- @human: Internal module/object layout and how the public API is wired together. Internal detail only. Other sections may follow for other important implementation details for maintainers. -->
 
 ## References
 
