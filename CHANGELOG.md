@@ -1,3 +1,15 @@
+## [2.1.1](https://github.com/cloudvoyant/codevoyant/compare/v2.1.0...v2.1.1) (2026-08-30)
+
+### Bug Fixes
+
+* **docs:** escape bare angle-bracket tokens that break the vitepress build
+
+- `<command>`/`<slug>`/`<branch>` in prose are parsed as HTML tags by the
+  Vue compiler (loop.md/pr.md/spec.md) — wrap them in inline code
+
+- surfaced by the Deploy Docs job on main after PR #64; branch CI
+  never caught it because ci.yml does not build docs
+
 ## [2.1.0](https://github.com/cloudvoyant/codevoyant/compare/v2.0.1...v2.1.0) (2026-08-30)
 
 ### Features
