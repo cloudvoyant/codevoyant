@@ -230,7 +230,9 @@ for name, asset in assets.items():
     targets = resolve_targets(name, asset)
     files = asset.get("files")
     if files:
-        managed = sorted(set(files) | set(source_relfiles(src)))
+        # `files` is an exclusive filter per the documented contract ("copy only
+        # these") — tests and other source-dir residents stay in skills/shared/.
+        managed = sorted(set(files))
         for t in targets:
             files_targets.add(t)
             prev = set(manifest.get(f"{name}::{t}", []))
