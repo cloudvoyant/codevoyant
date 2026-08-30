@@ -4,7 +4,7 @@ retcon reads the code and writes the full mandated documentation. It fills every
 
 - **Markdown output: soft-wrap prose, never hard-wrap** — when this workflow writes a `.md` artifact, write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
-retcon scaffolds the same way `new` does. It runs `scripts/scaffold.py` to lay each skeleton. Then it reads each component's code and replaces every `<!-- @agent: … -->` marker with real content. retcon reads code. It never parses templates itself.
+retcon scaffolds the same way `new` does. It runs `scripts/scaffold.py` to lay each skeleton. Then it reads each component's code and fills the contract surface: tables, mermaid diagrams, runnable code samples, constrained `## Requirements` (per `references/requirements-guidance.md`), and `## References` — replacing each `<!-- @agent: … -->` marker it consumes. It NEVER writes prose elsewhere: sections marked `<!-- @human: … -->` keep their marker untouched (see `references/prose-policy.md`). retcon reads code. It never parses templates itself.
 
 **Documentation grain.** retcon documents the system the way people think about it: grouped by kind (apps|services, libs, CI), by platform when the repo has more than one, then by module within apps|services. Correctness at the wrong grain is still a bad doc: a per-directory doc shaped like a service reads as a thin wrapper around a list of outputs and hides how the system works. retcon therefore groups discovered components (Step 2.5) before building the manifest (Step 3) and keeps the architecture index at the same grain.
 On a flat (non-monorepo) repo, retcon first proposes a lib/module → feature breakdown from `references/module-taxonomy.md` and asks the user to confirm it (Step 2.4) before grouping.
@@ -232,9 +232,13 @@ Collect all agent results before authoring the top-level/index docs (5c), becaus
    This copies the resolved template and fills each `{key}` token from the `--vars` dict (`{name}`/`{path}`, so the frontmatter's `globs` already points at the doc's directory). retcon does not parse the template itself.
 2. **Read the real code** so the doc is accurate: package metadata (`package.json`/`Cargo.toml`/etc.), entry points and exports (`index.ts`, public modules), route handlers, config files, env vars, and for infra the Terraform/module definitions. Author from what the code actually does — never invent identifiers, endpoints, or env vars.
 
-### Step 5b: Replace each `@agent` marker with real content
+### Step 5b: Fill the contract surface — artifacts only
 
-Open the scaffolded doc and replace every `<!-- @agent: … -->` marker with real content authored from the code, then delete the marker. The marker text is the authoring guidance for that section; the copied mermaid/table below it is the shape to fill.
+Open the scaffolded doc. Per `references/prose-policy.md`, the LLM text budget is: artifact internals (tables, mermaid labels, code samples), `## Requirements`, `## References`, and nothing else.
+
+- `<!-- @agent: … -->` marker introducing an artifact (table/diagram/code/requirements/references): replace it with the artifact authored from the code, then delete the marker. Keep artifact text minimal and barebones — identifiers, types, one-phrase labels.
+- `<!-- @agent: … -->` marker whose content would be prose: leave the marker in place; do not write prose.
+- `<!-- @human: … -->` marker: preserve verbatim. Never fill, never delete.
 
 1. **Frontmatter is already correct.** The `---` block is first and `globs:` already points at the doc's directory. Adjust the glob only if the doc owns a narrower/wider subtree than `{path}`. The doc carries no stored type marker — review re-derives the doc's type from its code path (its `globs`) using the type table in `references/structure.md`.
 2. **Public API section** (the template's `[public-api]`-marked heading — see `references/template-contract.md`) must be explicit — the surface other modules reference.
@@ -243,7 +247,7 @@ Open the scaffolded doc and replace every `<!-- @agent: … -->` marker with rea
 5. **Type-specific detail** from the source: request-lifecycle `sequenceDiagram` in `api` docs only; a data-model (`erDiagram`/type table) in `api`/`library`/`auth` docs; auth flow in `auth`; user flow in `frontend`; per the mermaid guide.
 6. **Delete any `(optional)` section** whose content does not apply (e.g. no env vars → delete the Environment Variables section). Keep required sections.
 7. **Carry forward legacy facts.** If a legacy doc for this doc's members exists, incorporate its still-correct details (commands, endpoints, env vars, terminology). Do not repeat facts the code contradicts.
-8. Apply all language-guide rules to written prose (STE-terse). Leave a `<!-- TODO: … -->` only for the rare thing that genuinely needs a human decision.
+8. Apply all language-guide rules to the prose you are allowed to write (requirements bullets, references). Leave `<!-- @human: … -->` markers for every prose section; leave a `<!-- TODO: … -->` only for the rare thing that genuinely needs a human decision inside an artifact.
 
 ### Step 5c: Author the top-level and index docs
 
@@ -278,6 +282,14 @@ for path in sys.argv[1:]:
 ```
 
 After the fixup, run the coverage-overlap check from `references/coverage-and-api.md` (Step B) over the tree: skip docs carrying `index: true`; a non-nested overlap → warn and suggest narrowing one doc's `globs`; a strict-subset overlap → note the nested parent/child relationship; disjoint → no action. Surface these in the Step 7 summary; do not block the write.
+
+Then run the artifact gate over every authored doc:
+
+```bash
+python3 "$SKILL/scripts/validate_artifacts.py" {authored doc paths...}
+```
+
+Blocking findings (exit 1) are repair-before-write: fix the offending fence/table and re-run, at most 2 repair rounds. A finding that still fails becomes a `<!-- TODO: artifact gate — {finding message} -->` comment beside the artifact and is surfaced in the Step 7 report; a doc never ships silently unvalidated. NOTE findings (no renderer available) are reported, not blocked.
 
 ### Step 5e: Reconcile cross-references
 

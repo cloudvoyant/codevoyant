@@ -9,7 +9,7 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What is the system? Its top-level responsibilities? What does it explicitly NOT do — the scoping statement matters as much as the inclusions. -->
+<!-- @human: 3 sentences max. What is the system? Its top-level responsibilities? What does it explicitly NOT do — the scoping statement matters as much as the inclusions. -->
 
 ### Technology Stack
 
@@ -60,7 +60,7 @@ graph LR
 
 ### {Section Heading, Repeats}
 
-<!-- @agent: use sections with headings to explain key implementation details. Can be simple bullets instead if component is simple. -->
+<!-- @human: use sections with headings to explain key implementation details. Can be simple bullets instead if component is simple. -->
 
 ## References
 

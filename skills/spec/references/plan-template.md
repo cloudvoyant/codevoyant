@@ -16,9 +16,12 @@ Write this structure to `.codevoyant/spec/{plan-name}/plan.md` when creating a n
 {What this plan is solving, for whom, and why now. 2–3 sentences.}
 
 ## Requirements
-{Measurable outcomes, not deliverables. State the success condition the plan must achieve.}
-- {outcome bullet 1}
-- {outcome bullet 2}
+{Measurable outcomes, not deliverables — per the docs skill's requirements-guidance.md rules R1–R3, R6. State the success condition the plan must achieve. No implementation terms; wording that survives an implementation change; each bullet names an observable outcome.}
+- {outcome statement, domain-phrased} — {fit criterion} — {Source: … | [ASSUMPTION — unvalidated]}
+
+## Tables
+{One line per table in `tables/` — required when the objective or intent contains enumerable sets (rote replacements, page/file sets, requirement sets); see references/tabulation.md. Omit the section when there are none.}
+- `tables/{set-slug}.md` — {row count} rows, owned by Phase {N}
 
 ## Design
 [High-level solution architecture — major classes/functions/concepts]

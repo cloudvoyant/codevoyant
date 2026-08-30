@@ -244,32 +244,11 @@ After running the checkpoint, write the Quality Brief (3–5 bullets) and use it
 
 ## Step 5: Build Milestone Task Plan
 
-Create plan directory. `cv_init_store` ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`) **before** the first `mkdir` — otherwise a fresh clone would create `.codevoyant` as a real directory instead of the shared symlink. It is idempotent, never migrates an existing real dir (that is `/migrate`'s job), and computes the identical `<project-slug>` as the `/migrate` skill.
+Create plan directory. Before the first `mkdir`, run the vendored store initializer — it ensures the in-repo `.codevoyant` is a symlink to the shared per-project store (`~/.codevoyant/<project-slug>/`), so worktrees and regular clones share one store. Idempotent; never migrates an existing real dir (that is `/migrate`'s job). Substitute `{SKILL_ROOT}` with this skill's package root (the directory containing the plan skill's SKILL.md, as reported when the skill loaded).
 
 ```bash
-cv_init_store() {
-  local root; root="$(git rev-parse --show-toplevel 2>/dev/null)" || root=""; [ -n "$root" ] || root="$PWD"
-  local link="$root/.codevoyant"
-  [ -L "$link" ] && return 0          # already a symlink → initialized
-  [ -d "$link" ] && return 0          # old real dir → leave it; /migrate copies it in, never here
-  local common name slug
-  common="$(git rev-parse --git-common-dir 2>/dev/null)" || common=""
-  if [ -n "$common" ]; then
-    case "$common" in /*) : ;; *) common="$root/$common" ;; esac
-    name="$(basename "$(cd "$(dirname "$common")" >/dev/null 2>&1 && pwd -P)")"
-  else
-    name="$(basename "$root")"
-  fi
-  slug="$(printf '%s' "$name" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-*//; s/-*$//')"
-  [ -n "$slug" ] || slug="unnamed"    # empty-slug fallback — matches the /migrate skill
-  local dest="$HOME/.codevoyant/$slug"
-  mkdir -p "$dest"; ln -s "$dest" "$link"
-  local gi="$root/.gitignore"
-  { [ -f "$gi" ] && grep -qxF '.codevoyant' "$gi"; } || \
-    printf '\n# codevoyant context store (symlink to ~/.codevoyant/<project-slug>/)\n.codevoyant\n' >> "$gi"
-}
-
-cv_init_store
+# {SKILL_ROOT} = the plan skill's package root (substitute the real path)
+python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
 mkdir -p .codevoyant/plan/{slug}/tasks
 mkdir -p .codevoyant/explore/{slug}
 ```

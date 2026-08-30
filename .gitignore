@@ -85,10 +85,6 @@ test-results/
 *.old
 
 # Instance-specific development files (not committed)
-.claude/plan.md
-.claude/todos.md
-.claude/review.md
-.claude/skills/
 .agents/
 
 # codevoyant context store — in-repo .codevoyant is a symlink to ~/.codevoyant/<project-slug>/; never commit it
@@ -103,8 +99,7 @@ test-results/
 # codevoyant snippets store (in-project fallback — never commit generated snippets)
 .codevoyant/snippets/
 
-# Claude Code agent state
-.claude/worktrees/
+# Codevoyant agent state
 .memsearch/
 
 # Generated / untracked assets

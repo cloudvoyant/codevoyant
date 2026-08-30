@@ -68,6 +68,9 @@ Acceptance:
 **Files to modify / create:**
 - `path/to/file.ext` — {specific changes}
 
+**Table rows (only when the task consumes a `tables/*.md` table):**
+- `tables/{set-slug}.md` — rows {#–#}: mark each row's Status `[x]` as it is completed; a row is done only when its change is applied and validated
+
 **Validation (run after every task):**
 - [ ] `{fmt command}` — no formatting changes outstanding
 - [ ] `{lint command}` — zero warnings/errors

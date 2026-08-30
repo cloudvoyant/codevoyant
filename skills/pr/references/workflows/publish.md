@@ -65,13 +65,13 @@ If none of the three is true: `✓ Nothing to publish — PR/MR #{PR_NUMBER} is 
 
 ## Step 2.5: Resolve the review body
 
-Before any review submission, resolve a **non-empty markdown** `REVIEW_BODY`:
+Before any review submission, resolve a **non-empty markdown** `REVIEW_BODY` — the top-level comment is reserved for structural/overall issues and never restates the review:
 
-1. If a matching local review doc exists, read its `## Summary` section and use that paragraph (trimmed) as the top-level review comment, formatted as markdown.
+1. If a matching local review doc exists, read its `## Overall issues` section. If it has content, use those bullets (trimmed) as the top-level review comment. If the section is absent or empty, use the fixed minimal body `Inline comments only.` — never generate prose, never summarize the findings.
 2. Else if a pending review already carries a body, reuse it (GitHub: `gh api "repos/:owner/:repo/pulls/{PR_NUMBER}/reviews/{review_id}" --jq '.body'`).
-3. Else derive a one-line summary that matches the event: `Submitted via /pr publish.` (COMMENT), `Approved via /pr publish.` (APPROVE), or `Requesting changes via /pr publish.` (REQUEST_CHANGES).
+3. Else use the fixed minimal body matching the event: `Inline comments only.` (COMMENT), `Approved — inline comments only.` (APPROVE), or `Requesting changes — see inline comments.` (REQUEST_CHANGES).
 
-Never submit a review with an empty body — GitHub rejects it (`Review cannot be submitted with empty body and comments`), and an empty top-level comment renders as nothing.
+Never submit a review with an empty body — GitHub rejects it (`Review cannot be submitted with empty body and comments`). Never write a top-level restatement of what the review did.
 
 ## Step 3: Push an unpublished local review doc
 

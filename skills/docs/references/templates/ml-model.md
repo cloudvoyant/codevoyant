@@ -8,19 +8,19 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max: what this model predicts, classifies, or generates, where it is used, what breaks without it. Define acronyms on first use. -->
+<!-- @human: 3 sentences max: what this model predicts, classifies, or generates, where it is used, what breaks without it. Define acronyms on first use. -->
 
 ## Requirements
 
 ### Functional
 
-<!-- @agent: Expected behavior for the consumer. What the model must produce: output shape, supported inputs, task/class coverage, confidence/score semantics. Phrase as "must", "returns", "accepts". -->
+<!-- @agent: Expected behavior for the consumer. What the model must produce: output shape, supported inputs, task/class coverage, confidence/score semantics. Phrase as "must", "returns", "accepts". Follow R1–R3, R6 in requirements-guidance.md: no implementation terms (architecture/training details belong in Design), wording must survive an implementation change, each requirement names an observable outcome, domain claims carry a Source or [ASSUMPTION — unvalidated]. Invariants are NOT expected behavior — keep them out of Functional (R5). -->
 
 - {requirement}
 
 ### Non-Functional
 
-<!-- @agent: Constraints on how it behaves — latency, throughput, memory, cost, accuracy targets, hardware. Numbers, not vibes. -->
+<!-- @agent: Constraints on how it behaves — latency, throughput, memory, cost, accuracy targets, hardware. Numbers, not vibes. Follow R4, R7 in requirements-guidance.md. -->
 
 - {requirement}
 
@@ -47,7 +47,7 @@ graph TD
 
 ### Training & Evaluation
 
-<!-- @agent: How the model is trained and evaluated — data, loss, metric, eval setup. High level; lower-level detail goes in ## Implementation. -->
+<!-- @human: How the model is trained and evaluated — data, loss, metric, eval setup. High level; lower-level detail goes in ## Implementation. -->
 
 ### API
 
@@ -64,7 +64,7 @@ pred = model.predict({example})   # {Type}
 
 ### {Section Heading, Repeats}
 
-<!-- @agent: Lower-level detail that does not fit tersely in Design — activation function choices, the dataset used, deviations from standard training methodology, and internal invariants (e.g. "the encoder caches tokens and must be thread-safe"). One subsection per topic. Invariants are NOT expected behavior — keep them out of Functional. -->
+<!-- @human: Lower-level detail that does not fit tersely in Design — activation function choices, the dataset used, deviations from standard training methodology, and internal invariants (e.g. "the encoder caches tokens and must be thread-safe"). One subsection per topic. Invariants are NOT expected behavior — keep them out of Functional. -->
 
 ## References
 

@@ -162,6 +162,8 @@ agent-browser --session {slug} close
 
 ## Step 7: Write smoke report
 
+Before writing the report, initialize the shared store — substitute `{SKILL_ROOT}` with the qa skill's package root: `python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null`.
+
 Write `.codevoyant/qa/{slug}/smoke-report.md` using `references/templates/smoke-report.md`.
 
 ## Step 8: Report

@@ -9,7 +9,7 @@ Update documentation files. Four modes, selected automatically (or by flag):
 3. **Diff-scoped audit mode**: if no report exists, restrict scope to the branch diff and author the affected sections by reading the changed code (like retcon, but only what the diff touches).
 4. **Escalation mode**: if the needed changes are too large, stop and run `docs review` first so you can inspect before applying.
 
-**Preserve human text.** In all modes, change only text that is inaccurate or structurally incomplete. Do not rephrase working prose for style. This is the first-class principle of this workflow.
+**Preserve human text.** In all modes, change only text that is inaccurate or structurally incomplete. Do not rephrase working prose for style. Never convert a `<!-- @human: … -->` marker into generated prose, and never delete one (see `references/prose-policy.md`). This is the first-class principle of this workflow.
 
 **Preserve coverage & API boundaries.** In all modes, follow `references/coverage-and-api.md`. Keep the doc's `globs:` frontmatter accurate; never add content that covers paths another doc owns (unless nested — then reference the child doc's interface only); when adding cross-references, use the target module's documented public API only; preserve the parent/child interface relationship (Step 4c).
 

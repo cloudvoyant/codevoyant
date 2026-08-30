@@ -51,6 +51,10 @@ Store as `GENERATE_PROPOSALS`. Continue immediately — do not wait further.
 Create the exploration directory structure:
 
 ```bash
+# {SKILL_ROOT} = the explore skill's package root (substitute the real path).
+# Initialize the shared store first so a fresh clone gets the ~/.codevoyant/<slug>
+# symlink instead of a real .codevoyant dir.
+python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
 mkdir -p "$EXPLORE_DIR/research" "$EXPLORE_DIR/proposals"
 ```
 

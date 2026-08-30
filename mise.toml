@@ -12,6 +12,7 @@ shfmt      = "latest"
 gh         = "latest"
 glab       = "latest"
 "npm:skills-ref" = "0.1.5"
+"npm:@mermaid-js/mermaid-cli" = "11.16.0"
 
 # ==============================================================================
 # DOCS
@@ -48,6 +49,10 @@ run         = "cat version.txt"
 [tasks.upversion]
 description = "Run semantic-release to version and update changelog"
 run         = ".mise-tasks/upversion"
+
+[tasks."changelog:sanitize"]
+description = "Escape bare HTML tags in CHANGELOG.md after generation"
+run         = "node scripts/sanitize-changelog.js"
 
 # ==============================================================================
 # SKILLS

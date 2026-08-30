@@ -34,12 +34,14 @@ Read a PR/MR diff and generate AI-authored inline comments. Comments are terse (
 
 Reviews evaluate the change against its **stated intent** first — does the diff actually deliver the PR/MR's purpose end-to-end (tracing the headline use case), not just whether the code is clean? A well-formed change that fails its intent is flagged `BLOCKING`.
 
-Assesses the change with **four subagents in parallel**, one per dimension, then merges their findings into one review:
+Runs deterministic pre-checks (CI status, commit-convention consistency, and a static-analysis floor), then assesses the change with **five subagents in parallel** — one per dimension — plus a **claim-checker**, and merges all findings into one review:
 
 - **Intent-match** — does the diff deliver the stated intent (from the description, linked issue, or executed spec plan) end-to-end? A well-formed change that fails its intent is `BLOCKING`.
 - **Unnecessary changes** — a dedicated **slop-detector**: scope creep, stray edits, dead/commented code, accidental reverts, stochastic churn (random renames, reordering, reformatting), boilerplate, debug leftovers, dependency creep. Findings prefixed `Slop:`. A prevalent problem with agentic coding.
 - **Code quality** — a **code-quality-auditor** judges the added/edited code against the relevant codevoyant skill (`typescript`, `python`, `react`, `svelte`, `sveltekit`, …) or the language/framework standard. Findings prefixed `Quality:`.
 - **Docs freshness** — a **docs-freshness-checker** decides whether docs should have been updated. By default review stays read-only: stale docs are reported as a `Docs:` finding recommending `/docs update`. Pass `--update-docs` to opt in to having the pass run `/docs update` and refresh docs during the review. Findings prefixed `Docs:`.
+- **Adversarial hunt** — a **red-team-adversary** tries to break the change: failure modes, edge cases, negative paths, mutation-mindset test review, STRIDE on security surfaces. Findings prefixed `Adversarial:` — `BLOCKING` only when they carry a concrete input/expected/observed scenario.
+- **Claim check** — a **claim-checker** verifies the PR/MR body's claims (Changes bullets, Validation checklist, stated behavior) against the diff. Findings prefixed `Claim:`.
 
 ```bash
 /pr review                            # draft the review directly on the PR/MR

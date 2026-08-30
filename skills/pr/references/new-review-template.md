@@ -12,9 +12,17 @@ Write this structure to `.codevoyant/review/{slug}/new-review.md`.
 - **Stats**: +{additions} -{deletions} across {changedFiles} files
 - **Reviewed**: {timestamp}
 
-## Summary — does this deliver its intent?
+## Overall issues
 
-{Lead with an intent verdict: does the change deliver its stated purpose end-to-end? Trace the headline use case. Then the main concern. No filler phrases.}
+{BLOCKING findings that are structural/PR-wide and cannot be anchored to a file:line. One bullet per issue: the problem and what must change. If there are none, delete this entire section — the review then posts file-level comments only. Never restate what the review did, never summarize the diff, never narrate the verdict.}
+
+## Verification
+
+{Which deterministic gates ran and their status — CI, project format/lint/typecheck, semgrep/bandit/trufflehog, commit consistency — one line each, including skips.}
+
+## What was NOT verified
+
+{The red-team-adversary's what_was_not_verified list plus anything the reviewer could not confirm from the diff. One bullet each.}
 
 ## Inline Comments
 

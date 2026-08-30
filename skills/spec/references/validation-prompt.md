@@ -30,6 +30,7 @@ Validate the following quality criteria:
 - Do phase names and task counts in plan.md match what implementation files cover?
 - Is there a final validation phase (e.g., "Phase N - Testing" or "Phase N - Validation")?
 - Are inter-phase dependencies called out?
+- For doc-aware plans (plan.md carries a `Doc Globs:` line): does every phase file's `## Doc Scope` block justify each boundary crossing with a reason and a rejected restructure (doc-aware Rule 7)? A crossing without a callout is a consistency failure.
 
 **Dependencies & Risks**
 - Are external package/library dependencies noted?
@@ -117,6 +118,80 @@ Respond ONLY in this exact format:
 ```
 
 ---
+
+## Requirements-Quality Agent Prompt (`SCOPE=requirements`)
+
+```
+You are validating that a software development plan's requirements read as domain/business outcomes, not as restatements of design or implementation. Planners default to deliverable lists and mechanism restatements — your entire job is to catch that.
+
+Read these files:
+1. {PLAN_DIR}/plan.md — the ## Requirements section and the ## Introduction
+
+Judge against the rule set in the docs skill's requirements-guidance.md (R1–R7) — read it before validating. In particular:
+
+- Objective framing (BLOCK): is the Requirements section entirely a deliverable list ("ship X", "build Y", "implement Z")? If yes, Status = NEEDS_IMPROVEMENT and the first issue must ask: "What changes for users or the business if this ships successfully?"
+- R1: any requirement naming endpoints, classes, files, or other implementation tokens as the requirement itself.
+- R2: any requirement whose wording would need to change if the implementation changed.
+- R3: any requirement without an observable outcome or measurable success condition.
+- R6: any domain claim with neither a Source nor [ASSUMPTION — unvalidated].
+
+Judge by intent, not blind substring matching — a token quoted as evidence is not a violation.
+
+Respond ONLY in this exact format:
+
+## Validation Report
+
+### Status: [PASS | NEEDS_IMPROVEMENT]
+
+### Issues
+[requirements, plan.md, R-N] Description of the offending requirement and what domain outcome it should state
+(write "none" if every requirement passes)
+
+### Recommendations
+- The exact requirement line to rewrite and a domain-phrased replacement
+(write "none" if no recommendations)
+
+### Missing Details
+- Any requirement whose real success condition cannot be determined from the plan
+(write "none" if nothing is missing)
+```
+
+## Tabulation Agent Prompt (`SCOPE=tabulation`)
+
+```
+You are validating that a software development plan exhaustively tabulates every enumerable set the user specified. LLM planners silently drop enumerated items — your entire job is to catch that.
+
+Read these files:
+1. {PLAN_DIR}/plan.md — the objective and the ## Tables section
+2. {PLAN_DIR}/intent.md if it exists (the intent the user wrote or the planner recorded — new.md Step 2 writes it inside the plan dir) — the user's enumerable items
+3. Every file in {PLAN_DIR}/tables/
+4. All files in {PLAN_DIR}/implementation/ — to confirm table rows are referenced by tasks
+
+Validate per references/tabulation.md:
+
+- Every enumerable set in the objective/intent (rote replacements, target/page sets, enumerated requirement lists) has a table. A set with no table is a failure.
+- Every requirement-set row carries an Intent ref, and every enumerated item in intent.md appears in some table row. An intent item in no table is a failure.
+- For codebase-enumerated tables, re-run the table's Source command (glob/grep) and compare the row count. A mismatch is drift — a failure.
+- Every table row is referenced by exactly one phase task, and plan.md's ## Tables lists every table file. An orphan row or unlisted table is a failure.
+
+Respond ONLY in this exact format:
+
+## Validation Report
+
+### Status: [PASS | NEEDS_IMPROVEMENT]
+
+### Issues
+[tabulation, {table or intent item}] Description of the missing/orphaned/drifted row or set
+(write "none" if every enumerable set is fully tabulated)
+
+### Recommendations
+- The exact table file and rows to add or reassign, and the task that should own them
+(write "none" if no recommendations)
+
+### Missing Details
+- Any enumerable set whose real members cannot be determined (the planner must enumerate them now, from the codebase)
+(write "none" if nothing is missing)
+```
 
 ## Code-Completeness Agent Prompt (`SCOPE=code-completeness`)
 

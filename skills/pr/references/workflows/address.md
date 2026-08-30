@@ -41,7 +41,13 @@ Identical to `new.md` Steps 1–2. Populate `PROVIDER`, `PR_NUMBER`, `PR_TITLE`,
 
 ## Step 2: Resolve Review Directory
 
-Derive `SLUG` (or use `--name`); set `REVIEW_DIR=.codevoyant/review/{SLUG}`; create if absent.
+Derive `SLUG` (or use `--name`). Initialize the shared store, then set `REVIEW_DIR=.codevoyant/review/{SLUG}`; create if absent:
+
+```bash
+# {SKILL_ROOT} = the pr skill's package root (substitute the real path)
+python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
+mkdir -p .codevoyant/review/{SLUG}
+```
 
 - If `${REVIEW_DIR}/comments.md` already exists, overwrite it — it is always regenerated from the live PR/MR state.
 - If `${REVIEW_DIR}/address.md` exists with any `Status: APPLIED` entries, warn:

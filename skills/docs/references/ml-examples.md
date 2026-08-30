@@ -1,5 +1,7 @@
 # ML examples — boundaries and requirements
 
+> The functional-vs-non-functional-vs-invariant rule taught here is generalized to all templates in `references/requirements-guidance.md` (R5). The examples below remain the ML-flavored worked subset.
+
 Worked examples for the ml-model, data-pipeline, and experiment templates. The rule that matters most: how a class operates is an implementation invariant, never a functional requirement.
 
 ## Module boundaries

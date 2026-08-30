@@ -18,6 +18,7 @@ Workflows read these markers from the template. Do not invent other marker token
 | Marker                              | Meaning                                                                                                                                                                              | Used by                                      |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
 | `<!-- @agent: guidance … -->`       | The base annotation form — authoring guidance with no mechanical effect (never a line-level edit). Carries no token. The shared contract is `skills/shared/annotations.md`.           | retcon, update                               |
+| `<!-- @human: guidance … -->`       | A permanent fill-in prompt: the generator never writes prose here and never deletes the marker (see `references/prose-policy.md`). The section is still required — its presence, not its content, is checked. | retcon, update, review 3a |
 | `<!-- @agent: (optional) … -->`     | Marks the **block it precedes** as optional: a section whose FIRST marker under the heading starts with `(optional)`, OR a diagram/table block inside a required section. Absence of an optional block is never flagged. | review 3a, update --scaffold, retcon |
 | `<!-- @agent: [components] … -->`   | This heading is Design's **Components** subsection — where a parent names+links its child docs (Rule 3). It may contain the `### Components` system diagram. Exactly one per component and architecture template. Always required. | review 3f, coverage-and-api Step C, validate |
 | `<!-- @agent: [public-api] … -->`   | This heading is the doc's **public API surface** (Rule 4). Exactly one per component template. Its heading is the API section other docs may reference. Always required.              | review 3e, coverage-and-api Rule 4, validate |
@@ -35,7 +36,7 @@ Collect every `##` and `###` heading in template order. A heading is **required*
 - the first `<!-- @agent: … -->` marker directly under it starts with `(optional)`, AND
 - it does NOT carry a `[components]` or `[public-api]` marker.
 
-A `[components]` or `[public-api]` heading is always required, even if an `(optional)` diagram block sits inside it. The doc must contain every required heading (in template order). That is the entire structure check — edit the template, and what review requires changes with it.
+A `[components]` or `[public-api]` heading is always required, even if an `(optional)` diagram block sits inside it. The doc must contain every required heading (in template order). That is the entire structure check — edit the template, and what review requires changes with it. A required heading whose template marker is `<!-- @human: … -->` is satisfied by the heading plus the marker (or by human-written prose replacing it) — an unfilled `@human` section is never a gap.
 
 ### 2. Required diagrams
 

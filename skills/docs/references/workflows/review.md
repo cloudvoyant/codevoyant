@@ -24,6 +24,8 @@ Derive `SLUG` from `TARGET_PATH`:
 Rule: lowercase the path, strip the file extension, replace `/` and non-alphanumeric characters with `-`, collapse runs of `-`, trim leading/trailing `-`.
 
 ```bash
+# $SKILL is this skill's package root (already exported by SKILL.md). Initialize the shared store first.
+python3 "$SKILL/scripts/cv_init_store.py" >/dev/null
 REVIEW_DIR=".codevoyant/review/${SLUG}"
 mkdir -p "$REVIEW_DIR"
 ```
@@ -99,6 +101,8 @@ For each missing required section, record:
 
 Derive the required diagram set from the resolved template per `references/template-contract.md` (§2 Required diagrams): for each required heading that contains a ` ```mermaid ` fence in the template, the **diagram type** on the line after the fence is required for that section. Detect the doc's diagrams by grepping for ` ```mermaid ` blocks and reading the type on the next line; check that the doc has a matching-type fence somewhere under the corresponding heading. Optional sections never require a diagram.
 
+For every mermaid fence present, also run the artifact gate: `python3 "$SKILL/scripts/validate_artifacts.py" {doc path}`. Blocking DIAGRAM findings (does not render, node/participant caps exceeded, literal `\n` labels) are recorded as DIAGRAM findings with the gate's message as `rationale`. NOTE findings (no renderer) are surfaced in the terminal report only.
+
 For each missing diagram, record:
 - `type`: DIAGRAM
 - `current_text`: the prose that describes the flow (or "(no flow description found)")
@@ -109,8 +113,10 @@ For each missing diagram, record:
 
 Apply the review check set in `references/language-guide.md` (## Review Checks) and the key STE rules from `references/simple-english/ruleset.md`.
 
+Checks 11–17 (the Requirements Checks, R1–R7 from `references/requirements-guidance.md`) apply inside `## Requirements` sections only, and are recorded as `type: REQUIREMENTS` findings. Judge by intent, not blind substring matching — an identifier quoted as evidence is not an R1 violation; a requirement that names an endpoint as the requirement is.
+
 For each violation, record:
-- `type`: LANGUAGE
+- `type`: LANGUAGE (checks 1–10) or REQUIREMENTS (checks 11–17)
 - `current_text`: the exact sentence or phrase containing the violation
 - `replacement_text`: the minimal rewrite that fixes only the violation
 - `rationale`: the specific rule number and name
@@ -140,6 +146,16 @@ Applies to COMPONENT docs and the architecture index doc (skip `user-guide.md` /
 - **Components required.** The `## Design` section must contain the template's `[components]`-marked heading (see `references/template-contract.md` §4). If absent, record a STRUCTURE finding: `current_text`: "(section absent)"; `replacement_text`: the heading plus its `<!-- @agent: … -->` marker from the resolved template; `rationale`: "Design must contain a Components explanation (see references/coverage-and-api.md Rule 3)."
 - **Sub-component docs named + linked in Components.** When this doc has child docs in the mandated structure (nested children under it — a `<name>/` dir with `index.md`, or leaf children beside a nested `index.md`; for the architecture doc, every component doc is a child), each such child MUST be named and linked in the `[components]` section, referencing the child's public API section — NOT in `## References`. If a known child doc is not linked from Components (or is only linked from References), record a COVERAGE finding: `rationale`: "coverage-and-api Rule 3: parent names+links each child in Components, referencing the child's public API section." (Best-effort — when the child set cannot be determined, do not flag.)
 - **Inline system diagram is optional.** A `graph TD`/`flowchart TD` whose template marker starts with `(optional)` inside `### Components` is optional — do NOT flag its absence (its requiredness is decided by the template marker per `template-contract.md` §2).
+
+### 3g. Prose-policy check
+
+Applies the allowance in `references/prose-policy.md`. For each section that is NOT `## Requirements` or `## References` and is NOT an artifact block (table, ` ```mermaid ` fence, code fence, HTML comment): narrative prose is a violation UNLESS the section's template marker is `@human` AND the prose is human-authored (preserved by update — treat existing prose in a `@human` section as human-written; do not flag it). Generator-authored prose outside the allowance is flagged:
+- `type`: PROSE
+- `current_text`: the offending prose block
+- `replacement_text`: the `<!-- @human: … -->` marker from the resolved template for that section
+- `rationale`: "prose-policy: LLM text is limited to comments, Requirements, References, and minimal artifact labels."
+
+A required heading whose template marker is `@human` is satisfied by the heading plus the marker — never flag an unfilled `@human` section as missing content.
 
 
 

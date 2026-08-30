@@ -124,6 +124,14 @@ Target repository: read the repository URL from the invocation text (the argumen
 
 **Check for changelog:** Look for `CHANGELOG.md`, `CHANGELOG`, or `RELEASES.md` in both repos. If found, scan recent entries to guide characterization of changes — they often name features and breaking changes explicitly.
 
+Initialize the shared store before writing:
+
+```bash
+# {SKILL_ROOT} = the explore skill's package root (substitute the real path)
+python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
+mkdir -p .codevoyant/diffs
+```
+
 Determine the output filename: `.codevoyant/diffs/{YYYY-MM-DD}-{target-repo-name}.md`
 
 Write the report using `references/report-template.md` as the structure. Keep each section to **5 bullets or fewer**. File trees should show `*` next to modified/added files. Only include sections that have meaningful content.

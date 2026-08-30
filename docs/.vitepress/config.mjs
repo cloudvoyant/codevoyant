@@ -14,11 +14,10 @@ export default defineConfig({
     // Root-level files
     "README.md",
     "CHANGELOG.md",
-    "CLAUDE.md",
+    "AGENTS.md",
     // Internal dirs
-    ".claude/**",
-    ".memsearch/**",
     ".codevoyant/**",
+    ".memsearch/**",
     // Shared skill assets (source of truth for vendored templates/scripts — not docs pages)
     "skills/shared/**",
     // Non-recipe skills (exclude entirely)

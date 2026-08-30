@@ -7,7 +7,7 @@ globs:
 
 ## Overview
 
-<!-- @agent: 3 sentences max. What the project does for the user, what problem it solves, who uses it. -->
+<!-- @human: 3 sentences max. What the project does for the user, what problem it solves, who uses it. -->
 
 ## Install
 

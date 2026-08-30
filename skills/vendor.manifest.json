@@ -1,19 +1,49 @@
 {
-  "skills/docs/scripts": [
+  "bug-report::skills/gh/references/templates": [
+    "bug-report.md"
+  ],
+  "bug-report::skills/glab/references/templates": [
+    "bug-report.md"
+  ],
+  "bug-report::skills/linear/references/templates": [
+    "bug-report.md"
+  ],
+  "scope-scripts::skills/docs/scripts": [
     "scope.py",
     "test_scope.py"
   ],
-  "skills/gh/references/templates": [
-    "bug-report.md"
-  ],
-  "skills/glab/references/templates": [
-    "bug-report.md"
-  ],
-  "skills/linear/references/templates": [
-    "bug-report.md"
-  ],
-  "skills/spec/scripts": [
+  "scope-scripts::skills/spec/scripts": [
     "scope.py",
     "test_scope.py"
+  ],
+  "store-init::skills/docs/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/explore/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/flow/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/loop/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/plan/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/pm/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/pr/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/qa/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/skill/scripts": [
+    "cv_init_store.py"
+  ],
+  "store-init::skills/spec/scripts": [
+    "cv_init_store.py"
   ]
 }

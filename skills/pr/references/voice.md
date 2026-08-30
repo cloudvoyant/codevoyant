@@ -42,6 +42,8 @@ Prefer (terse — problem + ask):
 
 Then, if it helps, a short code suggestion — not a paragraph.
 
+**File-level by default.** Reviews post resolvable file-level comments. A top-level comment appears only for structural/overall issues that must be addressed and cannot be pinned to a file:line — and never to restate what the review did or what the diff contains. If everything is anchored, there is no top-level comment.
+
 ## Bugfix descriptions
 
 Bugfix bodies (`pr-bug.md`, used by `/pr open --bug` or a `fix/`/`bug/` branch) have three extra rules on top of the voice above:

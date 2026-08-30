@@ -25,9 +25,11 @@
 # the whole source dir is copied; when present the listed entries are the
 # minimum set that must be vendored — any other file under the source is also
 # vendored, so a file added to the shared source propagates automatically. The
-# vendored set for each target is recorded in skills/vendor.manifest.json so
-# --check can flag (and vendor can clean) a previously-vendored copy whose file
-# is no longer in the source or the allowlist.
+# vendored set for each (asset, target) pair is recorded in
+# skills/vendor.manifest.json (key "<asset>::<target>") so --check can flag
+# (and vendor can clean) a previously-vendored copy whose file is no longer in
+# the source or the allowlist — without one asset's cleanup deleting files
+# vendored into the same target dir by another asset.
 #
 # The Agent Skills standard scopes every skill to its own directory: file
 # references are relative and one level deep, and there is no cross-skill
@@ -228,10 +230,12 @@ for name, asset in assets.items():
     targets = resolve_targets(name, asset)
     files = asset.get("files")
     if files:
-        managed = sorted(set(files) | set(source_relfiles(src)))
+        # `files` is an exclusive filter per the documented contract ("copy only
+        # these") — tests and other source-dir residents stay in skills/shared/.
+        managed = sorted(set(files))
         for t in targets:
             files_targets.add(t)
-            prev = set(manifest.get(t, []))
+            prev = set(manifest.get(f"{name}::{t}", []))
             stale = sorted(prev - set(managed))
             if mode == "check":
                 for f in managed:
@@ -252,7 +256,7 @@ for name, asset in assets.items():
                     if os.path.lexists(os.path.join(root, d)):
                         remove_path(d)
                         print(f"removed stale: {d}")
-                manifest[t] = managed
+                manifest[f"{name}::{t}"] = managed
     else:
         for t in targets:
             if mode == "check":
@@ -262,7 +266,7 @@ for name, asset in assets.items():
                 print(f"vendored: {src} -> {t}")
 
 if mode != "check":
-    manifest = {t: v for t, v in manifest.items() if t in files_targets}
+    manifest = {k: v for k, v in manifest.items() if "::" in k and k.split("::", 1)[1] in files_targets}
     save_manifest(manifest)
 
 sys.exit(fail)

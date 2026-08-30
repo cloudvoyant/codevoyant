@@ -60,18 +60,35 @@ class VendorAssetsTestCase(unittest.TestCase):
             (self.root / "skills" / "spec" / "scripts").iterdir()
         )
 
-    def test_propagates_new_source_file(self):
-        """A file added to the shared source propagates and --check passes."""
+    def test_unlisted_source_file_stays_in_shared(self):
+        """`files` is an exclusive filter: a source-dir file not listed is NOT vendored."""
         src = self.root / "skills" / "shared" / "scope-scripts"
         (src / "helper.py").write_text("HELPER\n")
 
         proc = self.run_tool()
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertTrue((self.root / "skills" / "spec" / "scripts" / "helper.py").exists())
-        self.assertTrue((self.root / "skills" / "docs" / "scripts" / "helper.py").exists())
+        self.assertFalse((self.root / "skills" / "spec" / "scripts" / "helper.py").exists())
+        self.assertFalse((self.root / "skills" / "docs" / "scripts" / "helper.py").exists())
 
         proc = self.run_tool("--check")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_unfiltered_asset_walks_whole_source(self):
+        """An asset without `files` still walks the whole source dir."""
+        cfg = json.loads(self.config.read_text())
+        del cfg["assets"]["scope-scripts"]["files"]
+        cfg["assets"]["scope-scripts"]["source"] = "skills/shared/simple-english"
+        cfg["assets"]["scope-scripts"]["destination"] = "references/simple-english"
+        src = self.root / "skills" / "shared" / "simple-english"
+        src.mkdir(parents=True)
+        (src / "ruleset.md").write_text("RULES\n")
+        (src / "NOTICE.md").write_text("NOTICE\n")
+        self.config.write_text(json.dumps(cfg))
+
+        proc = self.run_tool()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertTrue((self.root / "skills" / "spec" / "references" / "simple-english" / "ruleset.md").exists())
+        self.assertTrue((self.root / "skills" / "spec" / "references" / "simple-english" / "NOTICE.md").exists())
 
     def test_stale_copy_flagged_and_cleaned(self):
         """A removed allowlist entry leaves a stale target copy --check flags and vendor cleans."""
