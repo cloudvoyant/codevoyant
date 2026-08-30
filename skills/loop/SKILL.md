@@ -1,47 +1,72 @@
 ---
 name: loop
-description: "Repeat-until-objective orchestration. Run a task repeatedly until its objective is met or a caller-specified max iteration count is reached; every iteration runs in a background agent. Triggers on: 'loop new', 'loop go', 'loop run', 'loop status', 'loop list', 'create a loop', 'run loop', 'repeat until'."
+description: "Repeat a task until its objective is met or a max iteration count is reached. Creates a tracking doc and runs immediately — every iteration executes in one background loop agent that performs the task and judges the objective. Triggers on: 'loop', 'run loop', 'repeat until', 'keep going until'."
 license: MIT
-compatibility: Works on Claude Code. Uses Agent/subagent features (background agents).
+compatibility: Works on Claude Code and OpenCode. Uses background agents.
 ---
 
-You are the `loop` dispatcher. Parse the user's command and route to the correct workflow file.
+# loop
 
-**Markdown output: soft-wrap prose, never hard-wrap** — when a loop workflow writes a `.md` artifact (loop.md, run.md, or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
+A loop is not a saved artifact like a flow. It is a **tracking doc plus a run**: `/loop` writes `.codevoyant/loops/{slug}/loop.md` (task, objective, bound, and a per-iteration log) and immediately executes iterations, appending each result to the doc, until the objective is met or the bound is reached. There is nothing to define ahead of time and no separate run command.
 
-## Dispatch logic
+**Markdown output: soft-wrap prose, never hard-wrap** — when this skill writes a `.md` artifact (the tracking doc or any generated document), write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
 
-The raw invocation args (filled by Claude Code / OpenCode slash commands): `$ARGUMENTS`. If this line is not filled in, read the verb and remaining args from the user's current message.
+## Usage
 
 ```
-VERB = first non-flag argument (default: "help")
-
-Aliases:
-  "run"   → go
-  "exec"  → go
-  "start" → go
-  "ls"    → list
-  "show"  → status
-
-Dispatch to: references/workflows/{VERB}.md
+/loop <task to repeat> --until <objective> [--max N] [--check <command>] [--resume <slug>]
 ```
 
-Any flag other than the loop-control flags is **not** dropped: collect it into `PASSTHROUGH_FLAGS` and forward it to the step command the loop runs (this is how `--branch feature/x` reaches the skills a loop invokes).
+- **task** (required positional) — what to repeat each iteration: a skill command, shell command, or agent instruction. Runs in a background agent.
+- **--until** (required) — the objective: the verifiable condition that ends the loop, phrased as an outcome, not an activity.
+- **--max N** (default 3, must be ≥ 1) — the hard upper bound. The loop stops after N iterations even if the objective is not met.
+- **--check <command>** (optional) — a deterministic check that exits 0 when the objective is met. When present it is the authoritative signal and overrides the agent's verdict.
+- **--resume <slug>** (optional) — continue an existing tracking doc (append iterations under its existing task/objective/max) instead of starting a new one.
 
-## Workflow index
+## Procedure
 
-| Verb | File | Purpose |
-| --- | --- | --- |
-| new | `references/workflows/new.md` | Define a new loop (task, objective, optional check, max iterations) |
-| go | `references/workflows/go.md` | Run the loop: repeat the task in background agents until the objective is met or max iterations |
-| list | `references/workflows/list.md` | List all loops and their latest run state |
-| status | `references/workflows/status.md` | Print a loop's definition and run-instance state |
-| help | `references/workflows/help.md` | Usage reference |
+All of it is here — there are no workflow files.
 
-## Instructions
+1. **Parse args.** Error out if the task or `--until` is missing, or `--max` is not a positive integer.
+2. **Initialize the shared store** before any mkdir (a fresh clone must get the symlink, not a real dir):
+   ```bash
+   # {SKILL_ROOT} = this skill's package root (the directory containing this SKILL.md) — substitute the real path.
+   python3 "{SKILL_ROOT}/scripts/cv_init_store.py" >/dev/null
+   ```
+3. **Slug the task** (lowercase, spaces → hyphens, `[a-z0-9-]`, ≤ 50 chars); suffix `-2`, `-3`, … if `.codevoyant/loops/{slug}/` already exists, unless `--resume` names it. `mkdir -p .codevoyant/loops/{slug}`.
+4. **Write the tracking doc** `.codevoyant/loops/{slug}/loop.md` (or reuse it under `--resume`):
+   ```markdown
+   # Loop: {slug}
 
-1. Extract VERB from the user's message (first non-flag positional argument after "loop").
-2. Apply aliases (run/exec/start → go; ls → list; show → status).
-3. If VERB is empty or unrecognized, default to `help`.
-4. Read and execute `references/workflows/{VERB}.md`.
-5. Pass all remaining arguments to the workflow unchanged, **as a preserved argv array** — never flatten the args into a single string and re-split them.
+   - **Task:** {task}
+   - **Objective:** {objective}
+   - **Check:** {command | (none — the loop agent judges)}
+   - **Max iterations:** {N}
+   - **Status:** running
+
+   | # | Result | Verdict | Reason |
+   | --- | --- | --- | --- |
+   {one row appended per iteration}
+   ```
+5. **Run iterations** for `i` in `1..N`:
+   - Spawn ONE `loop-agent` background agent (`agents/loop-agent.md`, `run_in_background: true`) with the task, the objective, the iteration number, and the previous iteration's result line. It performs the task AND judges whether the objective is now met — strictly, from the actual repo state, never from its own claim. Collect with a blocking wait.
+   - If it returns `NEEDS_INPUT: {question}`: ask the user on the main thread, fold the answer in, and re-run the same iteration (it still counts once toward the bound).
+   - If `--check` is set, run the check command after the agent returns: exit 0 → MET (the check overrides the agent's verdict); non-zero → NOT_MET.
+   - Append the iteration row to the tracking doc (result summary, verdict, reason). On MET: set `Status: complete` and stop. Otherwise continue.
+6. **Report.** If the loop exits at the bound without MET, set `Status: max-reached`. Print:
+   ```
+   ✓ Loop '{slug}' {complete | max-reached} — {i}/{N} iterations
+     Final: {last verdict reason}
+     Tracking doc: .codevoyant/loops/{slug}/loop.md
+   ```
+   On `max-reached`, add: re-run with a higher `--max`, tighten the task, or `--resume {slug}` to continue the same loop later.
+
+## Guarantees
+
+- The task never runs inline on the main thread — every iteration is a `loop-agent` background run.
+- The loop always terminates: at the bound at the latest.
+- A `NEEDS_INPUT` re-run does not consume extra iterations beyond the bound.
+
+## Agent
+
+- **loop-agent** (`agents/loop-agent.md`) — performs one iteration of the task and judges the objective from the actual repo state; returns STATUS/RESULT/EVIDENCE/VERDICT.

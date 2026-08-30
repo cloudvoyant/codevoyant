@@ -4,45 +4,22 @@ title: loop
 
 # loop
 
-Repeat-until-objective orchestration — run a task repeatedly until its objective is met or a caller-specified max iteration count is reached. Every iteration runs in a background agent, and the loop always terminates at the bound.
+Repeat a task until its objective is met or a max iteration count is reached. A loop is not a saved artifact like a flow — `/loop` creates a tracking doc and runs immediately, with every iteration executed by a single background loop agent that performs the task and judges the objective.
 
-## Workflows
-
-### new — define a loop
-
-Collect a Task (what to repeat each iteration — a skill command, shell command, or agent instruction), an Objective (the verifiable condition that ends the loop), an optional Check (a shell command that exits 0 when the objective is met; otherwise a judge agent decides), and Max Iterations (a positive integer upper bound). Writes the definition to `.codevoyant/loops/{name}/loop.md`.
+## Usage
 
 ```bash
-/loop new fix-lint                     # prompts for task, objective, check, max
+/loop fix the failing lint errors --until "mise run lint exits 0" --max 5
+/loop keep triaging the backlog --until "all P0 issues are closed" --check "gh issue list --label P0 --state open | wc -l | grep -qx 0"
+/loop continue the earlier pass --resume fix-lint-errors
 ```
 
-### go — run a loop
+- **task** (required) — what to repeat each iteration: a skill command, shell command, or agent instruction.
+- **--until** (required) — the objective: the verifiable condition that ends the loop, phrased as an outcome.
+- **--max N** (default 3) — the hard upper bound; the loop stops at N iterations even if the objective is not met.
+- **--check <command>** (optional) — a deterministic check that exits 0 when the objective is met; when present it overrides the agent's verdict.
+- **--resume <slug>** — continue an existing loop's tracking doc instead of starting a new one.
 
-Run the Task in a `loop-runner` background agent, then evaluate the objective — the Check command when defined, otherwise a `loop-judge` agent. Repeat until the verdict is MET (status `complete`) or the iteration bound is hit (status `max-reached`). Each iteration and its verdict are appended to the run instance's `run.md` under `.codevoyant/loops/{name}-{run-id}/`. If the runner needs input, the question is escalated, answered, and the same iteration re-runs (it still counts once toward the bound). `--max N` overrides the definition's bound for one run; any other flag is forwarded to the task the loop runs.
+## How a run works
 
-```bash
-/loop go fix-lint                      # run until objective met or max reached
-/loop go fix-lint --max 10             # override Max Iterations for this run
-```
-
-### list — list loops
-
-Show every loop definition with its max iterations, latest run, and run status.
-
-```bash
-/loop list                             # all loops + latest run state
-```
-
-### status — inspect a loop
-
-Print a loop's definition (Task, Objective, Check, Max Iterations) and its latest run-instance state: status, iteration count, and the last iteration's result.
-
-```bash
-/loop status fix-lint                  # definition + latest run state
-```
-
-### help — list commands
-
-```bash
-/loop help                             # show usage reference
-```
+Each invocation writes `.codevoyant/loops/{slug}/loop.md` — the tracking doc holding the task, objective, check, bound, status, and one row per iteration — then runs: for each iteration it spawns one `loop-agent` background agent that performs the task and strictly judges the objective from the actual repo state (never from its own claim). On a MET verdict (or a zero-exit `--check`) the loop stops with status `complete`; at the bound it stops with `max-reached`. If an iteration needs input, the question is escalated to the user and the same iteration re-runs without consuming the bound twice.
