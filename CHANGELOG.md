@@ -1,3 +1,33 @@
+## [2.2.0](https://github.com/cloudvoyant/codevoyant/compare/v2.1.1...v2.2.0) (2026-08-31)
+
+### Features
+
+* **spec:** lean phase files and task-skill check discovery
+
+**Lean phase-file template**
+- Drop Requirements, Task Runner Commands, Design, and References boilerplate
+  from `implementation/phase-N.md`; keep the lite Contract block and the
+  doc-aware `## Doc Scope` section
+- Move process rules (brevity, build-system preservation, terse prose) into the
+  executor agent definition so phase files stay task documents
+- Tighten the executor prompt: terse prose rule plus no direct build/test tool
+  calls — discover recipes with the task skill instead
+- Restructure phase files to Introduction / Implementation / Validation /
+  Deviations sections, with a validation line per task and a closing
+  full-suite Validation + Deviations pair
+
+**Task-skill check wiring**
+- Replace recorded task-runner commands across planner, executor, updater, and
+  agent-prompt wiring with `/task detect` + `/task list` discovery at execution
+  time — never raw npm/pytest/go-test invocations
+- Update planning (new.md, guide.md, update.md), review, and validation
+  (validation-loop.md, validation-prompt.md) checks to validate the lean shape
+  and task-skill references instead of runner-command metadata
+- Keep runner commands out of bash fences in guide.md and out of validation
+  prompt code blocks
+- Skip the code-completeness gate for lite plans (no `**Code:**` blocks) in
+  new.md, review.md, and validation-loop.md
+
 ## [2.1.1](https://github.com/cloudvoyant/codevoyant/compare/v2.1.0...v2.1.1) (2026-08-30)
 
 ### Bug Fixes
