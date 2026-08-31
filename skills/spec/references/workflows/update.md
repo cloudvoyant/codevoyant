@@ -107,7 +107,7 @@ Proposed changes for: "{CHANGE_DESCRIPTION}"
 
   implementation/phase-2.md
     + Step 4: Implement retry wrapper using existing HttpClient pattern
-              Add validation: {task runner test command}
+              Add validation: project checks green via the task skill (`/task detect`, `/task list`)
 
   Boundary callouts:
     $DOCS_DIR/architecture/phase-2.md — edit writes $DOCS_DIR/architecture/; the plan's globs are libs/auth/**, $DOCS_DIR/**. Confirm?

@@ -23,7 +23,7 @@ prompt: [contents of references/validation-prompt.md with SCOPE=plan-level]
 ```
 
 Validate:
-- plan.md metadata (Task Runners field present, branch/worktree filled)
+- plan.md metadata (no runner-command metadata, branch/worktree filled)
 - user-guide.md exists and has non-TODO overview
 - Phase names and task counts consistent across plan.md and implementation files
 - Inter-phase dependencies identified
@@ -38,10 +38,12 @@ prompt: [contents of references/validation-prompt.md with SCOPE=phase, PHASE_N={
 Validate only `implementation/phase-{N}.md` against the plan.md tasks for that phase:
 - Task specificity and actionability
 - Implementation completeness (file paths, code examples, no ambiguity)
-- Task runner commands listed and used (not raw npm/pytest/go test)
-- fmt/lint/typecheck/test validation block present
+- Lean shape: only Introduction / Implementation / Validation / Deviations sections, plus `## Doc Scope` for doc-aware plans (no Requirements process block, no Task Runner Commands, no Design)
+- Validation steps reference the task skill (no recorded runner commands, no raw npm/pytest/go test invocations)
 - Test coverage and success criteria
 - user-guide.md update instructions per task
+
+**Lite plans skip this agent.** If the plan's metadata carries `Lite: true`, there are no `**Code:**` blocks to check — do not launch the code-completeness agent and treat `VALIDATION_CODE_COMPLETENESS_STATUS` as PASS.
 
 **Code-completeness agent** — launch one agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`):
 

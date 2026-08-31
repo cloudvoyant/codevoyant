@@ -42,7 +42,7 @@ plan.md                          implementation/phase-N.md
 ───────────────────────────────  ──────────────────────────────────────
 High-level task checklist        Step-by-step execution detail
 One line per task                Full context, code examples, commands
-Phase headers with ✅ markers    Task runner commands and validation steps
+Phase headers with ✅ markers    Task-skill validation steps and deviations
 ```
 
 **These two views must always agree.** When you modify one, ask: does the other need to change too?

@@ -12,7 +12,7 @@ This workflow's **only output** is plan files. If you are about to do anything e
 |---|---|
 | Edit a source file | Stop. Add a task to the plan instead. |
 | Write application code | Stop. Describe it in `implementation/phase-N.md`. |
-| Run build / test / lint | Stop. Record the command in plan metadata. |
+| Run build / test / lint | Stop. Executors discover checks at run time via the task skill — record nothing. |
 | Fix a bug you noticed | Stop. Add it as a task in the appropriate phase. |
 | Write a task that says "research / investigate / explore / decide / figure out X" | Stop. Resolve it **now**, during planning — read the codebase (Glob/Grep/Read) and use WebSearch/WebFetch — then write the concrete answer and code. The written plan must be delta-free; the execution agent never researches or makes open design decisions. |
 | Keep going after "looks good" | Stop. Your job is done. Tell the user to run `/spec go`. |
@@ -345,9 +345,9 @@ Use `references/implementation-template.md`. Move ALL detailed specs here:
 - **The complete code for every task** — full file contents for new files; for edits, a diff (exact old→new lines or a unified diff) with context lines above and below the change, never a whole-file dump. A whole-file replacement appears only when the user explicitly asked for a full-file replacement. Not "code for non-trivial logic": all of it. No ellipses, pseudocode, or prose-only descriptions. If you can't show the code, resolve the unknown during planning rather than deferring it.
 - Testing and validation steps — including the `spec go --commit` CI-green check per phase. Under `--commit` with a remote, CI, and matching CI CLI, this is a HARD per-phase gate (the executor's `/git commit --yes --fix` blocks until green or stops); it must never gate a non-`--commit` run or a repo with no CI.
 
-**Task runner constraint (CRITICAL):** Every build, test, lint, and run command MUST use the project's task runner (mise/just/Makefile/package.json scripts). Before recording any such command, call `/task detect` to identify the runner and `/task list` to see available tasks — use those names verbatim. Never invent custom shell commands when a task runner recipe exists.
+**Check discovery (CRITICAL):** Phase files carry NO task runner commands — executors discover build/test/lint/format at run time via the task skill. Write each task's validation step as "project checks green via the task skill (`/task detect`, `/task list`)", never as recorded commands, and never as raw `npm test` / `pytest` style invocations. Process rules (brevity, build-system preservation, markdown, terse prose) are never written into phase files — they live in the executor agent definition.
 
-**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** every phase-N.md MUST begin its Design section with a `## Doc Scope` block (per `references/doc-aware.md` Rules 3, 4, 6). The `**Write globs:**` list MUST contain at least one glob — a phase with no write globs is a planning error (per `references/doc-aware.md` Rule 3's no-globless-phases rule); when docs are incomplete, derive the phase globs from the repository layout (src/monorepo libs, CI, docs) instead of leaving the list empty:
+**Doc-aware scoping (only when `PERSISTENT_MODE=true`):** every phase-N.md MUST carry a `## Doc Scope` section directly after the Introduction (per `references/doc-aware.md` Rules 3, 4, 6) — the lean template provides this section for doc-aware plans only. The `**Write globs:**` list MUST contain at least one glob — a phase with no write globs is a planning error (per `references/doc-aware.md` Rule 3's no-globless-phases rule); when docs are incomplete, derive the phase globs from the repository layout (src/monorepo libs, CI, docs) instead of leaving the list empty:
 
 ```
 ## Doc Scope
@@ -406,6 +406,8 @@ done
 ## Step 5.6: Required Code-Completeness Gate, Validation, and Permissions Analysis
 
 Immediately after all files are verified, run the code-completeness gate before permission analysis or optional full-plan validation. This gate is required for every non-blank plan; `--validate` only adds the broader multi-agent validation loop.
+
+**Lite plans skip the code-completeness gate.** When `LITE_MODE=true` a plan's tasks carry `**Contract:**` blocks instead of literal `**Code:**`, so the gate does not apply — skip the code-completeness agent below for lite plans and treat code-completeness as satisfied. The requirements and tabulation gates still run.
 
 **Code-completeness gate (required):** Launch one validation agent (`subagent_type: general-purpose`, `model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted.
 

@@ -1,36 +1,26 @@
 # Implementation Phase File Template
 
-Use this structure for each `implementation/phase-N.md` file created in Step 5.5.
+Use this structure for each `implementation/phase-N.md` file. Phase files are task documents: a one-line introduction, the tasks with their complete code, then validation and deviations. Process rules (brevity, build-system preservation, markdown, terse prose) live in the executor agent definition — never repeat them here. Design context lives in plan.md and the user guide. Executors discover build/test/lint/format commands via the task skill, so no runner commands are recorded.
 
 ```markdown
 # Phase {N} - {Phase Name}
 
 ## Introduction
-{Brief description of what this phase accomplishes and its role in the overall plan.}
+{One or two sentences — what this phase accomplishes.}
 
-## Requirements
+## Doc Scope
+{ONLY for doc-aware (`--persistent`) plans — omit this section otherwise. Per `references/doc-aware.md` Rule 3: the `**Write globs:**` list must contain at least one glob; cross-module interaction uses documented public interfaces only (Rule 4); each crossing gets a boundary callout (Rules 6–7). Verify every write target with `$SPEC_SKILL/scripts/scope.py`.}
 
-**Brevity:** Make the smallest change that achieves the task. No drive-by refactors or unrelated fixes.
+**Write globs:** {`glob1`} {`glob2`}
 
-**Build system preservation:** Do NOT modify the build system, CI config, or dependencies unless this phase is explicitly about them. If the project built before you started, it must build after every task. If a change would require an unplanned build system modification, stop and flag it.
+**Public interfaces only:** {cross-module interaction uses only the target module's documented public API — never its internals.}
 
-**Markdown output:** Soft-wrap prose — never hard-wrap. Write each paragraph as one continuous line; do not insert manual newlines to wrap prose at a fixed column width. Newlines still separate paragraphs, list items, headings, and code fences.
-
-### Task Runner Commands
-{List the relevant task runner commands for this phase. ALWAYS use these — never invent equivalent shell commands. Discover them by reading `mise.toml`, `justfile`, `Makefile`, or `package.json` scripts directly.}
-- Build: `{e.g. just build | make build | task build | mise run build}`
-- Test: `{e.g. just test | make test | task test | mise run test}`
-- Lint: `{e.g. just lint | make lint | mise run lint}`
-- Format: `{e.g. just fmt | make format | task fmt | mise run fmt}`
-
-If no task runner covers a needed operation, note: "Gap: no recipe for X — suggest adding one."
-
-## Design
-{Describe the approach taken in this phase — what pattern, what structure, what architectural decision was made before coding begins.}
+**Boundary callouts:**
+- {task} — {what crosses the boundary, why it is required, and the alternative considered}
 
 ## Implementation
 
-> **Gate (machine-checked in validation):** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files; for edits to existing files, a **diff** (exact old→new lines or a unified diff) with context lines above and below the change, never a whole-file dump. A whole-file replacement appears only when the task explicitly states that the user asked for a full-file replacement. The block is REJECTED if it is missing or empty, contains a placeholder/stub marker from the blocklist (see `references/code-completeness-blocklist.md` — the canonical list), shows a bare signature/comment where a body belongs, describes the code in prose instead of showing it, or replaces an entire existing file with a whole-file dump where a diff was required. The blocklist is judged by intent, not blind substring matching, so a marker used as a legitimate token (not a stand-in for missing code) does not fail the block. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent. A dedicated validation agent scans for exactly these placeholders and will fail the plan until every code block is complete.
+> **Gate (machine-checked in validation):** Every task below MUST contain a `**Code:**` block holding the **complete, literal code** it will produce — full contents for new files; for edits to existing files, a **diff** (exact old→new lines or a unified diff) with context lines above and below the change, never a whole-file dump. A whole-file replacement appears only when the task explicitly states that the user asked for a full-file replacement. The block is REJECTED if it is missing or empty, contains a placeholder/stub marker from the blocklist (see `references/code-completeness-blocklist.md` — the canonical list), shows a bare signature/comment where a body belongs, describes the code in prose instead of showing it, or replaces an entire existing file with a whole-file dump where a diff was required. The blocklist is judged by intent, not blind substring matching, so a marker used as a legitimate token (not a stand-in for missing code) does not fail the block. If you cannot show the complete code, resolve the unknown now during planning (read the codebase, search the web, or ask the user) — never pass research, open design choices, or code authoring to the execution agent.
 The executor may still apply minor mechanical fixes to the specified code in-flight — obvious typos, missing imports, or trivial type corrections that do not change a module's contract or violate an invariant — per the permitted-minor-deviations policy in `agents/spec-executor.md`; these are logged as `[MINOR-DEVIATION]` entries, not treated as failures.
 
 {For each task in this phase:}
@@ -38,18 +28,14 @@ The executor may still apply minor mechanical fixes to the specified code in-fli
 ### Task {X}: {Task Description}
 
 **Steps:**
-1. {Detailed step-by-step instructions}
-2. {Include exact commands, file paths, code patterns}
+1. {Concise step-by-step instructions}
 
 **Code (required — complete, never omit, never abbreviate):**
 ```{lang}
 {The COMPLETE code this task produces. New file: its entire contents. Edit to an existing
 file: a diff — the exact old→new lines or a unified diff with the changed lines plus context
-lines above and below, so the executor sees what changes and where. Never paste the whole
-file for an edit; a whole-file replacement is shown only when this task explicitly declares
-a user-requested full-file replacement. Every line the execution agent will write appears
-here verbatim. No ellipses, no pseudocode, no "e.g." A task with a partial, prose-only, or
-whole-file-dump code block is incomplete and must not be emitted.}
+lines above and below. Never paste the whole file for an edit; a whole-file replacement is
+shown only when this task explicitly declares a user-requested full-file replacement.}
 ```
 
 **Contract (lite mode only — replaces `**Code:**`):**
@@ -65,37 +51,23 @@ Acceptance:
   - <the invariant or test that proves the task is done>
 ```
 
-**Files to modify / create:**
-- `path/to/file.ext` — {specific changes}
-
 **Table rows (only when the task consumes a `tables/*.md` table):**
 - `tables/{set-slug}.md` — rows {#–#}: mark each row's Status `[x]` as it is completed; a row is done only when its change is applied and validated
 
+**Files to modify / create:**
+- `path/to/file.ext` — {specific changes}
+
 **Validation (run after every task):**
-- [ ] `{fmt command}` — no formatting changes outstanding
-- [ ] `{lint command}` — zero warnings/errors
-- [ ] `{test command}` — all tests pass
-- [ ] *(only under `spec go --commit`, and only when CI exists)* CI is green for this committed phase — the executor invokes `/git commit --yes --fix` and the git skill blocks in its bounded fix-until-green loop. This is a HARD gate: the phase is not complete while CI is red, and if the git skill stops with CI still failing, the phase is reported FAILED. Skip silently when any of: no `--commit`, no remote, no configured CI, no `gh`/`glab` CLI. A phase never fails for the absence of CI — only for a CI that exists and stays red.
+- [ ] Project checks green via the task skill (`/task detect`, `/task list` — then the repo's test/lint/typecheck recipes); fix failures before marking the task complete
+- [ ] *(only under `spec go --commit`, and only when CI exists)* CI is green for this committed phase — the executor invokes `/git commit --yes --fix` and the git skill blocks in its bounded fix-until-green loop. Skip silently when any of: no `--commit`, no remote, no configured CI, no `gh`/`glab` CLI.
 
----
+## Validation
 
-## Future Work / Validation
+After all tasks complete, run the repo's full check set via the task skill and record the outcome:
 
-After all tasks complete, run the full suite:
+- [ ] Full suite green (tests + validate/lint as the repo defines them) — note the exact recipes run
 
-```bash
-{fmt command}
-{lint command}
-{typecheck command}
-{test command}
-{build command}
-```
+## Deviations
 
-Expected: {describe expected output}
-
-Note any follow-on tasks or deferred items surfaced during this phase:
-- {deferred item}
-
-## References
-- {Related proposals, ADRs, or external references consulted for this phase}
+- {Deviations, minor deviations, or deferred items surfaced during this phase — or "none"}
 ```

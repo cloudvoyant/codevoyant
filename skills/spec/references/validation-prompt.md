@@ -19,7 +19,7 @@ Read these files:
 Validate the following quality criteria:
 
 **Metadata**
-- Does plan.md have a "Task Runners" field with actual commands?
+- Does plan.md carry no runner-command metadata? (Checks are discovered at execution time via the task skill — a "Task Runners" field is stale boilerplate.)
 - Are branch/worktree fields filled (or "(none)" explicitly)?
 
 **User Guide**
@@ -80,12 +80,11 @@ Validate the following quality criteria for Phase {N} only:
 - Are code examples present for non-trivial logic?
 - Is there enough detail for an autonomous agent to execute without asking clarifying questions?
 
-**Task Runner Usage**
-- Does phase-{N}.md list applicable task runner commands in a "Task Runner Commands" section covering build/test/lint/format/typecheck?
-- Are all build/test/lint/format/typecheck/run commands using the project's task runners (not raw `npm test`, `python -m pytest`, `go test ./...` when a task runner wraps them)?
-- Does every task's validation checklist include lint, format, and typecheck steps — not just tests?
-- Is there a "Phase Validation" block at the end with all five checks (fmt, lint, typecheck, test, build)?
-- Is there a note that lint/format/typecheck must run after every task, not only at phase end?
+**Lean shape and check discovery**
+- Does phase-{N}.md contain ONLY the sections Introduction, Implementation, Validation, and Deviations — plus a `## Doc Scope` section when the plan is doc-aware (`--persistent`)? A "## Requirements" process block, a "Task Runner Commands" section, or a "## Design" section is a failure — those rules live in the executor agent definition and the design lives in plan.md.
+- Does every task's validation checklist run the project's checks via the task skill (references `/task detect` / `/task list` or equivalent) — not recorded runner commands, and never raw `npm test` / `python -m pytest` / `go test` style invocations?
+- Does the phase close with a Validation section (full-suite run via the task skill) and a Deviations section?
+- Is the Introduction one or two sentences, with no policy prose?
 
 **User Guide**
 - Does each task in phase-{N}.md specify what to update in user-guide.md once complete?
@@ -95,7 +94,7 @@ Validate the following quality criteria for Phase {N} only:
 - Are task descriptions consistent between plan.md and phase-{N}.md?
 
 **Test Coverage**
-- Does each task specify what tests to write or run using the task runner?
+- Does each task specify what tests to write or run via the task skill (never raw `npm test` / `python -m pytest` / `go test` style invocations)?
 - Are acceptance/success criteria testable?
 
 Respond ONLY in this exact format:

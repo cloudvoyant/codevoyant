@@ -1,6 +1,6 @@
 # review
 
-Review a spec plan for code completeness before running `/spec go`, then assess remaining quality issues. A plan cannot receive a ready verdict while any implementation task lacks complete, ready-to-write literal code.
+Review a spec plan for code completeness before running `/spec go`, then assess remaining quality issues. A plan cannot receive a ready verdict while any implementation task lacks complete, ready-to-write literal code (for lite plans, complete `**Contract:**` blocks).
 
 ## Variables
 
@@ -41,6 +41,8 @@ Additional checks:
 
 Before launching scope, ordering, or codebase-alignment review agents, launch one code-completeness agent (`model-tier: light`, `run_in_background: true`) with the `SCOPE=code-completeness` prompt from `references/validation-prompt.md` and `{PLAN_DIR}` substituted, and — in the same message — one requirements agent with the `SCOPE=requirements` prompt. The code-completeness agent must read `references/code-completeness-blocklist.md` and inspect every implementation task for a complete literal `**Code:**` block; the requirements agent judges plan.md's Requirements section against R1–R7 (see `references/validation-prompt.md`).
 
+**Lite plans skip the code-completeness gate.** A plan whose metadata carries `Lite: true` has no `**Code:**` blocks (tasks carry `**Contract:**` instead) — skip the code-completeness agent for lite plans and treat its result as PASS. The requirements, tabulation, scope, ordering, and codebase-alignment passes still run.
+
 Wait for both reports. Add every `NEEDS_IMPROVEMENT` finding to the critical finding set. Classify a finding as `AUTO-FIX` only when the reviewer can determine and paste the complete literal code (code-completeness) or the domain-phrased requirement rewrite (requirements) from the repository and plan context; otherwise classify it as `ASK`. Do not allow later review findings, AUTO-FIX work, or a report verdict to mark the plan ready until both gates return `PASS` with no unresolved findings.
 
 Launch the tabulation gate in the same message as the other two (`SCOPE=tabulation` prompt from `references/validation-prompt.md`). Treat its failures like code-completeness failures: `AUTO-FIX` when the reviewer can enumerate the missing rows from the codebase (re-run the table's Source command, add the rows, assign them to tasks, update plan.md `## Tables`), otherwise `ASK`. The plan is not ready while the tabulation gate has unresolved findings.
@@ -62,7 +64,7 @@ For each phase-N.md, flag as CRITICAL if:
 - A task has no corresponding section in the implementation file
 - A task has no concrete validation/verification step
 - A task says "implement X" without specifying files, APIs, or acceptance criteria
-- Task runner commands are missing or vague
+- A phase file carries old-shape boilerplate (a Requirements process block, a Task Runner Commands section, or a Design section) or validation steps that name raw tool invocations instead of the task skill
 - A task modifies a `docs/` file without updating the doc entry
 
 Tag each finding as `AUTO-FIX` (mechanical fix) or `ASK` (judgment call required).
