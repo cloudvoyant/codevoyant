@@ -25,7 +25,6 @@ Read `.codevoyant/spec/{plan-name}/plan.md` in full.
 Parse:
 - All phases (`### Phase N - Name`)
 - All tasks per phase (`N. [ ] task` and `N. [x] task`)
-- Task runner commands from the Metadata section
 - Any `## Insights` section from previous sessions
 
 Determine starting position:
@@ -199,10 +198,7 @@ Then continue the guide loop with the next task.
 
 When all tasks in a phase are either done `[x]` or skipped, run the phase boundary:
 
-1. Run tests if task runner commands are available:
-   ```bash
-   {test command from plan metadata}
-   ```
+1. Run the project's checks via the task skill: `/task detect` then `/task list` — run the repo's test recipe.
    If tests fail, report the failure and use **AskUserQuestion** (Fix before continuing / Continue anyway).
 
 2. If all tasks were done (none skipped), mark the phase header `✅` in plan.md.

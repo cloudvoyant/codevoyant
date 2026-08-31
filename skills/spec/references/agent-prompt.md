@@ -12,8 +12,8 @@ Branch: {PLAN_BRANCH}
 Worktree: {PLAN_WORKTREE or "(none)"}
 Git commits allowed: {ALLOW_COMMITS}
 
-Task runner commands:
-{Discover by reading mise.toml/justfile/Makefile/package.json directly}
+Project checks:
+Discover and run every build/test/lint/format command via the task skill (`/task detect`, then `/task list`) — the phase file carries no runner commands. Never call build/test tools directly and never invent shell equivalents.
 
 ## Completed phases (summary only)
 {One line per completed phase: "Phase 1 (Setup) ✅ — 4/4 tasks, tests passing"}
